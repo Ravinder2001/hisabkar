@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  /* justify-content: space-evenly; */
+}
+.spliter {
+  width: 20%;
+}
+.accordian {
+  width: 40%;
+  margin-left: 20px;
+  margin-top: 15px;
+}
+.accordianBox {
+  margin-top: 20px;
+}
+.splitCon {
+  width: 40%;
+  margin-top: 25px;
+  /* border: 1px solid red; */
+  height: calc(100vh - 150px);
+  overflow: auto;
+}

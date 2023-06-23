@@ -1,0 +1,18 @@
+.container{
+    margin: 10px;
+}
+.heading  div{
+    font-size: 30px;
+    background: -webkit-linear-gradient(#302f2f, #2adeeb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.subHeading{
+    display: flex;
+    width: 300px;
+    justify-content: space-between;
+}
+.subHeading div{
+    font-size: 20px;
+    color: white;
+}

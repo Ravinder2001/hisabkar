@@ -1,0 +1,13 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  width: 350px;
+  /* border: 1px solid red; */
+}
+.list {
+  display: flex;
+  /* border: 1px solid red; */
+  justify-content: space-between;
+  margin-top: 10px;
+  /* width: 80%; */
+}

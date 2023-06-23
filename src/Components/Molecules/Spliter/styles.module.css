@@ -1,0 +1,50 @@
+.container{
+    width: 100%;
+    margin-top: 30px;
+}
+.paid{
+    margin-left: 10px;
+    margin-top: 20px;
+}
+
+.paidText{
+    font-size: 16px;
+    color: white;
+    
+    margin-bottom: 10px;
+}
+.checkCon{
+    margin-top: 10px;
+    display: flex;
+    /* border: 1px solid orange; */
+    padding: 5px;
+    height: 20px;
+    margin-left: 0px;
+    cursor: pointer;
+}
+.checkName{
+    font-size: 16px;
+    margin-left: 15px;
+    color: #45f3ff;
+}
+.list{
+    max-height: 300px;
+    /* border: 1px solid red; */
+    display: flex;
+    flex-wrap: wrap;
+    overflow: auto;
+    /* flex-direction: column; */
+}
+.btn{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    /* border: 1px solid red; */
+    margin-top: 20px;
+}
+.line{
+    margin-top: 20px;
+    width: 100%;
+    height: 1px;
+    border-top: 1px dashed #105a60;
+}

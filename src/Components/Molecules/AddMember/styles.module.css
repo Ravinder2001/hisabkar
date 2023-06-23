@@ -1,0 +1,12 @@
+.container{
+    display: flex;
+    /* border: 1px solid red; */
+    align-items: flex-end;
+    justify-content: space-evenly;
+    width: 100%;
+    margin: 10px;
+}
+.icon{
+    cursor: pointer;
+    margin-left: 10px;
+}
