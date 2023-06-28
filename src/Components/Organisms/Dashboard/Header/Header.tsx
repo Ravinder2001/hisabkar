@@ -1,16 +1,16 @@
 import React from "react";
 import styles from "./styles.module.css";
 import Heading from "../../../Atoms/Headings/Heading";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../store/store";
-function Header() {
-  const GroupName = useSelector(
-    (state: RootState) => state.AddGroupSlice.GroupName
-  );
 
-  const MembersLength = useSelector(
-    (state: RootState) => state.AddGroupSlice.MemberList.length
-  );
+type HeaderProps = {
+  name: string;
+  members: number;
+};
+
+function Header(props: HeaderProps) {
+  const GroupName = props.name;
+
+  const MembersLength = props.members;
 
   return (
     <div className={styles.container}>

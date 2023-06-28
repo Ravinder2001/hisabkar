@@ -2,8 +2,7 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-import AddGroupSlice from "./slices/AddGroupSlice";
-import SplitSlice from "./slices/SplitSlice";
+import UserSlice from "./slices/UserSlice";
 
 const persistConfig = {
   key: "root",
@@ -11,8 +10,7 @@ const persistConfig = {
 };
 
 const RootReducers = combineReducers({
-  AddGroupSlice,
-  SplitSlice,
+  UserSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, RootReducers);

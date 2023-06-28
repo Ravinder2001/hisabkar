@@ -2,7 +2,7 @@ import { ChangeEventHandler } from "react";
 import styles from "./styles.module.css";
 
 type SelectBoxProps = {
-  options: { id: string; name: string }[];
+  options: { member_id: string; member_name: string }[];
   value: string;
   handleChange: ChangeEventHandler<HTMLSelectElement>;
 };
@@ -18,8 +18,12 @@ function SelectBox(props: SelectBoxProps) {
       onChange={handleChange}
     >
       {options.map((item) => (
-        <option key={item.id} value={item.name} className={styles.option}>
-          {item.name}
+        <option
+          key={item.member_id}
+          value={item.member_id}
+          className={styles.option}
+        >
+          {item.member_name}
         </option>
       ))}
     </select>

@@ -1,15 +1,21 @@
-import { ChangeEvent, useState, KeyboardEvent } from "react";
+import {
+  ChangeEvent,
+  useState,
+  KeyboardEvent,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import InputBox2 from "../../Atoms/InputBox/InputBox2/InputBox2";
 import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
 import styles from "./styles.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import {
-  addGroupMember,
-  addGroupName,
-} from "../../../store/slices/AddGroupSlice";
 
-function AddMember() {
+const shortid = require("shortid");
+type AddMemberProps = {
+  addMember: (e: { id: string; name: string }) => void;
+};
+function AddMember(props: AddMemberProps) {
   const dispatch = useDispatch();
   const [memberName, setMemberName] = useState<string>("");
 
@@ -19,7 +25,9 @@ function AddMember() {
 
   const handleAddMember = () => {
     if (memberName !== "") {
-      dispatch(addGroupMember(memberName));
+      let id = shortid.generate();
+      props.addMember({ id: id, name: memberName });
+      // dispatch(addGroupMember(memberName));
       setMemberName("");
     }
   };

@@ -9,7 +9,7 @@ import styles from "./styles.module.css";
 type SimpleAccordionProps = {
   amount: number;
   paidBy: string;
-  memberList: { id: string; amount: number; name?: string }[];
+  memberList: { amount: number; member_name: string }[];
 };
 
 export default function SimpleAccordion(props: SimpleAccordionProps) {
@@ -26,10 +26,10 @@ export default function SimpleAccordion(props: SimpleAccordionProps) {
             <div>Paid By: {props.paidBy}</div>
           </div>
         </AccordionSummary>
-        <AccordionDetails>  
-          {props.memberList.map((item) => (
-            <div key={item.id} className={styles.list}>
-              <div>{item.name}</div>
+        <AccordionDetails>
+          {props.memberList.map((item, index) => (
+            <div key={index} className={styles.list}>
+              <div>{item.member_name}</div>
               <div>₹{item.amount}</div>
             </div>
           ))}

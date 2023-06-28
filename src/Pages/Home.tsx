@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 
 function Home() {
   const navigate = useNavigate();
-  useEffect(() => {
-    const data = localStorage.getItem("persist:root");
-    if (data) {
-      navigate("/dashboard");
-    }
+  // useEffect(() => {
+  //   const data = localStorage.getItem("persist:root");
+  //   if (data) {
+  //     navigate("/dashboard");
+  //   }
 
-  }, []);
+  // }, []);
 
   return <HomeTemplate />;
 }

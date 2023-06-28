@@ -4,29 +4,56 @@ import styles from "./styles.module.css";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../store/store";
-import { toogleErrorShow } from "../../../../store/slices/AddGroupSlice";
-import { addPairs } from "../../../../store/slices/SplitSlice";
-function Footer() {
+import PostGroup from "../../../../APIs/PostGroup";
+import moment from "moment";
+import { request_succesfully } from "../../../../utils/Constants";
+import { toast } from "react-toastify";
+import { ErroToast } from "../../../../utils/ToastStyle";
+import PostPairs from "../../../../APIs/PostPairs";
+
+type FooterProps = {
+  GroupName: string;
+  MemberList: { id: string; name: string }[];
+};
+
+function Footer(props: FooterProps) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const GroupError = useSelector(
-    (state: RootState) => state.AddGroupSlice.GroupError
-  );
-  const MemberError = useSelector(
-    (state: RootState) => state.AddGroupSlice.MemberError
-  );
 
-  const MemberList = useSelector(
-    (state: RootState) => state.AddGroupSlice.MemberList
-  );
+  const user_id = useSelector((state: RootState) => state.UserSlice.id);
+
+  const SubmitGroup = async () => {
+    let data = {
+      user_id: user_id,
+      name: props.GroupName,
+      timestamp: moment(),
+      members: props.MemberList,
+    };
+    const res = await PostGroup(data);
+    if (res.status == request_succesfully) {
+      CreatePairs(res.data.group_id, res.data.members);
+    } else {
+      toast.error(
+        res.response.data.message ?? "Something went wrong",
+        ErroToast
+      );
+    }
+  };
+
+  const CreatePairs = async (e: string, members: string[]) => {
+    const res = await PostPairs(e, members);
+    if (res.status == request_succesfully) {
+      navigate(`/${e}`);
+    } else {
+      toast.error(
+        res.response.data.message ?? "Something went wrong",
+        ErroToast
+      );
+    }
+  };
 
   const handleSubmit = () => {
-    if (!GroupError && !MemberError) {
-      dispatch(addPairs(MemberList));
-      navigate("/dashboard");
-    } else {
-      dispatch(toogleErrorShow());
-    }
+    SubmitGroup();
   };
   return (
     <div className={styles.container} onClick={handleSubmit}>
