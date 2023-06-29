@@ -10,7 +10,7 @@ import ReactIcons from "../../../Atoms/ReactIcons/ReactIcons";
 type ListProps = {
   handleGroupName: (e: ChangeEvent<HTMLInputElement>) => void;
   GroupName: string;
-  addMember: (e: { id: string; name: string }) => void;
+  addMember: (e: { id: string; name: string,image:string }) => void;
   MemberList: { id: string; name: string }[];
   handleRemoveMember: (e: string) => void;
 };

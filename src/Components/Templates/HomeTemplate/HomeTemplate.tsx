@@ -15,6 +15,7 @@ type MemberList = {
 type MemberListType = {
   id: string;
   name: string;
+  image:string
 };
 
 function HomeTemplate() {
@@ -25,7 +26,8 @@ function HomeTemplate() {
     setGroupName(e.target.value);
   };
 
-  const addMember = (e: { id: string; name: string }) => {
+  const addMember = (e: { id: string; name: string,image:string }) => {
+    
     setMemberList((prev) => [...prev, e]);
   };
 

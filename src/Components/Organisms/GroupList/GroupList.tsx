@@ -11,12 +11,20 @@ import GroupCard from "../../Atoms/GroupCard/GroupCard";
 type GroupListType = {
   id: string;
   name: string;
-  group_members: { member_name: string }[];
+  group_members: { image: string; name: string }[];
+  timestamp: string;
+  editable: boolean;
+  amount: number;
 };
 
 function GroupList() {
   const user_id = useSelector((state: RootState) => state.UserSlice.id);
   const [GroupsList, setGroupList] = useState<GroupListType[]>([]);
+  const [flag, setFlag] = useState(false);
+
+  const toogleFlag = () => {
+    setFlag(!flag);
+  };
 
   const FetchGroupList = async () => {
     const res = await GetUserGroups(user_id);
@@ -31,34 +39,22 @@ function GroupList() {
   };
   useEffect(() => {
     FetchGroupList();
-  }, []);
-
-  let GroupDetails = [
-    {
-      groupName: "Kedarnath",
-      description: "Ase hi bnai h",
-      members: [
-        { image: "https://api.multiavatar.com/111.png", name: "Ravi" },
-        { image: "https://api.multiavatar.com/2222.png", name: "Vishal" },
-        { image: "https://api.multiavatar.com/333.png", name: "Prajal" },
-      ],
-      amount: 10000,
-      timestamp: "2023-06-28T06:30:39.060Z",
-    },
-  ];
+  }, [flag]);
 
   return (
     <div className={styles.container}>
       {/* {GroupsList.map((item) => (
         <div>{item.name}</div>
       ))} */}
-      {GroupDetails.map((item: any) => (
+      {GroupsList.map((item) => (
         <GroupCard
-          name={item.groupName}
-          des={item.description}
-          members={item.members}
+          id={item.id}
+          name={item.name}
+          members={item.group_members}
           amount={item.amount}
           time={item.timestamp}
+          editable={item.editable}
+          toogleFlag={toogleFlag}
         />
       ))}
     </div>

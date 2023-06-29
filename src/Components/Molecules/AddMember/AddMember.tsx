@@ -13,7 +13,7 @@ import { RootState } from "../../../store/store";
 
 const shortid = require("shortid");
 type AddMemberProps = {
-  addMember: (e: { id: string; name: string }) => void;
+  addMember: (e: { id: string; name: string; image: string }) => void;
 };
 function AddMember(props: AddMemberProps) {
   const dispatch = useDispatch();
@@ -25,8 +25,10 @@ function AddMember(props: AddMemberProps) {
 
   const handleAddMember = () => {
     if (memberName !== "") {
+      const num1 = Math.floor(Math.random() * 100);
+      const image = `https://api.multiavatar.com/${num1}.png`;
       let id = shortid.generate();
-      props.addMember({ id: id, name: memberName });
+      props.addMember({ id: id, name: memberName, image: image });
       // dispatch(addGroupMember(memberName));
       setMemberName("");
     }
