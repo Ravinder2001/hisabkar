@@ -9,7 +9,7 @@
   /* border: 1px solid red; */
 }
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 2px;
 }
 
 /* Track */
@@ -20,7 +20,7 @@
 /* Handle */
 ::-webkit-scrollbar-thumb {
   background: #171717;
-  border-radius: 10px;
+  /* border-radius: 10px; */
 }
 
 /* Handle on hover */

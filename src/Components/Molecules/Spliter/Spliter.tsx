@@ -10,9 +10,15 @@ import { GroupDataType } from "../../Templates/DashboardTemplate/DashboardTempla
 import PostExpense from "../../../APIs/PostExpense";
 import moment from "moment";
 import { toast } from "react-toastify";
-import { ErroToast } from "../../../utils/ToastStyle";
-import { request_succesfully } from "../../../utils/Constants";
+import { ErroToast, SuccessToast } from "../../../utils/ToastStyle";
+import {
+  Unauthorized,
+  localStorageKey,
+  request_succesfully,
+} from "../../../utils/Constants";
 import PutPairs, { PutPairsType } from "../../../APIs/PutPairs";
+import { useNavigate } from "react-router-dom";
+import { Logout } from "../../../store/slices/UserSlice";
 
 type PaymentForType = {
   member_id: string;
@@ -20,10 +26,13 @@ type PaymentForType = {
   checked: boolean;
 };
 type MainProps = {
+  toogleFlag: () => void;
   GroupData: GroupDataType;
 };
 
 function Spliter(props: MainProps) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { group_id, group_members, group_name } = props.GroupData;
 
   const [amount, setAmount] = useState<string>("");
@@ -56,7 +65,16 @@ function Spliter(props: MainProps) {
   const UpdatePairs = async (updatedObject: PutPairsType) => {
     let res = await PutPairs(updatedObject);
     if (res.status == request_succesfully) {
-      alert("expense added sucessfully");
+      props.toogleFlag();
+      toast.success("Expense added", SuccessToast);
+    } else if (res.response.data.status === Unauthorized) {
+      dispatch(Logout());
+      localStorage.removeItem(localStorageKey);
+      navigate("/login");
+      toast.error(
+        res.response.data.message ?? "Something went wrong",
+        ErroToast
+      );
     } else {
       toast.error(
         res.response.data.message ?? "Something went wrong",
@@ -71,48 +89,69 @@ function Spliter(props: MainProps) {
     });
 
     if (!error.amount && !error.member) {
-      let memberActive = paymentFor
-        .filter((item) => item.checked === true)
-        .map((item) => {
-          return item.member_id;
-        });
+      if (amount.length > 0) {
+        setAmount("");
+        AddPeople();
+        setPaidBy(group_members[0].member_id);
+        let memberActive = paymentFor
+          .filter((item) => item.checked === true)
+          .map((item) => {
+            return item.member_id;
+          });
 
-      let object = {
-        group_id,
-        amount: parseInt(amount),
-        paidBy: paidBy,
-        members: memberActive,
-        timestamp: moment(),
-      };
-      let perPersonAmount = Math.ceil(parseInt(amount) / memberActive.length);
-
-      let updatedObject = {
-        amount: Number(perPersonAmount),
-        paidBy,
-        group_id,
-        members: memberActive,
-      };
-      let res = await PostExpense(object);
-      if (res.status == request_succesfully) {
-        UpdatePairs(updatedObject);
-      } else {
-        toast.error(
-          res.response.data.message ?? "Something went wrong",
-          ErroToast
+        let object = {
+          group_id,
+          amount: parseInt(amount),
+          paidBy: paidBy,
+          members: memberActive,
+          timestamp: moment(),
+        };
+        let perPersonAmount = (parseInt(amount) / memberActive.length).toFixed(
+          2
         );
+
+        let updatedObject = {
+          amount: Number(perPersonAmount),
+          paidBy,
+          group_id,
+          members: memberActive,
+        };
+        let res = await PostExpense(object);
+        if (res.status == request_succesfully) {
+          UpdatePairs(updatedObject);
+        } else if (res.response.data.status === Unauthorized) {
+          localStorage.removeItem(localStorageKey);
+          dispatch(Logout());
+          navigate("/login");
+          toast.error(
+            res.response.data.message ?? "Something went wrong",
+            ErroToast
+          );
+        } else {
+          toast.error(
+            res.response.data.message ?? "Something went wrong",
+            ErroToast
+          );
+        }
+      } else {
+        alert("Please add the amount.");
       }
     }
   };
 
-  useEffect(() => {
+  const AddPeople = () => {
     let MemberData = group_members.map((item: any) => {
       return { ...item, checked: true };
     });
     setPaymentFor(MemberData);
+  };
+
+  useEffect(() => {
+    AddPeople();
   }, [group_members]);
 
   useEffect(() => {
-    if (amount.length > 0) {
+    if (amount.length <= 6) {
       setError((prev) => {
         return { ...prev, amount: false };
       });
@@ -139,8 +178,11 @@ function Spliter(props: MainProps) {
         handleChange={handleAmountChange}
         placeholder="Amount"
         type="number"
+        max={100}
       />
-      {error.amount && error.show && <div>Please add amount</div>}
+      {error.amount && error.show && (
+        <div className={styles.error}>Please add amount between (1-100000)</div>
+      )}
       <div className={styles.line}></div>
       <div className={styles.paid}>
         <div className={styles.paidText}>Paid By</div>
@@ -167,7 +209,9 @@ function Spliter(props: MainProps) {
             </div>
           ))}
         </div>
-        {error.member && error.show && <div>Please add amount</div>}
+        {error.member && error.show && (
+          <div className={styles.errorMem}>Please add atleast one person!</div>
+        )}
       </div>
       <div className={styles.line}></div>
       <div className={styles.btn}>

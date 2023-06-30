@@ -12,7 +12,7 @@ export const ErroToast: ToastOptions<{}> = {
 };
 export const SuccessToast: ToastOptions<{}> = {
   position: "bottom-right",
-  autoClose: 5000,
+  autoClose: 3000,
   hideProgressBar: false,
   closeOnClick: true,
   pauseOnHover: true,

@@ -5,11 +5,12 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import { MdExpandMore } from "react-icons/md";
 import styles from "./styles.module.css";
+import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
 
 type SimpleAccordionProps = {
   amount: number;
   paidBy: string;
-  memberList: { amount: number; member_name: string }[];
+  memberList: { amount: number; member_name: string; image: string }[];
 };
 
 export default function SimpleAccordion(props: SimpleAccordionProps) {
@@ -20,17 +21,34 @@ export default function SimpleAccordion(props: SimpleAccordionProps) {
           expandIcon={<MdExpandMore size={30} />}
           aria-controls="panel1a-content"
           id="panel1a-header"
+          className={styles.container}
         >
           <div className={styles.header}>
-            <div>Amount: ₹{props.amount}</div>
-            <div>Paid By: {props.paidBy}</div>
+            <div className={styles.amountBox}>Amount: ₹{props.amount}</div>
+            <div className={styles.paidBox}>
+              Paid By: <span className={styles.paid}>{props.paidBy}</span>
+            </div>
+            <div
+              className={styles.deleteBox}
+              onClick={() => {
+                alert("This functionality is still under development.");
+              }}
+            >
+              <ReactIcons name="AiFillDelete" size={20} />
+            </div>
           </div>
         </AccordionSummary>
         <AccordionDetails>
           {props.memberList.map((item, index) => (
             <div key={index} className={styles.list}>
-              <div>{item.member_name}</div>
-              <div>₹{item.amount}</div>
+              <div className={styles.subBox}>
+                <div className={styles.img}>
+                  <img src={item.image} alt="logo" width="100%" height="100%" />
+                </div>
+                <div>{item.member_name}</div>
+              </div>
+
+              <div className={styles.amount}>₹{item.amount}</div>
             </div>
           ))}
         </AccordionDetails>

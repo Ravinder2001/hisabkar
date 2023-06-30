@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ProjectRoutes from "./routes/ProjectRoutes";
 import { Logout, addUser } from "./store/slices/UserSlice";
 import jwtDecode from "jwt-decode";
+import { localStorageKey } from "./utils/Constants";
 
 interface Decode {
   name: string;
@@ -14,7 +15,7 @@ interface Decode {
 function App() {
   const dispatch = useDispatch();
 
-  const token = localStorage.getItem("hisabToken");
+  const token = localStorage.getItem(localStorageKey);
   useEffect(() => {
     if (token) {
       const decode: Decode = jwtDecode(token);

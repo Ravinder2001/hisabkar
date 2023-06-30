@@ -48,3 +48,10 @@
     height: 1px;
     border-top: 1px dashed #105a60;
 }
+.error{
+    color: rgb(201, 25, 25);
+    margin-left: 10px;
+}
+.errorMem{
+    color: rgb(201, 25, 25);
+}

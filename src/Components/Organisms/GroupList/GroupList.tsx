@@ -1,12 +1,18 @@
 import { useState, useEffect } from "react";
 import styles from "./styles.module.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import GetUserGroups from "../../../APIs/GetUserGroups";
-import { request_succesfully } from "../../../utils/Constants";
+import {
+  Unauthorized,
+  localStorageKey,
+  request_succesfully,
+} from "../../../utils/Constants";
 import { toast } from "react-toastify";
 import { ErroToast } from "../../../utils/ToastStyle";
 import GroupCard from "../../Atoms/GroupCard/GroupCard";
+import { useNavigate } from "react-router-dom";
+import { Logout } from "../../../store/slices/UserSlice";
 
 type GroupListType = {
   id: string;
@@ -18,7 +24,9 @@ type GroupListType = {
 };
 
 function GroupList() {
-  const user_id = useSelector((state: RootState) => state.UserSlice.id);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user_id: any = useSelector((state: RootState) => state.UserSlice.id);
   const [GroupsList, setGroupList] = useState<GroupListType[]>([]);
   const [flag, setFlag] = useState(false);
 
@@ -30,6 +38,14 @@ function GroupList() {
     const res = await GetUserGroups(user_id);
     if (res.status == request_succesfully) {
       setGroupList(res.data);
+    } else if (res.response.data.status === Unauthorized) {
+      localStorage.removeItem(localStorageKey);
+      dispatch(Logout());
+      navigate("/login");
+      toast.error(
+        res.response.data.message ?? "Something went wrong",
+        ErroToast
+      );
     } else {
       toast.error(
         res.response.data.message ?? "Something went wrong",

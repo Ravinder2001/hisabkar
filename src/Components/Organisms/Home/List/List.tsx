@@ -8,9 +8,11 @@ import { RootState } from "../../../../store/store";
 import ReactIcons from "../../../Atoms/ReactIcons/ReactIcons";
 
 type ListProps = {
+  Error: { name: boolean; members: boolean };
+  isSubmit: boolean;
   handleGroupName: (e: ChangeEvent<HTMLInputElement>) => void;
   GroupName: string;
-  addMember: (e: { id: string; name: string,image:string }) => void;
+  addMember: (e: { id: string; name: string; image: string }) => void;
   MemberList: { id: string; name: string }[];
   handleRemoveMember: (e: string) => void;
 };
@@ -26,10 +28,14 @@ function List(props: ListProps) {
           type="text"
         />
       </div>
+      {props.Error.name && props.isSubmit && <div className={styles.error}>Please Add Group name!</div>}
 
       <div>
         <AddMember addMember={props.addMember} />
       </div>
+      {props.Error.members && props.isSubmit && (
+        <div  className={styles.error}>Please Add atleast two people!</div>
+      )}
 
       {props.MemberList.map((item) => (
         <div className={styles.memberBox} key={item.id}>

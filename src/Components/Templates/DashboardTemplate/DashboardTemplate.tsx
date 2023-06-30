@@ -2,12 +2,18 @@ import { Fragment, useState, useEffect } from "react";
 import Header from "../../Organisms/Dashboard/Header/Header";
 import Main from "../../Organisms/Dashboard/Main/Main";
 import styles from "./styles.module.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import GetGroupById from "../../../APIs/GetGroupById";
-import { request_succesfully } from "../../../utils/Constants";
+import {
+  Unauthorized,
+  localStorageKey,
+  request_succesfully,
+} from "../../../utils/Constants";
 import { toast } from "react-toastify";
 import { ErroToast } from "../../../utils/ToastStyle";
 import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
+import { Logout } from "../../../store/slices/UserSlice";
+import { useDispatch } from "react-redux";
 
 interface Params extends Record<string, string | undefined> {
   group_id: string;
@@ -20,6 +26,8 @@ export type GroupDataType = {
 };
 
 function DashBoardTemplate() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [GroupData, setGroupData] = useState<GroupDataType | undefined>(
     undefined
   );
@@ -29,6 +37,14 @@ function DashBoardTemplate() {
       const res = await GetGroupById(group_id);
       if (res.status == request_succesfully) {
         setGroupData(res.data);
+      } else if (res.response.data.status === Unauthorized) {
+        dispatch(Logout());
+        localStorage.removeItem(localStorageKey);
+        navigate("/login");
+        toast.error(
+          res.response.data.message ?? "Something went wrong",
+          ErroToast
+        );
       } else {
         setGroupData(undefined);
         toast.error(
@@ -52,7 +68,7 @@ function DashBoardTemplate() {
               name={GroupData.group_name}
               members={GroupData.group_members.length}
             />
-            <Main GroupData={GroupData}/>
+            <Main GroupData={GroupData} />
           </div>
         </>
       ) : (
@@ -64,6 +80,7 @@ function DashBoardTemplate() {
             There is no group exist with this group id! Please check the group
             id.
           </div>
+          <div onClick={()=>navigate('/')} className={styles.home}>Go to Home</div>
         </div>
       )}
     </>

@@ -12,3 +12,13 @@
   font-size: 25px;
   color: white;
 }
+.home{
+  font-size: 20px;
+  color: black;
+  margin-top: 20px;
+  border-radius: 10px;
+  /* border: 1px solid red; */
+  padding: 10px;
+  cursor: pointer;
+  background-color: aqua;
+}

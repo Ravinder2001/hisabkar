@@ -1,4 +1,4 @@
-export const localStorageKey = "whatsToken";
+export const localStorageKey = "hisabkarToken";
 export const request_succesfully = 200;
 export const created_succesfully = 201;
 export const Unauthorized = 401;

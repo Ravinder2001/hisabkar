@@ -4,7 +4,7 @@ import { auth, googleAuthProvider } from "../../../firebase.config";
 import RegisterUser from "../../../APIs/RegisterUser";
 import { toast } from "react-toastify";
 import { ErroToast } from "../../../utils/ToastStyle";
-import { request_succesfully } from "../../../utils/Constants";
+import { localStorageKey, request_succesfully } from "../../../utils/Constants";
 import LoginUser from "../../../APIs/LoginUser";
 import { useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
@@ -34,7 +34,7 @@ function Login() {
       if (res.status == request_succesfully) {
         const decode: Decode = jwtDecode(res.token);
         dispatch(addUser(decode));
-        localStorage.setItem("hisabToken", res.token);
+        localStorage.setItem(localStorageKey, res.token);
         navigate("/");
       } else {
         toast.error(
@@ -63,7 +63,7 @@ function Login() {
       if (res.status == request_succesfully) {
         const decode: Decode = jwtDecode(res.token);
         dispatch(addUser(decode));
-        localStorage.setItem("hisabToken", res.token);
+        localStorage.setItem(localStorageKey, res.token);
         navigate("/");
       } else {
         toast.error(

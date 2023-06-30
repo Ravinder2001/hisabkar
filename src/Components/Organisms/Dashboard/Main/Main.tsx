@@ -7,10 +7,17 @@ import SimpleAccordion from "../../../Molecules/Accordian/Accordian";
 import BillBox from "../../../Molecules/BillBox/BillBox";
 import { GroupDataType } from "../../../Templates/DashboardTemplate/DashboardTemplate";
 import GetExpensesById from "../../../../APIs/GetExpensesById";
-import { request_succesfully } from "../../../../utils/Constants";
+import {
+  Unauthorized,
+  localStorageKey,
+  request_succesfully,
+} from "../../../../utils/Constants";
 import { toast } from "react-toastify";
 import { ErroToast } from "../../../../utils/ToastStyle";
 import GetPairsByGroupId from "../../../../APIs/GetPairsByGroupId";
+import { toogleAmount } from "../../../../store/slices/OtherSlice";
+import { Logout } from "../../../../store/slices/UserSlice";
+import { useNavigate } from "react-router-dom";
 
 type MainProps = {
   GroupData: GroupDataType;
@@ -21,7 +28,7 @@ type ExpensesListType = {
   amount: number;
   timestamp: string;
   paidby: string;
-  expensemembers: { member_name: string; amount: number }[];
+  expensemembers: { member_name: string; amount: number; image: string }[];
 };
 type BillListType = {
   id: number;
@@ -31,15 +38,28 @@ type BillListType = {
 };
 
 function Main(props: MainProps) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [ExpensesList, setExpenseList] = useState<ExpensesListType[]>([]);
-
   const [BillList, setBillList] = useState<BillListType[]>([]);
-  console.log("🚀 ~ file: Main.tsx:37 ~ Main ~ BillList:", BillList)
+  const [flag, setFlag] = useState(false);
+
+  const toogleFlag = () => {
+    setFlag(!flag);
+  };
 
   const ExpensesListFetch = async () => {
     const res = await GetExpensesById(props.GroupData.group_id);
     if (res.status == request_succesfully) {
       setExpenseList(res.data);
+    } else if (res.response.data.status === Unauthorized) {
+      localStorage.removeItem(localStorageKey);
+      dispatch(Logout());
+      navigate("/login");
+      toast.error(
+        res.response.data.message ?? "Something went wrong",
+        ErroToast
+      );
     } else {
       toast.error(
         res.response.data.message ?? "Something went wrong",
@@ -51,6 +71,14 @@ function Main(props: MainProps) {
     const res = await GetPairsByGroupId(props.GroupData.group_id);
     if (res.status == request_succesfully) {
       setBillList(res.data);
+    } else if (res.response.data.status === Unauthorized) {
+      dispatch(Logout());
+      localStorage.removeItem(localStorageKey);
+      navigate("/login");
+      toast.error(
+        res.response.data.message ?? "Something went wrong",
+        ErroToast
+      );
     } else {
       toast.error(
         res.response.data.message ?? "Something went wrong",
@@ -62,12 +90,21 @@ function Main(props: MainProps) {
   useEffect(() => {
     ExpensesListFetch();
     PairsListFetch();
-  }, []);
+  }, [flag]);
+
+  useEffect(() => {
+    if (ExpensesList.length) {
+      const total = ExpensesList.reduce((prev, curr) => {
+        return prev + curr.amount;
+      }, 0);
+      dispatch(toogleAmount(total));
+    }
+  }, [ExpensesList]);
 
   return (
     <div className={styles.container}>
       <div className={styles.spliter}>
-        <Spliter GroupData={props.GroupData} />
+        <Spliter GroupData={props.GroupData} toogleFlag={toogleFlag} />
       </div>
       <div className={styles.accordian}>
         {ExpensesList.map((item, index) => (

@@ -8,9 +8,12 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
 import DeleteGroup from "../../../APIs/DeleteGroup";
-import { request_succesfully } from "../../../utils/Constants";
+import { Unauthorized, localStorageKey, request_succesfully } from "../../../utils/Constants";
 import { toast } from "react-toastify";
 import { ErroToast, SuccessToast } from "../../../utils/ToastStyle";
+import { Logout } from "../../../store/slices/UserSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -25,17 +28,27 @@ type AlertBoxProps = {
   open: boolean;
   openAlert: () => void;
   id: string;
-  toogleFlag:()=>void
+  toogleFlag: () => void;
 };
 
 export default function AlertBox(props: AlertBoxProps) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { open, openAlert, id } = props;
   const RemoveGroup = async () => {
     const res = await DeleteGroup({ group_id: id, status: false });
     if (res.status == request_succesfully) {
       openAlert();
       toast.success(res.message, SuccessToast);
-      props.toogleFlag()
+      props.toogleFlag();
+    } else if (res.response.data.status === Unauthorized) {
+      localStorage.removeItem(localStorageKey)
+      dispatch(Logout());
+      navigate("/login");
+      toast.error(
+        res.response.data.message ?? "Something went wrong",
+        ErroToast
+      );
     } else {
       toast.error(
         res.response.data.message ?? "Something went wrong",

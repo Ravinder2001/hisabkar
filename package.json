@@ -16,6 +16,7 @@
     "@types/react-dom": "^18.2.5",
     "axios": "^1.4.0",
     "dotenv": "^16.3.1",
+    "env-cmd": "^10.1.0",
     "firebase": "^9.23.0",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",
@@ -33,7 +34,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start:dev": "env-cmd -f .env.dev react-scripts start",
+    "start:prod": "env-cmd -f .env.prod react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

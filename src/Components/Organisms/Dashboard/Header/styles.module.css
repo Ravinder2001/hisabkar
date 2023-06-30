@@ -1,18 +1,49 @@
-.container{
-    margin: 10px;
+.container {
+  margin: 10px;
+  display: flex;
+  justify-content: space-between;
 }
-.heading  div{
-    font-size: 30px;
-    background: -webkit-linear-gradient(#302f2f, #2adeeb);
+.heading div {
+  font-size: 30px;
+  background: -webkit-linear-gradient(#302f2f, #2adeeb);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-.subHeading{
-    display: flex;
-    width: 300px;
-    justify-content: space-between;
+.subHeading {
+  display: flex;
+  width: 300px;
+  justify-content: space-between;
 }
-.subHeading div{
-    font-size: 20px;
-    color: white;
+.subHeading div {
+  font-size: 20px;
+  color: white;
+}
+.amountHead {
+  /* border: 1px solid red;  */
+  margin-left: 10px;
+  margin-top: 40px;
+  font-size: 20px;
+  color: white;
+  width: 35%;
+  text-align: center;
+}
+.share{
+  width: 40%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+.share div{
+  font-size:16px;
+  color: black;
+  margin-right: 30px;
+  cursor: pointer;
+  /* border: 1px solid rgb(179, 0, 255); */
+  padding: 10px;
+  border-radius: 8px;
+  background-image: linear-gradient(
+    to right,
+    rgba(51, 230, 246, 0.873),
+    rgba(128, 6, 204, 0.873)
+  );
 }
