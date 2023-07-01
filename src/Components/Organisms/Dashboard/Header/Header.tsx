@@ -17,7 +17,7 @@ function Header(props: HeaderProps) {
 
   const handleClick = () => {
     const url = window.location.href;
-    setURL(`${url}?sharing=true`);
+    setURL(`${url}?sharing`);
   };
 
   const handleOpen = () => {

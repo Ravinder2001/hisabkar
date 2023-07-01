@@ -5,6 +5,7 @@ interface UserState {
   name: string;
   image: string;
   user: boolean;
+  guestUser: boolean;
 }
 
 const initialState: UserState = {
@@ -12,6 +13,7 @@ const initialState: UserState = {
   name: "",
   image: "",
   user: false,
+  guestUser: false,
 };
 type AddUserProps = {
   name: string;
@@ -29,15 +31,20 @@ const UserSlice = createSlice({
       state.image = image;
       state.name = name;
       state.user = true;
+      state.guestUser = false;
     },
     Logout: (state) => {
       state.id = "";
       state.image = "";
       state.name = "";
       state.user = false;
+      state.guestUser = false;
+    },
+    addGuestUser: (state) => {
+      state.guestUser = true;
     },
   },
 });
 
-export const { addUser, Logout } = UserSlice.actions;
+export const { addUser, Logout, addGuestUser } = UserSlice.actions;
 export default UserSlice.reducer;

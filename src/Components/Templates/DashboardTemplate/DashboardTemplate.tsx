@@ -13,7 +13,8 @@ import { toast } from "react-toastify";
 import { ErroToast } from "../../../utils/ToastStyle";
 import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
 import { Logout } from "../../../store/slices/UserSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../store/store";
 
 interface Params extends Record<string, string | undefined> {
   group_id: string;
@@ -32,9 +33,16 @@ function DashBoardTemplate() {
     undefined
   );
   const { group_id } = useParams<Params>();
+  const guestUser = useSelector(
+    (state: RootState) => state.UserSlice.guestUser
+  );
   const FetchGroup = async () => {
     if (group_id) {
-      const res = await GetGroupById(group_id);
+      let object = {
+        group_id,
+        guestUser,
+      };
+      const res = await GetGroupById(object);
       if (res.status == request_succesfully) {
         setGroupData(res.data);
       } else if (res.response.data.status === Unauthorized) {
@@ -80,7 +88,9 @@ function DashBoardTemplate() {
             There is no group exist with this group id! Please check the group
             id.
           </div>
-          <div onClick={()=>navigate('/')} className={styles.home}>Go to Home</div>
+          <div onClick={() => navigate("/")} className={styles.home}>
+            Go to Home
+          </div>
         </div>
       )}
     </>

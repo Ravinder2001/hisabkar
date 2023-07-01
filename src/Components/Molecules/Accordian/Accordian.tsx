@@ -6,6 +6,8 @@ import Typography from "@mui/material/Typography";
 import { MdExpandMore } from "react-icons/md";
 import styles from "./styles.module.css";
 import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store/store";
 
 type SimpleAccordionProps = {
   amount: number;
@@ -14,6 +16,9 @@ type SimpleAccordionProps = {
 };
 
 export default function SimpleAccordion(props: SimpleAccordionProps) {
+  const guestUser = useSelector(
+    (state: RootState) => state.UserSlice.guestUser
+  );
   return (
     <div>
       <Accordion>
@@ -28,14 +33,16 @@ export default function SimpleAccordion(props: SimpleAccordionProps) {
             <div className={styles.paidBox}>
               Paid By: <span className={styles.paid}>{props.paidBy}</span>
             </div>
-            <div
-              className={styles.deleteBox}
-              onClick={() => {
-                alert("This functionality is still under development.");
-              }}
-            >
-              <ReactIcons name="AiFillDelete" size={20} />
-            </div>
+            {!guestUser && (
+              <div
+                className={styles.deleteBox}
+                onClick={() => {
+                  alert("This functionality is still under development.");
+                }}
+              >
+                <ReactIcons name="AiFillDelete" size={20} />
+              </div>
+            )}
           </div>
         </AccordionSummary>
         <AccordionDetails>

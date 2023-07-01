@@ -40,6 +40,9 @@ type BillListType = {
 function Main(props: MainProps) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const guestUser = useSelector(
+    (state: RootState) => state.UserSlice.guestUser
+  );
   const [ExpensesList, setExpenseList] = useState<ExpensesListType[]>([]);
   const [BillList, setBillList] = useState<BillListType[]>([]);
   const [flag, setFlag] = useState(false);
@@ -49,7 +52,11 @@ function Main(props: MainProps) {
   };
 
   const ExpensesListFetch = async () => {
-    const res = await GetExpensesById(props.GroupData.group_id);
+    let object = {
+      group_id: props.GroupData.group_id,
+      guestUser,
+    };
+    const res = await GetExpensesById(object);
     if (res.status == request_succesfully) {
       setExpenseList(res.data);
     } else if (res.response.data.status === Unauthorized) {
@@ -68,7 +75,11 @@ function Main(props: MainProps) {
     }
   };
   const PairsListFetch = async () => {
-    const res = await GetPairsByGroupId(props.GroupData.group_id);
+    let object = {
+      group_id: props.GroupData.group_id,
+      guestUser,
+    };
+    const res = await GetPairsByGroupId(object);
     if (res.status == request_succesfully) {
       setBillList(res.data);
     } else if (res.response.data.status === Unauthorized) {
@@ -103,9 +114,12 @@ function Main(props: MainProps) {
 
   return (
     <div className={styles.container}>
-      <div className={styles.spliter}>
-        <Spliter GroupData={props.GroupData} toogleFlag={toogleFlag} />
-      </div>
+      {!guestUser && (
+        <div className={styles.spliter}>
+          <Spliter GroupData={props.GroupData} toogleFlag={toogleFlag} />
+        </div>
+      )}
+
       <div className={styles.accordian}>
         {ExpensesList.map((item, index) => (
           <div key={index} className={styles.accordianBox}>
