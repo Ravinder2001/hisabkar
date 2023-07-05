@@ -2,7 +2,7 @@
   position: relative;
   padding: 20px 0 0;
   width: 100%;
-  max-width: 200px;
+  /* max-width: 200px; */
 }
 
 .form__field {
@@ -16,6 +16,11 @@
   padding: 7px 0;
   background: transparent;
   transition: border-color 0.2s;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 }
 
 .form__field::placeholder {

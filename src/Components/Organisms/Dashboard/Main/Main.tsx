@@ -12,13 +12,12 @@ import {
   localStorageKey,
   request_succesfully,
 } from "../../../../utils/Constants";
-import { toast } from "react-toastify";
-import { ErroToast } from "../../../../utils/ToastStyle";
 import GetPairsByGroupId from "../../../../APIs/GetPairsByGroupId";
 import { toogleAmount } from "../../../../store/slices/OtherSlice";
 import { Logout } from "../../../../store/slices/UserSlice";
 import { useNavigate } from "react-router-dom";
-
+import { message } from "antd";
+import BarLoader from "../../../Atoms/Loader/BarLoader/BarLoader";
 type MainProps = {
   GroupData: GroupDataType;
 };
@@ -47,6 +46,9 @@ function Main(props: MainProps) {
   const [BillList, setBillList] = useState<BillListType[]>([]);
   const [flag, setFlag] = useState(false);
 
+  const [ExpenseLoader, setExpenseLoader] = useState(true);
+  const [PairLoader, setPairLoader] = useState(true);
+
   const toogleFlag = () => {
     setFlag(!flag);
   };
@@ -59,19 +61,15 @@ function Main(props: MainProps) {
     const res = await GetExpensesById(object);
     if (res.status == request_succesfully) {
       setExpenseList(res.data);
+      setExpenseLoader(false);
     } else if (res.response.data.status === Unauthorized) {
       localStorage.removeItem(localStorageKey);
       dispatch(Logout());
       navigate("/login");
-      toast.error(
-        res.response.data.message ?? "Something went wrong",
-        ErroToast
-      );
+      message.error(res.response.data.message ?? "Something went wrong");
     } else {
-      toast.error(
-        res.response.data.message ?? "Something went wrong",
-        ErroToast
-      );
+      setExpenseLoader(false);
+      message.error(res.response.data.message ?? "Something went wrong");
     }
   };
   const PairsListFetch = async () => {
@@ -82,23 +80,21 @@ function Main(props: MainProps) {
     const res = await GetPairsByGroupId(object);
     if (res.status == request_succesfully) {
       setBillList(res.data);
+      setPairLoader(false);
     } else if (res.response.data.status === Unauthorized) {
       dispatch(Logout());
       localStorage.removeItem(localStorageKey);
       navigate("/login");
-      toast.error(
-        res.response.data.message ?? "Something went wrong",
-        ErroToast
-      );
+      message.error(res.response.data.message ?? "Something went wrong");
     } else {
-      toast.error(
-        res.response.data.message ?? "Something went wrong",
-        ErroToast
-      );
+      setPairLoader(false);
+      message.error(res.response.data.message ?? "Something went wrong");
     }
   };
 
   useEffect(() => {
+    setExpenseLoader(true);
+    setPairLoader(true);
     ExpensesListFetch();
     PairsListFetch();
   }, [flag]);
@@ -121,29 +117,45 @@ function Main(props: MainProps) {
       )}
 
       <div className={styles.accordian}>
-        {ExpensesList.map((item, index) => (
-          <div key={index} className={styles.accordianBox}>
-            <SimpleAccordion
-              amount={item.amount}
-              paidBy={item.paidby}
-              memberList={item.expensemembers}
-            />
+        {ExpenseLoader ? (
+          <div className={styles.loader}>
+            <BarLoader />
           </div>
-        ))}
+        ) : (
+          <>
+            {ExpensesList.map((item, index) => (
+              <div key={index} className={styles.accordianBox}>
+                <SimpleAccordion
+                  amount={item.amount}
+                  paidBy={item.paidby}
+                  memberList={item.expensemembers}
+                />
+              </div>
+            ))}
+          </>
+        )}
       </div>
       <div className={styles.splitCon}>
-        {BillList.map((item, index) => (
+        {PairLoader ? (
+          <div className={styles.loader}>
+            <BarLoader />
+          </div>
+        ) : (
           <>
-            {item.amount > 0 && (
-              <BillBox
-                key={index}
-                receiver={item.receiver}
-                sender={item.sender}
-                amount={item.amount}
-              />
-            )}
+            {BillList.map((item, index) => (
+              <>
+                {item.amount > 0 && (
+                  <BillBox
+                    key={index}
+                    receiver={item.receiver}
+                    sender={item.sender}
+                    amount={item.amount}
+                  />
+                )}
+              </>
+            ))}
           </>
-        ))}
+        )}
       </div>
     </div>
   );

@@ -48,6 +48,7 @@ function AddMember(props: AddMemberProps) {
           handleChange={handleMemberName}
           value={memberName}
           handleKeyPress={handleKeyPress}
+          placeholder="Add Group Member"
         />
       </div>
       <div className={styles.icon} onClick={handleAddMember}>

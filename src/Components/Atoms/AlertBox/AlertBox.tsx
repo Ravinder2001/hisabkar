@@ -9,11 +9,10 @@ import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
 import DeleteGroup from "../../../APIs/DeleteGroup";
 import { Unauthorized, localStorageKey, request_succesfully } from "../../../utils/Constants";
-import { toast } from "react-toastify";
-import { ErroToast, SuccessToast } from "../../../utils/ToastStyle";
 import { Logout } from "../../../store/slices/UserSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { message } from "antd";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -39,21 +38,15 @@ export default function AlertBox(props: AlertBoxProps) {
     const res = await DeleteGroup({ group_id: id, status: false });
     if (res.status == request_succesfully) {
       openAlert();
-      toast.success(res.message, SuccessToast);
+      message.success(res.message)
       props.toogleFlag();
     } else if (res.response.data.status === Unauthorized) {
       localStorage.removeItem(localStorageKey)
       dispatch(Logout());
       navigate("/login");
-      toast.error(
-        res.response.data.message ?? "Something went wrong",
-        ErroToast
-      );
+      message.error(res.response.data.message ?? "Something went wrong")
     } else {
-      toast.error(
-        res.response.data.message ?? "Something went wrong",
-        ErroToast
-      );
+      message.error(res.response.data.message ?? "Something went wrong")
     }
   };
 

@@ -11,11 +11,9 @@ import {
   localStorageKey,
   request_succesfully,
 } from "../../../../utils/Constants";
-import { toast } from "react-toastify";
-import { ErroToast } from "../../../../utils/ToastStyle";
 import PostPairs from "../../../../APIs/PostPairs";
 import { Logout } from "../../../../store/slices/UserSlice";
-
+import {message} from "antd"
 type FooterProps = {
   setIsSubmit: Dispatch<SetStateAction<boolean>>;
   Error: { name: boolean; members: boolean };
@@ -40,10 +38,7 @@ function Footer(props: FooterProps) {
     if (res.status == request_succesfully) {
       CreatePairs(res.data.group_id, res.data.members);
     } else {
-      toast.error(
-        res.response.data.message ?? "Something went wrong",
-        ErroToast
-      );
+      message.error(res.response.data.message ?? "Something went wrong")
     }
   };
 
@@ -55,15 +50,9 @@ function Footer(props: FooterProps) {
       dispatch(Logout());
       localStorage.removeItem(localStorageKey);
       navigate("/login");
-      toast.error(
-        res.response.data.message ?? "Something went wrong",
-        ErroToast
-      );
+      message.error(res.response.data.message ?? "Something went wrong")
     } else {
-      toast.error(
-        res.response.data.message ?? "Something went wrong",
-        ErroToast
-      );
+      message.error(res.response.data.message ?? "Something went wrong")
     }
   };
 

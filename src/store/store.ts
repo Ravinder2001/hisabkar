@@ -15,6 +15,7 @@ const RootReducers = combineReducers({
   OtherSlice
 });
 
+
 const persistedReducer = persistReducer(persistConfig, RootReducers);
 
 export const store = configureStore({

@@ -23,7 +23,7 @@
   font-size: 1em;
   letter-spacing: 0.05em;
   transition: 0.5s;
-  z-index: 10;
+  /* z-index: 10; */
 }
 
 .inputbox span {
@@ -55,7 +55,8 @@
   border-radius: 4px;
   transition: 0.5s;
   pointer-events: none;
-  z-index: 9;
+  /* z-index: 9; */
+  /* display: none; */
 }
 
 .inputbox input:valid ~ i,

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import "./App.css";
+
 import { useDispatch, useSelector } from "react-redux";
 import ProjectRoutes from "./routes/ProjectRoutes";
 import { Logout, addGuestUser, addUser } from "./store/slices/UserSlice";

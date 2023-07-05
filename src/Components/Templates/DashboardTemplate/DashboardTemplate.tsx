@@ -9,13 +9,13 @@ import {
   localStorageKey,
   request_succesfully,
 } from "../../../utils/Constants";
-import { toast } from "react-toastify";
-import { ErroToast } from "../../../utils/ToastStyle";
 import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
 import { Logout } from "../../../store/slices/UserSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-
+import { message } from "antd";
+import BarLoader from "../../Atoms/Loader/BarLoader/BarLoader";
+import ProgressLoader from "../../Atoms/Loader/ProgressLoader/ProgressLoader";
 interface Params extends Record<string, string | undefined> {
   group_id: string;
 }
@@ -32,6 +32,8 @@ function DashBoardTemplate() {
   const [GroupData, setGroupData] = useState<GroupDataType | undefined>(
     undefined
   );
+  const [loading, setLoading] = useState<boolean>(true);
+
   const { group_id } = useParams<Params>();
   const guestUser = useSelector(
     (state: RootState) => state.UserSlice.guestUser
@@ -45,29 +47,30 @@ function DashBoardTemplate() {
       const res = await GetGroupById(object);
       if (res.status == request_succesfully) {
         setGroupData(res.data);
+        setLoading(false);
       } else if (res.response.data.status === Unauthorized) {
         dispatch(Logout());
         localStorage.removeItem(localStorageKey);
         navigate("/login");
-        toast.error(
-          res.response.data.message ?? "Something went wrong",
-          ErroToast
-        );
+        message.error(res.response.data.message ?? "Something went wrong");
       } else {
         setGroupData(undefined);
-        toast.error(
-          res.response.data.message ?? "Something went wrong",
-          ErroToast
-        );
+        message.error(res.response.data.message ?? "Something went wrong");
+        setLoading(false)
       }
     } else {
       setGroupData(undefined);
     }
   };
   useEffect(() => {
+    setLoading(true);
     FetchGroup();
   }, [group_id]);
-  return (
+  return loading ? (
+    <div className={styles.loader}>
+      <ProgressLoader />
+    </div>
+  ) : (
     <>
       {GroupData ? (
         <>

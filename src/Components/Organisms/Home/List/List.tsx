@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { RootState } from "../../../../store/store";
 import ReactIcons from "../../../Atoms/ReactIcons/ReactIcons";
+import InputBox2 from "../../../Atoms/InputBox/InputBox2/InputBox2";
 
 type ListProps = {
   Error: { name: boolean; members: boolean };
@@ -20,35 +21,39 @@ type ListProps = {
 function List(props: ListProps) {
   return (
     <div className={styles.container}>
-      <div>
-        <InputBox1
+      <div className={styles.groupBtn}>
+        <InputBox2
           handleChange={props.handleGroupName}
           value={props.GroupName}
           placeholder="Group Name"
           type="text"
         />
       </div>
-      {props.Error.name && props.isSubmit && <div className={styles.error}>Please Add Group name!</div>}
+      {props.Error.name && props.isSubmit && (
+        <div className={styles.error}>Please Add Group name!</div>
+      )}
 
       <div>
         <AddMember addMember={props.addMember} />
       </div>
       {props.Error.members && props.isSubmit && (
-        <div  className={styles.error}>Please Add atleast two people!</div>
+        <div className={styles.error}>Please Add atleast two people!</div>
       )}
 
-      {props.MemberList.map((item) => (
-        <div className={styles.memberBox} key={item.id}>
-          <div className={styles.memberName}>{item.name}</div>
-          <div onClick={() => props.handleRemoveMember(item.id)}>
-            <ReactIcons
-              name="IoMdRemoveCircleOutline"
-              color="white"
-              size={20}
-            />
+      <div className={styles.memberCon}>
+        {props.MemberList.map((item) => (
+          <div className={styles.memberBox} key={item.id}>
+            <div className={styles.memberName}>{item.name}</div>
+            <div style={{cursor:"pointer"}} onClick={() => props.handleRemoveMember(item.id)}>
+              <ReactIcons
+                name="IoMdRemoveCircleOutline"
+                color="white"
+                size={20}
+              />
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

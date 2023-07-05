@@ -8,12 +8,11 @@ import {
   localStorageKey,
   request_succesfully,
 } from "../../../utils/Constants";
-import { toast } from "react-toastify";
-import { ErroToast } from "../../../utils/ToastStyle";
 import GroupCard from "../../Atoms/GroupCard/GroupCard";
 import { useNavigate } from "react-router-dom";
 import { Logout } from "../../../store/slices/UserSlice";
-
+import CircularLoader from "../../Atoms/Loader/CircularLoader/CircularLoader";
+import {message} from "antd"
 type GroupListType = {
   id: string;
   name: string;
@@ -27,41 +26,42 @@ function GroupList() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user_id: any = useSelector((state: RootState) => state.UserSlice.id);
+
   const [GroupsList, setGroupList] = useState<GroupListType[]>([]);
   const [flag, setFlag] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const toogleFlag = () => {
     setFlag(!flag);
   };
 
   const FetchGroupList = async () => {
+    setLoading(true);
     const res = await GetUserGroups(user_id);
     if (res.status == request_succesfully) {
       setGroupList(res.data);
+      setLoading(false);
     } else if (res.response.data.status === Unauthorized) {
       localStorage.removeItem(localStorageKey);
       dispatch(Logout());
       navigate("/login");
-      toast.error(
-        res.response.data.message ?? "Something went wrong",
-        ErroToast
-      );
+      message.error(res.response.data.message ?? "Something went wrong")
     } else {
-      toast.error(
-        res.response.data.message ?? "Something went wrong",
-        ErroToast
-      );
+      setLoading(false);
+      message.error(res.response.data.message ?? "Something went wrong")
     }
   };
   useEffect(() => {
+    console.log("flag",flag)
     FetchGroupList();
   }, [flag]);
-
-  return (
+  
+  return loading ? (
+    <div className={styles.loaderBox}>
+      <CircularLoader />
+    </div>
+  ) : (
     <div className={styles.container}>
-      {/* {GroupsList.map((item) => (
-        <div>{item.name}</div>
-      ))} */}
       {GroupsList.map((item) => (
         <GroupCard
           id={item.id}

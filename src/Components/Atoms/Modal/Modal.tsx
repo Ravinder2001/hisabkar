@@ -4,9 +4,7 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import styles from "./styles.module.css";
-import { toast } from "react-toastify";
-import { SuccessToast } from "../../../utils/ToastStyle";
-
+import {message} from "antd"
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -30,7 +28,7 @@ export default function ModalBox(props: ModalBoxProps) {
     navigator.clipboard
       .writeText(url)
       .then(() => {
-       toast.success("Url is copied",SuccessToast)
+       message.success("Url is copied")
       })
       .catch((error) => {
         console.error("Error copying text:", error);

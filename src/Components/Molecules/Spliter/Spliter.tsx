@@ -9,8 +9,6 @@ import Button2 from "../../Atoms/Button/Button2/Button2";
 import { GroupDataType } from "../../Templates/DashboardTemplate/DashboardTemplate";
 import PostExpense from "../../../APIs/PostExpense";
 import moment from "moment";
-import { toast } from "react-toastify";
-import { ErroToast, SuccessToast } from "../../../utils/ToastStyle";
 import {
   Unauthorized,
   localStorageKey,
@@ -19,6 +17,8 @@ import {
 import PutPairs, { PutPairsType } from "../../../APIs/PutPairs";
 import { useNavigate } from "react-router-dom";
 import { Logout } from "../../../store/slices/UserSlice";
+import { message } from "antd";
+import InputBox2 from "../../Atoms/InputBox/InputBox2/InputBox2";
 
 type PaymentForType = {
   member_id: string;
@@ -66,20 +66,14 @@ function Spliter(props: MainProps) {
     let res = await PutPairs(updatedObject);
     if (res.status == request_succesfully) {
       props.toogleFlag();
-      toast.success("Expense added", SuccessToast);
+      message.success("Expense added");
     } else if (res.response.data.status === Unauthorized) {
       dispatch(Logout());
       localStorage.removeItem(localStorageKey);
       navigate("/login");
-      toast.error(
-        res.response.data.message ?? "Something went wrong",
-        ErroToast
-      );
+      message.error(res.response.data.message ?? "Something went wrong");
     } else {
-      toast.error(
-        res.response.data.message ?? "Something went wrong",
-        ErroToast
-      );
+      message.error(res.response.data.message ?? "Something went wrong");
     }
   };
 
@@ -123,15 +117,9 @@ function Spliter(props: MainProps) {
           localStorage.removeItem(localStorageKey);
           dispatch(Logout());
           navigate("/login");
-          toast.error(
-            res.response.data.message ?? "Something went wrong",
-            ErroToast
-          );
+          message.error(res.response.data.message ?? "Something went wrong");
         } else {
-          toast.error(
-            res.response.data.message ?? "Something went wrong",
-            ErroToast
-          );
+          message.error(res.response.data.message ?? "Something went wrong");
         }
       } else {
         alert("Please add the amount.");
@@ -173,7 +161,7 @@ function Spliter(props: MainProps) {
 
   return (
     <div className={styles.container}>
-      <InputBox1
+      <InputBox2
         value={amount}
         handleChange={handleAmountChange}
         placeholder="Amount"
