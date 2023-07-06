@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -8,8 +8,11 @@ import styles from "./styles.module.css";
 import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
+import DeleteExpense from "../../../APIs/DeleteExpense";
+import AlertModal from "../../Organisms/AlertModal/AlertModal";
 
 type SimpleAccordionProps = {
+  id: number;
   amount: number;
   paidBy: string;
   memberList: { amount: number; member_name: string; image: string }[];
@@ -19,8 +22,14 @@ export default function SimpleAccordion(props: SimpleAccordionProps) {
   const guestUser = useSelector(
     (state: RootState) => state.UserSlice.guestUser
   );
+
+  const [open, setOpen] = useState(false);
+  const handleModal = () => {
+    setOpen(!open);
+  };
+
   return (
-    <div>
+    <div className={styles.mainBox}>
       <Accordion>
         <AccordionSummary
           expandIcon={<MdExpandMore size={30} />}
@@ -33,16 +42,6 @@ export default function SimpleAccordion(props: SimpleAccordionProps) {
             <div className={styles.paidBox}>
               Paid By: <span className={styles.paid}>{props.paidBy}</span>
             </div>
-            {!guestUser && (
-              <div
-                className={styles.deleteBox}
-                onClick={() => {
-                  alert("This functionality is still under development.");
-                }}
-              >
-                <ReactIcons name="AiFillDelete" size={20} />
-              </div>
-            )}
           </div>
         </AccordionSummary>
         <AccordionDetails>
@@ -60,6 +59,17 @@ export default function SimpleAccordion(props: SimpleAccordionProps) {
           ))}
         </AccordionDetails>
       </Accordion>
+      {!guestUser && (
+        <div className={styles.deleteBox} onClick={handleModal}>
+          <ReactIcons name="AiFillDelete" size={25} color="white" />
+        </div>
+      )}
+      <AlertModal
+        open={open}
+        handleModal={handleModal}
+        id={props.id}
+        text="Are you sure! You want to delete this expense."
+      />
     </div>
   );
 }

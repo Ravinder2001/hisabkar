@@ -47,9 +47,12 @@
   width: 50%;
   margin-left: 70px;
 }
+
+.mainBox {
+ display: flex;
+ align-items: center;
+ justify-content: space-evenly;
+}
 .deleteBox {
-  /* border: 1px solid green; */
-  position: absolute;
-  top: 13px;
-  right: 80px;
+cursor: pointer;
 }

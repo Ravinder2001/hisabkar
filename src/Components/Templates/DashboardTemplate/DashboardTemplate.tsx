@@ -66,6 +66,7 @@ function DashBoardTemplate() {
     setLoading(true);
     FetchGroup();
   }, [group_id]);
+
   return loading ? (
     <div className={styles.loader}>
       <ProgressLoader />

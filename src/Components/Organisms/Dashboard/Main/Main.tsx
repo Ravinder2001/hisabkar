@@ -105,6 +105,8 @@ function Main(props: MainProps) {
         return prev + curr.amount;
       }, 0);
       dispatch(toogleAmount(total));
+    }else{
+      dispatch(toogleAmount(0));
     }
   }, [ExpensesList]);
 
@@ -126,10 +128,12 @@ function Main(props: MainProps) {
             {ExpensesList.map((item, index) => (
               <div key={index} className={styles.accordianBox}>
                 <SimpleAccordion
+                  id={item.id}
                   amount={item.amount}
                   paidBy={item.paidby}
                   memberList={item.expensemembers}
                 />
+        
               </div>
             ))}
           </>
@@ -144,14 +148,12 @@ function Main(props: MainProps) {
           <>
             {BillList.map((item, index) => (
               <>
-                {item.amount > 0 && (
-                  <BillBox
-                    key={index}
-                    receiver={item.receiver}
-                    sender={item.sender}
-                    amount={item.amount}
-                  />
-                )}
+                <BillBox
+                  key={index}
+                  receiver={item.receiver}
+                  sender={item.sender}
+                  amount={item.amount}
+                />
               </>
             ))}
           </>

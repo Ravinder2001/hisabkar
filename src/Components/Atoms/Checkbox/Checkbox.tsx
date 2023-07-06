@@ -1,18 +1,16 @@
 import styles from "./styles.module.css";
 type CheckboxProps = {
   checked: boolean;
-  handleClick: (e: string) => void;
-  id: string;
+
 };
 function Checkbox(props: CheckboxProps) {
-  const { checked, handleClick, id } = props;
+  const { checked } = props;
   return (
     <label className={styles.container}>
       <input
         type="checkbox"
         checked={checked}
         className={styles.hiddenCheckbox}
-        onChange={() => handleClick(id)}
       />
       <svg viewBox="0 0 50 50" height="13px" width="13px">
         <path

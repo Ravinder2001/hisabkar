@@ -9,13 +9,16 @@ function PrivateRoutes({ children }: any) {
   const guestUser = useSelector(
     (state: RootState) => state.UserSlice.guestUser
   );
-  console.log("ayaya")
+  console.log("ayaya");
 
   return user || guestUser ? (
     <div className={styles.container}>
-      <div className={styles.sidebar}>
-        <Drawer />
-      </div>
+      {user && (
+        <div className={styles.sidebar}>
+          <Drawer />
+        </div>
+      )}
+
       <div className={styles.children}>{children}</div>
     </div>
   ) : (

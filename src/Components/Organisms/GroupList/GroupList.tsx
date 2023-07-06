@@ -41,18 +41,17 @@ function GroupList() {
     if (res.status == request_succesfully) {
       setGroupList(res.data);
       setLoading(false);
-    } else if (res.response.data.status === Unauthorized) {
+    } else if (res?.response?.data?.status === Unauthorized) {
       localStorage.removeItem(localStorageKey);
       dispatch(Logout());
       navigate("/login");
-      message.error(res.response.data.message ?? "Something went wrong")
+      message.error(res?.response?.data?.message ?? "Something went wrong")
     } else {
       setLoading(false);
-      message.error(res.response.data.message ?? "Something went wrong")
+      message.error(res?.response?.data?.message ?? "Something went wrong")
     }
   };
   useEffect(() => {
-    console.log("flag",flag)
     FetchGroupList();
   }, [flag]);
   

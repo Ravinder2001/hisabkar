@@ -53,6 +53,7 @@ function Spliter(props: MainProps) {
   };
 
   const handleCheckBox = (e: string) => {
+    console.log("string", e);
     let temp = paymentFor.map((item) => {
       if (item.member_id === e) {
         return { ...item, checked: !item.checked };
@@ -185,14 +186,13 @@ function Spliter(props: MainProps) {
         <div className={styles.paidText}>Payment for</div>
         <div className={styles.list}>
           {paymentFor.map((item) => (
-            <div className={styles.checkCon} key={item.member_id}>
-              <div>
-                <Checkbox
-                  id={item.member_id}
-                  handleClick={handleCheckBox}
-                  checked={item.checked}
-                />
-              </div>
+            <div
+              className={styles.checkCon}
+              key={item.member_id}
+              onClick={() => handleCheckBox(item.member_id)}
+            >
+              <Checkbox checked={item.checked} />
+
               <div className={styles.checkName}>{item.member_name}</div>
             </div>
           ))}
