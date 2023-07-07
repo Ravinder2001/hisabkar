@@ -24,7 +24,7 @@ interface Decode {
   image: string;
 }
 
-function Login() {
+function LoginBox() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -95,4 +95,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default LoginBox;

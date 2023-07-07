@@ -1,12 +1,8 @@
 import React from "react";
-import Login from "../../Organisms/Login/Login";
+import LoginBox from "../../Organisms/LoginBox/LoginBox";
 
 function LoginTemplate() {
-  return (
-    <div>
-      <Login />
-    </div>
-  );
+  return <LoginBox />;
 }
 
 export default LoginTemplate;
