@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import Spliter from "../../../Molecules/Spliter/Spliter";
 import styles from "./styles.module.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +18,13 @@ import { Logout } from "../../../../store/slices/UserSlice";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 import BarLoader from "../../../Atoms/Loader/BarLoader/BarLoader";
+import FilterBox from "../../../Molecules/FilterBox/FilterBox";
+import ReactIcons from "../../../Atoms/ReactIcons/ReactIcons";
+import {
+  handleReceiver,
+  handleReset,
+  handleSender,
+} from "../../../../store/slices/FilterSlice";
 type MainProps = {
   GroupData: GroupDataType;
 };
@@ -50,6 +57,10 @@ function Main(props: MainProps) {
   const ReceiverFilter = useSelector(
     (state: RootState) => state.FilterSlice.receiverFilter
   );
+  const GroupMembers = useSelector(
+    (state: RootState) => state.FilterSlice.groupMembers
+  );
+
   const [ExpensesList, setExpenseList] = useState<ExpensesListType[]>([]);
   const [BillList, setBillList] = useState<BillListType[]>([]);
   const [TempBillList, setTempBillList] = useState<BillListType[]>([]);
@@ -102,6 +113,16 @@ function Main(props: MainProps) {
     }
   };
 
+  const handleSenderFilter = (e: ChangeEvent<HTMLSelectElement>) => {
+    dispatch(handleSender(e.target.value));
+  };
+  const handleReceiverFilter = (e: ChangeEvent<HTMLSelectElement>) => {
+    dispatch(handleReceiver(e.target.value));
+  };
+  const Reset = () => {
+    dispatch(handleReset());
+  };
+
   useEffect(() => {
     setExpenseLoader(true);
     setPairLoader(true);
@@ -145,34 +166,32 @@ function Main(props: MainProps) {
           <Spliter GroupData={props.GroupData} toogleFlag={toogleFlag} />
         </div>
       )}
-
-      <div className={styles.accordian}>
-        {ExpenseLoader ? (
-          <div className={styles.loader}>
-            <BarLoader />
-          </div>
-        ) : (
-          ExpensesList.length?<>
-          {ExpensesList.map((item, index) => (
-            <div key={index} className={styles.accordianBox}>
-              <SimpleAccordion
-                id={item.id}
-                amount={item.amount}
-                paidBy={item.paidby}
-                memberList={item.expensemembers}
-              />
-            </div>
-          ))}
-        </>:<div className={styles.noData}>No Expenses Found!</div>
-        )}
-      </div>
       <div className={styles.splitCon}>
         {PairLoader ? (
           <div className={styles.loader}>
             <BarLoader />
           </div>
         ) : BillList.length ? (
-          <>
+          <div>
+            <div className={styles.filterCon}>
+              <FilterBox
+                title="Sender"
+                options={GroupMembers}
+                handleChange={handleSenderFilter}
+                value={SenderFilter}
+              />
+              <FilterBox
+                title="Receiver"
+                options={GroupMembers}
+                handleChange={handleReceiverFilter}
+                value={ReceiverFilter}
+              />
+              {(SenderFilter != "All" || ReceiverFilter != "All") && (
+                <div onClick={Reset} style={{ cursor: "pointer" }}>
+                  <ReactIcons name="CiCircleRemove" color="white" size={25} />
+                </div>
+              )}
+            </div>
             {BillList.map((item, index) => (
               <div key={index}>
                 <BillBox
@@ -182,12 +201,36 @@ function Main(props: MainProps) {
                 />
               </div>
             ))}
-          </>
+          </div>
         ) : (
           <div className={styles.noData}>No Billing Pairs Found!</div>
         )}
       </div>
+      <div className={styles.accordian}>
+        {ExpenseLoader ? (
+          <div className={styles.loader}>
+            <BarLoader />
+          </div>
+        ) : ExpensesList.length ? (
+          <>
+            {ExpensesList.map((item, index) => (
+              <div key={index} className={styles.accordianBox}>
+                <SimpleAccordion
+                  id={item.id}
+                  amount={item.amount}
+                  paidBy={item.paidby}
+                  memberList={item.expensemembers}
+                />
+              </div>
+            ))}
+          </>
+        ) : (
+          <div className={styles.noData}>No Expenses Found!</div>
+        )}
+      </div>
     </div>
+
+
   );
 }
 

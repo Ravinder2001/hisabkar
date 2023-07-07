@@ -1,28 +1,38 @@
 .container {
   display: flex;
+  
   /* justify-content: space-evenly; */
 }
 .spliter {
   width: 20%;
+  /* border: 1px solid red; */
 }
 .accordian {
-  width: 35%;
-  margin-left: 20px;
-  margin-top: 15px;
+  width: 38%;
+  /* margin-left: 20px; */
+  /* margin-top: 15px; */
   /* border: 1px solid red; */
   height: calc(100vh - 130px);
   overflow: auto;
+  /* border: 1px solid red; */
+  display: flex;
+  /* justify-content: center; */
+  flex-direction: column;
+  align-items: center;
+  /* padding-top: 80px; */
 }
 .accordianBox {
   margin-top: 20px;
-  width: 100%;
+  width: 45%;
+  /* border: 1px solid red; */
 }
 .splitCon {
   width: 45%;
-  margin-top: 25px;
+  /* margin-top: 25px; */
   /* border: 1px solid red; */
   height: calc(100vh - 130px);
   overflow: auto;
+  /* border: 1px solid green; */
 }
 .loader {
   width: 100%;
@@ -31,7 +41,7 @@
   justify-content: center;
   align-items: center;
 }
-.noData{
+.noData {
   width: 100%;
   height: 100%;
   display: flex;
@@ -39,4 +49,94 @@
   align-items: center;
   color: white;
   font-size: 20px;
+}
+.filterCon {
+  /* border: 1px solid red; */
+  display: flex;
+  /* justify-content: space-evenly; */
+  align-items: flex-end;
+  /* width: 60%; */
+}
+@media screen and (max-width: 1300px) {
+  .spliter {
+    width: 23%;
+  }
+  .accordian {
+    width: 40%;
+  }
+  .splitCon {
+    width: 40%;
+    /* border: 1px solid red; */
+  }
+
+}
+@media screen and (max-width: 1200px) {
+  .container{
+    flex-wrap: wrap;
+  }
+  .spliter {
+    width: 30%;
+    margin-left: 10px;
+    /* border: 1px solid red; */
+  }
+  .splitCon {
+    width: 48%;
+    /* margin-left: 120px; */
+    /* border: 1px solid red; */
+  }
+  .accordian {
+    max-height: 800px;
+    overflow: auto;
+    width:100%;
+  }
+
+}
+@media screen and (max-width: 800px) {
+  .container{
+    flex-wrap: wrap;
+  }
+  .spliter {
+    width: 40%;
+    margin-left: 10px;
+    /* border: 1px solid red; */
+  }
+  .splitCon {
+    width: 55%;
+    /* margin-left: 120px; */
+    /* border: 1px solid red; */
+  }
+  .accordian {
+    max-height: 800px;
+    overflow: auto;
+    width:100%;
+  }
+
+}
+@media screen and (max-width: 600px) {
+  .container{
+    display: block;
+  }
+  .spliter {
+    width:90%;
+    /* border: 1px solid red; */
+  }
+  .splitCon {
+    width: 95%;
+    margin-top: 40px;
+    /* margin-left: 120px; */
+    /* border: 1px solid red; */
+  max-height: 500px;
+  }
+  .accordian {
+    max-height: 600px;
+    overflow: auto;
+    width:95%;
+    /* border: 1px solid red; */
+  }
+  .accordianBox {
+    margin-top: 20px;
+    width: 99%;
+    /* border: 1px solid red;  */
+    overflow: hidden;
+  }
 }

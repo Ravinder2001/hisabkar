@@ -20,15 +20,6 @@ type HeaderProps = {
 function Header(props: HeaderProps) {
   const dispatch = useDispatch();
   const GroupName = props.name;
-  const GroupMembers = useSelector(
-    (state: RootState) => state.FilterSlice.groupMembers
-  );
-  const SenderFilter = useSelector(
-    (state: RootState) => state.FilterSlice.senderFilter
-  );
-  const ReceiverFilter = useSelector(
-    (state: RootState) => state.FilterSlice.receiverFilter
-  );
 
   const MembersLength = props.members;
   const Amount = useSelector((state: RootState) => state.OtherSlice.amount);
@@ -47,16 +38,6 @@ function Header(props: HeaderProps) {
   };
   const handleClose = () => setOpen(false);
 
-  const handleSenderFilter = (e: ChangeEvent<HTMLSelectElement>) => {
-    dispatch(handleSender(e.target.value));
-  };
-  const handleReceiverFilter = (e: ChangeEvent<HTMLSelectElement>) => {
-    dispatch(handleReceiver(e.target.value));
-  };
-  const Reset = () => {
-    dispatch(handleReset());
-  };
-
   return (
     <div className={styles.container}>
       <div>
@@ -68,30 +49,13 @@ function Header(props: HeaderProps) {
           <div>{MembersLength} Members</div>
         </div>
       </div>
+        <div className={styles.amountHead}>Total Expense: ₹{Amount}</div>
 
-      <div className={styles.amountHead}>Total Expense: ₹{Amount}</div>
-      <div className={styles.filterCon}>
-        <FilterBox
-          title="Sender"
-          options={GroupMembers}
-          handleChange={handleSenderFilter}
-          value={SenderFilter}
-        />
-        <FilterBox
-          title="Receiver"
-          options={GroupMembers}
-          handleChange={handleReceiverFilter}
-          value={ReceiverFilter}
-        />
-        {(SenderFilter != "All" || ReceiverFilter != "All") && (
-          <div onClick={Reset} style={{ cursor: "pointer" }}>
-            <ReactIcons name="CiCircleRemove" color="white" size={25} />
-          </div>
-        )}
-      </div>
-      <div className={styles.share}>
-        <div onClick={handleOpen}>Share with friends</div>
-      </div>
+        <div className={styles.share}>
+          <div onClick={handleOpen}>Share with friends</div>
+        </div>
+    
+
       <ModalBox url={url} open={open} handleClose={handleClose} />
     </div>
   );
