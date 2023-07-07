@@ -17,7 +17,7 @@ function BillBox(props: BillBoxProps) {
       </div>
 
       <div className={styles.subCon}>
-        <BsArrowRight size={45} color="#45f3ff" />
+        <BsArrowRight size={40} color="#45f3ff" />
       </div>
       <div className={styles.subCon}>
         <div className={styles.name}>{receiver}</div>

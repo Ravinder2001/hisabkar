@@ -187,7 +187,7 @@ function Main(props: MainProps) {
                 value={ReceiverFilter}
               />
               {(SenderFilter != "All" || ReceiverFilter != "All") && (
-                <div onClick={Reset} style={{ cursor: "pointer" }}>
+                <div onClick={Reset} className={styles.cross}>
                   <ReactIcons name="CiCircleRemove" color="white" size={25} />
                 </div>
               )}

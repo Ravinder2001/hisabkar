@@ -57,6 +57,13 @@
   align-items: flex-end;
   /* width: 60%; */
 }
+.cross {
+  cursor: pointer;
+  margin-left: 10px;
+  /* border: 1px solid red; */
+  display: flex;
+  align-items: flex-end;
+}
 @media screen and (max-width: 1300px) {
   .spliter {
     width: 23%;
