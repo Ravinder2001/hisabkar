@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import { RootState } from "../store/store";
-import Drawer from "../Components/Organisms/Drawer/Drawer";
+import Drawer from "../Components/Organisms/Drawer/NavBar";
 import styles from "../App.module.css";
+import Heading from "../Components/Atoms/Headings/Heading";
+import NavBar from "../Components/Organisms/Drawer/NavBar";
 function PrivateRoutes({ children }: any) {
   const user = useSelector((state: RootState) => state.UserSlice.user);
   const guestUser = useSelector(
@@ -12,10 +14,7 @@ function PrivateRoutes({ children }: any) {
 
   return user || guestUser ? (
     <div className={styles.container}>
-      <div className={styles.sidebar}>
-        <Drawer />
-      </div>
-
+      <NavBar />
       <div className={styles.children}>{children}</div>
     </div>
   ) : (

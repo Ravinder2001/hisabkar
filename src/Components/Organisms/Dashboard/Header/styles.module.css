@@ -1,96 +1,50 @@
-.container {
-  margin: 10px;
+.container{
+  /* border: 1px solid red; */
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
 }
-.heading div {
-  font-size: 30px;
-  background: -webkit-linear-gradient(#302f2f, #2adeeb);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.subHeading {
-  display: flex;
-  width: 95%;
-  justify-content: space-between;
-}
-.subHeading div {
-  font-size: 20px;
+.text{
   color: white;
-}
-.amountHead {
-  /* border: 1px solid red;  */
-  margin-left: 10px;
-  margin-top: 40px;
   font-size: 20px;
-  color: white;
-  width: 35%;
-  text-align: center;
+  /* width: 29%; */
 }
-.share {
-  width: 20%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-}
-.share div {
-  font-size: 16px;
-  color: black;
-  margin-right: 30px;
-  cursor: pointer;
-  /* border: 1px solid rgb(179, 0, 255); */
-  padding: 10px;
+.share{
+  background-color: rgb(166, 0, 255);
+  padding: 8px;
   border-radius: 4px;
-  background-image: linear-gradient(
-    to right,
-    rgba(51, 230, 246, 0.873),
-    rgba(128, 6, 204, 0.873)
-  );
+  color: white;
+  /* margin-left: 10px; */
 }
-
-@media screen and (max-width: 1000px) {
-  .share {
-    width: 23%;
-    /* border: 1px solid red; */
-  }
-  .share div {
-    font-size: 14px;
-  }
-}
-@media screen and (max-width: 830px) {
-  .subHeading div {
+@media screen and (max-width:700px) {
+  .text{
     font-size: 18px;
-  }
-  .amountHead {
-    font-size: 18px;
-  }
-  .share div {
-    font-size: 12px;
-  }
-}
-@media screen and (max-width: 600px) {
-  .container {
-    display: block;
-  }
-  .amountHead{
-    margin-top: 0px;
-    margin-left: 0px;
-    /* border: 1px solid red; */
-    width: 50%;
-    text-align: left;
-    float: left;
   }
   .share{
-    width: 50%;
-    /* border: 1px solid red; */
-    /* display: block; */
-    /* clear: both; */
-    /* justify-content: center; */
+    font-size: 17px;
   }
-  .share div{
-    padding: 5px 5px;
-    margin-left: 50px;
-    margin-right: 16px;
-
+}
+@media screen and (max-width:600px) {
+  .text{
+    font-size: 16px;
+  }
+  .share{
+    font-size: 15px;
+    padding: 5px;
+  }
+}
+@media screen and (max-width:400px) {
+  .container{
+    /* margin: 10px; */
+    padding-right: 8px;
+  }
+  .text{
+    font-size: 14px;
+  }
+  .share{
+    font-size: 13px;
+    padding: 5px;
+    margin-top: 10px;
   }
 }

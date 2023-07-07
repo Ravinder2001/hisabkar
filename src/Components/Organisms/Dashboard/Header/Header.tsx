@@ -40,22 +40,12 @@ function Header(props: HeaderProps) {
 
   return (
     <div className={styles.container}>
-      <div>
-        <div className={styles.heading}>
-          <Heading text="hisabkar.com" />
-        </div>
-        <div className={styles.subHeading}>
-          <div>{GroupName}</div>
-          <div>{MembersLength} Members</div>
-        </div>
+      <div className={styles.text}>{GroupName}</div>
+      <div className={styles.text}>{MembersLength} Members</div>
+      <div className={styles.text}>Total Expense: ₹{Amount}</div>
+      <div className={styles.share} onClick={handleOpen}>
+        Share with friends
       </div>
-        <div className={styles.amountHead}>Total Expense: ₹{Amount}</div>
-
-        <div className={styles.share}>
-          <div onClick={handleOpen}>Share with friends</div>
-        </div>
-    
-
       <ModalBox url={url} open={open} handleClose={handleClose} />
     </div>
   );

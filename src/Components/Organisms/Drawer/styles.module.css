@@ -1,7 +1,18 @@
 .container {
-  height: 100%;
-  background-color: #2b2a2a;
-  border: none !important;
+  display: flex;
+  justify-content: space-between;
+  /* width: 100%; */
+  padding: 10px;
+}
+.subCon {
+  display: flex;
+  flex-direction: row-reverse;
+}
+.heading div {
+  font-size: 30px;
+  background: -webkit-linear-gradient(#302f2f, #2adeeb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .img {
   width: 40px;
@@ -15,8 +26,46 @@
   color: white;
   padding-left: 10px;
   font-weight: 400;
+  margin-right: 10px;
+  cursor: pointer;
 }
-.id{
-    font-size: 12px;
-    color:aqua
+.id {
+  font-size: 12px;
+  color: black;
+}
+.profileCon {
+  cursor: pointer;
+  background-color: #0fc9d6;
+  padding: 5px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: row-reverse;
+}
+.logoutBox {
+  margin-right: 20px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+@media screen and (max-width: 400px) {
+  .username {
+    display: none;
+  }
+  .id {
+    display: none;
+  }
+  .box{
+    padding-left: 0px;
+    margin-right: 0px;
+  }
+  .profileCon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* justify-content: center;
+    align-items: center; */
+  }
 }
