@@ -2,11 +2,15 @@
     display: flex;
     /* border: 1px solid red; */
     align-items: flex-end;
-    justify-content: space-evenly;
+    /* justify-content: space-evenly; */
     width: 100%;
-    margin: 10px;
+    margin-top: 10px;
+}
+.inputBox{
+    width: 90%;
 }
 .icon{
     cursor: pointer;
     margin-left: 10px;
+    width: 10%;
 }

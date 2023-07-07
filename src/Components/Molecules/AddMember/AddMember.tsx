@@ -43,7 +43,7 @@ function AddMember(props: AddMemberProps) {
 
   return (
     <div className={styles.container}>
-      <div>
+      <div className={styles.inputBox}>
         <InputBox2
           handleChange={handleMemberName}
           value={memberName}

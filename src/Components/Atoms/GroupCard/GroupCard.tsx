@@ -38,8 +38,8 @@ function GroupCard(props: GroupCardType) {
             <div className={styles.cardScore}>+{props.members.length - 2}</div>
           )}
 
-          {props.members.slice(0, 2).map((item) => (
-            <div className={styles.cardAccounts}>
+          {props.members.slice(0, 2).map((item,index) => (
+            <div className={styles.cardAccounts} key={index}>
               <img
                 src={item.image}
                 width="100%"
@@ -63,8 +63,8 @@ function GroupCard(props: GroupCardType) {
       <div>
         <div className={styles.heading}>Members</div>
         <ul className={styles.main}>
-          {props.members.map((item) => (
-            <li className={styles.box}>{item.name}</li>
+          {props.members.map((item,index) => (
+            <li key={index} className={styles.box}>{item.name}</li>
           ))}
         </ul>
       </div>

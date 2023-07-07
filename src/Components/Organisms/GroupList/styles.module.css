@@ -6,6 +6,7 @@
   flex-wrap: wrap;
   height: calc(100vh - 30px);
   overflow: auto;
+  justify-content: space-evenly;
   /* border: 1px solid red; */
 }
 ::-webkit-scrollbar {

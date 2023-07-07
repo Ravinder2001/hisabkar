@@ -28,7 +28,7 @@
   text-align: center;
 }
 .share{
-  width: 40%;
+  width: 20%;
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
@@ -46,4 +46,11 @@
     rgba(51, 230, 246, 0.873),
     rgba(128, 6, 204, 0.873)
   );
+}
+.filterCon{
+  /* border: 1px solid red; */
+  display: flex;
+  justify-content: space-evenly;
+  align-items: flex-end;
+  width: 30%;
 }

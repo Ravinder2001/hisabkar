@@ -63,6 +63,7 @@ function GroupList() {
     <div className={styles.container}>
       {GroupsList.map((item) => (
         <GroupCard
+        key={item.id}
           id={item.id}
           name={item.name}
           members={item.group_members}

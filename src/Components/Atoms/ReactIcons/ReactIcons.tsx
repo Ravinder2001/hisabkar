@@ -1,8 +1,9 @@
-import { BsPersonAdd ,} from "react-icons/bs";
+import { BsPersonAdd } from "react-icons/bs";
 import { IoMdRemoveCircleOutline } from "react-icons/io";
-import {BiErrorCircle,BiArrowBack} from "react-icons/bi"
-import {AiFillDelete} from "react-icons/ai"
-import {RiLogoutBoxFill} from "react-icons/ri"
+import { BiErrorCircle, BiArrowBack } from "react-icons/bi";
+import { CiCircleRemove } from "react-icons/ci";
+import { AiFillDelete } from "react-icons/ai";
+import { RiLogoutBoxFill } from "react-icons/ri";
 
 type ReactIconsProps = {
   name: string;
@@ -24,6 +25,8 @@ const ReactIcons = (props: ReactIconsProps) => {
       return <RiLogoutBoxFill size={props.size} color={props.color} />;
     case "BiArrowBack":
       return <BiArrowBack size={props.size} color={props.color} />;
+    case "CiCircleRemove":
+      return <CiCircleRemove size={props.size} color={props.color} />;
     default:
       return <></>;
   }

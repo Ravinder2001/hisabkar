@@ -16,6 +16,7 @@ import { RootState } from "../../../store/store";
 import { message } from "antd";
 import BarLoader from "../../Atoms/Loader/BarLoader/BarLoader";
 import ProgressLoader from "../../Atoms/Loader/ProgressLoader/ProgressLoader";
+import { addGroupMembers } from "../../../store/slices/FilterSlice";
 interface Params extends Record<string, string | undefined> {
   group_id: string;
 }
@@ -47,6 +48,7 @@ function DashBoardTemplate() {
       const res = await GetGroupById(object);
       if (res.status == request_succesfully) {
         setGroupData(res.data);
+        dispatch(addGroupMembers(res.data.group_members));
         setLoading(false);
       } else if (res.response.data.status === Unauthorized) {
         dispatch(Logout());
@@ -56,7 +58,7 @@ function DashBoardTemplate() {
       } else {
         setGroupData(undefined);
         message.error(res.response.data.message ?? "Something went wrong");
-        setLoading(false)
+        setLoading(false);
       }
     } else {
       setGroupData(undefined);

@@ -11,6 +11,7 @@ function Checkbox(props: CheckboxProps) {
         type="checkbox"
         checked={checked}
         className={styles.hiddenCheckbox}
+        readOnly
       />
       <svg viewBox="0 0 50 50" height="13px" width="13px">
         <path

@@ -41,7 +41,11 @@ const UserSlice = createSlice({
       state.guestUser = false;
     },
     addGuestUser: (state) => {
+      const num1 = Math.floor(Math.random() * 100);
+      const image = `https://api.multiavatar.com/${num1}.png`;
       state.guestUser = true;
+      state.name = "Guest User";
+      state.image = image;
     },
   },
 });

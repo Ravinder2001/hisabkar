@@ -1,0 +1,21 @@
+.filterHeader {
+  color: white;
+  font-size: 18px;
+}
+.select {
+  font-size: 16px;
+  background-color: transparent;
+  border: 1px solid aqua;
+  border-radius: 6px;
+  padding: 2px 5px;
+  width: 150px;
+  color: white;
+  margin-top: 5px;
+}
+
+.select option{
+    color: black;
+}
+.select:focus{
+    outline: none;
+}

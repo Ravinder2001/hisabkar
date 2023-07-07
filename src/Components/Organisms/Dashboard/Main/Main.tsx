@@ -33,7 +33,9 @@ type BillListType = {
   id: number;
   amount: number;
   sender: string;
+  sender_id: string;
   receiver: string;
+  receiver_id: string;
 };
 
 function Main(props: MainProps) {
@@ -42,8 +44,15 @@ function Main(props: MainProps) {
   const guestUser = useSelector(
     (state: RootState) => state.UserSlice.guestUser
   );
+  const SenderFilter = useSelector(
+    (state: RootState) => state.FilterSlice.senderFilter
+  );
+  const ReceiverFilter = useSelector(
+    (state: RootState) => state.FilterSlice.receiverFilter
+  );
   const [ExpensesList, setExpenseList] = useState<ExpensesListType[]>([]);
   const [BillList, setBillList] = useState<BillListType[]>([]);
+  const [TempBillList, setTempBillList] = useState<BillListType[]>([]);
   const [flag, setFlag] = useState(false);
 
   const [ExpenseLoader, setExpenseLoader] = useState(true);
@@ -80,6 +89,7 @@ function Main(props: MainProps) {
     const res = await GetPairsByGroupId(object);
     if (res.status == request_succesfully) {
       setBillList(res.data);
+      setTempBillList(res.data);
       setPairLoader(false);
     } else if (res.response.data.status === Unauthorized) {
       dispatch(Logout());
@@ -105,10 +115,28 @@ function Main(props: MainProps) {
         return prev + curr.amount;
       }, 0);
       dispatch(toogleAmount(total));
-    }else{
+    } else {
       dispatch(toogleAmount(0));
     }
   }, [ExpensesList]);
+
+  useEffect(() => {
+    let filteredData = TempBillList;
+
+    if (SenderFilter !== "All") {
+      filteredData = filteredData.filter(
+        (item) => item.sender_id === SenderFilter
+      );
+    }
+
+    if (ReceiverFilter !== "All") {
+      filteredData = filteredData.filter(
+        (item) => item.receiver_id === ReceiverFilter
+      );
+    }
+
+    setBillList(filteredData);
+  }, [SenderFilter, ReceiverFilter, BillList]);
 
   return (
     <div className={styles.container}>
@@ -124,19 +152,18 @@ function Main(props: MainProps) {
             <BarLoader />
           </div>
         ) : (
-          <>
-            {ExpensesList.map((item, index) => (
-              <div key={index} className={styles.accordianBox}>
-                <SimpleAccordion
-                  id={item.id}
-                  amount={item.amount}
-                  paidBy={item.paidby}
-                  memberList={item.expensemembers}
-                />
-        
-              </div>
-            ))}
-          </>
+          ExpensesList.length?<>
+          {ExpensesList.map((item, index) => (
+            <div key={index} className={styles.accordianBox}>
+              <SimpleAccordion
+                id={item.id}
+                amount={item.amount}
+                paidBy={item.paidby}
+                memberList={item.expensemembers}
+              />
+            </div>
+          ))}
+        </>:<div className={styles.noData}>No Expenses Found!</div>
         )}
       </div>
       <div className={styles.splitCon}>
@@ -144,19 +171,20 @@ function Main(props: MainProps) {
           <div className={styles.loader}>
             <BarLoader />
           </div>
-        ) : (
+        ) : BillList.length ? (
           <>
             {BillList.map((item, index) => (
-              <>
+              <div key={index}>
                 <BillBox
-                  key={index}
                   receiver={item.receiver}
                   sender={item.sender}
                   amount={item.amount}
                 />
-              </>
+              </div>
             ))}
           </>
+        ) : (
+          <div className={styles.noData}>No Billing Pairs Found!</div>
         )}
       </div>
     </div>
