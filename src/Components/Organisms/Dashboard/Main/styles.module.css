@@ -10,11 +10,13 @@
 .accordian {
   width: 38%;
   height: auto;
+  /* border: 1px solid red; */
+  /* overflow: hidden; */
 
 }
 .accordianBox {
   margin-top: 20px;
-  width: 45%;
+  /* width: 45%; */
   /* border: 1px solid red; */
 }
 .splitCon {

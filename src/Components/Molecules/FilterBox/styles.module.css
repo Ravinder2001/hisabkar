@@ -22,10 +22,10 @@
 }
 @media screen and (max-width: 400px) {
   .filterHeader {
-    font-size: 16px;
+    font-size: 18px;
   }
   .select {
     width: 130px;
-    font-size: 14px;
+    font-size: 16px;
   }
 }

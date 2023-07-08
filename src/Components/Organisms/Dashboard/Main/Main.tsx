@@ -157,7 +157,7 @@ function Main(props: MainProps) {
     }
 
     setBillList(filteredData);
-  }, [SenderFilter, ReceiverFilter, BillList]);
+  }, [SenderFilter, ReceiverFilter, TempBillList]);
 
   return (
     <div className={styles.container}>
