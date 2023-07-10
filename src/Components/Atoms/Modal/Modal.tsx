@@ -1,21 +1,7 @@
 import * as React from "react";
-import Backdrop from "@mui/material/Backdrop";
-import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
-import Fade from "@mui/material/Fade";
+import { Button, Modal, message } from "antd";
+
 import styles from "./styles.module.css";
-import {message} from "antd"
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  // width: 400,
-  bgcolor: "background.paper",
-  border: "none",
-  boxShadow: 24,
-  p: 4,
-};
 type ModalBoxProps = {
   url: string;
   open: boolean;
@@ -28,41 +14,25 @@ export default function ModalBox(props: ModalBoxProps) {
     navigator.clipboard
       .writeText(url)
       .then(() => {
-       message.success("Url is copied")
+        message.success("Url is copied");
       })
       .catch((error) => {
         console.error("Error copying text:", error);
       });
+    handleClose();
   };
 
   return (
     <div>
       <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
+        title="Share this link with your friends"
         open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
+        onOk={handleCopy}
+        onCancel={handleClose}
+        okText="Copy"
+        centered
       >
-        <Fade in={open}>
-          <Box sx={style}>
-            <div className={styles.heading}>
-              Share this link with your friends
-            </div>
-            <div className={styles.container}>
-              <div className={styles.urlBox}>{url}</div>
-              <div className={styles.copyBox} onClick={handleCopy}>
-                Copy
-              </div>
-            </div>
-          </Box>
-        </Fade>
+        <p>{url}</p>
       </Modal>
     </div>
   );
