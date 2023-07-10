@@ -9,7 +9,7 @@ function PublicRoutes({ children }: any) {
   return user ? (
     <Navigate to="/" />
   ) : (
-    <div className={styles.container}>{children}</div>
+    <div className={styles.publicContainer}>{children}</div>
   );
 }
 

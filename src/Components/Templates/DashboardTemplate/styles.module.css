@@ -1,7 +1,7 @@
 .container {
   margin-left: 10px;
   /* border: 1px solid red; */
-  height: 100vh;
+  /* height: 100vh; */
   overflow: auto;
 }
 .errorContainer {

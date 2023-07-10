@@ -167,6 +167,7 @@ function Main(props: MainProps) {
         </div>
       )}
       <div className={styles.splitCon}>
+      <div className={styles.billHead}>Bills</div>
         {PairLoader ? (
           <div className={styles.loader}>
             <BarLoader />
@@ -209,6 +210,7 @@ function Main(props: MainProps) {
         )}
       </div>
       <div className={styles.accordian}>
+        <div className={styles.exHead}>Expenses</div>
         {ExpenseLoader ? (
           <div className={styles.loader}>
             <BarLoader />

@@ -10,9 +10,9 @@
 .accordian {
   width: 38%;
   height: auto;
-  /* border-left: 1px dashed gray; */
+  border-left: 1px dashed gray;
   /* border: 1px solid red; */
-  height: calc(100vh - 130px);
+  max-height: calc(100vh - 130px);
   overflow: auto;
   /* overflow: hidden; */
 
@@ -27,7 +27,7 @@
   width: 45%;
   /* margin-top: 25px; */
   /* border: 1px solid red; */
-  height: calc(100vh - 130px);
+  max-height: calc(100vh - 130px);
   /* overflow: hidden; */
   border-left: 1px dashed gray;
   margin-left: 10px;
@@ -80,6 +80,17 @@ width: 87%;
   /* border: 1px solid red; */
   height: 85%;
   overflow: auto;
+}
+.exHead{
+  font-size: 20px;
+  color: white;
+  text-align: center;
+}
+.billHead{
+  font-size: 20px;
+  color: white;
+  text-align: center;
+  margin-bottom: 10px;
 }
 @media screen and (max-width: 1300px) {
   .spliter {
@@ -167,5 +178,8 @@ width: 87%;
     width: 99%;
     /* border: 1px solid red;  */
     overflow: hidden;
+  }
+  .exHead{
+    margin-top: 20px;
   }
 }
