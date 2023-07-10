@@ -25,13 +25,11 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.9.0",
-    "react-pro-sidebar": "^1.1.0-alpha.1",
     "react-redux": "^8.1.0",
     "react-router-dom": "^6.13.0",
-    "react-scripts": "5.0.1",
+    "react-scroll": "^1.8.9",
     "redux-persist": "^6.0.0",
     "shortid": "^2.2.16",
-    "sweetalert": "^2.1.2",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
@@ -62,6 +60,8 @@
     ]
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.2"
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/react-router-hash-link": "^2.4.6",
+    "@types/react-scroll": "^1.8.7"
   }
 }

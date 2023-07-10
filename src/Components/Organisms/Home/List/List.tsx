@@ -21,6 +21,7 @@ type ListProps = {
 function List(props: ListProps) {
   return (
     <div className={styles.container}>
+      <div className={styles.head}>Create Group!</div>
       <div className={styles.groupBtn}>
         <InputBox2
           handleChange={props.handleGroupName}

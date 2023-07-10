@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import List from "../../Organisms/Home/List/List";
 import Footer from "../../Organisms/Home/Footer/Footer";
 import Header from "../../Organisms/Home/Header/Header";
@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import GroupList from "../../Organisms/GroupList/GroupList";
 import { toogleAmount } from "../../../store/slices/OtherSlice";
-
+import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
 type MemberList = {
   name: string;
 }[];
@@ -68,7 +68,6 @@ function HomeTemplate() {
     }
   }, [MemberList]);
 
-
   return (
     <div className={styles.container}>
       <div className={styles.leftBox}>
@@ -88,9 +87,21 @@ function HomeTemplate() {
           GroupName={GroupName}
           MemberList={MemberList}
         />
+       
+          <div className={styles.scroll}>
+            {/* Scroll Down */}
+            <span style={{ marginTop: "10px", marginLeft: "6px" }}>
+              <ReactIcons name="BsChevronDoubleDown" size={30} />
+            </span>
+          </div>
+   
       </div>
+
       <div className={styles.rightBox}>
+     
+
         <GroupList />
+      
       </div>
     </div>
   );

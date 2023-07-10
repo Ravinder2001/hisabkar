@@ -165,7 +165,7 @@ function Spliter(props: MainProps) {
       <InputBox2
         value={amount}
         handleChange={handleAmountChange}
-        placeholder="Amount"
+        placeholder="Enter the Amount"
         type="number"
         max={100}
       />

@@ -10,7 +10,7 @@
 .accordian {
   width: 38%;
   height: auto;
-  /* border: 1px solid red; */
+  border-left: 1px dashed gray;
   /* overflow: hidden; */
 
 }
@@ -25,7 +25,8 @@
   /* border: 1px solid red; */
   height: auto;
   overflow: auto;
-  /* border: 1px solid green; */
+  border-left: 1px dashed gray;
+  margin-left: 10px;
 }
 .loader {
   width: 100%;
@@ -44,10 +45,18 @@
   font-size: 20px;
 }
 .filterCon {
+  margin-left: 20px;
   /* border: 1px solid red; */
+  /* width: auto; */
+  /* max-width: 100%; */
   display: flex;
   /* justify-content: space-evenly; */
   align-items: flex-end;
+  justify-content: flex-start;
+  padding: 10px;
+background-color: rgb(49, 47, 47);
+border-radius: 4px;
+width: 87%;
   /* width: 60%; */
 }
 .cross {
@@ -88,6 +97,8 @@
     max-height: 800px;
     overflow: auto;
     width:100%;
+    border-top: 1px dashed gray;
+    border-left:none;
   }
 
 }
@@ -123,6 +134,9 @@
   .splitCon {
     width: 95%;
     margin-top: 40px;
+    border-left: none;
+    border-top: 1px dashed gray;
+    padding-top: 10px;
     /* margin-left: 120px; */
     /* border: 1px solid red; */
   /* max-height: 500px; */

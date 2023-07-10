@@ -10,7 +10,7 @@ type FilterBoxProps = {
 function FilterBox(props: FilterBoxProps) {
   const { title, options, handleChange, value } = props;
   return (
-    <div style={{marginLeft:"20px"}}>
+    <div className={styles.container}>
       <div className={styles.filterHeader}>{title}</div>
       <select
         name=""

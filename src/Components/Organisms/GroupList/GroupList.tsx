@@ -12,7 +12,8 @@ import GroupCard from "../../Atoms/GroupCard/GroupCard";
 import { useNavigate } from "react-router-dom";
 import { Logout } from "../../../store/slices/UserSlice";
 import CircularLoader from "../../Atoms/Loader/CircularLoader/CircularLoader";
-import {message} from "antd"
+import { message } from "antd";
+import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
 type GroupListType = {
   id: string;
   name: string;
@@ -45,34 +46,46 @@ function GroupList() {
       localStorage.removeItem(localStorageKey);
       dispatch(Logout());
       navigate("/login");
-      message.error(res?.response?.data?.message ?? "Something went wrong")
+      message.error(res?.response?.data?.message ?? "Something went wrong");
     } else {
       setLoading(false);
-      message.error(res?.response?.data?.message ?? "Something went wrong")
+      message.error(res?.response?.data?.message ?? "Something went wrong");
     }
   };
   useEffect(() => {
     FetchGroupList();
   }, [flag]);
-  
+
   return loading ? (
     <div className={styles.loaderBox}>
       <CircularLoader />
     </div>
   ) : (
     <div className={styles.container}>
-      {GroupsList.map((item) => (
-        <GroupCard
-        key={item.id}
-          id={item.id}
-          name={item.name}
-          members={item.group_members}
-          amount={item.amount}
-          time={item.timestamp}
-          editable={item.editable}
-          toogleFlag={toogleFlag}
-        />
-      ))}
+      <div className={styles.heading}>Older Groups</div>
+      {GroupsList.length ? (
+        <div className={styles.subCon}>
+          {GroupsList?.map((item) => (
+            <GroupCard
+              key={item.id}
+              id={item.id}
+              name={item.name}
+              members={item.group_members}
+              amount={item.amount}
+              time={item.timestamp}
+              editable={item.editable}
+              toogleFlag={toogleFlag}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className={styles.noData}>
+          <span style={{marginRight:"5px",marginTop:"5px"}}>
+            <ReactIcons name="BiErrorCircle" />
+          </span>
+          No Old Groups Found !
+        </div>
+      )}
     </div>
   );
 }

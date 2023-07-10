@@ -172,7 +172,7 @@ function Main(props: MainProps) {
             <BarLoader />
           </div>
         ) : BillList.length ? (
-          <div>
+          <div >
             <div className={styles.filterCon}>
               <FilterBox
                 title="Sender"

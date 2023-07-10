@@ -54,16 +54,8 @@ function LoginBox() {
 
     auth.signInWithPopup(googleAuthProvider).then(async (response) => {
       const profile = response?.additionalUserInfo?.profile as UserProfile;
-      let object = {
-        name: profile.name,
-        email: profile.email,
-        image:
-          profile.picture || profile.picture !== ""
-            ? profile.picture
-            : `https://api.multiavatar.com/${num1}.png`,
-      };
 
-      const res = await RegisterUser(object);
+      const res = await RegisterUser(profile.email);
       if (res.status == request_succesfully) {
         const decode: Decode = jwtDecode(res.token);
         dispatch(addUser(decode));
