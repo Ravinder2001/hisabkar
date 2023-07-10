@@ -10,12 +10,16 @@
 .accordian {
   width: 38%;
   height: auto;
-  border-left: 1px dashed gray;
+  /* border-left: 1px dashed gray; */
+  /* border: 1px solid red; */
+  height: calc(100vh - 130px);
+  overflow: auto;
   /* overflow: hidden; */
 
 }
 .accordianBox {
   margin-top: 20px;
+  margin-bottom: 10px;
   /* width: 45%; */
   /* border: 1px solid red; */
 }
@@ -23,8 +27,8 @@
   width: 45%;
   /* margin-top: 25px; */
   /* border: 1px solid red; */
-  height: auto;
-  overflow: auto;
+  height: calc(100vh - 130px);
+  /* overflow: hidden; */
   border-left: 1px dashed gray;
   margin-left: 10px;
 }
@@ -65,6 +69,17 @@ width: 87%;
   /* border: 1px solid red; */
   display: flex;
   align-items: flex-end;
+}
+.filterBox{
+  height: 100%;
+  /* border: 1px solid green; */
+  overflow: hidden;
+  /* position: relative; */
+}
+.BillBox{
+  /* border: 1px solid red; */
+  height: 85%;
+  overflow: auto;
 }
 @media screen and (max-width: 1300px) {
   .spliter {

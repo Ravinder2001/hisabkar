@@ -172,7 +172,7 @@ function Main(props: MainProps) {
             <BarLoader />
           </div>
         ) : BillList.length ? (
-          <div >
+          <div className={styles.filterBox}>
             <div className={styles.filterCon}>
               <FilterBox
                 title="Sender"
@@ -192,15 +192,17 @@ function Main(props: MainProps) {
                 </div>
               )}
             </div>
-            {BillList.map((item, index) => (
-              <div key={index}>
-                <BillBox
-                  receiver={item.receiver}
-                  sender={item.sender}
-                  amount={item.amount}
-                />
-              </div>
-            ))}
+            <div className={styles.BillBox}>
+              {BillList.map((item, index) => (
+                <div key={index}>
+                  <BillBox
+                    receiver={item.receiver}
+                    sender={item.sender}
+                    amount={item.amount}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
           <div className={styles.noData}>No Billing Pairs Found!</div>
@@ -229,8 +231,6 @@ function Main(props: MainProps) {
         )}
       </div>
     </div>
-
-
   );
 }
 
