@@ -3,7 +3,6 @@ import styles from "./styles.module.css";
 import Heading from "../../../Atoms/Headings/Heading";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../store/store";
-import ModalBox from "../../../Atoms/Modal/Modal";
 import FilterBox from "../../../Molecules/FilterBox/FilterBox";
 import ReactIcons from "../../../Atoms/ReactIcons/ReactIcons";
 import {
@@ -11,10 +10,13 @@ import {
   handleReset,
   handleSender,
 } from "../../../../store/slices/FilterSlice";
+import GroupModalBox from "../../../Atoms/GroupModalBox/GroupModalBox";
+import BillModalBox from "../../../Atoms/BillModalBox/BillModalBox";
 
 type HeaderProps = {
   name: string;
   members: number;
+  group_id:string
 };
 
 function Header(props: HeaderProps) {
@@ -27,7 +29,8 @@ function Header(props: HeaderProps) {
     (state: RootState) => state.UserSlice.guestUser
   );
 
-  const [open, setOpen] = useState(false);
+  const [GroupOpen, setGroupOpen] = useState(false);
+  const [BillOpen, setBillOpen] = useState(false);
   const [url, setURL] = useState("");
 
   const handleClick = () => {
@@ -36,11 +39,16 @@ function Header(props: HeaderProps) {
     setURL(`${url}?sharing`);
   };
 
-  const handleOpen = () => {
+  const handleGroupOpen = () => {
     handleClick();
-    setOpen(true);
+    setGroupOpen(true);
   };
-  const handleClose = () => setOpen(false);
+  const handleGroupClose = () => setGroupOpen(false);
+  const handleBillOpen = () => {
+    handleClick();
+    setBillOpen(true);
+  };
+  const handleBillClose = () => setBillOpen(false);
 
   return (
     <div className={styles.container}>
@@ -49,10 +57,22 @@ function Header(props: HeaderProps) {
       <div className={styles.text}>Total Expense: ₹{Amount}</div>
       {!GuestUser && (
         <>
-          <div className={styles.share} onClick={handleOpen}>
-            Share with friends
+          <div className={styles.share} onClick={handleGroupOpen}>
+            Share Group with friends
           </div>
-          <ModalBox url={url} open={open} handleClose={handleClose} />
+          <GroupModalBox
+            url={url}
+            open={GroupOpen}
+            handleClose={handleGroupClose}
+          />
+        </>
+      )}
+      {!GuestUser && (
+        <>
+          <div className={styles.share} onClick={handleBillOpen}>
+            Share Bills with friends
+          </div>
+          <BillModalBox group_id={props.group_id} url={url} open={BillOpen} handleClose={handleBillClose} />
         </>
       )}
     </div>

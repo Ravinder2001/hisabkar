@@ -9,7 +9,7 @@ type ModalBoxProps = {
   handleClose: () => void;
 };
 
-export default function ModalBox(props: ModalBoxProps) {
+export default function GroupModalBox(props: ModalBoxProps) {
   const { open, handleClose, url } = props;
   const handleCopy = () => {
     navigator.clipboard

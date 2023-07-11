@@ -73,6 +73,7 @@ function Main(props: MainProps) {
     setFlag(!flag);
   };
 
+
   const ExpensesListFetch = async () => {
     let object = {
       group_id: props.GroupData.group_id,
@@ -167,7 +168,7 @@ function Main(props: MainProps) {
         </div>
       )}
       <div className={styles.splitCon}>
-      <div className={styles.billHead}>Bills</div>
+        <div className={styles.billHead}>Bills</div>
         {PairLoader ? (
           <div className={styles.loader}>
             <BarLoader />

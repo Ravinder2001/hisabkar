@@ -81,6 +81,7 @@ function DashBoardTemplate() {
             <Header
               name={GroupData.group_name}
               members={GroupData.group_members.length}
+              group_id={GroupData.group_id}
             />
             <Main GroupData={GroupData} />
           </div>
