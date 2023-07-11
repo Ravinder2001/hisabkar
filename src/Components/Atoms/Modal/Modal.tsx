@@ -24,9 +24,17 @@ export default function ModalBox(props: ModalBoxProps) {
   };
   const handleWhats = () => {
     handleCopy();
-    const Newurl = `https://web.whatsapp.com/send?text=${encodeURIComponent(
-      url
-    )}`;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    let Newurl = "";
+
+    if (isMobile) {
+      // Open WhatsApp if installed on mobile
+      Newurl = `whatsapp://send?text=${encodeURIComponent(url)}`;
+    } else {
+      // Open WhatsApp Web on desktop
+      Newurl = `https://web.whatsapp.com/send?text=${encodeURIComponent(url)}`;
+    }
+
     window.open(Newurl, "_blank");
   };
 

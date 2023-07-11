@@ -23,12 +23,16 @@ function Header(props: HeaderProps) {
 
   const MembersLength = props.members;
   const Amount = useSelector((state: RootState) => state.OtherSlice.amount);
+  const GuestUser = useSelector(
+    (state: RootState) => state.UserSlice.guestUser
+  );
 
   const [open, setOpen] = useState(false);
   const [url, setURL] = useState("");
 
   const handleClick = () => {
     const url = window.location.href;
+    console.log("re", url);
     setURL(`${url}?sharing`);
   };
 
@@ -43,10 +47,14 @@ function Header(props: HeaderProps) {
       <div className={styles.text}>{GroupName}</div>
       <div className={styles.text}>{MembersLength} Members</div>
       <div className={styles.text}>Total Expense: ₹{Amount}</div>
-      <div className={styles.share} onClick={handleOpen}>
-        Share with friends
-      </div>
-      <ModalBox url={url} open={open} handleClose={handleClose} />
+      {!GuestUser && (
+        <>
+          <div className={styles.share} onClick={handleOpen}>
+            Share with friends
+          </div>
+          <ModalBox url={url} open={open} handleClose={handleClose} />
+        </>
+      )}
     </div>
   );
 }
