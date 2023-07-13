@@ -2,7 +2,7 @@ import * as React from "react";
 import { Button, Modal, message } from "antd";
 
 import styles from "./styles.module.css";
-import ReactIcons from "../ReactIcons/ReactIcons";
+import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
 type ModalBoxProps = {
   url: string;
   open: boolean;
@@ -46,6 +46,7 @@ export default function GroupModalBox(props: ModalBoxProps) {
         onCancel={handleClose}
         footer={null}
         centered
+        wrapClassName={styles.modal}
       >
         <p>{url}</p>
         <Button className={styles.copyBtn} onClick={handleCopy}>

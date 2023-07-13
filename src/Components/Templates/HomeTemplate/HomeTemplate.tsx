@@ -98,10 +98,7 @@ function HomeTemplate() {
       </div>
 
       <div className={styles.rightBox}>
-     
-
         <GroupList />
-      
       </div>
     </div>
   );

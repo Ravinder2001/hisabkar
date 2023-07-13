@@ -6,6 +6,7 @@ import Dashboard from "../Pages/Dashboard";
 import ErrorFallback from "../Error/ErrorFallback";
 import PublicRoutes from "./PublicRoutes";
 import PrivateRoutes from "./PrivateRoutes";
+import Graph from "../Pages/Graph";
 
 function ProjectRoutes() {
   return (
@@ -32,6 +33,14 @@ function ProjectRoutes() {
           element={
             <PrivateRoutes>
               <Dashboard />
+            </PrivateRoutes>
+          }
+        />
+        <Route
+          path="/graph/:user_id"
+          element={
+            <PrivateRoutes>
+              <Graph />
             </PrivateRoutes>
           }
         />

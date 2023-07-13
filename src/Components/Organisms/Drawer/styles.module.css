@@ -29,9 +29,21 @@
   margin-right: 10px;
   cursor: pointer;
 }
+.username{
+  /* border: 1px solid red; */
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .id {
   font-size: 12px;
   color: black;
+  /* border: 1px solid red; */
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .profileCon {
   cursor: pointer;
@@ -50,6 +62,12 @@
   align-items: center;
   justify-content: center;
 }
+.iconBox{
+  display: flex;
+}
+.iconText{
+  font-size: 14px;
+}
 @media screen and (max-width: 400px) {
   .username {
     display: none;
@@ -67,5 +85,11 @@
     align-items: center;
     /* justify-content: center;
     align-items: center; */
+  }
+  .iconText{
+    font-size: 11px;
+  }
+  .logoutBox{
+    margin-right: 10px;
   }
 }

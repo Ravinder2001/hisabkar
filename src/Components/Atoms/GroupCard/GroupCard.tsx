@@ -4,9 +4,17 @@ import moment from "moment";
 import ReactIcons from "../ReactIcons/ReactIcons";
 import { formatTime } from "../../../utils/Function";
 import DeleteGroup from "../../../APIs/DeleteGroup";
-import { request_succesfully } from "../../../utils/Constants";
-import AlertBox from "../AlertBox/AlertBox";
+import {
+  Unauthorized,
+  localStorageKey,
+  request_succesfully,
+} from "../../../utils/Constants";
 import { useNavigate } from "react-router-dom";
+import ConfirmPop from "../../Molecules/ConfirmPop/ConfirmPop";
+import { Popconfirm, message } from "antd";
+import { useDispatch } from "react-redux";
+import { Logout } from "../../../store/slices/UserSlice";
+import DeleteRelation from "../../../APIs/DeleteRelation";
 
 type GroupCardType = {
   id: string;
@@ -15,19 +23,53 @@ type GroupCardType = {
   amount: number;
   time: string;
   editable: boolean;
-  toogleFlag:()=> void
+  toogleFlag: () => void;
+  relationid: number | null;
 };
 
 function GroupCard(props: GroupCardType) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [open, setOpen] = React.useState(false);
 
-  const openAlert = () => {
+  const handleAlert = () => {
     setOpen(!open);
   };
 
   const handleClick = () => {
     navigate(`/${props.id}`);
+  };
+
+  const RemoveGroup = async () => {
+    if (props.editable && props.relationid == null) {
+      const res = await DeleteGroup({ group_id: props.id, status: false });
+      if (res.status == request_succesfully) {
+        handleAlert();
+        message.success(res.message);
+        props.toogleFlag();
+      } else if (res.response.data.status === Unauthorized) {
+        localStorage.removeItem(localStorageKey);
+        dispatch(Logout());
+        navigate("/login");
+        message.error(res.response.data.message ?? "Something went wrong");
+      } else {
+        message.error(res.response.data.message ?? "Something went wrong");
+      }
+    } else if (!props.editable && props.relationid !== null) {
+      const res = await DeleteRelation(props.relationid);
+      if (res.status == request_succesfully) {
+        handleAlert();
+        message.success("Group Deleted!");
+        props.toogleFlag();
+      } else if (res.response.data.status === Unauthorized) {
+        localStorage.removeItem(localStorageKey);
+        dispatch(Logout());
+        navigate("/login");
+        message.error(res.response.data.message ?? "Something went wrong");
+      } else {
+        message.error(res.response.data.message ?? "Something went wrong");
+      }
+    }
   };
 
   return (
@@ -38,7 +80,7 @@ function GroupCard(props: GroupCardType) {
             <div className={styles.cardScore}>+{props.members.length - 2}</div>
           )}
 
-          {props.members.slice(0, 2).map((item,index) => (
+          {props.members.slice(0, 2).map((item, index) => (
             <div className={styles.cardAccounts} key={index}>
               <img
                 src={item.image}
@@ -53,18 +95,28 @@ function GroupCard(props: GroupCardType) {
             </div>
           ))}
         </div>
-        {props.editable && (
-          <div className={styles.cardMenu} onClick={openAlert}>
+        <Popconfirm
+          open={open}
+          title="Are you sure you want to delete this group."
+          // description={props.des}
+          onConfirm={RemoveGroup}
+          onCancel={handleAlert}
+          okText="Yes"
+          cancelText="No"
+        >
+          <div className={styles.cardMenu} onClick={handleAlert}>
             <ReactIcons name="AiFillDelete" size={25} />
           </div>
-        )}
+        </Popconfirm>
       </div>
       <div className={styles.cardTitle}>{props.name}</div>
       <div>
         <div className={styles.heading}>Members</div>
         <ul className={styles.main}>
-          {props.members.map((item,index) => (
-            <li key={index} className={styles.box}>{item.name}</li>
+          {props.members.map((item, index) => (
+            <li key={index} className={styles.box}>
+              {item.name}
+            </li>
           ))}
         </ul>
       </div>
@@ -81,7 +133,6 @@ function GroupCard(props: GroupCardType) {
       <div className={styles.cardProgress}>
         <progress max="100" value="40"></progress>
       </div> */}
-      <AlertBox open={open} openAlert={openAlert} id={props.id} toogleFlag={props.toogleFlag} />
     </div>
   );
 }

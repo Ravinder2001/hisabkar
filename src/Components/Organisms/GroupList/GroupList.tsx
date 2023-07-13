@@ -21,6 +21,7 @@ type GroupListType = {
   timestamp: string;
   editable: boolean;
   amount: number;
+  relationid:number|null,
 };
 
 function GroupList() {
@@ -54,7 +55,7 @@ function GroupList() {
   };
   useEffect(() => {
     FetchGroupList();
-  }, [flag]);
+  }, []);
 
   return loading ? (
     <div className={styles.loaderBox}>
@@ -75,6 +76,7 @@ function GroupList() {
               time={item.timestamp}
               editable={item.editable}
               toogleFlag={toogleFlag}
+              relationid={item.relationid}
             />
           ))}
         </div>

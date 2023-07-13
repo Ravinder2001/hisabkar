@@ -15,7 +15,7 @@ interface Decode {
 }
 function App() {
   const dispatch = useDispatch();
-  const queryString = window.location.search.substring(1);
+  const queryString = window.location.search.substring(1).split("&")[1];
 
   const [ServerOn, setServerOn] = useState(true);
 

@@ -2,7 +2,7 @@ import { Fragment, useState, useEffect } from "react";
 import Header from "../../Organisms/Dashboard/Header/Header";
 import Main from "../../Organisms/Dashboard/Main/Main";
 import styles from "./styles.module.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import GetGroupById from "../../../APIs/GetGroupById";
 import {
   Unauthorized,
@@ -25,11 +25,13 @@ export type GroupDataType = {
   group_id: string;
   group_name: string;
   group_members: { member_id: string; member_name: string }[];
+  inputedit: boolean;
 };
 
 function DashBoardTemplate() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const [GroupData, setGroupData] = useState<GroupDataType | undefined>(
     undefined
   );
@@ -39,18 +41,28 @@ function DashBoardTemplate() {
   const guestUser = useSelector(
     (state: RootState) => state.UserSlice.guestUser
   );
+
   const FetchGroup = async () => {
     if (group_id) {
+      let extractedValue: string | null = "";
+      if (guestUser) {
+        const urlParams = new URLSearchParams(location.search);
+        extractedValue = urlParams.get("id");
+      }
       let object = {
         group_id,
         guestUser,
+        user:extractedValue
       };
+
       const res = await GetGroupById(object);
-      if (res.status == request_succesfully) {
+      if (res.status == request_succesfully && res.data !== undefined) {
         setGroupData(res.data);
         dispatch(addGroupMembers(res.data.group_members));
         setLoading(false);
-      } else if (res.response.data.status === Unauthorized) {
+      } else if (res.data === undefined) {
+        setGroupData(undefined);
+      } else if (res?.response?.data?.status === Unauthorized) {
         dispatch(Logout());
         localStorage.removeItem(localStorageKey);
         navigate("/login");

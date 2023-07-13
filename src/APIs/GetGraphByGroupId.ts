@@ -1,18 +1,19 @@
-import { useLocation } from "react-router-dom";
 import axiosInstance from "../utils/AxiosInstance";
 import { request_succesfully } from "../utils/Constants";
 
-type propsType = { group_id: string; guestUser: boolean; user: string | null };
-const GetGroupById = async (props: propsType) => {
+const GetGraphByGroupId = async (props: {
+  group_id: string;
+  guestUser: boolean;
+}) => {
   try {
     if (!props.guestUser) {
-      const response = await axiosInstance.get(`/group/${props.group_id}`);
+      const response = await axiosInstance.get(`/graph/graphData/${props.group_id}`);
       if (response.status === request_succesfully) {
         return response?.data;
       }
-    } else if (props.guestUser && props.user) {
+    } else {
       const response = await axiosInstance.get(
-        `/group/${props.group_id}/${props.user}/sharing`
+        `/graph/graphData/${props.group_id}/sharing`
       );
       if (response.status === request_succesfully) {
         return response?.data;
@@ -23,4 +24,4 @@ const GetGroupById = async (props: propsType) => {
   }
 };
 
-export default GetGroupById;
+export default GetGraphByGroupId;

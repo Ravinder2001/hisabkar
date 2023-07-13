@@ -73,7 +73,6 @@ function Main(props: MainProps) {
     setFlag(!flag);
   };
 
-
   const ExpensesListFetch = async () => {
     let object = {
       group_id: props.GroupData.group_id,
@@ -159,13 +158,16 @@ function Main(props: MainProps) {
 
     setBillList(filteredData);
   }, [SenderFilter, ReceiverFilter, TempBillList]);
-
   return (
     <div className={styles.container}>
       {!guestUser && (
-        <div className={styles.spliter}>
-          <Spliter GroupData={props.GroupData} toogleFlag={toogleFlag} />
-        </div>
+        <>
+          {(props.GroupData.inputedit == null ||props.GroupData.inputedit) && (
+            <div className={styles.spliter}>
+              <Spliter GroupData={props.GroupData} toogleFlag={toogleFlag} />
+            </div>
+          )}
+        </>
       )}
       <div className={styles.splitCon}>
         <div className={styles.billHead}>Bills</div>

@@ -2,9 +2,11 @@ import { BsPersonAdd } from "react-icons/bs";
 import { IoMdRemoveCircleOutline } from "react-icons/io";
 import { BiErrorCircle, BiArrowBack } from "react-icons/bi";
 import { CiCircleRemove } from "react-icons/ci";
-import { AiFillDelete } from "react-icons/ai";
+import { AiFillDelete,AiFillHome } from "react-icons/ai";
 import { RiLogoutBoxFill } from "react-icons/ri";
+import { SiGoogleanalytics } from "react-icons/si";
 import { BsChevronDoubleDown,BsWhatsapp } from "react-icons/bs";
+import { SlGraph } from "react-icons/sl";
 
 type ReactIconsProps = {
   name: string;
@@ -32,6 +34,12 @@ const ReactIcons = (props: ReactIconsProps) => {
       return <BsChevronDoubleDown size={props.size} color={props.color} />;
     case "BsWhatsapp":
       return <BsWhatsapp size={props.size} color={props.color} />;
+    case "AiFillHome":
+      return <AiFillHome size={props.size} color={props.color} />;
+    case "SiGoogleanalytics":
+      return <SiGoogleanalytics size={props.size} color={props.color} />;
+    case "SlGraph":
+      return <SlGraph size={props.size} color={props.color} />;
     default:
       return <></>;
   }

@@ -1,54 +1,101 @@
-.container{
+.container {
   border-bottom: 1px dashed gray;
   padding-bottom: 10px;
-  margin-bottom:10px;
+  margin-bottom: 10px;
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   margin-right: 10px;
+  /* width: 100%; */
 }
-.text{
+.leftBox {
+  display: flex;
+  /* border: 1px solid yellowgreen; */
+  width: 50%;
+  justify-content: space-between;
+}
+.rightBox {
+  display: flex;
+  /* border: 1px solid green; */
+  width: 50%;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+.text {
   color: white;
   font-size: 20px;
+  /* border: 1px solid red; */
   /* width: 29%; */
 }
-.share{
+.share {
   background-color: rgb(166, 0, 255);
-  padding: 8px;
+  padding: 5px 8px;
+  margin-left: 10px;
   border-radius: 4px;
   color: white;
   cursor: pointer;
   /* margin-left: 10px; */
 }
-@media screen and (max-width:700px) {
-  .text{
+.graph {
+  background-color: white;
+  padding: 5px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 22px;
+}
+@media screen and (max-width: 1040px) {
+  .container {
+    display: block;
+  }
+  .leftBox {
+    width: 100%;
+  }
+  .rightBox {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  .share {
+    margin-left: 0px;
+  }
+}
+@media screen and (max-width: 700px) {
+  .text {
     font-size: 18px;
   }
-  .share{
+  .share {
     font-size: 17px;
   }
 }
-@media screen and (max-width:600px) {
-  .text{
+@media screen and (max-width: 600px) {
+  .text {
     font-size: 16px;
   }
-  .share{
+  .share {
     font-size: 15px;
     padding: 5px;
   }
 }
-@media screen and (max-width:400px) {
-  .container{
+@media screen and (max-width: 400px) {
+  .container {
     /* margin: 10px; */
     padding-right: 8px;
   }
-  .text{
+  .text {
     font-size: 14px;
   }
-  .share{
-    font-size: 13px;
-    padding: 5px;
+  .share {
+    font-size: 11px;
+    padding: 5px 5px;
     margin-top: 10px;
+  }
+  .graph{
+    font-size: 18px;
+    padding: 5px 5px;
+    height: 15px;
   }
 }

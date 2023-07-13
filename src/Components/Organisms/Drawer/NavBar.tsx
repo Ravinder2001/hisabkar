@@ -21,6 +21,19 @@ function NavBar() {
     navigate("/login");
     dispatch(Logout());
   };
+  const handleHome = () => {
+    navigate("/");
+  };
+  const handleGraph = () => {
+    if (User.guestUser) {
+      const urlParams = new URLSearchParams(location.search);
+      let extractedValue = urlParams.get("id");
+
+      navigate(`/graph/${extractedValue}`);
+    } else {
+      navigate(`/graph/${User.id}`);
+    }
+  };
   const handleProfile = () => {
     if (User.guestUser) {
       navigate("/login");
@@ -43,7 +56,9 @@ function NavBar() {
             }}
           />
           <div className={styles.box} onClick={handleProfile}>
-            <div style={{ color: "black" }} className={styles.username}>{User.name}</div>
+            <div style={{ color: "black" }} className={styles.username}>
+              {User.name}
+            </div>
             {!User.guestUser ? (
               <div className={styles.id}>id_{User.id}</div>
             ) : (
@@ -52,12 +67,30 @@ function NavBar() {
           </div>
         </div>
 
-        {!User.guestUser && (
-          <div className={styles.logoutBox} onClick={handleLogout}>
-            <ReactIcons name="RiLogoutBoxFill" size={25} />
-            <div style={{fontSize:'14px'}}>Logout</div>
-          </div>
-        )}
+        <div className={styles.iconBox}>
+          {!User.guestUser && (
+            <div className={styles.logoutBox} onClick={handleLogout}>
+              <ReactIcons name="RiLogoutBoxFill" size={22} />
+              <div className={styles.iconText}>Logout</div>
+            </div>
+          )}
+          {location.pathname.split("/")[1] !== "graph" && (
+            <div className={styles.logoutBox} onClick={handleGraph}>
+              <ReactIcons name="SlGraph" size={22} />
+              <div className={styles.iconText}>Analysis</div>
+            </div>
+          )}
+          {!User.guestUser && (
+            <>
+              {location.pathname !== "/" && (
+                <div className={styles.logoutBox} onClick={handleHome}>
+                  <ReactIcons name="AiFillHome" size={22} />
+                  <div className={styles.iconText}>Home</div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

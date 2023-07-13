@@ -32,39 +32,42 @@ function LoginBox() {
   const handleLogin = () => {
     setLoading(true);
     auth.signInWithPopup(googleAuthProvider).then(async (response) => {
-      const profile = response?.additionalUserInfo?.profile as UserProfile;
-
-      const res = await LoginUser(profile.email);
-      if (res.status == request_succesfully) {
-        const decode: Decode = jwtDecode(res.token);
-        dispatch(addUser(decode));
-        localStorage.setItem(localStorageKey, res.token);
-        setLoading(false);
-        navigate("/");
-      } else {
-        setLoading(false);
-        message.error(res.response.data.message ?? "Something went wrong");
+      if (response) {
+        response?.user?.getIdToken().then(async (token: any) => {
+          const res = await LoginUser(token);
+          if (res.status == request_succesfully) {
+            const decode: Decode = jwtDecode(res.token);
+            dispatch(addUser(decode));
+            localStorage.setItem(localStorageKey, res.token);
+            setLoading(false);
+            navigate("/");
+          } else {
+            setLoading(false);
+            message.error(res.response.data.message ?? "Something went wrong");
+          }
+        });
       }
     });
   };
 
   const handleRegister = () => {
     setLoading(true);
-    const num1 = Math.floor(Math.random() * 100);
 
-    auth.signInWithPopup(googleAuthProvider).then(async (response) => {
-      const profile = response?.additionalUserInfo?.profile as UserProfile;
-
-      const res = await RegisterUser(profile.email);
-      if (res.status == request_succesfully) {
-        const decode: Decode = jwtDecode(res.token);
-        dispatch(addUser(decode));
-        localStorage.setItem(localStorageKey, res.token);
-        setLoading(false);
-        navigate("/");
-      } else {
-        setLoading(false);
-        message.error(res.response.data.message ?? "Something went wrong");
+    auth.signInWithPopup(googleAuthProvider).then(async (response: any) => {
+      if (response) {
+        response.user.getIdToken().then(async (token: any) => {
+          const res = await RegisterUser(token);
+          if (res.status == request_succesfully) {
+            const decode: Decode = jwtDecode(res.token);
+            dispatch(addUser(decode));
+            localStorage.setItem(localStorageKey, res.token);
+            setLoading(false);
+            navigate("/");
+          } else {
+            setLoading(false);
+            message.error(res.response.data.message ?? "Something went wrong");
+          }
+        });
       }
     });
   };

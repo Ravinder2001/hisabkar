@@ -1,0 +1,10 @@
+.container{
+    width: 99%;
+    height: calc(100vh - 100px);
+    overflow: hidden;
+    /* border: 1px solid red; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* .load */

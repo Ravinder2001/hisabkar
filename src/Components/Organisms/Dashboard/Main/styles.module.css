@@ -27,10 +27,11 @@
   width: 45%;
   /* margin-top: 25px; */
   /* border: 1px solid red; */
-  max-height: calc(100vh - 130px);
-  /* overflow: hidden; */
+  height: calc(100vh - 130px);
+  overflow: hidden;
   border-left: 1px dashed gray;
   margin-left: 10px;
+  /* padding-bottom: 20px; */
 }
 .loader {
   width: 100%;
@@ -78,8 +79,9 @@ width: 87%;
 }
 .BillBox{
   /* border: 1px solid red; */
-  height: 85%;
+  height: 80%;
   overflow: auto;
+  /* padding-bottom: 20px; */
 }
 .exHead{
   font-size: 20px;

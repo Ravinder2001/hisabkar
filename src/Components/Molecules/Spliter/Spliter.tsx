@@ -1,5 +1,4 @@
-import { useState, useEffect, ChangeEvent } from "react";
-import InputBox1 from "../../Atoms/InputBox/InputBox1/InputBox1";
+import { useState, useEffect, ChangeEvent,KeyboardEvent } from "react";
 import styles from "./styles.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
@@ -45,7 +44,13 @@ function Spliter(props: MainProps) {
   });
 
   const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    
     setAmount(e.target.value);
+  };
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === '-') {
+      e.preventDefault();
+    }
   };
 
   const handleSelectBox = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -53,7 +58,6 @@ function Spliter(props: MainProps) {
   };
 
   const handleCheckBox = (e: string) => {
-    console.log("string", e);
     let temp = paymentFor.map((item) => {
       if (item.member_id === e) {
         return { ...item, checked: !item.checked };
@@ -162,12 +166,14 @@ function Spliter(props: MainProps) {
 
   return (
     <div className={styles.container}>
+      <div className={styles.head}>Add Expense Here!</div>
       <InputBox2
         value={amount}
         handleChange={handleAmountChange}
         placeholder="Enter the Amount"
         type="number"
         max={100}
+        handleKeyPress={handleKeyDown}
       />
       {error.amount && error.show && (
         <div className={styles.error}>Please add amount between (1-100000)</div>
