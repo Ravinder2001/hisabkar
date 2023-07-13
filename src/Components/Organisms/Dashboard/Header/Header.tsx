@@ -89,6 +89,7 @@ function Header(props: HeaderProps) {
               url={url}
               open={GroupOpen}
               handleClose={handleGroupClose}
+              name={GroupName}
             />
           </div>
         )}

@@ -50,9 +50,6 @@ export default function BillModalBox(props: ModalBoxProps) {
     }
   };
   const renderWhats = (jsonData: any) => {
-
-
-
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     let message = "";
 

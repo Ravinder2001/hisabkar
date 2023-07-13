@@ -7,10 +7,11 @@ type ModalBoxProps = {
   url: string;
   open: boolean;
   handleClose: () => void;
+  name: string;
 };
 
 export default function GroupModalBox(props: ModalBoxProps) {
-  const { open, handleClose, url } = props;
+  const { open, handleClose, url, name } = props;
   const handleCopy = () => {
     navigator.clipboard
       .writeText(url)
@@ -23,16 +24,20 @@ export default function GroupModalBox(props: ModalBoxProps) {
     handleClose();
   };
   const handleWhats = () => {
-    handleCopy();
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    let message = `Hi All\n${name} has been created at hisabkar.\nYou all can check-out it here\n${url}
+    \nThanks & Regards\nhisabkar.vercel.app`;
+
     let Newurl = "";
 
     if (isMobile) {
       // Open WhatsApp if installed on mobile
-      Newurl = `whatsapp://send?text=${encodeURIComponent(url)}`;
+      Newurl = `whatsapp://send?text=${encodeURIComponent(message)}`;
     } else {
       // Open WhatsApp Web on desktop
-      Newurl = `https://web.whatsapp.com/send?text=${encodeURIComponent(url)}`;
+      Newurl = `https://web.whatsapp.com/send?text=${encodeURIComponent(
+        message
+      )}`;
     }
 
     window.open(Newurl, "_blank");
