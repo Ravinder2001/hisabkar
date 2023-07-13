@@ -35,22 +35,24 @@ export default function BillModalBox(props: ModalBoxProps) {
   const [loading, setLoading] = useState(true);
 
   const FetchList = async () => {
-    setLoading(true)
+    setLoading(true);
     const res = await GetUniquePairsNames(group_id);
     if (res?.status === request_succesfully) {
       setData(res?.data);
-      setLoading(false)
+      setLoading(false);
     } else if (res.response.data.status === Unauthorized) {
       dispatch(Logout());
       localStorage.removeItem(localStorageKey);
       navigate("/login");
       message.error(res.response.data.message ?? "Something went wrong");
     } else {
-
       message.error(res.response.data.message ?? "Something went wrong");
     }
   };
   const renderWhats = (jsonData: any) => {
+
+
+
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     let message = "";
 
@@ -81,7 +83,8 @@ export default function BillModalBox(props: ModalBoxProps) {
           : ""
       }\n\nAnd you have to send ₹${sendingamount} ${
         sending?.length ? `to ${sending?.length} people:\n${sendingList}` : ""
-      }`;
+      }
+      \nYou can check out the Expenses here\n${url}\n\nThanks & Regards\nhisabkar.vercel.app`;
     }
 
     let Newurl = "";
@@ -108,7 +111,7 @@ export default function BillModalBox(props: ModalBoxProps) {
     if (open) {
       FetchList();
     }
-  },[open]);
+  }, [open]);
 
   return (
     <div>

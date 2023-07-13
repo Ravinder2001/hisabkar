@@ -3,7 +3,7 @@ import { request_succesfully } from "../utils/Constants";
 
 const GetUniquePairsNames = async (props: string) => {
   try {
-    const response = await axiosInstance.get(`/getUniquePairsNames/${props}`);
+    const response = await axiosInstance.get(`/pairs/getUniquePairsNames/${props}`);
     if (response.status === request_succesfully) {
       return response?.data;
     }

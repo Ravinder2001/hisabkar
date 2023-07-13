@@ -161,37 +161,46 @@ export default function AccessModal(props: ModalBoxProps) {
                 </div>
               </div>
               <div>
-                <Button3 onClick={handleSubmit} Error={Error} Loading={submitLoading}/>
+                <Button3
+                  onClick={handleSubmit}
+                  Error={Error}
+                  Loading={submitLoading}
+                />
               </div>
             </div>
-
-            <div>
-              <div className={styles.listHead}>
-                Already Access to these people
-              </div>
+            {Data.length && (
               <div>
-                {Data.map((item) => (
-                  <div key={item.id} className={styles.editCon}>
-                    <div className={styles.name}>{item.user_email}</div>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      {/* <div className={styles.edit}>Edit Access</div> */}
-                      <div style={{ marginTop: "5px" }}>
-                        <ToogleSwitch2 open={item.edit} id={item.id} />
+                <div className={styles.listHead}>
+                  Already Access to these people
+                </div>
+                <div>
+                  {Data.map((item) => (
+                    <div key={item.id} className={styles.editCon}>
+                      <div className={styles.name}>{item.user_email}</div>
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        {/* <div className={styles.edit}>Edit Access</div> */}
+                        <div style={{ marginTop: "5px" }}>
+                          <ToogleSwitch2 open={item.edit} id={item.id} />
+                        </div>
+                      </div>
+                      <div style={{ marginTop: "3px", cursor: "pointer" }}>
+                        <ConfirmPop
+                          title="Remove Access"
+                          des="Are you sure to remove this user?"
+                          Submit={() => handleDelete(item.id)}
+                          component={
+                            <Button className={styles.btn} danger>
+                              Delete
+                            </Button>
+                          }
+                        />
+                        {/* <ReactIcons name="AiFillDelete" size={20} /> */}
                       </div>
                     </div>
-                    <div style={{ marginTop: "3px", cursor: "pointer" }}>
-                      <ConfirmPop
-                        title="Remove Access"
-                        des="Are you sure to remove this user?"
-                        Submit={() => handleDelete(item.id)}
-                        component={<Button className={styles.btn} danger>Delete</Button>}
-                      />
-                      {/* <ReactIcons name="AiFillDelete" size={20} /> */}
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </Modal>

@@ -6,7 +6,7 @@ const GetWhatsappData = async (props: {
   user_id: string;
 }) => {
   try {
-    const response = await axiosInstance.get(`/getWhatsappData/${props.group_id}/${props.user_id}`);
+    const response = await axiosInstance.get(`/pairs/getWhatsappData/${props.group_id}/${props.user_id}`);
     if (response.status === request_succesfully) {
       return response?.data;
     }
