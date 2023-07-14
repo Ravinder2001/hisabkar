@@ -1,5 +1,5 @@
-import React from "react";
 import styles from "./styles.module.css";
+
 function Button1() {
   return <button className={styles.btn}>Start</button>;
 }

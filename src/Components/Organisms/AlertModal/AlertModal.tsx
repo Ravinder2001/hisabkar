@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import { Button, Modal, message } from "antd";
+import { Modal, message } from "antd";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 import DeleteExpense from "../../../APIs/DeleteExpense";
 import {
   Unauthorized,
   localStorageKey,
   request_succesfully,
 } from "../../../utils/Constants";
-import { useDispatch } from "react-redux";
 import { Logout } from "../../../store/slices/UserSlice";
-import { useNavigate } from "react-router-dom";
 
 type ModalPropsType = {
   open: boolean;

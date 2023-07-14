@@ -1,6 +1,7 @@
-import React from "react";
-import styles from "./styles.module.css";
 import { BsArrowRight } from "react-icons/bs";
+
+import styles from "./styles.module.css";
+
 type BillBoxProps = {
   receiver: string;
   sender: string;

@@ -2,21 +2,20 @@ import {
   ChangeEvent,
   useState,
   KeyboardEvent,
-  Dispatch,
-  SetStateAction,
 } from "react";
+import { useDispatch } from "react-redux";
+
 import InputBox2 from "../../Atoms/InputBox/InputBox2/InputBox2";
 import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
+
 import styles from "./styles.module.css";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
 
 const shortid = require("shortid");
+
 type AddMemberProps = {
   addMember: (e: { id: string; name: string; image: string }) => void;
 };
 function AddMember(props: AddMemberProps) {
-  const dispatch = useDispatch();
   const [memberName, setMemberName] = useState<string>("");
 
   const handleMemberName = (e: ChangeEvent<HTMLInputElement>) => {

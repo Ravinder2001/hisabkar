@@ -1,8 +1,9 @@
 import styles from "./styles.module.css";
+
 type CheckboxProps = {
   checked: boolean;
-
 };
+
 function Checkbox(props: CheckboxProps) {
   const { checked } = props;
   return (

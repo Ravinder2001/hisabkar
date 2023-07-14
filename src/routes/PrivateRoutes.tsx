@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import { RootState } from "../store/store";
-import Drawer from "../Components/Organisms/Drawer/NavBar";
-import styles from "../App.module.css";
-import Heading from "../Components/Atoms/Headings/Heading";
+
 import NavBar from "../Components/Organisms/Drawer/NavBar";
+import { RootState } from "../store/store";
+
+import styles from "../App.module.css";
+
 function PrivateRoutes({ children }: any) {
   const user = useSelector((state: RootState) => state.UserSlice.user);
   const guestUser = useSelector(

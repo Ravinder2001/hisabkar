@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import styles from "./styles.module.css";
-import { auth, googleAuthProvider } from "../../../firebase.config";
-import RegisterUser from "../../../APIs/RegisterUser";
-
-import { localStorageKey, request_succesfully } from "../../../utils/Constants";
-import LoginUser from "../../../APIs/LoginUser";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import jwtDecode from "jwt-decode";
-import { useDispatch } from "react-redux";
-import { addUser } from "../../../store/slices/UserSlice";
 import { message } from "antd";
-import CircularLoader from "../../Atoms/Loader/CircularLoader/CircularLoader";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+
+import RegisterUser from "../../../APIs/RegisterUser";
+import LoginUser from "../../../APIs/LoginUser";
 import Loading from "../../Atoms/Loader/loading/Loading";
+import { auth, googleAuthProvider } from "../../../firebase.config";
+import { localStorageKey, request_succesfully } from "../../../utils/Constants";
+import { addUser } from "../../../store/slices/UserSlice";
+
+import styles from "./styles.module.css";
 interface UserProfile {
   name: string;
   email: string;

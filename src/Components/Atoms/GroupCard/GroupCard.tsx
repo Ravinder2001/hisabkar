@@ -1,6 +1,8 @@
 import React from "react";
-import styles from "./styles.module.css";
-import moment from "moment";
+import { useNavigate } from "react-router-dom";
+import { Popconfirm, message } from "antd";
+import { useDispatch } from "react-redux";
+
 import ReactIcons from "../ReactIcons/ReactIcons";
 import { formatTime } from "../../../utils/Function";
 import DeleteGroup from "../../../APIs/DeleteGroup";
@@ -9,12 +11,10 @@ import {
   localStorageKey,
   request_succesfully,
 } from "../../../utils/Constants";
-import { useNavigate } from "react-router-dom";
-import ConfirmPop from "../../Molecules/ConfirmPop/ConfirmPop";
-import { Popconfirm, message } from "antd";
-import { useDispatch } from "react-redux";
 import { Logout } from "../../../store/slices/UserSlice";
 import DeleteRelation from "../../../APIs/DeleteRelation";
+
+import styles from "./styles.module.css";
 
 type GroupCardType = {
   id: string;

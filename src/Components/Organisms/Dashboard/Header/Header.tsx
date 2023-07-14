@@ -1,20 +1,14 @@
-import { ChangeEvent, useState } from "react";
-import styles from "./styles.module.css";
-import Heading from "../../../Atoms/Headings/Heading";
+import {  useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../../store/store";
-import FilterBox from "../../../Molecules/FilterBox/FilterBox";
-import ReactIcons from "../../../Atoms/ReactIcons/ReactIcons";
-import {
-  handleReceiver,
-  handleReset,
-  handleSender,
-} from "../../../../store/slices/FilterSlice";
 
+import ReactIcons from "../../../Atoms/ReactIcons/ReactIcons";
 import AccessModal from "../../../Molecules/AccessModal/AccessModal";
 import GroupModalBox from "../../../Molecules/GroupModalBox/GroupModalBox";
 import BillModalBox from "../../../Molecules/BillModalBox/BillModalBox";
 import BarChartModal from "../../../Molecules/BarChartModal/BarChartModal";
+import { RootState } from "../../../../store/store";
+
+import styles from "./styles.module.css";
 
 type HeaderProps = {
   name: string;

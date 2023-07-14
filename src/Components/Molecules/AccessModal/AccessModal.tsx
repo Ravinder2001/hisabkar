@@ -1,18 +1,14 @@
 import { useEffect, useState, ChangeEvent } from "react";
 import { Button, Modal, message } from "antd";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-import styles from "./styles.module.css";
-import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
-import GetUniquePairsNames from "../../../APIs/GetUniquePairsNames";
 import {
   Unauthorized,
   localStorageKey,
   request_succesfully,
 } from "../../../utils/Constants";
 import { Logout } from "../../../store/slices/UserSlice";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import GetWhatsappData from "../../../APIs/GetWhatsappData";
 import CircularLoader from "../../Atoms/Loader/CircularLoader/CircularLoader";
 import GetGroupAccessReport from "../../../APIs/GetGroupAccessReport";
 import ToogleSwitch from "../../Atoms/ToogleSwitch/ToogleSwitch";
@@ -21,6 +17,9 @@ import ToogleSwitch2 from "../../Atoms/ToogleSwitch2/ToogleSwitch2";
 import PostGroupRelation from "../../../APIs/PostGroupRelation";
 import DeleteRelation from "../../../APIs/DeleteRelation";
 import ConfirmPop from "../ConfirmPop/ConfirmPop";
+
+import styles from "./styles.module.css";
+
 type ModalBoxProps = {
   open: boolean;
   handleClose: () => void;

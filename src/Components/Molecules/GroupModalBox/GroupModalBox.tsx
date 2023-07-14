@@ -1,8 +1,9 @@
-import * as React from "react";
 import { Button, Modal, message } from "antd";
 
-import styles from "./styles.module.css";
 import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
+
+import styles from "./styles.module.css";
+
 type ModalBoxProps = {
   url: string;
   open: boolean;

@@ -1,4 +1,3 @@
-import React from "react";
 import GraphTemplate from "../Components/Templates/GraphTemplate/GraphTemplate";
 
 function Graph() {

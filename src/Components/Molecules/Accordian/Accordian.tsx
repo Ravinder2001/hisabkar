@@ -1,15 +1,15 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
 import { MdExpandMore } from "react-icons/md";
-import styles from "./styles.module.css";
+
 import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
-import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import DeleteExpense from "../../../APIs/DeleteExpense";
 import AlertModal from "../../Organisms/AlertModal/AlertModal";
+
+import styles from "./styles.module.css";
 
 type SimpleAccordionProps = {
   id: number;

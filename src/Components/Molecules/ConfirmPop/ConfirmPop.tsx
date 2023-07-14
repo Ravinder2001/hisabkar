@@ -1,6 +1,5 @@
-import { Button, message, Popconfirm } from "antd";
 import { ReactNode, useState } from "react";
-import ToogleSwitch2 from "../../Atoms/ToogleSwitch2/ToogleSwitch2";
+import {  Popconfirm } from "antd";
 
 type popType = {
   Submit: () => void;

@@ -1,22 +1,23 @@
-import { Fragment, useState, useEffect } from "react";
+import {  useState, useEffect } from "react";
+import { message } from "antd";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
 import Header from "../../Organisms/Dashboard/Header/Header";
 import Main from "../../Organisms/Dashboard/Main/Main";
-import styles from "./styles.module.css";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import GetGroupById from "../../../APIs/GetGroupById";
+import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
+import ProgressLoader from "../../Atoms/Loader/ProgressLoader/ProgressLoader";
 import {
   Unauthorized,
   localStorageKey,
   request_succesfully,
 } from "../../../utils/Constants";
-import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
 import { Logout } from "../../../store/slices/UserSlice";
-import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import { message } from "antd";
-import BarLoader from "../../Atoms/Loader/BarLoader/BarLoader";
-import ProgressLoader from "../../Atoms/Loader/ProgressLoader/ProgressLoader";
 import { addGroupMembers } from "../../../store/slices/FilterSlice";
+
+import styles from "./styles.module.css";
 interface Params extends Record<string, string | undefined> {
   group_id: string;
 }

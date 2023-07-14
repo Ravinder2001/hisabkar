@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-
-import { useDispatch, useSelector } from "react-redux";
-import ProjectRoutes from "./routes/ProjectRoutes";
-import { Logout, addGuestUser, addUser } from "./store/slices/UserSlice";
+import { useDispatch } from "react-redux";
 import jwtDecode from "jwt-decode";
-import { guestString, localStorageKey } from "./utils/Constants";
+
+import ProjectRoutes from "./routes/ProjectRoutes";
 import ServerCheck from "./APIs/ServerCheck";
-import styles from "./App.module.css";
 import SVGIcons from "./Components/Atoms/SVGIcons/SVGIcons";
+import { Logout, addGuestUser, addUser } from "./store/slices/UserSlice";
+import { guestString, localStorageKey, request_succesfully } from "./utils/Constants";
+
+import styles from "./App.module.css";
 interface Decode {
   name: string;
   id: string;
@@ -15,20 +16,20 @@ interface Decode {
 }
 function App() {
   const dispatch = useDispatch();
+  const token = localStorage.getItem(localStorageKey);
   const queryString = window.location.search.substring(1).split("&")[1];
 
   const [ServerOn, setServerOn] = useState(true);
 
-  const token = localStorage.getItem(localStorageKey);
-
   const Server = async () => {
     const res = await ServerCheck();
-    if (res?.status == 200) {
+    if (res?.status === request_succesfully) {
       setServerOn(true);
     } else {
       setServerOn(false);
     }
   };
+  
   useEffect(() => {
     Server();
     if (token) {

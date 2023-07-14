@@ -1,11 +1,10 @@
-import { ChangeEvent, Dispatch, SetStateAction } from "react";
-import AddMember from "../../../Molecules/AddMember/AddMember";
-import styles from "./styles.module.css";
-import { useDispatch, useSelector } from "react-redux";
+import { ChangeEvent } from "react";
 
-import { RootState } from "../../../../store/store";
+import AddMember from "../../../Molecules/AddMember/AddMember";
 import ReactIcons from "../../../Atoms/ReactIcons/ReactIcons";
 import InputBox2 from "../../../Atoms/InputBox/InputBox2/InputBox2";
+
+import styles from "./styles.module.css";
 
 type ListProps = {
   Error: { name: boolean; members: boolean };

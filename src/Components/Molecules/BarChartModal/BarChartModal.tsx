@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Button, Modal, message } from "antd";
+import  { useState, useEffect } from "react";
+import {  Modal, message } from "antd";
 import { Bar } from "react-chartjs-2";
-import styles from "./styles.module.css";
-import GetGraphByGroupId from "../../../APIs/GetGraphByGroupId";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { Chart, registerables } from "chart.js";
+
+import GetGraphByGroupId from "../../../APIs/GetGraphByGroupId";
 import { RootState } from "../../../store/store";
 import {
   Unauthorized,
@@ -11,10 +13,10 @@ import {
   request_succesfully,
 } from "../../../utils/Constants";
 import { Logout } from "../../../store/slices/UserSlice";
-import { useNavigate } from "react-router-dom";
-import CircularLoader from "../../Atoms/Loader/CircularLoader/CircularLoader";
 import BarLoader from "../../Atoms/Loader/BarLoader/BarLoader";
-import { Chart, registerables } from "chart.js";
+
+import styles from "./styles.module.css";
+
 Chart.register(...registerables);
 
 type ModalProps = {

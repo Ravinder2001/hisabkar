@@ -1,19 +1,21 @@
-import React, { Dispatch, SetStateAction } from "react";
-import Button1 from "../../../Atoms/Button/Button1/Button1";
-import styles from "./styles.module.css";
+import  { Dispatch, SetStateAction } from "react";
+import moment from "moment";
+import {message} from "antd"
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../../store/store";
+
+import Button1 from "../../../Atoms/Button/Button1/Button1";
+import PostPairs from "../../../../APIs/PostPairs";
 import PostGroup from "../../../../APIs/PostGroup";
-import moment from "moment";
+import { RootState } from "../../../../store/store";
+import { Logout } from "../../../../store/slices/UserSlice";
 import {
   Unauthorized,
   localStorageKey,
   request_succesfully,
 } from "../../../../utils/Constants";
-import PostPairs from "../../../../APIs/PostPairs";
-import { Logout } from "../../../../store/slices/UserSlice";
-import {message} from "antd"
+
+import styles from "./styles.module.css";
 
 type FooterProps = {
   setIsSubmit: Dispatch<SetStateAction<boolean>>;

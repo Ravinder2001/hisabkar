@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
-import styles from "./styles.module.css";
+import  { useEffect, useState } from "react";
+import { message } from "antd";
 import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
-import GetGraphByUserId from "../../../APIs/GetGraphByUserId";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
+import GetGraphByUserId from "../../../APIs/GetGraphByUserId";
+import CircularLoader from "../../Atoms/Loader/CircularLoader/CircularLoader";
 import { RootState } from "../../../store/store";
 import {
   Unauthorized,
@@ -11,15 +14,17 @@ import {
   request_succesfully,
 } from "../../../utils/Constants";
 import { Logout } from "../../../store/slices/UserSlice";
-import { message } from "antd";
-import { useLocation, useNavigate } from "react-router-dom";
-import CircularLoader from "../../Atoms/Loader/CircularLoader/CircularLoader";
+
+import styles from "./styles.module.css";
+
 Chart.register(...registerables);
+
 type DataType = {
   name: string;
   amount: string;
   color: string;
 };
+
 function GraphTemplate() {
   const dispatch = useDispatch();
   const navigate = useNavigate();

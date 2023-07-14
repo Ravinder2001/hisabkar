@@ -1,10 +1,16 @@
 import { useState, useEffect, ChangeEvent } from "react";
-import Spliter from "../../../Molecules/Spliter/Spliter";
-import styles from "./styles.module.css";
+import { message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../../store/store";
-import SimpleAccordion from "../../../Molecules/Accordian/Accordian";
+import { useNavigate } from "react-router-dom";
+
+import Spliter from "../../../Molecules/Spliter/Spliter";
+import BarLoader from "../../../Atoms/Loader/BarLoader/BarLoader";
+import FilterBox from "../../../Molecules/FilterBox/FilterBox";
+import ReactIcons from "../../../Atoms/ReactIcons/ReactIcons";
 import BillBox from "../../../Molecules/BillBox/BillBox";
+import SimpleAccordion from "../../../Molecules/Accordian/Accordian";
+import GetPairsByGroupId from "../../../../APIs/GetPairsByGroupId";
+import { RootState } from "../../../../store/store";
 import { GroupDataType } from "../../../Templates/DashboardTemplate/DashboardTemplate";
 import GetExpensesById from "../../../../APIs/GetExpensesById";
 import {
@@ -12,19 +18,16 @@ import {
   localStorageKey,
   request_succesfully,
 } from "../../../../utils/Constants";
-import GetPairsByGroupId from "../../../../APIs/GetPairsByGroupId";
 import { toogleAmount } from "../../../../store/slices/OtherSlice";
 import { Logout } from "../../../../store/slices/UserSlice";
-import { useNavigate } from "react-router-dom";
-import { message } from "antd";
-import BarLoader from "../../../Atoms/Loader/BarLoader/BarLoader";
-import FilterBox from "../../../Molecules/FilterBox/FilterBox";
-import ReactIcons from "../../../Atoms/ReactIcons/ReactIcons";
 import {
   handleReceiver,
   handleReset,
   handleSender,
 } from "../../../../store/slices/FilterSlice";
+
+import styles from "./styles.module.css";
+
 type MainProps = {
   GroupData: GroupDataType;
 };

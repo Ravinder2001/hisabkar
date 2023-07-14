@@ -1,17 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
+import { useDispatch } from "react-redux";
+
+import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
 import List from "../../Organisms/Home/List/List";
 import Footer from "../../Organisms/Home/Footer/Footer";
 import Header from "../../Organisms/Home/Header/Header";
-import styles from "./styles.module.css";
-import { ChangeEvent } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
 import GroupList from "../../Organisms/GroupList/GroupList";
 import { toogleAmount } from "../../../store/slices/OtherSlice";
-import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
-type MemberList = {
-  name: string;
-}[];
+
+import styles from "./styles.module.css";
 
 type MemberListType = {
   id: string;

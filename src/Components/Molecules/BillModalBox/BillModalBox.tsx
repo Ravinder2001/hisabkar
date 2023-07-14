@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button, Modal, message } from "antd";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-import styles from "./styles.module.css";
 import GetUniquePairsNames from "../../../APIs/GetUniquePairsNames";
 import {
   Unauthorized,
@@ -9,11 +10,12 @@ import {
   request_succesfully,
 } from "../../../utils/Constants";
 import { Logout } from "../../../store/slices/UserSlice";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import GetWhatsappData from "../../../APIs/GetWhatsappData";
 import CircularLoader from "../../Atoms/Loader/CircularLoader/CircularLoader";
 import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
+
+import styles from "./styles.module.css";
+
 type ModalBoxProps = {
   url: string;
   open: boolean;

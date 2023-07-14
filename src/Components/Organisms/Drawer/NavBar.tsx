@@ -1,20 +1,19 @@
-import { useState } from "react";
-import styles from "./styles.module.css";
-import Heading from "../../Atoms/Headings/Heading";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
+import Heading from "../../Atoms/Headings/Heading";
+import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
 import { localStorageKey } from "../../../utils/Constants";
 import { RootState } from "../../../store/store";
 import { Logout } from "../../../store/slices/UserSlice";
-import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
+
+import styles from "./styles.module.css";
+
 function NavBar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-
   const User = useSelector((state: RootState) => state.UserSlice);
-
-  const [open, setOpen] = useState<boolean>(true);
 
   const handleLogout = () => {
     localStorage.removeItem(localStorageKey);

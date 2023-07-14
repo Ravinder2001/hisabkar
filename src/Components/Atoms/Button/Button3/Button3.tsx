@@ -1,11 +1,13 @@
-import React from "react";
-import styles from "./styles.module.css";
 import CircularProgress from '@mui/material/CircularProgress';
+
+import styles from "./styles.module.css";
+
 type ButtonType = {
   onClick: () => void;
   Error: boolean;
   Loading: boolean;
 };
+
 function Button3(props: ButtonType) {
   return (
     <button

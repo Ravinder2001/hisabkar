@@ -1,19 +1,22 @@
 import { useState, useEffect } from "react";
-import styles from "./styles.module.css";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
+import { message } from "antd";
+import { useNavigate } from "react-router-dom";
+
+import GroupCard from "../../Atoms/GroupCard/GroupCard";
 import GetUserGroups from "../../../APIs/GetUserGroups";
+import CircularLoader from "../../Atoms/Loader/CircularLoader/CircularLoader";
+import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
+import { RootState } from "../../../store/store";
 import {
   Unauthorized,
   localStorageKey,
   request_succesfully,
 } from "../../../utils/Constants";
-import GroupCard from "../../Atoms/GroupCard/GroupCard";
-import { useNavigate } from "react-router-dom";
 import { Logout } from "../../../store/slices/UserSlice";
-import CircularLoader from "../../Atoms/Loader/CircularLoader/CircularLoader";
-import { message } from "antd";
-import ReactIcons from "../../Atoms/ReactIcons/ReactIcons";
+
+import styles from "./styles.module.css";
+
 type GroupListType = {
   id: string;
   name: string;
