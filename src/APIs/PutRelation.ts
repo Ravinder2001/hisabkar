@@ -9,7 +9,7 @@ export type PutPairsType = {
 const PutRelation = async (props: PutPairsType) => {
   try {
     const response = await axiosInstance.put(
-      `/updateRelation/${props.id}/${props.status}`
+      `/group/updateRelation/${props.id}/${props.status}`
     );
     if (response.status === request_succesfully) {
       return response?.data;
