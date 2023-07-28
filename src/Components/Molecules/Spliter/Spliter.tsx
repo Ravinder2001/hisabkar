@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent,KeyboardEvent } from "react";
+import { useState, useEffect, ChangeEvent, KeyboardEvent } from "react";
 import moment from "moment";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +19,7 @@ import { Logout } from "../../../store/slices/UserSlice";
 import InputBox2 from "../../Atoms/InputBox/InputBox2/InputBox2";
 
 import styles from "./styles.module.css";
+import CircularLoader from "../../Atoms/Loader/CircularLoader/CircularLoader";
 
 type PaymentForType = {
   member_id: string;
@@ -43,13 +44,13 @@ function Spliter(props: MainProps) {
     member: true,
     show: false,
   });
+  const [loading, setLoading] = useState(false);
 
   const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
-    
     setAmount(e.target.value);
   };
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === '-') {
+    if (e.key === "-") {
       e.preventDefault();
     }
   };
@@ -73,12 +74,14 @@ function Spliter(props: MainProps) {
     if (res.status == request_succesfully) {
       props.toogleFlag();
       message.success("Expense added");
+      setLoading(false);
     } else if (res.response.data.status === Unauthorized) {
       dispatch(Logout());
       localStorage.removeItem(localStorageKey);
       navigate("/login");
       message.error(res.response.data.message ?? "Something went wrong");
     } else {
+      setLoading(false);
       message.error(res.response.data.message ?? "Something went wrong");
     }
   };
@@ -90,6 +93,7 @@ function Spliter(props: MainProps) {
 
     if (!error.amount && !error.member) {
       if (amount.length > 0) {
+        setLoading(true);
         setAmount("");
         AddPeople();
         setPaidBy(group_members[0].member_id);
@@ -119,6 +123,7 @@ function Spliter(props: MainProps) {
         let res = await PostExpense(object);
         if (res.status == request_succesfully) {
           UpdatePairs(updatedObject);
+          
         } else if (res.response.data.status === Unauthorized) {
           localStorage.removeItem(localStorageKey);
           dispatch(Logout());
@@ -126,6 +131,7 @@ function Spliter(props: MainProps) {
           message.error(res.response.data.message ?? "Something went wrong");
         } else {
           message.error(res.response.data.message ?? "Something went wrong");
+          setLoading(false);
         }
       } else {
         alert("Please add the amount.");
@@ -210,7 +216,7 @@ function Spliter(props: MainProps) {
       </div>
       <div className={styles.line}></div>
       <div className={styles.btn}>
-        <Button2 handleClick={handleHisab} />
+        {loading ? <CircularLoader /> : <Button2 handleClick={handleHisab} />}
       </div>
     </div>
   );

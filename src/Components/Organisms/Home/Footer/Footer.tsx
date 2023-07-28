@@ -1,6 +1,6 @@
-import  { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import moment from "moment";
-import {message} from "antd"
+import { message } from "antd";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -16,6 +16,7 @@ import {
 } from "../../../../utils/Constants";
 
 import styles from "./styles.module.css";
+import CircularLoader from "../../../Atoms/Loader/CircularLoader/CircularLoader";
 
 type FooterProps = {
   setIsSubmit: Dispatch<SetStateAction<boolean>>;
@@ -27,10 +28,11 @@ type FooterProps = {
 function Footer(props: FooterProps) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [loading, setLoading] = useState(false);
   const user_id = useSelector((state: RootState) => state.UserSlice.id);
 
   const SubmitGroup = async () => {
+    setLoading(true);
     let data = {
       user_id: user_id,
       name: props.GroupName,
@@ -41,7 +43,8 @@ function Footer(props: FooterProps) {
     if (res.status == request_succesfully) {
       CreatePairs(res.data.group_id, res.data.members);
     } else {
-      message.error(res.response.data.message ?? "Something went wrong")
+      setLoading(false);
+      message.error(res.response.data.message ?? "Something went wrong");
     }
   };
 
@@ -53,9 +56,10 @@ function Footer(props: FooterProps) {
       dispatch(Logout());
       localStorage.removeItem(localStorageKey);
       navigate("/login");
-      message.error(res.response.data.message ?? "Something went wrong")
+      message.error(res.response.data.message ?? "Something went wrong");
     } else {
-      message.error(res.response.data.message ?? "Something went wrong")
+      setLoading(false);
+      message.error(res.response.data.message ?? "Something went wrong");
     }
   };
 
@@ -67,7 +71,7 @@ function Footer(props: FooterProps) {
   };
   return (
     <div className={styles.container} onClick={handleSubmit}>
-      <Button1 />
+      {loading ? <CircularLoader /> : <Button1 />}
     </div>
   );
 }

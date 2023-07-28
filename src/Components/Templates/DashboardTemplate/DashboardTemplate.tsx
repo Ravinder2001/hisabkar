@@ -1,4 +1,4 @@
-import {  useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { message } from "antd";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -53,7 +53,7 @@ function DashBoardTemplate() {
       let object = {
         group_id,
         guestUser,
-        user:extractedValue
+        user: extractedValue,
       };
 
       const res = await GetGroupById(object);
@@ -61,7 +61,7 @@ function DashBoardTemplate() {
         setGroupData(res.data);
         dispatch(addGroupMembers(res.data.group_members));
         setLoading(false);
-      } else if (res.data === undefined) {
+      } else if (res.data === undefined && res.status == request_succesfully) {
         setGroupData(undefined);
       } else if (res?.response?.data?.status === Unauthorized) {
         dispatch(Logout());
