@@ -8,6 +8,7 @@ import ErrorFallback from "../Error/ErrorFallback";
 import PublicRoutes from "./PublicRoutes";
 import PrivateRoutes from "./PrivateRoutes";
 import Graph from "../Pages/Graph";
+import Trash from "../Pages/Trash";
 
 function ProjectRoutes() {
   return (
@@ -42,6 +43,14 @@ function ProjectRoutes() {
           element={
             <PrivateRoutes>
               <Graph />
+            </PrivateRoutes>
+          }
+        />
+        <Route
+          path="/trash"
+          element={
+            <PrivateRoutes>
+              <Trash />
             </PrivateRoutes>
           }
         />

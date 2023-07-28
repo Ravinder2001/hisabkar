@@ -1,0 +1,39 @@
+.container {
+  width: 100%;
+}
+.box {
+  background-color: white;
+  width: 30%;
+  border-radius: 10px;
+  margin: 10px;
+  padding: 10px;
+}
+.name {
+  font-size: 20px;
+  font-weight: bold;
+}
+.count {
+  font-size: 14px;
+}
+.time {
+  font-size: 16px;
+}
+
+.button {
+  background-color: green;
+  text-align: center;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+}
+.del_button {
+  background-color: red;
+  text-align: center;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+}

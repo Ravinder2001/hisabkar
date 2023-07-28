@@ -23,6 +23,9 @@ function NavBar() {
   const handleHome = () => {
     navigate("/");
   };
+  const handleTrash = () => {
+    navigate("/trash");
+  };
   const handleGraph = () => {
     if (User.guestUser) {
       const urlParams = new URLSearchParams(location.search);
@@ -71,6 +74,12 @@ function NavBar() {
             <div className={styles.logoutBox} onClick={handleLogout}>
               <ReactIcons name="RiLogoutBoxFill" size={22} />
               <div className={styles.iconText}>Logout</div>
+            </div>
+          )}
+          {!User.guestUser && (
+            <div className={styles.logoutBox} onClick={handleTrash}>
+              <ReactIcons name="AiFillDelete" size={22} />
+              <div className={styles.iconText}>Trash</div>
             </div>
           )}
           {location.pathname.split("/")[1] !== "graph" && (
