@@ -5,5 +5,5 @@ export const Unauthorized = 401;
 export const navigateHome = "/";
 export const navigateLogin = "/login";
 export const guestString = "sharing";
-export const test="test"
-
+export const test = "test";
+export const NanoIdLength = 10;
