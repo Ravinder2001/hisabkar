@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import ErrorFallback from "../Error/ErrorFallback";
 import PublicRoutes from "./PublicRoutes";
 import PrivateRoutes from "./PrivateRoutes";
+import Home from "../pages/Home/Home";
 
 function ProjectRoutes() {
   return (
@@ -13,7 +14,7 @@ function ProjectRoutes() {
           path="/"
           element={
             <PublicRoutes>
-              <div>Hi</div>
+              <Home />
             </PublicRoutes>
           }
         />
