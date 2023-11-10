@@ -3,19 +3,15 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 import UserSlice from "./slices/UserSlice";
-import OtherSlice from "./slices/OtherSlice";
-import FilterSlice from "./slices/FilterSlice";
 
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: ["FilterSlice"]
+  blacklist: []
 };
 
 const RootReducers = combineReducers({
   UserSlice,
-  OtherSlice,
-  FilterSlice
 });
 
 
