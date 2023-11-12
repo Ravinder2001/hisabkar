@@ -1,7 +1,9 @@
 .container {
   width: 100%;
-  height: 90vh;
-}
+  height: calc(100vh - 10px);
+  padding-top: 10px;
+  background: rgb(195,221,239);
+background: linear-gradient(90deg, rgba(195,221,239,1) 0%, rgba(217,219,251,1) 100%);}
 .body {
   width: 100%;
   height: calc(90vh - 40px);
@@ -9,11 +11,14 @@
   justify-content: center;
   align-items: center;
 }
+
 .leftBox {
+  margin-top: 20px;
   width: 35%;
-  height: 80%;
+  height: 90%;
 }
 .rightBox {
   width: 35%;
-  height: 80%;
+  height: 90%;
+  margin-top: 20px;
 }

@@ -1,0 +1,14 @@
+.input input {
+  border: 1px solid black;
+  font-size: 24px;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+.input input:focus {
+  outline: none;
+  border: 2px solid rgb(165, 47, 255);
+}
+.input {
+  width: 100%;
+  justify-content: space-between !important;
+}

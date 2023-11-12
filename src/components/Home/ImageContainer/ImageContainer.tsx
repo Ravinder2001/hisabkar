@@ -1,7 +1,8 @@
 import React from "react";
 import styles from "./style.module.scss";
+import logo from "../../../assets/images/Paying_Bills.png";
 function ImageContainer() {
-  return <div className={styles.container}>ImageContainer</div>;
+  return <img src={logo} alt="" className={styles.img} />;
 }
 
 export default ImageContainer;
