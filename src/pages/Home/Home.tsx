@@ -4,8 +4,9 @@ import styles from "./style.module.scss";
 import DetailContainer from "../../components/Home/DetailContainer/DetailContainer";
 import ImageContainer from "../../components/Home/ImageContainer/ImageContainer";
 import SignUpContainer from "../../components/Home/SignUpContainer/SignUpContainer";
+import LoginContainer from "../../components/Home/LoginContainer/LoginContainer";
 function Home() {
-  const [selectedOptions, setSelectedOptions] = useState<string>("sign");
+  const [selectedOptions, setSelectedOptions] = useState<string>("");
   return (
     <div className={styles.container}>
       <HomeNav setSelectedOptions={setSelectedOptions} />
@@ -14,7 +15,13 @@ function Home() {
           <DetailContainer setSelectedOptions={setSelectedOptions} />
         </div>
         <div className={styles.rightBox}>
-          {selectedOptions == "sign" ? <SignUpContainer /> : selectedOptions == "login" ? <div>Login</div> : <ImageContainer />}
+          {selectedOptions == "sign" ? (
+            <SignUpContainer setSelectedOptions={setSelectedOptions} />
+          ) : selectedOptions == "login" ? (
+            <LoginContainer setSelectedOptions={setSelectedOptions} />
+          ) : (
+            <ImageContainer />
+          )}
         </div>
       </div>
     </div>
