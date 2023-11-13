@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import OtpInput from "react-otp-input";
 import styles from "./style.module.scss";
-function PinBox() {
-  const [otp, setOtp] = useState("");
+type props = {
+  value: string;
+  setPin: Dispatch<SetStateAction<string>>;
+};
+function PinBox(props: props) {
   return (
     <OtpInput
-      value={otp}
-      onChange={setOtp}
+      value={props.value}
+      onChange={props.setPin}
       containerStyle={styles.input}
       numInputs={4}
       renderSeparator={<span>-</span>}

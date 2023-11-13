@@ -6,7 +6,7 @@ import ImageContainer from "../../components/Home/ImageContainer/ImageContainer"
 import SignUpContainer from "../../components/Home/SignUpContainer/SignUpContainer";
 import LoginContainer from "../../components/Home/LoginContainer/LoginContainer";
 function Home() {
-  const [selectedOptions, setSelectedOptions] = useState<string>("");
+  const [selectedOptions, setSelectedOptions] = useState<string>("sign");
   return (
     <div className={styles.container}>
       <HomeNav setSelectedOptions={setSelectedOptions} />

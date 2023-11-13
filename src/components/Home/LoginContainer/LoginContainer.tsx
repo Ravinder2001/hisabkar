@@ -1,10 +1,11 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import styles from "./style.module.scss";
 import PinBox from "../../PinBox/PinBox";
 type props = {
   setSelectedOptions: Dispatch<SetStateAction<string>>;
 };
 function LoginContainer(props: props) {
+  const [pin, setPin] = useState<string>("");
   return (
     <div className={styles.container}>
       <div className={styles.heading}>Login</div>
@@ -15,7 +16,7 @@ function LoginContainer(props: props) {
       </div>
       <div className={styles.mainContainer}>
         <div className={styles.label}>Pin</div>
-        <PinBox />
+        <PinBox value={pin} setPin={setPin} />
       </div>
       <div className={styles.btn}>Submit</div>
 
