@@ -1,7 +1,6 @@
 import React from "react";
 import styles from "./style.module.scss";
 import LucideIcons from "../../assets/Icons/Icons";
-import Base64Images from "../../assets/base64Images/Base64Images";
 function TableBody() {
   const ActiveBox = () => {
     return (
@@ -14,7 +13,6 @@ function TableBody() {
   return (
     <div className={styles.row}>
       <div className={styles.col_1}>
-        <Base64Images name="Monthly" />
         <div>Expense of June</div>
       </div>
       <div className={styles.col_3}>

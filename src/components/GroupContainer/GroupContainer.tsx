@@ -1,10 +1,13 @@
 import React from "react";
 import styles from "./style.module.scss";
-import Base64Images from "../../assets/base64Images/Base64Images";
 import LucideIcons from "../../assets/Icons/Icons";
 import TableBody from "./TableBody";
 import Btn1 from "../Buttons/Btn1/Btn1";
-function GroupContainer() {
+
+type props = {
+  handleModal: () => void;
+};
+function GroupContainer(props: props) {
   return (
     <div className={styles.container}>
       <div className={styles.headerBox}>
@@ -13,9 +16,8 @@ function GroupContainer() {
           <div className={styles.groupCount}>10 groups</div>
         </div>
         <div>
-          <div className={styles.createBtn}>
-
-          <Btn1 text="Create New Group" />
+          <div className={styles.createBtn} onClick={props.handleModal}>
+            <Btn1 text="Create New Expense" />
           </div>
         </div>
       </div>
