@@ -1,5 +1,12 @@
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { Navigate } from "react-router";
+import { HomeRoute } from "../utils/Constants";
+import Drawer from "../components/Drawer/Drawer";
+import styles from "../App.module.scss";
 function PrivateRoutes({ children }: any) {
-  return <div>{children}</div>;
+  const User = useSelector((state: RootState) => state.UserSlice.status);
+  return User ? <div>{children}</div> : <Navigate to={HomeRoute} />;
 }
 
 export default PrivateRoutes;

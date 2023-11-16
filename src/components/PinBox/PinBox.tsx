@@ -9,7 +9,11 @@ function PinBox(props: props) {
   return (
     <OtpInput
       value={props.value}
-      onChange={props.setPin}
+      onChange={(event) => {
+        if (/^\d*$/.test(event)) {
+          props.setPin(event);
+        }
+      }}
       containerStyle={styles.input}
       numInputs={4}
       renderSeparator={<span>-</span>}

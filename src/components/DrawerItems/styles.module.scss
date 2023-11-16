@@ -1,0 +1,89 @@
+.box {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  margin: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.selected_box {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  margin: 10px;
+  border-radius: 8px;
+  background-color: #023f62;
+  cursor: pointer;
+}
+.box:hover {
+  background-color: #023f62;
+}
+.icon {
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+.box:hover .icon {
+  animation: shake 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97); /* Apply the shake animation on hover */
+}
+.selected_box:hover .icon {
+  animation: shake 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97); /* Apply the shake animation on hover */
+}
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.text {
+  margin-left: 20px;
+  font-size: 16px;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+@media only screen and (max-width: 1024px) {
+  .text {
+    display: none;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .box {
+    padding: 10px 9px;
+    justify-content: center;
+  }
+  .selected_box {
+    padding: 10px 9px;
+    justify-content: center;
+  }
+}
+
+/* Tablets and small desktops */
+@media only screen and (min-width: 769px) and (max-width: 1024px) {
+  .box {
+    padding: 10px 9px;
+    justify-content: center;
+  }
+  .selected_box {
+    padding: 10px 9px;
+    justify-content: center;
+  }
+}
+
+/* Medium to large desktops */
+@media only screen and (min-width: 1025px) {
+}
