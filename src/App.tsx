@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import ProjectRoutes from "./routes/ProjectRoutes";
-import { DashboardRoute, localStorageKey } from "./utils/Constants";
+import { AddExpenseRoute, DashboardRoute, localStorageKey } from "./utils/Constants";
 import { jwtDecode } from "jwt-decode";
 import { AddUser, Logout } from "./store/slices/UserSlice";
 import { useDispatch } from "react-redux";
@@ -24,7 +24,7 @@ function App() {
         const currentTime = Math.floor(Date.now() / 1000);
         if (exp > currentTime) {
           dispatch(AddUser(decode));
-          navigate(DashboardRoute);
+          navigate(AddExpenseRoute);
         } else {
           localStorage.removeItem(localStorageKey);
           dispatch(Logout());

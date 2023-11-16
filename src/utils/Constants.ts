@@ -9,3 +9,4 @@ export const localStorageKey = "hisabkarToken";
 export const HomeRoute = "/";
 export const LoginRouter = "/login";
 export const DashboardRoute = "/dashboard";
+export const AddExpenseRoute = "/addExpense";

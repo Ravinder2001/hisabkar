@@ -5,8 +5,9 @@ import ErrorFallback from "../Error/ErrorFallback";
 import PublicRoutes from "./PublicRoutes";
 import PrivateRoutes from "./PrivateRoutes";
 import Home from "../pages/Home/Home";
-import { DashboardRoute, HomeRoute } from "../utils/Constants";
+import { AddExpenseRoute, DashboardRoute, HomeRoute } from "../utils/Constants";
 import Dashboard from "../pages/Dashboard/Dashboard";
+import AddExpense from "../pages/AddExpense/AddExpense";
 
 function ProjectRoutes() {
   return (
@@ -25,6 +26,14 @@ function ProjectRoutes() {
           element={
             <PrivateRoutes>
               <Dashboard />
+            </PrivateRoutes>
+          }
+        />
+        <Route
+          path={AddExpenseRoute}
+          element={
+            <PrivateRoutes>
+              <AddExpense />
             </PrivateRoutes>
           }
         />

@@ -3,11 +3,14 @@ import { Button, Modal } from "antd";
 
 import styles from "./style.module.scss";
 import ExpensesImages from "../ExpensesImages/ExpensesImages";
+import { useNavigate } from "react-router-dom";
+import { AddExpenseRoute } from "../../utils/Constants";
 type props = {
   status: boolean;
   handleModal: () => void;
 };
 const AddGroupModal = (props: props) => {
+  const navigate = useNavigate();
   const [type, setType] = useState<string>("");
   const [membersName, setMemberName] = useState<string>("");
   const [members, setMembers] = useState<string[]>([]);
@@ -30,6 +33,9 @@ const AddGroupModal = (props: props) => {
       // Call your function here
       handleAdd();
     }
+  };
+  const handleSubmit = () => {
+    navigate(AddExpenseRoute);
   };
 
   return (
@@ -125,7 +131,7 @@ const AddGroupModal = (props: props) => {
         ))}
       </div>
 
-      <div className={styles.createBtn}>Create</div>
+      <div className={styles.createBtn} onClick={handleSubmit}>Create</div>
     </Modal>
   );
 };

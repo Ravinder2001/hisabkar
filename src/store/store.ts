@@ -3,7 +3,6 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 import UserSlice from "./slices/UserSlice";
-import DrawerSlice from "./slices/DrawerSlice";
 
 const persistConfig = {
   key: "root",
@@ -13,7 +12,6 @@ const persistConfig = {
 
 const RootReducers = combineReducers({
   UserSlice,
-  DrawerSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, RootReducers);
