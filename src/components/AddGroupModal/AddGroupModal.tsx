@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { NanoIdLength, avatarURL } from "../../utils/Constants";
 import { nanoid } from "nanoid";
 import { useDispatch } from "react-redux";
-import { AddGroupMembers, CreateGroup } from "../../store/slices/StoreExpenseSlice";
+import { AddGroupMembers, AddPairs, CreateGroup } from "../../store/slices/StoreExpenseSlice";
 type props = {
   status: boolean;
   handleModal: () => void;
@@ -46,18 +46,41 @@ const AddGroupModal = (props: props) => {
   };
   const handleSubmit = () => {
     let stack: any = [];
+    let pairStack: {
+      id: string;
+      sender: string;
+      receiver: string;
+      amount: number;
+    }[] = [];
     members.map((item) => {
       const random = Math.floor(Math.random() * 100);
-      const avatar = avatarURL  + random + ".png";
+      const avatar = avatarURL + random + ".png";
       const member_id = nanoid(NanoIdLength);
       stack.push({ name: item, id: member_id, avatar });
     });
+
     let object = {
       name,
       type,
     };
     dispatch(CreateGroup(object));
     dispatch(AddGroupMembers(stack));
+    for (let i = 0; i < stack.length; i++) {
+      for (let j = 0; j < stack.length; j++) {
+        if (stack[i].id != stack[j].id) {
+          const id = nanoid(NanoIdLength);
+          let object = {
+            id: id,
+            sender: stack[i].id,
+            receiver: stack[j].id,
+            amount: 0,
+          };
+          pairStack.push(object);
+        }
+      }
+    }
+
+    dispatch(AddPairs(pairStack));
   };
 
   return (

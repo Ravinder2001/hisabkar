@@ -5,12 +5,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { nanoid } from "nanoid";
 import { NanoIdLength } from "../../utils/Constants";
-import { AddExpense } from "../../store/slices/StoreExpenseSlice";
+import { AddExpense, TooglePairs } from "../../store/slices/StoreExpenseSlice";
 function Splitor() {
   const dispatch = useDispatch();
   const GroupMembersInfo = useSelector((state: RootState) => state.StoreExpenseSlice.group_members);
+  const pairs = useSelector((state: RootState) => state.StoreExpenseSlice.pairs);
   const [MembersCheck, setMembersCheck] = useState<{ id: string; name: string; avatar: string; checked: boolean }[]>([]);
- 
+
   const [amount, setAmount] = useState<string>("");
   const [paidBy, setPaidBy] = useState<string>("");
 
@@ -52,6 +53,17 @@ function Splitor() {
         members: stack,
       })
     );
+    let stacks: any = [];
+    pairs.map((pair) => {
+      if (
+        (pair.sender === paidBy && stack.find((member: any) => member.id === pair.receiver)) ||
+        (pair.receiver === paidBy && stack.find((member: any) => member.id === pair.sender))
+      ) {
+        stacks.push(pair.id);
+      }
+    });
+    console.log("🚀  file: Splitor.tsx:57  stacks:", stacks);
+    dispatch(TooglePairs({ ids: stacks, paidby: paidBy, amount: Number(amountPerPerson) }));
   };
 
   useEffect(() => {
