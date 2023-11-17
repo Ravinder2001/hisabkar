@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./style.module.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import CountUp from "react-countup";
 type props = {
   id: string;
   sender: string;
@@ -16,7 +17,7 @@ function PairContainer(props: props) {
     <div className={styles.container}>
       <div>{senderName?.name}</div>
       <div>{receiverName?.name}</div>
-      <div>{props.amount}</div>
+      <CountUp end={props.amount} prefix="₹" />
     </div>
   );
 }

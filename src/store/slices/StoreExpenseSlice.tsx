@@ -75,13 +75,9 @@ const StoreExpenseSlice = createSlice({
       }>
     ) => {
       const { ids, paidby, amount } = action.payload;
-      console.log("🚀  file: StoreExpenseSlice.tsx:78  amount:", amount)
-      console.log("🚀  file: StoreExpenseSlice.tsx:78  paidby:", paidby)
-      console.log("🚀  file: StoreExpenseSlice.tsx:78  ids:", ids)
       ids.forEach((id) => {
         state.pairs = state.pairs.map((pair) => {
           if (pair.id == id) {
-            
             return {
               ...pair,
               amount: pair.receiver === paidby ? pair.amount + amount : pair.sender === paidby ? pair.amount - amount : pair.amount,
@@ -91,8 +87,35 @@ const StoreExpenseSlice = createSlice({
         });
       });
     },
+    DeleteExpense: (state, action: PayloadAction<string>) => {
+      const updatedExpenses = state.expenses.filter((expense) => expense.id !== action.payload);
+      return {
+        ...state,
+        expenses: updatedExpenses,
+      };
+    },
+    SubtractPairs: (
+      state,
+      action: PayloadAction<{
+        ids: string[]; // Array of member IDs
+        paidby: string;
+        amount: number;
+      }>
+    ) => {
+      const { ids, paidby, amount } = action.payload;
+
+      state.pairs = state.pairs.map((pair) => {
+        if ((pair.receiver === paidby && ids.includes(pair.sender)) || (pair.sender === paidby && ids.includes(pair.receiver))) {
+          return {
+            ...pair,
+            amount: pair.receiver === paidby ? pair.amount - amount : pair.sender === paidby ? pair.amount + amount : pair.amount,
+          };
+        }
+        return pair;
+      });
+    },
   },
 });
 
-export const { CreateGroup, AddGroupMembers, AddExpense, AddPairs, TooglePairs } = StoreExpenseSlice.actions;
+export const { CreateGroup, AddGroupMembers, AddExpense, AddPairs, TooglePairs, DeleteExpense, SubtractPairs } = StoreExpenseSlice.actions;
 export default StoreExpenseSlice.reducer;
