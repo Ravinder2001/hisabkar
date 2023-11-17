@@ -5,8 +5,9 @@ export const Unauthorized = 401;
 export const NanoIdLength = 10;
 
 export const localStorageKey = "hisabkarToken";
+export const avatarURL="https://api.multiavatar.com/"
 
 export const HomeRoute = "/";
 export const LoginRouter = "/login";
 export const DashboardRoute = "/dashboard";
-export const AddExpenseRoute = "/addExpense";
+export const StoreExpenseRoute = "/addStoreExpense";

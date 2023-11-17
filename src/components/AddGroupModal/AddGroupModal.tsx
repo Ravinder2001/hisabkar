@@ -4,18 +4,28 @@ import { Button, Modal } from "antd";
 import styles from "./style.module.scss";
 import ExpensesImages from "../ExpensesImages/ExpensesImages";
 import { useNavigate } from "react-router-dom";
-import { AddExpenseRoute } from "../../utils/Constants";
+import { NanoIdLength, avatarURL } from "../../utils/Constants";
+import { nanoid } from "nanoid";
+import { useDispatch } from "react-redux";
+import { AddGroupMembers, CreateGroup } from "../../store/slices/StoreExpenseSlice";
 type props = {
   status: boolean;
   handleModal: () => void;
 };
 const AddGroupModal = (props: props) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [type, setType] = useState<string>("");
+  const [name, setName] = useState<string>("");
   const [membersName, setMemberName] = useState<string>("");
   const [members, setMembers] = useState<string[]>([]);
+
   const handleMemberName = (e: ChangeEvent<HTMLInputElement>) => {
     setMemberName(e.target.value);
+  };
+  const handleGroupName = (e: ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
   };
   const handleAdd = () => {
     setMembers((prev) => [...prev, membersName]);
@@ -35,13 +45,25 @@ const AddGroupModal = (props: props) => {
     }
   };
   const handleSubmit = () => {
-    navigate(AddExpenseRoute);
+    let stack: any = [];
+    members.map((item) => {
+      const random = Math.floor(Math.random() * 100);
+      const avatar = avatarURL  + random + ".png";
+      const member_id = nanoid(NanoIdLength);
+      stack.push({ name: item, id: member_id, avatar });
+    });
+    let object = {
+      name,
+      type,
+    };
+    dispatch(CreateGroup(object));
+    dispatch(AddGroupMembers(stack));
   };
 
   return (
     <Modal className={styles.modal} title="Create Expense" open={props.status} closeIcon footer={null} onCancel={props.handleModal}>
       <div className={styles.label}>Name</div>
-      <input type="text" className={styles.inputBox} placeholder="Your Expense Name" />
+      <input type="text" className={styles.inputBox} value={name} onChange={handleGroupName} placeholder="Your Expense Name" />
 
       <div className={styles.label}>Expense Type</div>
       <div className={styles.iconBox}>
@@ -131,7 +153,9 @@ const AddGroupModal = (props: props) => {
         ))}
       </div>
 
-      <div className={styles.createBtn} onClick={handleSubmit}>Create</div>
+      <div className={styles.createBtn} onClick={handleSubmit}>
+        Create
+      </div>
     </Modal>
   );
 };

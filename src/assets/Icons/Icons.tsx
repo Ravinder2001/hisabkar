@@ -1,5 +1,5 @@
 import React from "react";
-import { Home, LogOut, Dot, Trash2, Pencil } from "lucide-react";
+import { Home, LogOut, Dot, Trash2, Pencil,ChevronDown } from "lucide-react";
 
 type IconsType = {
   name: string;
@@ -18,6 +18,8 @@ function LucideIcons(props: IconsType) {
       return <Trash2 color={props.color} size={props.size} />;
     case "Edit":
       return <Pencil color={props.color} size={props.size} />;
+    case "ChevronDown":
+      return <ChevronDown color={props.color} size={props.size} />;
 
     default:
       return <></>;

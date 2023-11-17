@@ -4,12 +4,13 @@ import type { MenuProps } from "antd";
 import { Button, Dropdown, Space } from "antd";
 type props = {
   setSelectedOptions: Dispatch<SetStateAction<string>>;
+  handleModal:() => void;
 };
 function DetailContainer(props: props) {
   const items: MenuProps["items"] = [
     {
       key: "1",
-      label: <div className={styles.options}>Start Spliting</div>,
+      label: <div className={styles.options} onClick={props.handleModal}>Start Spliting</div>,
     },
     {
       key: "2",
