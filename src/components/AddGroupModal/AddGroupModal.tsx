@@ -71,7 +71,7 @@ const AddGroupModal = (props: props) => {
         const random = Math.floor(Math.random() * 100);
         const avatar = avatarURL + random + ".png";
         const member_id = nanoid(NanoIdLength);
-        stack.push({ name: item, id: member_id, avatar });
+        stack.push({ name: item, id: member_id, avatar, checked: true });
       });
 
       let object = {

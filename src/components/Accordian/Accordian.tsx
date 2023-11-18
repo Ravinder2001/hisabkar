@@ -21,6 +21,7 @@ export default function BasicAccordion(props: props) {
     props.members.map((member) => {
       stack.push({ id: member.id, amount: member.amount });
     });
+    console.log("🚀  file: Accordian.tsx:21  stack:", stack)
     dispatch(DeleteExpense(props.id));
     dispatch(
       SubtractPairs({

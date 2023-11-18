@@ -3,7 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 interface UserState {
   group_name: string;
   group_type: string;
-  group_members: { id: string; name: string; avatar: string }[];
+  group_members: { id: string; name: string; avatar: string; checked: boolean }[];
   expenses: {
     id: string;
     amount: number;
@@ -35,8 +35,15 @@ const ExpenseSlice = createSlice({
       state.group_name = action.payload.name;
       state.group_type = action.payload.type;
     },
-    AddGroupMembers: (state, action: PayloadAction<{ id: string; name: string; avatar: string }[]>) => {
+    AddGroupMembers: (state, action: PayloadAction<{ id: string; name: string; avatar: string; checked: boolean }[]>) => {
       state.group_members = action.payload;
+    },
+    ToogleCheck: (state, action: PayloadAction<string>) => {
+      state.group_members.map((member) => {
+        if (member.id == action.payload) {
+          member.checked = !member.checked;
+        }
+      });
     },
 
     AddExpense: (
@@ -49,7 +56,7 @@ const ExpenseSlice = createSlice({
         members: { id: string; name: string; avatar: string; amount: number }[];
       }>
     ) => {
-      console.log("action",action.payload)
+      console.log("action", action.payload);
       state.expenses.push(action.payload);
     },
     AddPairs: (
@@ -121,5 +128,5 @@ const ExpenseSlice = createSlice({
   },
 });
 
-export const { CreateGroup, AddGroupMembers, AddExpense, AddPairs, TooglePairs, DeleteExpense, SubtractPairs } = ExpenseSlice.actions;
+export const { CreateGroup, AddGroupMembers, AddExpense, AddPairs, TooglePairs, DeleteExpense, SubtractPairs, ToogleCheck } = ExpenseSlice.actions;
 export default ExpenseSlice.reducer;
