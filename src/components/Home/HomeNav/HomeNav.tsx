@@ -4,33 +4,9 @@ import type { MenuProps } from "antd";
 import { Button, Dropdown, Space } from "antd";
 
 type props = {
-  setSelectedOptions: Dispatch<SetStateAction<string>>;
   handleModal: () => void;
 };
 function HomeNav(props: props) {
-  const items: MenuProps["items"] = [
-    {
-      key: "1",
-      label: (
-        <div className={styles.options} onClick={props.handleModal}>
-          Start Spliting
-        </div>
-      ),
-    },
-    {
-      key: "2",
-      label: (
-        <div
-          className={styles.options}
-          onClick={() => {
-            props.setSelectedOptions("login");
-          }}
-        >
-          Login
-        </div>
-      ),
-    },
-  ];
   return (
     <div className={styles.container}>
       <div className={styles.title}>Hisabkar</div>
@@ -40,9 +16,7 @@ function HomeNav(props: props) {
         <div className={styles.label}>Ratings</div>
       </div>
 
-      <Dropdown menu={{ items }} placement="bottomLeft">
-        <div className={styles.btn}>Hisabkar</div>
-      </Dropdown>
+      <div className={styles.btn} onClick={props.handleModal}>Hisabkar</div>
     </div>
   );
 }

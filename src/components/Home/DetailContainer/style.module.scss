@@ -68,3 +68,17 @@
 .options {
   font-family: "Nunito" !important;
 }
+.recent {
+  margin-top: 10px;
+  display: flex;
+  align-items: flex-end;
+}
+.recentHead {
+  font-size: 12px;
+}
+.recentName {
+  font-size: 12px;
+  margin-left: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}

@@ -6,7 +6,6 @@ import PublicRoutes from "./PublicRoutes";
 import PrivateRoutes from "./PrivateRoutes";
 import Home from "../pages/Home/Home";
 import { DashboardRoute, HomeRoute, StoreExpenseRoute } from "../utils/Constants";
-import Dashboard from "../pages/Dashboard/Dashboard";
 import AddExpense from "../pages/AddExpense/AddExpense";
 
 function ProjectRoutes() {
@@ -19,14 +18,6 @@ function ProjectRoutes() {
             <PublicRoutes>
               <Home />
             </PublicRoutes>
-          }
-        />
-        <Route
-          path={DashboardRoute}
-          element={
-            <PrivateRoutes>
-              <Dashboard />
-            </PrivateRoutes>
           }
         />
         <Route

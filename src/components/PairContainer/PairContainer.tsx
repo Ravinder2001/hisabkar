@@ -10,7 +10,7 @@ type props = {
   amount: number;
 };
 function PairContainer(props: props) {
-  const Members = useSelector((state: RootState) => state.StoreExpenseSlice.group_members);
+  const Members = useSelector((state: RootState) => state.ExpenseSlice.group_members);
   let senderName = Members.find((member) => member.id == props.sender);
   let receiverName = Members.find((member) => member.id == props.receiver);
   return (

@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import LucideIcons from "../../assets/Icons/Icons";
 import styles from "./style.module.scss";
 import { useDispatch } from "react-redux";
-import { DeleteExpense, SubtractPairs } from "../../store/slices/StoreExpenseSlice";
+import { DeleteExpense, SubtractPairs } from "../../store/slices/ExpenseSlice";
 type props = {
   id: string;
   amount: number;

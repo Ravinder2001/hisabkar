@@ -28,8 +28,8 @@ const initialState: UserState = {
   pairs: [],
 };
 
-const StoreExpenseSlice = createSlice({
-  name: "StoreExpenseSlice",
+const ExpenseSlice = createSlice({
+  name: "ExpenseSlice",
   initialState,
   reducers: {
     CreateGroup: (state, action: PayloadAction<{ name: string; type: string }>) => {
@@ -117,5 +117,5 @@ const StoreExpenseSlice = createSlice({
   },
 });
 
-export const { CreateGroup, AddGroupMembers, AddExpense, AddPairs, TooglePairs, DeleteExpense, SubtractPairs } = StoreExpenseSlice.actions;
-export default StoreExpenseSlice.reducer;
+export const { CreateGroup, AddGroupMembers, AddExpense, AddPairs, TooglePairs, DeleteExpense, SubtractPairs } = ExpenseSlice.actions;
+export default ExpenseSlice.reducer;

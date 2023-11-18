@@ -2,39 +2,39 @@ import React, { Dispatch, SetStateAction } from "react";
 import styles from "./style.module.scss";
 import type { MenuProps } from "antd";
 import { Button, Dropdown, Space } from "antd";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store/store";
+import { useNavigate } from "react-router-dom";
+import { StoreExpenseRoute } from "../../../utils/Constants";
 type props = {
-  setSelectedOptions: Dispatch<SetStateAction<string>>;
-  handleModal:() => void;
+  handleModal: () => void;
 };
 function DetailContainer(props: props) {
-  const items: MenuProps["items"] = [
-    {
-      key: "1",
-      label: <div className={styles.options} onClick={props.handleModal}>Start Spliting</div>,
-    },
-    {
-      key: "2",
-      label: (
-        <div
-          className={styles.options}
-          onClick={() => {
-            props.setSelectedOptions("login");
-          }}
-        >
-          Login
-        </div>
-      ),
-    },
-  ];
+  const navigate = useNavigate();
+
+  const GroupName = useSelector((state: RootState) => state.ExpenseSlice.group_name);
+
+  const handleClick = () => {
+    navigate(StoreExpenseRoute);
+  };
   return (
     <div className={styles.container}>
       <div className={styles.heading}>Turning bills into thrills, effortlessly splitting expenses among friends!</div>
       <div className={styles.subHeading}>
         Tired of those post-trip payment disputes with friends? Say goodbye to those headaches with Hisabkar! 🌟
       </div>
-      <Dropdown menu={{ items }} placement="bottomLeft">
-        <div className={styles.btn}>Try Hisabkar</div>
-      </Dropdown>
+      <div className={styles.btn} onClick={props.handleModal}>
+        Try Hisabkar
+      </div>
+
+      {GroupName.length ? (
+        <div className={styles.recent}>
+          <div className={styles.recentHead}>Recent Expense:</div>
+          <div className={styles.recentName} onClick={handleClick}>
+            {GroupName}
+          </div>
+        </div>
+      ) : null}
 
       <div className={styles.ratingContainer}>
         <div className={styles.star}>🌟🌟🌟🌟🌟</div>

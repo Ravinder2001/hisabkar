@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { Button, Modal } from "antd";
 
 import styles from "./style.module.scss";
@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { NanoIdLength, avatarURL } from "../../utils/Constants";
 import { nanoid } from "nanoid";
 import { useDispatch } from "react-redux";
-import { AddGroupMembers, AddPairs, CreateGroup } from "../../store/slices/StoreExpenseSlice";
+import { AddGroupMembers, AddPairs, CreateGroup } from "../../store/slices/ExpenseSlice";
 type props = {
   status: boolean;
   handleModal: () => void;
@@ -20,6 +20,7 @@ const AddGroupModal = (props: props) => {
   const [name, setName] = useState<string>("");
   const [membersName, setMemberName] = useState<string>("");
   const [members, setMembers] = useState<string[]>([]);
+  const [error, setError] = useState<{ name: boolean; type: boolean; members: boolean }>({ name: false, type: false, members: false });
 
   const handleMemberName = (e: ChangeEvent<HTMLInputElement>) => {
     setMemberName(e.target.value);
@@ -45,49 +46,76 @@ const AddGroupModal = (props: props) => {
     }
   };
   const handleSubmit = () => {
-    let stack: any = [];
-    let pairStack: {
-      id: string;
-      sender: string;
-      receiver: string;
-      amount: number;
-    }[] = [];
-    members.map((item) => {
-      const random = Math.floor(Math.random() * 100);
-      const avatar = avatarURL + random + ".png";
-      const member_id = nanoid(NanoIdLength);
-      stack.push({ name: item, id: member_id, avatar });
-    });
-
-    let object = {
-      name,
-      type,
-    };
-    dispatch(CreateGroup(object));
-    dispatch(AddGroupMembers(stack));
-    for (let i = 0; i < stack.length; i++) {
-      for (let j = 0; j < stack.length; j++) {
-        if (stack[i].id != stack[j].id) {
-          const id = nanoid(NanoIdLength);
-          let object = {
-            id: id,
-            sender: stack[i].id,
-            receiver: stack[j].id,
-            amount: 0,
-          };
-          pairStack.push(object);
-        }
-      }
+    if (name.length == 0) {
+      setError((prev) => ({ ...prev, name: true }));
+      return;
+    }
+    if (type == "") {
+      setError((prev) => ({ ...prev, type: true }));
+      return;
+    }
+    if (members.length < 3) {
+      setError((prev) => ({ ...prev, members: true }));
+      return;
     }
 
-    dispatch(AddPairs(pairStack));
+    if (!error.members && !error.name && !error.type) {
+      let stack: any = [];
+      let pairStack: {
+        id: string;
+        sender: string;
+        receiver: string;
+        amount: number;
+      }[] = [];
+      members.map((item) => {
+        const random = Math.floor(Math.random() * 100);
+        const avatar = avatarURL + random + ".png";
+        const member_id = nanoid(NanoIdLength);
+        stack.push({ name: item, id: member_id, avatar });
+      });
+
+      let object = {
+        name,
+        type,
+      };
+      dispatch(CreateGroup(object));
+      dispatch(AddGroupMembers(stack));
+      for (let i = 0; i < stack.length; i++) {
+        for (let j = 0; j < stack.length; j++) {
+          if (stack[i].id != stack[j].id) {
+            const id = nanoid(NanoIdLength);
+            let object = {
+              id: id,
+              sender: stack[i].id,
+              receiver: stack[j].id,
+              amount: 0,
+            };
+            pairStack.push(object);
+          }
+        }
+      }
+
+      dispatch(AddPairs(pairStack));
+    }
   };
 
-  return (
-    <Modal className={styles.modal} title="Create Expense" open={props.status} closeIcon footer={null} onCancel={props.handleModal}>
-      <div className={styles.label}>Name</div>
-      <input type="text" className={styles.inputBox} value={name} onChange={handleGroupName} placeholder="Your Expense Name" />
+  useEffect(() => {
+    if (name.length) {
+      setError((prev) => ({ ...prev, name: false }));
+    }
+    if (members.length > 2) {
+      setError((prev) => ({ ...prev, members: false }));
+    }
+    if (type.length) {
+      setError((prev) => ({ ...prev, type: false }));
+    }
+  }, [name, members, type]);
 
+  return (
+    <Modal className={styles.modal} width={700} title="Create Expense" open={props.status} closeIcon footer={null} onCancel={props.handleModal}>
+      <div className={styles.label}>Name</div>
+      <input type="text" className={styles.inputBox} value={name} maxLength={20} onChange={handleGroupName} placeholder="Your Expense Name" />
+      {error.name ? <div className={styles.error}>Please fill the name!</div> : null}
       <div className={styles.label}>Expense Type</div>
       <div className={styles.iconBox}>
         <div
@@ -145,7 +173,7 @@ const AddGroupModal = (props: props) => {
           <div className={styles.typeLabel}>Others</div>
         </div>
       </div>
-
+      {error.type ? <div className={styles.error}>Please select any of the type!</div> : null}
       <div className={styles.label}>Add Members</div>
       <div className={styles.addBox}>
         <input
@@ -160,6 +188,7 @@ const AddGroupModal = (props: props) => {
           Add
         </div>
       </div>
+      {error.members ? <div className={styles.error}>Please add atleast three peoples!</div> : null}
       <div className={styles.memberList}>
         {members?.map((item, index) => (
           <div className={styles.memberBox}>

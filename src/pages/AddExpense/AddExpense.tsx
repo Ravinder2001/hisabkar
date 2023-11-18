@@ -8,8 +8,8 @@ import PairContainer from "../../components/PairContainer/PairContainer";
 function AddExpense() {
  
 
-  const ExpenseList = useSelector((state: RootState) => state.StoreExpenseSlice.expenses);
-  const PairsList = useSelector((state: RootState) => state.StoreExpenseSlice.pairs.filter((pair) => pair.amount > 0));
+  const ExpenseList = useSelector((state: RootState) => state.ExpenseSlice.expenses);
+  const PairsList = useSelector((state: RootState) => state.ExpenseSlice.pairs.filter((pair) => pair.amount > 0));
 
 
 
