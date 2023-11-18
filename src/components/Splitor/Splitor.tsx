@@ -10,12 +10,12 @@ function Splitor() {
   const dispatch = useDispatch();
   const GroupMembersInfo = useSelector((state: RootState) => state.ExpenseSlice.group_members);
   const pairs = useSelector((state: RootState) => state.ExpenseSlice.pairs);
-  const [MembersCheck, setMembersCheck] = useState<{ id: string; name: string; avatar: string; checked: boolean }[]>([]);
 
+  const [MembersCheck, setMembersCheck] = useState<{ id: string; name: string; avatar: string; checked: boolean }[]>([]);
   const [amount, setAmount] = useState<string>("");
   const [paidBy, setPaidBy] = useState<string>("");
   const [error, setError] = useState<{ amount: boolean; members: boolean }>({ amount: false, members: false });
-  
+  const [activeMembers, setActiveMembers] = useState<{ id: string; name: string; avatar: string; checked: boolean; amount: number }[]>([]);
 
   const handleAmount = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -41,36 +41,39 @@ function Splitor() {
     }
     if (!error.amount && !error.members) {
       let expense_id = nanoid(NanoIdLength);
-      let stack: any = [];
 
-      MembersCheck.map((member) => {
-        if (member.checked) {
-          stack.push(member);
-        }
-      });
+      let amountPerPerson = Number(amount) / activeMembers.length;
 
-      let amountPerPerson = Number(amount) / stack.length;
+      // Store activeMembers in a new variable
+      const updatedActiveMembers = activeMembers.map((member) => ({
+        ...member,
+        amount: amountPerPerson,
+      }));
+
+      setActiveMembers(updatedActiveMembers);
+
       let paidByName = MembersCheck.find((member) => member.id == paidBy);
+
       dispatch(
         AddExpense({
           id: expense_id,
           amount: Number(amount),
           paidByName: paidByName?.name ?? "",
           paidById: paidBy,
-          amountPerPerson,
-          members: stack,
+          members: updatedActiveMembers, // Use the new variable here
         })
       );
-      let stacks: any = [];
+
+      let stacks: { id: string; amount: number }[] = [];
       pairs.map((pair) => {
         if (
-          (pair.sender === paidBy && stack.find((member: any) => member.id === pair.receiver)) ||
-          (pair.receiver === paidBy && stack.find((member: any) => member.id === pair.sender))
+          (pair.sender === paidBy && activeMembers.find((member: any) => member.id === pair.receiver)) ||
+          (pair.receiver === paidBy && activeMembers.find((member: any) => member.id === pair.sender))
         ) {
-          stacks.push(pair.id);
+          stacks.push({ id: pair.id, amount: amountPerPerson });
         }
       });
-      dispatch(TooglePairs({ ids: stacks, paidby: paidBy, amount: Number(amountPerPerson) }));
+      dispatch(TooglePairs({ ids: stacks, paidby: paidBy }));
     }
   };
 
@@ -87,6 +90,8 @@ function Splitor() {
     if (amount.length) {
       setError((prev) => ({ ...prev, amount: false }));
     }
+  }, [amount]);
+  useEffect(() => {
     let stack: any = [];
 
     MembersCheck.map((member) => {
@@ -94,14 +99,18 @@ function Splitor() {
         stack.push(member);
       }
     });
-    if (stack.length > 1) {
+    setActiveMembers(stack);
+  }, [MembersCheck]);
+
+  useEffect(() => {
+    if (activeMembers.length > 1) {
       setError((prev) => ({ ...prev, members: false }));
     }
-    if (stack.length < 2) {
+    if (activeMembers.length < 2) {
       setError((prev) => ({ ...prev, members: true }));
       return;
     }
-  }, [amount, MembersCheck]);
+  }, [activeMembers]);
   return (
     <div className={styles.container}>
       <div className={styles.heading}>Add Expense</div>

@@ -24,7 +24,6 @@ function AddExpense() {
             key={Expense.id}
             id={Expense.id}
             amount={Expense.amount}
-            amountPerPerson={Expense.amountPerPerson}
             paidById={Expense.paidById}
             paidByName={Expense.paidByName}
             members={Expense.members}

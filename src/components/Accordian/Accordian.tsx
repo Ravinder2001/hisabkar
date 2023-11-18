@@ -10,25 +10,22 @@ import { DeleteExpense, SubtractPairs } from "../../store/slices/ExpenseSlice";
 type props = {
   id: string;
   amount: number;
-  amountPerPerson: number;
   paidById: string;
   paidByName: string;
-  members: { id: string; name: string; avatar: string }[];
+  members: { id: string; name: string; avatar: string; amount: number }[];
 };
 export default function BasicAccordion(props: props) {
   const dispatch = useDispatch();
   const handleDelete = () => {
     let stack: any = [];
     props.members.map((member) => {
-      stack.push(member.id);
+      stack.push({ id: member.id, amount: member.amount });
     });
-    console.log("🚀  file: Accordian.tsx:22  stack:", stack)
     dispatch(DeleteExpense(props.id));
     dispatch(
       SubtractPairs({
-        ids: stack, // Change to an array of strings
+        ids: stack,
         paidby: props.paidById,
-        amount: props.amountPerPerson,
       })
     );
   };
@@ -57,7 +54,7 @@ export default function BasicAccordion(props: props) {
               <img src={member.avatar} alt="" className={styles.img} />
               <div className={styles.name}>{member.name}</div>
             </div>
-            <div className={styles.bodyAmount}>₹{props.amountPerPerson}</div>
+            <div className={styles.bodyAmount}>₹{member.amount}</div>
           </div>
         ))}
       </AccordionDetails>

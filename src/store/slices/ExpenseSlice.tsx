@@ -9,7 +9,6 @@ interface UserState {
     amount: number;
     paidByName: string;
     paidById: string;
-    amountPerPerson: number;
     members: { id: string; name: string; avatar: string; amount: number }[];
   }[];
   pairs: {
@@ -47,10 +46,10 @@ const ExpenseSlice = createSlice({
         amount: number;
         paidByName: string;
         paidById: string;
-        amountPerPerson: number;
         members: { id: string; name: string; avatar: string; amount: number }[];
       }>
     ) => {
+      console.log("action",action.payload)
       state.expenses.push(action.payload);
     },
     AddPairs: (
@@ -69,18 +68,17 @@ const ExpenseSlice = createSlice({
     TooglePairs: (
       state,
       action: PayloadAction<{
-        ids: string[]; // Change to an array of strings
+        ids: { id: string; amount: number }[]; // Change to an array of strings
         paidby: string;
-        amount: number;
       }>
     ) => {
-      const { ids, paidby, amount } = action.payload;
+      const { ids, paidby } = action.payload;
       ids.forEach((id) => {
         state.pairs = state.pairs.map((pair) => {
-          if (pair.id == id) {
+          if (pair.id == id.id) {
             return {
               ...pair,
-              amount: pair.receiver === paidby ? pair.amount + amount : pair.sender === paidby ? pair.amount - amount : pair.amount,
+              amount: pair.receiver === paidby ? pair.amount + id.amount : pair.sender === paidby ? pair.amount - id.amount : pair.amount,
             };
           }
           return pair;
@@ -97,20 +95,26 @@ const ExpenseSlice = createSlice({
     SubtractPairs: (
       state,
       action: PayloadAction<{
-        ids: string[]; // Array of member IDs
+        ids: { id: string; amount: number }[]; // Updated structure for member IDs
         paidby: string;
-        amount: number;
       }>
     ) => {
-      const { ids, paidby, amount } = action.payload;
+      const { ids, paidby } = action.payload;
 
       state.pairs = state.pairs.map((pair) => {
-        if ((pair.receiver === paidby && ids.includes(pair.sender)) || (pair.sender === paidby && ids.includes(pair.receiver))) {
+        const isReceiver = pair.receiver === paidby;
+        const isSender = pair.sender === paidby;
+
+        if ((isReceiver || isSender) && ids.some((member) => member.id === pair.sender || member.id === pair.receiver)) {
+          const senderAmount = ids.find((member) => member.id === pair.sender)?.amount || 0;
+          const receiverAmount = ids.find((member) => member.id === pair.receiver)?.amount || 0;
+
           return {
             ...pair,
-            amount: pair.receiver === paidby ? pair.amount - amount : pair.sender === paidby ? pair.amount + amount : pair.amount,
+            amount: isReceiver ? pair.amount - senderAmount : isSender ? pair.amount + receiverAmount : pair.amount,
           };
         }
+
         return pair;
       });
     },
