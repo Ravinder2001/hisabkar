@@ -19,7 +19,7 @@ function AddExpense() {
   const PairsList = useSelector((state: RootState) => state.ExpenseSlice.pairs.filter((pair) => pair.amount > 0));
   const sortedPairsList = PairsList.slice().sort((a, b) => b.amount - a.amount);
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const handleOpen = () => {
     setOpen(!open);
   };
