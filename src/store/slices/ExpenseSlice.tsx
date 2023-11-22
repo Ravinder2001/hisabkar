@@ -45,7 +45,6 @@ const ExpenseSlice = createSlice({
         }
       });
     },
-
     AddExpense: (
       state,
       action: PayloadAction<{
@@ -125,8 +124,16 @@ const ExpenseSlice = createSlice({
         return pair;
       });
     },
+    HandleDelete: (state) => {
+      state.group_name = "";
+      state.group_type = "";
+      state.group_members = [];
+      state.expenses = [];
+      state.pairs = [];
+    },
   },
 });
 
-export const { CreateGroup, AddGroupMembers, AddExpense, AddPairs, TooglePairs, DeleteExpense, SubtractPairs, ToogleCheck } = ExpenseSlice.actions;
+export const { CreateGroup, AddGroupMembers, AddExpense, AddPairs, TooglePairs, DeleteExpense, SubtractPairs, ToogleCheck, HandleDelete } =
+  ExpenseSlice.actions;
 export default ExpenseSlice.reducer;

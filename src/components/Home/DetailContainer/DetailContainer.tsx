@@ -5,7 +5,7 @@ import { Button, Dropdown, Space } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { useNavigate } from "react-router-dom";
-import { StoreExpenseRoute } from "../../../utils/Constants";
+import { ExpenseRoute } from "../../../utils/Constants";
 type props = {
   handleModal: () => void;
 };
@@ -15,7 +15,7 @@ function DetailContainer(props: props) {
   const GroupName = useSelector((state: RootState) => state.ExpenseSlice.group_name);
 
   const handleClick = () => {
-    navigate(StoreExpenseRoute);
+    navigate(ExpenseRoute);
   };
   return (
     <div className={styles.container}>

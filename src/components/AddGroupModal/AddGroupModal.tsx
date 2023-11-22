@@ -4,10 +4,10 @@ import { Button, Modal } from "antd";
 import styles from "./style.module.scss";
 import ExpensesImages from "../ExpensesImages/ExpensesImages";
 import { useNavigate } from "react-router-dom";
-import { NanoIdLength, avatarURL } from "../../utils/Constants";
+import { ExpenseRoute, NanoIdLength, avatarURL } from "../../utils/Constants";
 import { nanoid } from "nanoid";
 import { useDispatch } from "react-redux";
-import { AddGroupMembers, AddPairs, CreateGroup } from "../../store/slices/ExpenseSlice";
+import { AddGroupMembers, AddPairs, CreateGroup, HandleDelete } from "../../store/slices/ExpenseSlice";
 type props = {
   status: boolean;
   handleModal: () => void;
@@ -60,6 +60,7 @@ const AddGroupModal = (props: props) => {
     }
 
     if (!error.members && !error.name && !error.type) {
+      dispatch(HandleDelete())
       let stack: any = [];
       let pairStack: {
         id: string;
@@ -96,6 +97,7 @@ const AddGroupModal = (props: props) => {
       }
 
       dispatch(AddPairs(pairStack));
+      navigate(ExpenseRoute)
     }
   };
 

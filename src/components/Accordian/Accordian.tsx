@@ -21,7 +21,7 @@ export default function BasicAccordion(props: props) {
     props.members.map((member) => {
       stack.push({ id: member.id, amount: member.amount });
     });
-    console.log("🚀  file: Accordian.tsx:21  stack:", stack)
+    console.log("🚀  file: Accordian.tsx:21  stack:", stack);
     dispatch(DeleteExpense(props.id));
     dispatch(
       SubtractPairs({
@@ -31,7 +31,7 @@ export default function BasicAccordion(props: props) {
     );
   };
   return (
-    <Accordion>
+    <Accordion style={{ marginTop: "10px",marginBottom:"10px" }}>
       <AccordionSummary
         className={styles.container}
         expandIcon={<LucideIcons name="ChevronDown" />}
@@ -46,9 +46,11 @@ export default function BasicAccordion(props: props) {
           <div className={styles.paidHead}>Paid By : </div>
           <div className={styles.paidName}>{props.paidByName}</div>
         </div>
+        <div onClick={handleDelete} className={styles.deleteIcon}>
+          <LucideIcons name="Trash" size={18} color="red" />
+        </div>
       </AccordionSummary>
       <AccordionDetails>
-        <div onClick={handleDelete}>Delete</div>
         {props.members.map((member) => (
           <div className={styles.body}>
             <div className={styles.userBox}>

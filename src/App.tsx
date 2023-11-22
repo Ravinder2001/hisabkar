@@ -1,45 +1,19 @@
-import { useEffect } from "react";
-import ProjectRoutes from "./routes/ProjectRoutes";
-import { DashboardRoute, HomeRoute, StoreExpenseRoute, localStorageKey } from "./utils/Constants";
-import { jwtDecode } from "jwt-decode";
-import { AddUser, Logout } from "./store/slices/UserSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import { RootState } from "./store/store";
-interface decode {
-  exp: number;
-  iat: number;
-  id: string;
-  username: string;
-  image: string;
-}
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import { ExpenseRoute, HomeRoute } from "./utils/Constants";
+import Home from "./pages/Home/Home";
+import AddExpense from "./pages/AddExpense/AddExpense";
+import ErrorFallback from "./Error/ErrorFallback";
+
 function App() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  useEffect(() => {
-    const token = localStorage.getItem(localStorageKey);
-    if (token) {
-      const decode: decode = jwtDecode(token);
-      if (decode) {
-        let exp = decode.exp;
-        const currentTime = Math.floor(Date.now() / 1000);
-        if (exp > currentTime) {
-          dispatch(AddUser(decode));
-          navigate(DashboardRoute);
-        } else {
-          localStorage.removeItem(localStorageKey);
-          dispatch(Logout());
-        }
-      } else {
-        localStorage.removeItem(localStorageKey);
-        dispatch(Logout());
-      }
-    } else {
-      localStorage.removeItem(localStorageKey);
-      dispatch(Logout());
-    }
-  }, []);
-  return <ProjectRoutes />;
+  return (
+    <Routes>
+      <Route path={HomeRoute} element={<Home />} />
+      <Route path={ExpenseRoute} element={<AddExpense />} />
+
+      <Route path="*" element={<ErrorFallback />} />
+    </Routes>
+  );
 }
 
 export default App;

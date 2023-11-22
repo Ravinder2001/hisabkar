@@ -8,6 +8,4 @@ export const localStorageKey = "hisabkarToken";
 export const avatarURL="https://api.multiavatar.com/"
 
 export const HomeRoute = "/";
-export const LoginRouter = "/login";
-export const DashboardRoute = "/dashboard";
-export const StoreExpenseRoute = "/addStoreExpense";
+export const ExpenseRoute = "/Expense";

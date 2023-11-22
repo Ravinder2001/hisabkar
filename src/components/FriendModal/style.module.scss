@@ -1,0 +1,28 @@
+@import "../../Variable.scss";
+.modal {
+  width: 300px;
+  font-family: $fontFamily;
+}
+.container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  border: 1px solid grey;
+  padding: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.container:hover{
+  background-color: rgb(13, 173, 120);
+  border: 1px solid white;
+}
+.img{
+  width: 40px;
+  height: 40px;
+}
+.name{
+  margin-left: 10px;
+  font-size: 20px;
+  font-weight: bold;
+}

@@ -6,18 +6,24 @@ import { RootState } from "../../store/store";
 import { nanoid } from "nanoid";
 import { NanoIdLength } from "../../utils/Constants";
 import { AddExpense, ToogleCheck, TooglePairs } from "../../store/slices/ExpenseSlice";
+import ToogleBox from "../ToogleBox/ToogleBox";
 function Splitor() {
   const dispatch = useDispatch();
   const GroupMembersInfo = useSelector((state: RootState) => state.ExpenseSlice.group_members);
   const pairs = useSelector((state: RootState) => state.ExpenseSlice.pairs);
 
   const MembersCheck = useSelector((state: RootState) => state.ExpenseSlice.group_members);
-  const [amount, setAmount] = useState<string>("100");
+  const [amount, setAmount] = useState<string>("");
   const [paidBy, setPaidBy] = useState<string>("");
   const [error, setError] = useState<{ amount: boolean; members: boolean }>({ amount: false, members: false });
   const [activeMembers, setActiveMembers] = useState<{ id: string; name: string; avatar: string; checked: boolean; amount: number }[]>([]);
   const [customInput, setCustomInput] = useState<{ value: string; id: string; name: string }[]>([]);
   const [remainingAmount, setRemainingAmount] = useState<number>(0);
+  const [checked, setChecked] = useState<boolean>(false);
+
+  const handleCustomCheck = () => {
+    setChecked(!checked);
+  };
 
   const handleAmount = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -42,7 +48,7 @@ function Splitor() {
     if (!error.amount && !error.members) {
       let expense_id = nanoid(NanoIdLength);
 
-      let amountPerPerson = Number(amount) / activeMembers.length;
+      let amountPerPerson = Math.ceil(Number(amount) / activeMembers.length);
 
       // Store activeMembers in a new variable
       const updatedActiveMembers = activeMembers.map((member) => ({
@@ -82,17 +88,17 @@ function Splitor() {
       setError((prev) => ({ ...prev, amount: true }));
       return;
     }
-    if (!error.amount && !error.members) {
+    const totalValue = customInput.reduce((accumulator, input) => {
+      return accumulator + Number(input.value);
+    }, 0);
+    if (!error.amount && !error.members && totalValue == Number(amount)) {
       let expense_id = nanoid(NanoIdLength);
-
-      let amountPerPerson = Number(amount) / activeMembers.length;
 
       // Store activeMembers in a new variable
       const updatedActiveMembers = activeMembers.map((member) => ({
         ...member,
         amount: Number(customInput.find((input) => input.id === member.id)?.value) || 0,
       }));
-      console.log("🚀  file: Splitor.tsx:95  updatedActiveMembers:", updatedActiveMembers);
 
       setActiveMembers(updatedActiveMembers);
 
@@ -109,23 +115,19 @@ function Splitor() {
       );
 
       let stacks: { id: string; amount: number }[] = [];
-      console.log("actibe member", customInput);
-      console.log("pairs", pairs);
       pairs.map((pair) => {
         const isSenderPaidBy = pair.sender === paidBy;
         const correspondingInputId = isSenderPaidBy ? pair.receiver : pair.sender;
-      
+
         const correspondingInput = customInput.find((member: any) => member.id === correspondingInputId);
-      
+
         if (correspondingInput) {
           stacks.push({
             id: pair.id,
-            amount: Number(correspondingInput.value) || 0,
+            amount: Math.ceil(Number(correspondingInput.value)) || 0,
           });
         }
       });
-      
-      console.log("🚀  file: Splitor.tsx:112  stacks:", stacks);
       dispatch(TooglePairs({ ids: stacks, paidby: paidBy }));
     }
   };
@@ -157,6 +159,8 @@ function Splitor() {
   useEffect(() => {
     if (amount.length) {
       setError((prev) => ({ ...prev, amount: false }));
+    } else {
+      setChecked(false);
     }
   }, [amount]);
   useEffect(() => {
@@ -193,9 +197,18 @@ function Splitor() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.heading}>Add Expense</div>
-
-      <input type="text" className={styles.input} value={amount} onChange={handleAmount} placeholder="Enter Amount (₹1 - ₹100000)" />
+      <div className={styles.inputBox}>
+        <div className={styles.label}>Amount</div>
+        <input
+          type="text"
+          autoComplete="off"
+          maxLength={6}
+          className={styles.input}
+          value={amount}
+          onChange={handleAmount}
+          placeholder="Enter Amount (₹1 - ₹100000)"
+        />
+      </div>
       {error.amount ? <div className={styles.error}>Please add the amount!</div> : null}
       <div className={styles.label}>Paid by</div>
       <select name="" id="" className={styles.select} onChange={handlePaidBy} value={paidBy}>
@@ -210,28 +223,46 @@ function Splitor() {
       <div className={styles.memberList}>
         {MembersCheck?.map((member) => (
           <div
-            className={styles.member}
+            className={member.checked ? styles.member : styles.unChecked}
             key={member.id}
             onClick={() => {
               handleCheck(member.id);
             }}
           >
-            <CheckBox checked={member.checked} />
             <div className={styles.name}>{member.name}</div>
           </div>
         ))}
       </div>
-      <div>Custom Amount</div>
-      <div>{Number(amount) - remainingAmount}</div>
-      <div>
-        {customInput.map((member) => (
+      {amount.length ? (
+        <div className={styles.toogleBox}>
+          <div className={styles.customLabel}>Custom Amount</div>
           <div>
-            <div>{member.name}</div>
-            <input type="text" value={member.value} name={member.id} id={member.id} onChange={handleCustom} />
+            <ToogleBox checked={checked} handleCustomCheck={handleCustomCheck} />
           </div>
-        ))}
-      </div>
-      <div className={styles.btn} onClick={handleCustomSubmit}>
+        </div>
+      ) : null}
+      {checked && amount.length ? (
+        <div className={styles.customBox}>
+          <div className={styles.remaing}>Remaining Amount: {Number(amount) - remainingAmount}</div>
+          <div>
+            {customInput.map((member) => (
+              <div>
+                <div className={styles.customName}>{member.name}</div>
+                <input
+                  className={styles.customInput}
+                  autoComplete="off"
+                  type="text"
+                  value={member.value}
+                  name={member.id}
+                  id={member.id}
+                  onChange={handleCustom}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+      <div className={styles.btn} onClick={checked ? handleCustomSubmit : handleSubmit}>
         Hisabkar
       </div>
     </div>

@@ -1,9 +1,9 @@
 .container > div:first-child {
   display: flex;
-  width: 80%;
   justify-content: space-between;
 }
-.amount {
+.deleteIcon {
+  margin-right: 10px;
 }
 .paidBox {
   margin-right: 10px;
@@ -14,8 +14,8 @@
 .paidHead {
 }
 .paidName {
-    font-weight: bold;
-    margin-left: 10px;
+  font-weight: bold;
+  margin-left: 10px;
 }
 
 .body {

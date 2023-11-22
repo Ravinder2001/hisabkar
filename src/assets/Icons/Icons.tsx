@@ -1,5 +1,5 @@
 import React from "react";
-import { Home, LogOut, Dot, Trash2, Pencil,ChevronDown } from "lucide-react";
+import { Home, LogOut, Dot, Trash2, Pencil,ChevronDown,MoveRight } from "lucide-react";
 
 type IconsType = {
   name: string;
@@ -20,6 +20,8 @@ function LucideIcons(props: IconsType) {
       return <Pencil color={props.color} size={props.size} />;
     case "ChevronDown":
       return <ChevronDown color={props.color} size={props.size} />;
+    case "MoveRight":
+      return <MoveRight color={props.color} size={props.size} />;
 
     default:
       return <></>;

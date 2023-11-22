@@ -1,17 +1,103 @@
 .container {
   width: 100%;
-  height: 90vh;
+  height: 100vh;
+  overflow: hidden;
+}
+.navbar {
+  width: 100%;
+  height: 50px;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.leftBox {
+  display: flex;
+  align-items: center;
+}
+.heading {
+  font-weight: bold;
+  font-size: 28px;
+  margin-left: 10px;
+}
+.icon {
+  margin-left: 10px;
+  border-radius: 2px;
+}
+.icon img {
+  width: 30px !important;
+  height: 30px !important;
+}
+.body {
+  width: 100%;
+  height: calc(100vh - 50px);
+  display: flex;
+  justify-content: space-between;
+  // border: 1px solid red;
+
+  background: rgb(210, 240, 221);
+  background: linear-gradient(90deg, rgba(210, 240, 221, 1) 0%, rgba(189, 181, 252, 1) 100%);
 }
 .leftContainer {
   width: 25%;
   height: 100%;
+  overflow: auto;
+  // border: 1px solid red;
+
 }
 .centerContainer {
-  width:40%;
+  // display: none;
+  width: 35%;
   height: 100%;
+  overflow: auto;
 }
 .rightContainer {
-  width:30%;
+  // display: none;
+  width: 35%;
   height: 100%;
+  overflow: hidden;
+}
+.pairContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+  margin: 10px;
+  font-weight: bold;
+  font-size: 24px;
+}
+.sender {
+  flex: 1;
+}
+.arrow {
+  flex: 1;
+}
+.receiver {
+  flex: 1;
+}
+.amount {
+  text-align: center;
+  flex: 1;
+}
+.rightBox {
+  display: flex;
+  align-items: center;
+}
+.btn {
+  background-color: rgb(104, 2, 147);
+  color: white;
+  text-align: center;
+  border-radius: 20px;
+  font-size: 16px;
+  padding: 5px 20px;
+  cursor: pointer;
+  margin-right: 20px;
+}
+.deleteIcon {
+  margin-right: 20px;
+}
+.pairList{
+  height: 85vh;
+  overflow: auto;
+}
+::-webkit-scrollbar {
+  width: 0px;
 }
