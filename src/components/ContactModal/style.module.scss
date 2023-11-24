@@ -1,0 +1,21 @@
+@import "../../Variable.scss";
+.modal {
+  width: 300px;
+  font-family: $fontFamily;
+}
+.heading {
+  font-size: 16px;
+}
+
+.name{
+  font-size: 24px;
+  font-weight: bold;
+}
+.box{
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-evenly;
+}
+.icon{
+  cursor: pointer;
+}
