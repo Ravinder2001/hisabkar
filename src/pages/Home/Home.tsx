@@ -1,23 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import HomeNav from "../../components/Home/HomeNav/HomeNav";
 import styles from "./style.module.scss";
 import DetailContainer from "../../components/Home/DetailContainer/DetailContainer";
 import ImageContainer from "../../components/Home/ImageContainer/ImageContainer";
 import AddGroupModal from "../../components/AddGroupModal/AddGroupModal";
-import video from "../../assets/intro.mp4";
+import Welcome from "../../components/Welcome/Welcome";
+
 function Home() {
   const [modalStatus, setModalStatus] = useState(false);
   const handleModal = () => {
     setModalStatus(!modalStatus);
   };
   const [flag, setFlag] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setFlag(false);
+    }, 4000);
+  }, []);
   return flag ? (
-    <div style={{ width: "100%", height: "100vh", background: "#E8E8E8" }}>
-      <video width="100%" height="100%" autoPlay muted>
-        <source src={video} type="video/mp4" width="100%" />
-        Your browser does not support the video tag.
-      </video>
-    </div>
+    <Welcome />
   ) : (
     <div className={styles.container}>
       <HomeNav handleModal={handleModal} />
