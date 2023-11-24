@@ -44,7 +44,7 @@ function DetailContainer(props: props) {
       ) : null}
 
       <div className={styles.footer}>
-        <div className={styles.label}>Contact Us</div>
+        <div className={styles.label} onClick={handleModal}>Contact Us</div>
       </div>
       <ContactModal status={open} handleModal={handleModal} />
     </div>
