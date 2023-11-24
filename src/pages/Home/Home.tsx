@@ -5,7 +5,7 @@ import DetailContainer from "../../components/Home/DetailContainer/DetailContain
 import ImageContainer from "../../components/Home/ImageContainer/ImageContainer";
 import AddGroupModal from "../../components/AddGroupModal/AddGroupModal";
 function Home() {
-  const [modalStatus, setModalStatus] = useState(true);
+  const [modalStatus, setModalStatus] = useState(false);
   const handleModal = () => {
     setModalStatus(!modalStatus);
   };
