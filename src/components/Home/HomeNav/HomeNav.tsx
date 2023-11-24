@@ -13,7 +13,6 @@ function HomeNav(props: props) {
       <div className={styles.centerBox}>
         <div className={styles.label}>Features</div>
         <div className={styles.label}>Support</div>
-        <div className={styles.label}>Ratings</div>
       </div>
 
       <div className={styles.btn} onClick={props.handleModal}>Hisabkar</div>

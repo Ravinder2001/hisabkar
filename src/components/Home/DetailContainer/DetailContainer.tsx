@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { useNavigate } from "react-router-dom";
 import { ExpenseRoute } from "../../../utils/Constants";
+import RatingComponent from "../../RatingComponent/RatingComponent";
 type props = {
   handleModal: () => void;
 };
@@ -19,7 +20,7 @@ function DetailContainer(props: props) {
   };
   return (
     <div className={styles.container}>
-      <div className={styles.heading}>Turning bills into thrills, effortlessly splitting expenses among friends!</div>
+      <RatingComponent />
       <div className={styles.subHeading}>
         Tired of those post-trip payment disputes with friends? Say goodbye to those headaches with Hisabkar! 🌟
       </div>
@@ -36,26 +37,9 @@ function DetailContainer(props: props) {
         </div>
       ) : null}
 
-      <div className={styles.ratingContainer}>
-        <div className={styles.star}>🌟🌟🌟🌟🌟</div>
-        <div className={styles.title}>Best Expense splitor in market</div>
-        <div className={styles.description}>
-          Consectetur adipiscing elit. Vehicula massa in enim luctus. Rutrum arcu, aliquam nulla tincidunt gravida. Cursus convallis dolor semper
-          pretium ornare.
-        </div>
-        <div className={styles.profile}>
-          <img
-            className={styles.img}
-            src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-            alt=""
-          />
-          <div className={styles.name}>Ravinder</div>
-        </div>
-      </div>
       <div className={styles.footer}>
         <div className={styles.label}>Features</div>
         <div className={styles.label}>Support</div>
-        <div className={styles.label}>Ratings</div>
       </div>
     </div>
   );
