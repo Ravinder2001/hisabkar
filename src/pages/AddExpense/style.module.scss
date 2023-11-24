@@ -42,17 +42,16 @@
   height: 100%;
   overflow: auto;
   // border: 1px solid red;
-
 }
 .centerContainer {
   // display: none;
-  width: 35%;
+  width: 30%;
   height: 100%;
   overflow: auto;
 }
 .rightContainer {
   // display: none;
-  width: 35%;
+  width: 40%;
   height: 100%;
   overflow: hidden;
 }
@@ -62,7 +61,7 @@
   width: 95%;
   margin: 10px;
   font-weight: bold;
-  font-size: 24px;
+  font-size: 1.7vw;
 }
 .sender {
   flex: 1;
@@ -94,10 +93,96 @@
 .deleteIcon {
   margin-right: 20px;
 }
-.pairList{
+.pairList {
   height: 85vh;
   overflow: auto;
 }
 ::-webkit-scrollbar {
   width: 0px;
+}
+.boxHead {
+  font-weight: bold;
+  font-size: 24px;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+@media only screen and (min-width: 1024px) {
+  .pairContainer {
+  }
+}
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  .leftContainer {
+    width: 23%;
+    height: 100%;
+    overflow: auto;
+    // border: 1px solid red;
+  }
+  .centerContainer {
+    // display: none;
+    width: 35%;
+    height: 100%;
+    overflow: auto;
+  }
+  .rightContainer {
+    // display: none;
+    width: 38%;
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .body {
+    display: block;
+    height: calc(100vh - 50px);
+    overflow: auto;
+  }
+  .leftContainer {
+    margin: auto;
+    width: 90%;
+    height: auto;
+  }
+  .centerContainer {
+    margin: auto;
+    width: 90%;
+    height: auto;
+  }
+  .rightContainer {
+    margin: auto;
+    width: 90%;
+    height: auto;
+  }
+  .pairList {
+    height: auto;
+  }
+  .pairContainer {
+    font-size: 16px;
+    margin: 20px 10px 0px 10px;
+  }
+  .heading {
+    font-size: 18px;
+  }
+  .icon img {
+    width: 25px !important;
+    height: 25px !important;
+  }
+  .btn {
+    font-size: 12px;
+    padding: 5px 10px;
+    margin-right: 10px;
+  }
+  .deleteIcon {
+    margin-right: 10px;
+  }
+  .boxHead {
+    font-size: 20px;
+  }
+  .rightContainer {
+    border-top: 2px dashed grey;
+    margin-top: 10px;
+  }
+  .centerContainer {
+    border-top: 2px dashed grey;
+  }
 }

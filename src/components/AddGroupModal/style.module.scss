@@ -99,3 +99,24 @@
 .error {
   color: red;
 }
+@media only screen and (min-width: 1024px) {
+  /* Styles for desktops */
+}
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  /* Styles for tablets */
+}
+
+@media only screen and (max-width: 767px) {
+  .typeBox img {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  .typeLabel {
+    font-size: 10px;
+  }
+  .typeBox {
+    padding: 3px 0px;
+    border: 2px solid rgb(178, 178, 178);
+    width: 14%;
+  }
+}

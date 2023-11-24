@@ -27,11 +27,38 @@
 .amount {
   flex: 1;
   text-align: center;
-  font-size: 22px;
+  font-size: 1.5vw;
   font-weight: bold;
   color: green;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .name {
   margin-left: 10px;
-  font-size: 18px;
+  font-size: 1.3vw;
+}
+@media only screen and (min-width: 1024px) {
+  /* Styles for desktops */
+}
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  .amount {
+    font-size: 16px;
+  }
+  .name {
+    font-size: 14px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .avatar {
+    width: 25px;
+    height: 25px;
+  }
+  .amount {
+    font-size: 16px;
+  }
+  .name {
+    font-size: 14px;
+  }
 }

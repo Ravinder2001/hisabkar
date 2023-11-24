@@ -19,7 +19,7 @@ function AddExpense() {
   const PairsList = useSelector((state: RootState) => state.ExpenseSlice.pairs.filter((pair) => pair.amount > 0));
   const sortedPairsList = PairsList.slice().sort((a, b) => b.amount - a.amount);
 
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const handleOpen = () => {
     setOpen(!open);
   };
@@ -49,7 +49,9 @@ function AddExpense() {
           </div>
         </div>
         <div className={styles.rightBox}>
-          <div className={styles.btn} onClick={handleOpen}>Share on Whatsapp</div>
+          <div className={styles.btn} onClick={handleOpen}>
+            Share on Whatsapp
+          </div>
           <div className={styles.deleteIcon} onClick={handleDelete}>
             <LucideIcons name="Trash" color="red" />
           </div>
@@ -57,22 +59,12 @@ function AddExpense() {
       </div>
       <div className={styles.body}>
         <div className={styles.leftContainer}>
+          <div className={styles.boxHead}>Add Your Amount</div>
           <Splitor />
-        </div>
-        <div className={styles.centerContainer}>
-          {ExpenseList.map((Expense) => (
-            <AccordionBox
-              key={Expense.id}
-              id={Expense.id}
-              amount={Expense.amount}
-              paidById={Expense.paidById}
-              paidByName={Expense.paidByName}
-              members={Expense.members}
-            />
-          ))}
         </div>
         {sortedPairsList.length ? (
           <div className={styles.rightContainer}>
+             <div className={styles.boxHead}>Bills</div>
             <div className={styles.pairContainer}>
               <div className={styles.sender}>Sender</div>
               <div className={styles.arrow}></div>
@@ -86,6 +78,19 @@ function AddExpense() {
             </div>
           </div>
         ) : null}
+        <div className={styles.centerContainer}>
+        <div className={styles.boxHead}>Expenses</div>
+          {ExpenseList.map((Expense) => (
+            <AccordionBox
+              key={Expense.id}
+              id={Expense.id}
+              amount={Expense.amount}
+              paidById={Expense.paidById}
+              paidByName={Expense.paidByName}
+              members={Expense.members}
+            />
+          ))}
+        </div>
       </div>
       <FriendModal status={open} handleModal={handleOpen} />
     </div>

@@ -42,3 +42,15 @@
 .options {
   font-family: "Nunito" !important;
 }
+@media only screen and (min-width: 1024px) {
+  /* Styles for desktops */
+}
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  /* Styles for tablets */
+}
+
+@media only screen and (max-width: 767px) {
+  .centerBox {
+    display: none;
+  }
+}

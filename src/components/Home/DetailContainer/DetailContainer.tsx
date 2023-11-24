@@ -52,6 +52,11 @@ function DetailContainer(props: props) {
           <div className={styles.name}>Ravinder</div>
         </div>
       </div>
+      <div className={styles.footer}>
+        <div className={styles.label}>Features</div>
+        <div className={styles.label}>Support</div>
+        <div className={styles.label}>Ratings</div>
+      </div>
     </div>
   );
 }

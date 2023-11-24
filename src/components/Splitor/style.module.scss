@@ -57,7 +57,8 @@
   background-color: rgb(13, 137, 209);
   color: white;
 }
-.unChecked {  margin-top: 5px;
+.unChecked {
+  margin-top: 5px;
   cursor: pointer;
   display: flex;
   margin-right: 5px;
@@ -119,4 +120,37 @@
 .error {
   margin-left: 10px;
   color: rgb(220, 7, 7);
+}
+@media only screen and (min-width: 1024px) {
+  /* Styles for desktops */
+}
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  .label {
+    font-size: 14px;
+  }
+  .input {
+    font-size: 12px;
+    width: 85%;
+  }
+  .select {
+    width: 90%;
+    font-size: 12px;
+  }
+  .select option {
+    font-size: 12px;
+  }
+  .name {
+    font-size: 12px;
+  }
+  .btn {
+    font-size: 16px;
+    padding: 5px 5px;
+  }
+  .error {
+    font-size: 12px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  /* Styles for mobile devices */
 }

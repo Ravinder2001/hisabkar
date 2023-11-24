@@ -13,6 +13,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: auto;
 }
 
 .leftBox {
@@ -24,4 +25,34 @@
   width: 35%;
   height: 90%;
   margin-top: 20px;
+}
+@media only screen and (min-width: 1024px) {
+  /* Styles for desktops */
+}
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  .leftBox {
+    width: 45%;
+  }
+  .rightBox {
+    width: 40%;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .container {
+    overflow: hidden;
+    height: auto;
+  }
+  .body {
+    height: calc(100vh - 50px);
+    overflow: hidden;
+  }
+  .leftBox {
+    width: 90%;
+    height: 100%;
+    margin-top: 40px;
+  }
+  .rightBox {
+    display: none;
+  }
 }

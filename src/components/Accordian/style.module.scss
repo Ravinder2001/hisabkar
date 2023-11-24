@@ -9,13 +9,18 @@
   margin-right: 10px;
   display: flex;
   // border: 1px solid red;
-  width: 200px;
 }
 .paidHead {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .paidName {
   font-weight: bold;
   margin-left: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .body {
@@ -42,4 +47,42 @@
 .bodyAmount {
   font-weight: bold;
   font-size: 20px;
+}
+
+@media only screen and (min-width: 1024px) {
+  /* Styles for desktops */
+}
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  .paidBox {
+    font-size: 14px;
+  }
+  .paidName {
+    margin-left: 5px;
+  }
+  .img {
+    width: 30px;
+    height: 30px;
+  }
+  .name {
+    font-size: 14px;
+  }
+  .bodyAmount {
+    font-size: 16px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .img {
+    width: 30px;
+    height: 30px;
+  }
+  .name {
+    font-size: 12px;
+  }
+  .bodyAmount {
+    font-size: 14px;
+  }
+  .paidBox {
+    font-size: 13px;
+  }
 }
