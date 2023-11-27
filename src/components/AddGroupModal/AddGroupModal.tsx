@@ -29,8 +29,10 @@ const AddGroupModal = (props: props) => {
     setName(e.target.value);
   };
   const handleAdd = () => {
-    setMembers((prev) => [...prev, membersName]);
-    setMemberName("");
+    if (membersName.length) {
+      setMembers((prev) => [...prev, membersName]);
+      setMemberName("");
+    }
   };
   const handleMemberRemove = (index: number) => {
     setMembers((prev) => {
@@ -60,7 +62,7 @@ const AddGroupModal = (props: props) => {
     }
 
     if (!error.members && !error.name && !error.type) {
-      dispatch(HandleDelete())
+      // dispatch(HandleDelete());
       let stack: any = [];
       let pairStack: {
         id: string;
@@ -97,7 +99,7 @@ const AddGroupModal = (props: props) => {
       }
 
       dispatch(AddPairs(pairStack));
-      navigate(ExpenseRoute)
+      navigate(ExpenseRoute);
     }
   };
 

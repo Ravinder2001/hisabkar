@@ -9,3 +9,4 @@ export const avatarURL="https://api.multiavatar.com/"
 
 export const HomeRoute = "/";
 export const ExpenseRoute = "/Expense";
+export const TrashRoute = "/Trash";

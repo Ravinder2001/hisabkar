@@ -4,6 +4,7 @@ import storage from "redux-persist/lib/storage";
 
 import UserSlice from "./slices/UserSlice";
 import ExpenseSlice from "./slices/ExpenseSlice";
+import TrashExpenseSlice from "./slices/TrashExpenseSlice";
 
 const persistConfig = {
   key: "root",
@@ -14,6 +15,7 @@ const persistConfig = {
 const RootReducers = combineReducers({
   UserSlice,
   ExpenseSlice,
+  TrashExpenseSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, RootReducers);

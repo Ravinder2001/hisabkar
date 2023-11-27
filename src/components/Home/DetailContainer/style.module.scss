@@ -76,3 +76,19 @@
     color: rgb(103, 103, 103);
   }
 }
+.trashBox {
+  display: flex;
+  align-items: center;
+  background-color: rgb(3, 126, 59);
+  padding: 5px 15px;
+  border-radius: 4px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+.trashName {
+  color: white;
+  margin-left: 5px;
+}
+.trashIcon {
+  margin-top: 3px;
+}

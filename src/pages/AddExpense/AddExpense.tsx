@@ -8,24 +8,39 @@ import PairContainer from "../../components/PairContainer/PairContainer";
 import LucideIcons from "../../assets/Icons/Icons";
 import { HandleDelete } from "../../store/slices/ExpenseSlice";
 import { useNavigate } from "react-router-dom";
-import { HomeRoute } from "../../utils/Constants";
+import { HomeRoute, NanoIdLength } from "../../utils/Constants";
 import ExpensesImages from "../../components/ExpensesImages/ExpensesImages";
 import FriendModal from "../../components/FriendModal/FriendModal";
+import DeleteConfirm from "../../components/DeleteConfirm/DeleteConfirm";
+import { AddTrashGroup } from "../../store/slices/TrashExpenseSlice";
+import { nanoid } from "nanoid";
+import moment from "moment";
 function AddExpense() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const GroupInfo = useSelector((state: RootState) => state.ExpenseSlice);
-  const ExpenseList = useSelector((state: RootState) => state.ExpenseSlice.expenses);
-  const PairsList = useSelector((state: RootState) => state.ExpenseSlice.pairs.filter((pair) => pair.amount > 0));
-  const sortedPairsList = PairsList.slice().sort((a, b) => b.amount - a.amount);
+  const ExpenseList = GroupInfo.expenses;
+  const PairsList = GroupInfo.pairs;
+  const NewPairsList = PairsList.filter((pair) => pair.amount > 0);
+  const sortedPairsList = NewPairsList.slice().sort((a, b) => b.amount - a.amount);
 
   const [open, setOpen] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+
+  const handleDeleteModal = () => {
+    setDeleteModal(!deleteModal);
+  };
+
   const handleOpen = () => {
     setOpen(!open);
   };
   const handleDelete = () => {
+    let id = nanoid(NanoIdLength);
+    let object = { ...GroupInfo, id, createdAt: Date() };
+    dispatch(AddTrashGroup(object));
     dispatch(HandleDelete());
   };
+  
 
   useEffect(() => {
     if (GroupInfo.group_name.length == 0) {
@@ -52,7 +67,7 @@ function AddExpense() {
           <div className={styles.btn} onClick={handleOpen}>
             Share on Whatsapp
           </div>
-          <div className={styles.deleteIcon} onClick={handleDelete}>
+          <div className={styles.deleteIcon} onClick={handleDeleteModal}>
             <LucideIcons name="Trash" color="red" />
           </div>
         </div>
@@ -64,7 +79,7 @@ function AddExpense() {
         </div>
         {sortedPairsList.length ? (
           <div className={styles.rightContainer}>
-             <div className={styles.boxHead}>Bills</div>
+            <div className={styles.boxHead}>Bills</div>
             <div className={styles.pairContainer}>
               <div className={styles.sender}>Sender</div>
               <div className={styles.arrow}></div>
@@ -78,21 +93,24 @@ function AddExpense() {
             </div>
           </div>
         ) : null}
-        <div className={styles.centerContainer}>
-        <div className={styles.boxHead}>Expenses</div>
-          {ExpenseList.map((Expense) => (
-            <AccordionBox
-              key={Expense.id}
-              id={Expense.id}
-              amount={Expense.amount}
-              paidById={Expense.paidById}
-              paidByName={Expense.paidByName}
-              members={Expense.members}
-            />
-          ))}
-        </div>
+        {ExpenseList.length ? (
+          <div className={styles.centerContainer}>
+            <div className={styles.boxHead}>Expenses</div>
+            {ExpenseList.map((Expense) => (
+              <AccordionBox
+                key={Expense.id}
+                id={Expense.id}
+                amount={Expense.amount}
+                paidById={Expense.paidById}
+                paidByName={Expense.paidByName}
+                members={Expense.members}
+              />
+            ))}
+          </div>
+        ) : null}
       </div>
       <FriendModal status={open} handleModal={handleOpen} />
+      <DeleteConfirm status={deleteModal} handleModal={handleDeleteModal} handleOK={handleDelete} />
     </div>
   );
 }

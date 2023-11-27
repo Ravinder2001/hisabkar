@@ -5,9 +5,10 @@ import { Button, Dropdown, Space } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { useNavigate } from "react-router-dom";
-import { ExpenseRoute } from "../../../utils/Constants";
+import { ExpenseRoute, TrashRoute } from "../../../utils/Constants";
 import RatingComponent from "../../RatingComponent/RatingComponent";
 import ContactModal from "../../ContactModal/ContactModal";
+import LucideIcons from "../../../assets/Icons/Icons";
 type props = {
   handleModal: () => void;
 };
@@ -15,9 +16,13 @@ function DetailContainer(props: props) {
   const navigate = useNavigate();
 
   const GroupName = useSelector((state: RootState) => state.ExpenseSlice.group_name);
+  const TrashLength = useSelector((state: RootState) => state.TrashExpenseSlice.List.length);
 
   const handleClick = () => {
     navigate(ExpenseRoute);
+  };
+  const handleTrashClick = () => {
+    navigate(TrashRoute);
   };
 
   const [open, setOpen] = useState(false);
@@ -42,9 +47,19 @@ function DetailContainer(props: props) {
           </div>
         </div>
       ) : null}
+      {TrashLength ? (
+        <div className={styles.trashBox}onClick={handleTrashClick}>
+          
+          <div className={styles.trashName} >
+            Older Groups
+          </div>
+        </div>
+      ) : null}
 
       <div className={styles.footer}>
-        <div className={styles.label} onClick={handleModal}>Contact Us</div>
+        <div className={styles.label} onClick={handleModal}>
+          Contact Us
+        </div>
       </div>
       <ContactModal status={open} handleModal={handleModal} />
     </div>

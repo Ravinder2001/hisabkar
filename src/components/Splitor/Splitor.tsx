@@ -179,10 +179,10 @@ function Splitor() {
   }, [MembersCheck]);
 
   useEffect(() => {
-    if (activeMembers.length > 1) {
+    if (activeMembers.length > 0) {
       setError((prev) => ({ ...prev, members: false }));
     }
-    if (activeMembers.length < 2) {
+    if (activeMembers.length < 1) {
       setError((prev) => ({ ...prev, members: true }));
       return;
     }
@@ -219,7 +219,7 @@ function Splitor() {
         ))}
       </select>
       <div className={styles.label}>Members</div>
-      {error.members ? <div className={styles.error}>Please select atleast two people!</div> : null}
+      {error.members ? <div className={styles.error}>Please select atleast one people!</div> : null}
       <div className={styles.memberList}>
         {MembersCheck?.map((member) => (
           <div

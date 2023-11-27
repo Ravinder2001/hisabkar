@@ -6,14 +6,25 @@ import CountUp from "react-countup";
 import LucideIcons from "../../assets/Icons/Icons";
 type props = {
   id: string;
+  group_id?: string;
   sender: string;
   receiver: string;
   amount: number;
+  trash?: boolean;
 };
 function PairContainer(props: props) {
   const Members = useSelector((state: RootState) => state.ExpenseSlice.group_members);
-  let senderName = Members.find((member) => member.id == props.sender);
-  let receiverName = Members.find((member) => member.id == props.receiver);
+  const TrashMembers = useSelector((state: RootState) => state.TrashExpenseSlice.List.find((item) => item.id == props.group_id)?.group_members);
+  let senderName;
+  let receiverName;
+  if (props.trash && TrashMembers) {
+    senderName = TrashMembers.find((member) => member.id == props.sender);
+    receiverName = TrashMembers.find((member) => member.id == props.receiver);
+  } else {
+    senderName = Members.find((member) => member.id == props.sender);
+    receiverName = Members.find((member) => member.id == props.receiver);
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.sender}>
