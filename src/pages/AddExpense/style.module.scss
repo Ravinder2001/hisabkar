@@ -95,8 +95,9 @@
   cursor: pointer;
 }
 .pairList {
-  height: 85vh;
+  height: 78vh;
   overflow: auto;
+  // border: 1px solid red;
 }
 ::-webkit-scrollbar {
   width: 0px;
