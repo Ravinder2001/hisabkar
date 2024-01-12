@@ -15,6 +15,7 @@ function App() {
       setFlag(false);
     }, 4000);
   }, []);
+  
   return flag ? (
     <Welcome />
   ) : (

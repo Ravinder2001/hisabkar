@@ -15,7 +15,7 @@ function Splitor() {
   const MembersCheck = useSelector((state: RootState) => state.ExpenseSlice.group_members);
   const [amount, setAmount] = useState<string>("");
   const [paidBy, setPaidBy] = useState<string>("");
-  const [error, setError] = useState<{ amount: boolean; members: boolean }>({ amount: false, members: false });
+  const [error, setError] = useState<{ amount: boolean; members: boolean; paid: boolean }>({ amount: false, members: false, paid: false });
   const [activeMembers, setActiveMembers] = useState<{ id: string; name: string; avatar: string; checked: boolean; amount: number }[]>([]);
   const [customInput, setCustomInput] = useState<{ value: string; id: string; name: string }[]>([]);
   const [remainingAmount, setRemainingAmount] = useState<number>(0);
@@ -43,6 +43,10 @@ function Splitor() {
   const handleSubmit = () => {
     if (amount.length == 0) {
       setError((prev) => ({ ...prev, amount: true }));
+      return;
+    }
+    if (!paidBy.length) {
+      setError((prev) => ({ ...prev, paid: true }));
       return;
     }
     if (!error.amount && !error.members) {
@@ -151,18 +155,17 @@ function Splitor() {
   };
 
   useEffect(() => {
-    if (GroupMembersInfo.length) {
-      setPaidBy(GroupMembersInfo[0].id);
-    }
-  }, [GroupMembersInfo]);
-
-  useEffect(() => {
     if (amount.length) {
       setError((prev) => ({ ...prev, amount: false }));
     } else {
       setChecked(false);
     }
   }, [amount]);
+  useEffect(() => {
+    if (paidBy.length) {
+      setError((prev) => ({ ...prev, paid: false }));
+    }
+  }, [paidBy]);
   useEffect(() => {
     let stack: any = [];
     let customStack: any = [];
@@ -212,12 +215,13 @@ function Splitor() {
       {error.amount ? <div className={styles.error}>Please add the amount!</div> : null}
       <div className={styles.label}>Paid by</div>
       <select name="" id="" className={styles.select} onChange={handlePaidBy} value={paidBy}>
-        {MembersCheck.map((member) => (
+        {GroupMembersInfo.map((member) => (
           <option value={member.id} key={member.id}>
             {member.name}
           </option>
         ))}
       </select>
+      {error.paid ? <div className={styles.error}>Please select person.</div> : null}
       <div className={styles.label}>Members</div>
       {error.members ? <div className={styles.error}>Please select atleast one people!</div> : null}
       <div className={styles.memberList}>
