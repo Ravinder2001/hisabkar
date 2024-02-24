@@ -12,9 +12,7 @@ import { HomeRoute, NanoIdLength } from "../../utils/Constants";
 import ExpensesImages from "../../components/ExpensesImages/ExpensesImages";
 import FriendModal from "../../components/FriendModal/FriendModal";
 import DeleteConfirm from "../../components/DeleteConfirm/DeleteConfirm";
-import { AddTrashGroup } from "../../store/slices/TrashExpenseSlice";
-import { nanoid } from "nanoid";
-import moment from "moment";
+import Swal from "sweetalert2";
 function AddExpense() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -35,10 +33,12 @@ function AddExpense() {
     setOpen(!open);
   };
   const handleDelete = () => {
-    let id = nanoid(NanoIdLength);
-    let object = { ...GroupInfo, id, createdAt: Date() };
-    dispatch(AddTrashGroup(object));
-    dispatch(HandleDelete());
+    dispatch(HandleDelete())
+    Swal.fire({
+      title: "Deleted!",
+      text: "Successfully deleted the Group!",
+      icon: "success"
+    });
   };
   
 

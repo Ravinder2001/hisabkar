@@ -16,7 +16,6 @@ function DetailContainer(props: props) {
   const navigate = useNavigate();
 
   const GroupName = useSelector((state: RootState) => state.ExpenseSlice.group_name);
-  const TrashLength = useSelector((state: RootState) => state.TrashExpenseSlice.List.length);
 
   const handleClick = () => {
     navigate(ExpenseRoute);
@@ -44,14 +43,6 @@ function DetailContainer(props: props) {
           <div className={styles.recentHead}>Recent Expense:</div>
           <div className={styles.recentName} onClick={handleClick}>
             {GroupName}
-          </div>
-        </div>
-      ) : null}
-      {TrashLength ? (
-        <div className={styles.trashBox}onClick={handleTrashClick}>
-          
-          <div className={styles.trashName} >
-            Older Groups
           </div>
         </div>
       ) : null}

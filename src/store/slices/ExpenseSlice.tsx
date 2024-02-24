@@ -132,46 +132,9 @@ const ExpenseSlice = createSlice({
       state.expenses = [];
       state.pairs = [];
     },
-    HandleRecover: (
-      state,
-      action: PayloadAction<{
-        group_name: string;
-        group_type: string;
-        group_members: { id: string; name: string; avatar: string; checked: boolean }[];
-        expenses: {
-          id: string;
-          amount: number;
-          paidByName: string;
-          paidById: string;
-          members: { id: string; name: string; avatar: string; amount: number }[];
-        }[];
-        pairs: {
-          id: string;
-          sender: string;
-          receiver: string;
-          amount: number;
-        }[];
-      }>
-    ) => {
-      state.group_name = action.payload.group_name;
-      state.group_type = action.payload.group_type;
-      state.group_members =action.payload.group_members;
-      state.expenses = action.payload.expenses;
-      state.pairs = action.payload.pairs;
-    },
   },
 });
 
-export const {
-  CreateGroup,
-  AddGroupMembers,
-  AddExpense,
-  AddPairs,
-  TooglePairs,
-  DeleteExpense,
-  SubtractPairs,
-  ToogleCheck,
-  HandleDelete,
-  HandleRecover,
-} = ExpenseSlice.actions;
+export const { CreateGroup, AddGroupMembers, AddExpense, AddPairs, TooglePairs, DeleteExpense, SubtractPairs, ToogleCheck, HandleDelete } =
+  ExpenseSlice.actions;
 export default ExpenseSlice.reducer;

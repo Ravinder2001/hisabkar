@@ -62,7 +62,7 @@ const AddGroupModal = (props: props) => {
     }
 
     if (!error.members && !error.name && !error.type) {
-      // dispatch(HandleDelete());
+      dispatch(HandleDelete());
       let stack: any = [];
       let pairStack: {
         id: string;
