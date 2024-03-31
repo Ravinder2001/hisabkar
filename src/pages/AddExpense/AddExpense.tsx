@@ -24,6 +24,7 @@ function AddExpense() {
 
   const [open, setOpen] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [TotalAmount, setTotalAmount] = useState(0);
 
   const handleDeleteModal = () => {
     setDeleteModal(!deleteModal);
@@ -33,20 +34,32 @@ function AddExpense() {
     setOpen(!open);
   };
   const handleDelete = () => {
-    dispatch(HandleDelete())
+    dispatch(HandleDelete());
     Swal.fire({
       title: "Deleted!",
       text: "Successfully deleted the Group!",
-      icon: "success"
+      icon: "success",
     });
   };
-  
 
   useEffect(() => {
     if (GroupInfo.group_name.length == 0) {
       navigate(HomeRoute);
     }
   }, [GroupInfo]);
+
+  useEffect(() => {
+    let totalAmount = ExpenseList.reduce((total, pair) => {
+      if (pair.amount >= 0) {
+        return total + pair.amount;
+      } else {
+        return total;
+      }
+    }, 0);
+    setTotalAmount(totalAmount)
+  }, [ExpenseList]);
+  
+
   return (
     <div className={styles.container}>
       <div className={styles.navbar}>
@@ -64,6 +77,7 @@ function AddExpense() {
           </div>
         </div>
         <div className={styles.rightBox}>
+          <div className={styles.total}>Total: {TotalAmount}</div>
           <div className={styles.btn} onClick={handleOpen}>
             Share on Whatsapp
           </div>
