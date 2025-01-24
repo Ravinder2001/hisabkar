@@ -8,6 +8,7 @@ import Welcome from "./components/Welcome/Welcome";
 
 function App() {
   const [flag, setFlag] = useState(true);
+  console.log("🚀  flag:", flag)
 
   useEffect(() => {
     setTimeout(() => {
