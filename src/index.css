@@ -1,3 +1,4 @@
+@import "tailwindcss";
 :root {
   --fontFamily: "Nunito", serif;
   --background-color: #121212;
