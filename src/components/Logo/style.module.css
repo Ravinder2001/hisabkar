@@ -1,0 +1,13 @@
+.container {
+  display: flex;
+  align-items: flex-end;
+  font-size: 30px;
+  font-weight: bold;
+  border-bottom: 2px solid rgb(231, 228, 228);
+}
+.text1 {
+  color: green;
+}
+.text2 {
+  color: brown;
+}
