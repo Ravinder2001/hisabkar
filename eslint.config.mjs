@@ -8,11 +8,11 @@ export default [
   {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     rules: {
-      "no-unused-vars": "warn",
-      "no-undef": "warn",
-      "no-console": "error",
-      "@typescript-eslint/no-explicit-any": "error",
-      "no-empty-function": "error",
+      "no-unused-vars": "error",
+      "no-undef": "error",
+      "no-console": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "no-empty-function": "warn",
     },
   },
   { languageOptions: { globals: globals.browser } },

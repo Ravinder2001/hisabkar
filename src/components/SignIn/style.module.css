@@ -67,12 +67,6 @@
 }
 
 .signBtn {
-  text-align: center;
-  color: grey;
-  font-size: 14px;
-}
-
-.signBtn span {
   color: blue;
   cursor: pointer;
 }
