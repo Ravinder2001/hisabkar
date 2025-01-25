@@ -1,30 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
-import { ExpenseRoute, HomeRoute } from "./utils/Constants";
-import Home from "./pages/Home/Home";
-import AddExpense from "./pages/AddExpense/AddExpense";
-import ErrorFallback from "./Error/ErrorFallback";
-import Welcome from "./components/Welcome/Welcome";
+import React from "react";
 
 function App() {
-  const [flag, setFlag] = useState(true);
-  console.log("🚀  flag:", flag)
-
-  useEffect(() => {
-    setTimeout(() => {
-      setFlag(false);
-    }, 4000);
-  }, []);
-  
-  return flag ? (
-    <Welcome />
-  ) : (
-    <Routes>
-      <Route path={HomeRoute} element={<Home />} />
-      <Route path={ExpenseRoute} element={<AddExpense />} />
-
-      <Route path="*" element={<ErrorFallback />} />
-    </Routes>
+  return (
+    <div>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae dolorem facere tempora aperiam, officia eligendi est quae optio vero
+      perspiciatis nemo nihil quo quos molestiae adipisci velit labore veniam aspernatur ipsum magni iusto natus quam laboriosam! Reprehenderit optio
+      quisquam fuga animi eum nobis consequuntur maiores ipsum porro dolorum repellat, quidem non aut atque quam dolore nostrum distinctio, quibusdam
+      facere voluptatem cupiditate iure libero aperiam mollitia! Consectetur, ea nihil voluptas modi itaque quasi. Quasi eaque architecto repellat
+      iusto ratione consequatur est enim molestias id quia provident totam reprehenderit, tenetur omnis quae ab consequuntur tempora, deleniti unde
+      debitis! A neque eum blanditiis?
+    </div>
   );
 }
 
