@@ -1,10 +1,22 @@
-body {
-  margin: 0;
-  font-family: "Geist Variable";
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+:root {
+  --fontFamily: "Nunito", serif;
+  --background-color: #121212;
+  --text-color: #ffffff;
+  --primary-color: #6200ea;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+[data-theme="dark"] {
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --primary-color: #bb86fc;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fontFamily);
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
