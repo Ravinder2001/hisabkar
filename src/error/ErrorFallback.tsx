@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./style.module.css";
-import somethingWrongImage from "../assets/images/somethingwrongScreen.png";
+// import somethingWrongImage from "../assets/images/somethingwrongScreen.png";
 import CONSTANTS from "../utils/constant/Constant";
 
 const ErrorFallback = () => {
@@ -9,7 +9,7 @@ const ErrorFallback = () => {
 
   return (
     <div role="alert" className={styles.container}>
-      <img src={somethingWrongImage} alt="Something went wrong" className={styles.img} />
+      {/* <img src={somethingWrongImage} alt="Something went wrong" className={styles.img} /> */}
       <p className={styles.text}>Oops! Something went wrong.</p>
 
       <div className={styles.submitBtn}>

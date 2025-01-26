@@ -24,7 +24,7 @@ const ProjectRoutes = () => {
 
       {/* Public Routes */}
       <Route
-        path={CONSTANTS.PROJECT_ROUTES.HOME}
+        path={CONSTANTS.PROJECT_ROUTES.AUTHTICATION}
         element={
           <PublicRoute>
             <Authentication />

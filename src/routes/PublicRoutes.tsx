@@ -11,7 +11,7 @@ type PublicRouteProps = {
 const PublicRoute = ({ children }: PublicRouteProps) => {
   const { isUserLoggedIn } = useSelector((state: RootState) => state.user);
 
-  return !isUserLoggedIn ? children : <Navigate to={CONSTANTS.PROJECT_ROUTES.HOME} />;
+  return !isUserLoggedIn ? <>{children}</> : <Navigate to={CONSTANTS.PROJECT_ROUTES.HOME} />;
 };
 
 export default PublicRoute;

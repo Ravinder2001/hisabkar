@@ -3,6 +3,7 @@ import styles from "./style.module.css";
 import Logo from "../Logo/Logo";
 import OTPComponent from "../OTPComponent/OTPComponent";
 import FormikWrapper from "../FormikWrapper/FormikWrapper";
+import showToast from "../../utils/helpers/toastHelper";
 
 type PropsType = {
   setPageType: Dispatch<SetStateAction<string>>;
@@ -22,6 +23,7 @@ function SignIn(props: PropsType) {
   const fields = [{ name: "email", label: "Email address", type: "email", placeholder: "Enter your email" }];
 
   const handleSubmit = () => {
+    showToast("Hi there", "success");
     setShowOTP(true);
     setIsLoading(false);
   };

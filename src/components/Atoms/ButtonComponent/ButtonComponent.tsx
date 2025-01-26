@@ -3,13 +3,14 @@ import styles from "./style.module.css";
 
 type PropsTyps = {
   text: string;
+  type?: "submit" | "reset" | "button";
   onClick?: () => void;
   isLoading?: boolean;
 };
 
 function ButtonComponent(props: PropsTyps) {
   return (
-    <button className={styles.btn} onClick={props.onClick}>
+    <button type={props.type ?? "submit"} className={styles.btn} onClick={props.onClick}>
       {props.text}
     </button>
   );

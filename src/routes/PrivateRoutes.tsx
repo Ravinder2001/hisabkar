@@ -11,7 +11,7 @@ type PrivateRouteProps = {
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const { isUserLoggedIn } = useSelector((state: RootState) => state.user);
 
-  return isUserLoggedIn ? children : <Navigate to={CONSTANTS.PROJECT_ROUTES.AUTHTICATION} />;
+  return isUserLoggedIn ? <>{children}</> : <Navigate to={CONSTANTS.PROJECT_ROUTES.AUTHTICATION} />;
 };
 
 export default PrivateRoute;
