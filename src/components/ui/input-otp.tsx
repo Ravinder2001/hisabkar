@@ -2,7 +2,7 @@ import * as React from "react";
 import { OTPInput, OTPInputContext } from "input-otp";
 import { Minus } from "lucide-react";
 
-import { cn } from "../../utils/shadcnHelper";
+import { cn } from "../../utils/helpers/shadcnHelper";
 
 const InputOTP = React.forwardRef<React.ElementRef<typeof OTPInput>, React.ComponentPropsWithoutRef<typeof OTPInput>>(
   ({ className, containerClassName, ...props }, ref) => (

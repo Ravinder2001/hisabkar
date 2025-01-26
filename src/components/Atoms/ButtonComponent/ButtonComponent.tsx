@@ -4,6 +4,7 @@ import styles from "./style.module.css";
 type PropsTyps = {
   text: string;
   onClick?: () => void;
+  isLoading?: boolean;
 };
 
 function ButtonComponent(props: PropsTyps) {

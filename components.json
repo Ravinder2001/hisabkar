@@ -12,7 +12,7 @@
   },
   "aliases": {
     "components": "src/components",
-    "utils": "src/utils/shadcnHelper.ts",
+    "utils": "src/utils/helpers/shadcnHelper.ts",
     "ui": "src/components/ui",
     "lib": "src/lib",
     "hooks": "src/hooks"
