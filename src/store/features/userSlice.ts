@@ -3,15 +3,17 @@ import { createSlice } from "@reduxjs/toolkit";
 export interface userState {
   id: string;
   name: string;
+  image: string;
   token: string | null;
   isUserLoggedIn: boolean;
 }
 
 const initialState: userState = {
   id: "",
-  name: "",
+  name: "Ravinder Singh Negi",
+  image: "",
   token: "",
-  isUserLoggedIn: false,
+  isUserLoggedIn: true,
 };
 
 export const userSlice = createSlice({
@@ -21,12 +23,14 @@ export const userSlice = createSlice({
     setUserLoggedIn: (state, { payload }) => {
       state.id = payload.id;
       state.name = payload.name;
+      state.image = payload.image;
       state.token = payload.token;
       state.isUserLoggedIn = true;
     },
     setUserLoggedOut: (state) => {
       state.id = "";
       state.name = "";
+      state.image = "";
       state.token = null;
       state.isUserLoggedIn = false;
     },

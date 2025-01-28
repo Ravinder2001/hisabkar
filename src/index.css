@@ -4,6 +4,7 @@
   --background-color: #121212;
   --text-color: #ffffff;
   --primary-color: #6200ea;
+  --sideBarWidth: 250px;
 }
 
 [data-theme="dark"] {

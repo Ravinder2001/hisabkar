@@ -17,6 +17,7 @@ type InitialValuesType = {
 function SignUp(props: PropsType) {
   const [showOTP, setShowOTP] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [animate, setAnimate] = useState("animateIn");
 
   const initialValues: InitialValuesType = {
     name: "",
@@ -35,12 +36,19 @@ function SignUp(props: PropsType) {
     setIsLoading(true);
   };
 
+  const handleClose = () => {
+    setAnimate("animateOut");
+    setTimeout(() => {
+      props.setPageType("SIGN_IN");
+    }, 500); // Match animation duration
+  };
+
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${styles[animate]}`}>
       <Logo />
       <div className={styles.heading1}>Create New Account</div>
       {showOTP ? (
-        <OTPComponent />
+        <OTPComponent animateClassName={animate} />
       ) : (
         <FormikWrapper
           initialValues={initialValues}
@@ -52,14 +60,7 @@ function SignUp(props: PropsType) {
         />
       )}
       <div className={styles.signBtn}>
-        Already have an account?{" "}
-        <span
-          onClick={() => {
-            props.setPageType("SIGN_IN");
-          }}
-        >
-          Sign in
-        </span>
+        Already have an account? <span onClick={handleClose}>Sign in</span>
       </div>
     </div>
   );
