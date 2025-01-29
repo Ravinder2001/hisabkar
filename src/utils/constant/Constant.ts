@@ -7,6 +7,10 @@ const CONSTANTS = {
   },
   API_ROUTES: {
     GOOGLE_SIGN_IN: "user/google-signin",
+    SEND_LOGIN_OTP: "user/login-send-otp",
+    SEND_OTP: "user/send-otp",
+    LOGIN: "user/login",
+    REGISTER: "user/register",
   },
 };
 export default CONSTANTS;

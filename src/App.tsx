@@ -1,4 +1,3 @@
-/*eslint-disable */
 import React, { lazy, useEffect } from "react";
 import { withSuspense } from "./hoc/withSuspense";
 import { ErrorBoundary } from "react-error-boundary";
@@ -19,11 +18,11 @@ const App: React.FC = () => {
   const dispatch = useDispatch();
   const { token } = useSelector((state: RootState) => state.user);
 
-  // useEffect(() => {
-  //   if (!token || isTokenExpired(token)) {
-  //     dispatch(setUserLoggedOut());
-  //   }
-  // }, [token, dispatch]);
+  useEffect(() => {
+    if (!token || isTokenExpired(token)) {
+      dispatch(setUserLoggedOut());
+    }
+  }, [token, dispatch]);
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>

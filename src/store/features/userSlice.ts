@@ -4,14 +4,16 @@ export interface userState {
   id: string;
   name: string;
   image: string;
+  role: string;
   token: string | null;
   isUserLoggedIn: boolean;
 }
 
 const initialState: userState = {
   id: "",
-  name: "Ravinder Singh Negi",
+  name: "",
   image: "",
+  role: "",
   token: "",
   isUserLoggedIn: false,
 };
@@ -25,12 +27,14 @@ export const userSlice = createSlice({
       state.name = payload.name;
       state.image = payload.image;
       state.token = payload.token;
+      state.role = payload.role;
       state.isUserLoggedIn = true;
     },
     setUserLoggedOut: (state) => {
       state.id = "";
       state.name = "";
       state.image = "";
+      state.role = "";
       state.token = null;
       state.isUserLoggedIn = false;
     },

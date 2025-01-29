@@ -19,7 +19,7 @@ const useApiFetch = (initialUrl: string, initialOptions?: AxiosRequestConfig) =>
     setIsLoading(true);
     try {
       console.log(url, options);
-      const { data } = await axiosInstance.post(url, options?.data, options);
+      const { data } = await axiosInstance(url, options);
       setResponse({
         data: data.data,
         message: data.message,

@@ -11,7 +11,7 @@ type PropsTyps = {
 function ButtonComponent(props: PropsTyps) {
   return (
     <button type={props.type ?? "submit"} className={styles.btn} onClick={props.onClick}>
-      {props.text}
+      {props.isLoading ? <span className={styles.loader}></span> : props.text}
     </button>
   );
 }

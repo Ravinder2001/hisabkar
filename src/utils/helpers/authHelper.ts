@@ -17,3 +17,12 @@ export const isTokenExpired = (token: string | null): boolean => {
     return true;
   }
 };
+
+export const decodeJWT = (token: string) => {
+  try {
+    const decoded = jwtDecode<DecodedToken>(token);
+    return decoded;
+  } catch {
+    return true;
+  }
+};
