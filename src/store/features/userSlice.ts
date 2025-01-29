@@ -13,7 +13,7 @@ const initialState: userState = {
   name: "Ravinder Singh Negi",
   image: "",
   token: "",
-  isUserLoggedIn: true,
+  isUserLoggedIn: false,
 };
 
 export const userSlice = createSlice({

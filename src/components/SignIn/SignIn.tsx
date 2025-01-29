@@ -4,6 +4,10 @@ import Logo from "../Logo/Logo";
 import OTPComponent from "../OTPComponent/OTPComponent";
 import FormikWrapper from "../FormikWrapper/FormikWrapper";
 import showToast from "../../utils/helpers/toastHelper";
+import { GoogleLogin } from "@react-oauth/google";
+import useApiFetch from "../../hooks/useAPIFetch";
+import CONSTANTS from "../../utils/constant/Constant";
+import Messages from "../../utils/constant/Messages";
 
 type PropsType = {
   setPageType: Dispatch<SetStateAction<string>>;
@@ -16,6 +20,8 @@ function SignIn(props: PropsType) {
   const initialValues: InitialValuesType = {
     email: "",
   };
+
+  const { fetchData } = useApiFetch("");
 
   const [showOTP, setShowOTP] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +42,16 @@ function SignIn(props: PropsType) {
     }, 500); // Match animation duration
   };
 
+  const handleGoogleSignIn = async (token: string) => {
+    await fetchData(CONSTANTS.API_ROUTES.GOOGLE_SIGN_IN, {
+      data: { token },
+    });
+  };
+
+  const handleGoogleError = () => {
+    showToast(Messages.GENERAL.SERVER_ERROR, "error");
+  };
+
   return (
     <div className={`${styles.container} ${styles[animate]}`}>
       <Logo />
@@ -52,6 +68,14 @@ function SignIn(props: PropsType) {
           isLoading={isLoading}
         />
       )}
+
+      <div className={styles.line}></div>
+      <GoogleLogin
+        onSuccess={(response) => {
+          handleGoogleSignIn(response.credential ?? "");
+        }}
+        onError={handleGoogleError}
+      />
       <div className={styles.signBtn} onClick={handleClose}>
         Create an account?
       </div>

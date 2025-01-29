@@ -1,4 +1,4 @@
-/* eslint-disable  @typescript-eslint/no-explicit-any */
+/* eslint-disable*/
 import axios, { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from "axios";
 import { Store } from "redux"; // Ensure you have redux types installed
 import ENVConfig from "../../config/config";
@@ -22,7 +22,6 @@ axiosInstance.interceptors.request.use(
     const state = store.getState();
     const token = state.user?.token;
     const userId = state.user?.id; // Assuming userId is stored in the Redux state
-
     if (token && userId) {
       config.headers["Authorization"] = `Bearer ${token}`;
       config.headers["X-User-Id"] = userId; // Add user ID to custom header

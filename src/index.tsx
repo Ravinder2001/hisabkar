@@ -7,13 +7,19 @@ import { persistor, store } from "./store/store";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { BrowserRouter } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import ENVConfig from "./config/config";
+import { injectStore } from "./utils/helpers/axiosInstance";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+injectStore(store);
 root.render(
   <BrowserRouter>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <App />
+        <GoogleOAuthProvider clientId={ENVConfig.googleClientId}>
+          <App />
+        </GoogleOAuthProvider>
       </PersistGate>
     </Provider>
   </BrowserRouter>

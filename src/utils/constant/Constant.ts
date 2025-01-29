@@ -5,5 +5,8 @@ const CONSTANTS = {
     AUTHTICATION: "/authentication",
     HOME: "/",
   },
+  API_ROUTES: {
+    GOOGLE_SIGN_IN: "user/google-signin",
+  },
 };
 export default CONSTANTS;
