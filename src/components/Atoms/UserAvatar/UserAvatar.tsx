@@ -23,7 +23,7 @@ function UserAvatar(props: PropsType) {
   return (
     <Avatar>
       <AvatarImage src={props.userImage ?? User.image} />
-      <AvatarFallback style={{ border: "1px solid red", padding: "10px", background: "grey" }}>{fallbackText}</AvatarFallback>
+      <AvatarFallback style={{ background: "grey", color: "white", fontSize: "14px" }}>{fallbackText}</AvatarFallback>
     </Avatar>
   );
 }

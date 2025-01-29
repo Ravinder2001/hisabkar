@@ -24,7 +24,9 @@ function SidebarComponent() {
         </div>
         <div className={styles.footer}>
           <MenuItem icon={<LucideIcon name="LogOut" />}>User Icon</MenuItem>
-          <MenuItem icon={<UserAvatar />}>Ravinder Singh</MenuItem>
+          <MenuItem icon={<UserAvatar />} className="iconAvatarCon">
+            Ravinder Singh
+          </MenuItem>
         </div>
       </Menu>
     </Sidebar>

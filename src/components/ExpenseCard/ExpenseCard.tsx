@@ -4,6 +4,7 @@ import "./style.css";
 function ExpenseCard() {
   return (
     <div className="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/2200/2200326.png" className="travel-image" />
       <div className="card__wrapper">
         <div className="card___wrapper-acounts">
           <div className="card__score">+3</div>
@@ -109,7 +110,7 @@ function ExpenseCard() {
             </svg>
           </div>
         </div>
-        <div className="card__menu">
+        {/* <div className="card__menu">
           <svg xmlns="http://www.w3.org/2000/svg" width="4" viewBox="0 0 4 20" height="20" fill="none">
             <g fill="#000">
               <path d="m2 4c1.10457 0 2-.89543 2-2s-.89543-2-2-2-2 .89543-2 2 .89543 2 2 2z"></path>
@@ -117,7 +118,7 @@ function ExpenseCard() {
               <path d="m2 20c1.10457 0 2-.8954 2-2s-.89543-2-2-2-2 .8954-2 2 .89543 2 2 2z"></path>
             </g>
           </svg>
-        </div>
+        </div> */}
       </div>
       <div className="card__title">Web Design templates Selection</div>
       <div className="card__subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elitsed do eiusmod.</div>
