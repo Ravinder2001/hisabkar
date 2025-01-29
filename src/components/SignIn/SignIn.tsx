@@ -3,6 +3,7 @@ import styles from "./style.module.css";
 import Logo from "../Logo/Logo";
 import OTPComponent from "../OTPComponent/OTPComponent";
 import FormikWrapper from "../FormikWrapper/FormikWrapper";
+import showToast from "../../utils/helpers/toastHelper";
 
 type PropsType = {
   setPageType: Dispatch<SetStateAction<string>>;
@@ -18,20 +19,29 @@ function SignIn(props: PropsType) {
 
   const [showOTP, setShowOTP] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [animate, setAnimate] = useState("animateIn");
 
   const fields = [{ name: "email", label: "Email address", type: "email", placeholder: "Enter your email" }];
 
   const handleSubmit = () => {
+    showToast("Hi there", "success");
     setShowOTP(true);
     setIsLoading(false);
   };
 
+  const handleClose = () => {
+    setAnimate("animateOut");
+    setTimeout(() => {
+      props.setPageType("SIGN_UP");
+    }, 500); // Match animation duration
+  };
+
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${styles[animate]}`}>
       <Logo />
       <div className={styles.heading1}>Sign in to your account</div>
       {showOTP ? (
-        <OTPComponent />
+        <OTPComponent animateClassName={animate} />
       ) : (
         <FormikWrapper
           initialValues={initialValues}
@@ -42,12 +52,7 @@ function SignIn(props: PropsType) {
           isLoading={isLoading}
         />
       )}
-      <div
-        className={styles.signBtn}
-        onClick={() => {
-          props.setPageType("SIGN_UP");
-        }}
-      >
+      <div className={styles.signBtn} onClick={handleClose}>
         Create an account?
       </div>
     </div>

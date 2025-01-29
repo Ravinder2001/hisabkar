@@ -1,7 +1,7 @@
+/*eslint-disable */
 import React, { lazy, useEffect } from "react";
 import { withSuspense } from "./hoc/withSuspense";
 import { ErrorBoundary } from "react-error-boundary";
-import { useNavigate } from "react-router-dom"; // Ensure you have react-router-dom installed
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
 import { useDispatch } from "react-redux";
@@ -17,14 +17,13 @@ const ProjectRoutes = withSuspense(
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { token } = useSelector((state: RootState) => state.user);
 
-  useEffect(() => {
-    if (!token || isTokenExpired(token)) {
-      dispatch(setUserLoggedOut());
-    }
-  }, [token, navigate, dispatch]);
+  // useEffect(() => {
+  //   if (!token || isTokenExpired(token)) {
+  //     dispatch(setUserLoggedOut());
+  //   }
+  // }, [token, dispatch]);
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>

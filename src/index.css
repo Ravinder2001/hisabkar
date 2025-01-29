@@ -4,6 +4,7 @@
   --background-color: #121212;
   --text-color: #ffffff;
   --primary-color: #6200ea;
+  --sideBarWidth: 250px;
 }
 
 [data-theme="dark"] {
@@ -76,4 +77,9 @@ body {
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+}
+
+/* this css is for avatar circle min-width */
+.iconAvatarCon .css-wx7wi4 {
+  min-width: 40px !important;
 }

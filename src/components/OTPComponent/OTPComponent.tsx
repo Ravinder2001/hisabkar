@@ -3,9 +3,13 @@ import styles from "./style.module.css";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "../ui/input-otp";
 import ButtonComponent from "../Atoms/ButtonComponent/ButtonComponent";
 
-function OTPComponent() {
+type PropsType = {
+  animateClassName: string;
+};
+
+function OTPComponent(props: PropsType) {
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${styles[props.animateClassName]}`}>
       <InputOTP maxLength={6}>
         <InputOTPGroup>
           <InputOTPSlot index={0} />

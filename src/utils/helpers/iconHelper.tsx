@@ -1,4 +1,4 @@
-/* eslint-disable  @typescript-eslint/no-explicit-any */
+/* eslint-disable */
 import React from "react";
 import * as Icons from "lucide-react";
 
