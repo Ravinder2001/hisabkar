@@ -142,7 +142,7 @@ function SignIn(props: PropsType) {
                 Email address
               </Label> */}
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black-400 h-5 w-5" />
                 <Input
                   id="email"
                   type="email"
@@ -183,7 +183,7 @@ function SignIn(props: PropsType) {
           </Button>
           <p className="text-center text-sm text-gray-600">
             Don&apos;t have an account?{" "}
-            <div onClick={handleClose} className="font-medium text-purple-600 hover:text-purple-500 transition-colors duration-300">
+            <div onClick={handleClose} className="font-medium text-purple-600 hover:text-purple-500 transition-colors duration-300 cursor-pointer">
               Create an account
             </div>
           </p>

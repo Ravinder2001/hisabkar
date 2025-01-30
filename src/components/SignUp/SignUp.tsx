@@ -113,47 +113,36 @@ function SignUp(props: PropsType) {
           {showOTP ? (
             <OTPComponent animateClassName={animate} setValues={setValues} values={values} />
           ) : (
-            <div className="space-y-2">
-              {/* <Label htmlFor="Name" className="text-sm font-medium text-gray-700">
-                Name
-              </Label> */}
+            <div className="space-y-4">
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black-400 h-5 w-5" />
                 <Input
-                  id="name"
+                  id="input"
                   type="text"
                   placeholder="Enter your name"
-                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none"
                   value={values.name}
                   onChange={(e) => setValues({ ...values, name: e.target.value })}
                 />
               </div>
-              <div className="mt-4"></div>
-              {/* <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                Email address
-              </Label> */}
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black-400 h-5 w-5" />
                 <Input
-                  id="email"
+                  id="input"
                   type="email"
                   placeholder="Enter your email"
-                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none"
                   value={values.email}
                   onChange={(e) => setValues({ ...values, email: e.target.value })}
                 />
               </div>
-              <div className="mt-2"></div>
-              {/* <Label htmlFor="upiAddress" className="text-sm font-medium text-gray-700">
-                UPI Address
-              </Label> */}
               <div className="relative">
-                <Wallet className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Wallet className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black-400 h-5 w-5" />
                 <Input
-                  id="upiAddress"
+                  id="input"
                   type="text"
                   placeholder="Enter your UPI Address"
-                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparentfocus:outline-none"
                   value={values.upiAddress}
                   onChange={(e) => setValues({ ...values, upiAddress: e.target.value })}
                 />
@@ -179,7 +168,7 @@ function SignUp(props: PropsType) {
           </div>
           <p className="text-center text-sm text-gray-600">
             Already have an account?
-            <div onClick={handleClose} className="font-medium text-purple-600 hover:text-purple-500 transition-colors duration-300">
+            <div onClick={handleClose} className="font-medium text-purple-600 hover:text-purple-500 transition-colors duration-300 cursor-pointer">
               Sign In
             </div>
           </p>
