@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
-import Logo from "../Logo/Logo";
 import styles from "./style.module.css";
 import LucideIcon from "../../utils/helpers/iconHelper";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
@@ -35,7 +34,11 @@ function SidebarComponent() {
       <Menu className={styles.menu}>
         <div className={styles.header}>
           <MenuItem icon={<LucideIcon name={isCollapsed ? "ChevronRight" : "ChevronLeft"} />} onClick={toggleSidebar}>
-            {isCollapsed ? null : <Logo />}
+            {isCollapsed ? null : (
+              <div className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                Hisabkar<span className="text-black">.</span>
+              </div>
+            )}
           </MenuItem>
           <MenuItem active icon={<LucideIcon name="Home" />}>
             Home
