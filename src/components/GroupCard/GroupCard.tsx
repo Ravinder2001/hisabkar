@@ -7,10 +7,16 @@ import { Users, DollarSign, MoreVertical, Trash2 } from "lucide-react";
 import { GroupType } from "../../utils/comman/CommanTypes";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
 import styles from "./style.module.css";
+import { useNavigate } from "react-router-dom";
+import CONSTANTS from "../../utils/constant/Constant";
 
 export function propsCard(props: GroupType) {
+  const navigate = useNavigate();
   return (
-    <Card className="w-[100%] max-w-sm overflow-hidden transition-all duration-300 ease-in-out transform hover:shadow-xl bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 cursor-pointer">
+    <Card
+      onClick={() => navigate(CONSTANTS.PROJECT_ROUTES.GROUP + "/1")}
+      className="w-[100%] max-w-sm overflow-hidden transition-all duration-300 ease-in-out transform hover:shadow-xl bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 cursor-pointer"
+    >
       <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-400 to-blue-500 rounded-bl-full opacity-20"></div>
       <CardHeader className="relative z-10 flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-2xl font-bold text-purple-700 dark:text-purple-300">{props.group_name}</CardTitle>

@@ -6,6 +6,7 @@ import CONSTANTS from "../utils/constant/Constant";
 import Home from "../pages/Home/Home";
 import PrivateRoute from "./PrivateRoutes";
 import Authentication from "../pages/Authentication/Authentication";
+import Group from "../pages/GroupDetails/GroupDetails";
 
 // import StaffGroups from "../pages/Admin/StaffGroups/StaffGroups";
 
@@ -18,6 +19,14 @@ const ProjectRoutes = () => {
         element={
           <PrivateRoute>
             <Home />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={CONSTANTS.PROJECT_ROUTES.GROUP + "/:group_id"}
+        element={
+          <PrivateRoute>
+            <Group />
           </PrivateRoute>
         }
       />

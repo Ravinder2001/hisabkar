@@ -6,6 +6,8 @@ import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserLoggedOut } from "../../store/features/userSlice";
 import { RootState } from "../../store/store";
+import { Link } from "react-router-dom";
+import CONSTANTS from "../../utils/constant/Constant";
 // import { useLocation } from "react-router-dom";
 
 function SidebarComponent() {
@@ -40,7 +42,7 @@ function SidebarComponent() {
               </div>
             )}
           </MenuItem>
-          <MenuItem active icon={<LucideIcon name="Home" />}>
+          <MenuItem active icon={<LucideIcon name="Home" />} component={<Link to={CONSTANTS.PROJECT_ROUTES.HOME} />}>
             Home
           </MenuItem>
         </div>

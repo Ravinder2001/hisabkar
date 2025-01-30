@@ -4,6 +4,7 @@ const CONSTANTS = {
   PROJECT_ROUTES: {
     AUTHTICATION: "/authentication",
     HOME: "/",
+    GROUP: "/group",
   },
   API_ROUTES: {
     GOOGLE_SIGN_IN: "user/google-signin",
