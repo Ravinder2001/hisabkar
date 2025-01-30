@@ -1,99 +1,18 @@
-.container {
-  padding-top: 60px;
+.membersCon {
+  height: 300px;
+  overflow: auto;
+}
+.expenseCon {
+  height: calc(100vh - 130px);
+  padding-right: 10px;
+  overflow: auto;
 }
 
-.title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 16px;
-  margin-left: 16px;
-}
-
-.card {
-  background-color: #ff7f50;
-  border-radius: 15px;
-  padding: 16px;
-  margin-bottom: 16px;
-}
-
-.headerTitle {
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.headerSubtitle {
-  font-size: 12px;
-  color: #ffffff;
-}
-
-.classItem {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.classContent {
-  flex-grow: 1;
-}
-
-.classHours {
-  margin-right: 8px;
-}
-
-.startTime {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.expenseCard {
-  background-color: #e0ffff; /* Change as needed */
-  border-radius: 15px;
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.cardAmount {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.cardTitle {
-  font-size: 16px;
-}
-
-.cardDate {
-  font-size: 12px;
-}
-
-.studentListContainer {
-  display: flex;
-}
-
-.studentAvatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 15px;
-  margin-left: -3px;
-  border: 1px solid #fff;
-}
-
-.btnGroup {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.addButton {
-  padding: 10px;
-  width: 60px;
-  height: 60px;
-  position: absolute;
-  bottom: 50px;
-  right: 10px;
-  background-color: #6a4fff;
-  border-radius: 100%;
-  color: white;
-  font-size: 28px;
+@media only screen and (max-width: 1024px) {
+  .expenseCon {
+    height: auto;
+  }
+  .cardHeader {
+    padding: 0px !important;
+  }
 }
