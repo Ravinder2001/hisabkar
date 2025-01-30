@@ -2,31 +2,31 @@
 .card {
   --main-color: #000;
   --bg-color: #ebd18d;
-  width: 300px;
-  padding: 25px;
+  width: 250px;
+  padding: 15px;
   background: var(--bg-color);
   border-radius: 20px;
   position: relative;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
-.travel-image {
+.travel_image {
   position: absolute;
   top: -20px;
   right: -20px;
-  width: 80px;
-  height: 80px;
+  width: 40px;
+  height: 40px;
   /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
   border-radius: 50%;
 }
 
-.card__wrapper {
+.card_wrapper {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
 }
 
-.card___wrapper-acounts {
+.card_wrapper_acounts {
   position: relative;
   display: flex;
   flex-direction: row;
@@ -35,19 +35,19 @@
   cursor: pointer;
 }
 
-.card___wrapper-acounts > div:nth-child(2) {
+.card_wrapper_acounts > div:nth-child(2) {
   position: absolute;
   left: 25px;
   z-index: -1;
 }
 
-.card___wrapper-acounts > div:nth-child(3) {
+.card_wrapper_acounts > div:nth-child(3) {
   position: absolute;
   left: 50px;
   z-index: -2;
 }
 
-.card__score {
+.card_score {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -57,20 +57,20 @@
   width: 40px;
   height: 40px;
   border-radius: 100%;
-  background: var(--main-color);
+  background: #000;
 }
 
-.card__acounts {
+.card_acounts {
   width: 42px;
   height: 42px;
 }
 
-.card__acounts svg {
+.card_acounts svg {
   width: 100%;
   height: 100%;
 }
 
-.card__menu {
+.card_menu {
   width: 40px;
   height: 40px;
   background: #f6db96;
@@ -81,39 +81,15 @@
   cursor: pointer;
 }
 
-.card__title {
-  margin-top: 50px;
+.card_title {
+  margin-top: 20px;
   font-weight: 900;
-  font-size: 25px;
+  font-size: 20px;
   color: var(--main-color);
 }
 
-.card__subtitle {
-  margin-top: 15px;
-  font-weight: 400;
-  font-size: 15px;
-  color: var(--main-color);
-}
-
-.card__indicator {
-  margin-top: 50px;
-  font-weight: 500;
+.card_sub_title {
+  /* font-weight: 500; */
   font-size: 14px;
-  color: var(--main-color);
-}
-
-.card__progress progress {
-  width: 100%;
-  height: 4px;
-  border-radius: 100px;
-}
-
-.card__progress progress::-webkit-progress-bar {
-  background-color: #00000030;
-  border-radius: 100px;
-}
-
-.card__progress progress::-webkit-progress-value {
-  background-color: var(--main-color);
-  border-radius: 100px;
+  color: rgb(54, 53, 53);
 }

@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export interface userState {
   id: string;
   name: string;
-  image: string;
+  avatar: string;
   role: string;
   token: string | null;
   isUserLoggedIn: boolean;
@@ -12,7 +12,7 @@ export interface userState {
 const initialState: userState = {
   id: "",
   name: "",
-  image: "",
+  avatar: "",
   role: "",
   token: "",
   isUserLoggedIn: false,
@@ -25,7 +25,7 @@ export const userSlice = createSlice({
     setUserLoggedIn: (state, { payload }) => {
       state.id = payload.id;
       state.name = payload.name;
-      state.image = payload.image;
+      state.avatar = payload.avatar;
       state.token = payload.token;
       state.role = payload.role;
       state.isUserLoggedIn = true;
@@ -33,7 +33,7 @@ export const userSlice = createSlice({
     setUserLoggedOut: (state) => {
       state.id = "";
       state.name = "";
-      state.image = "";
+      state.avatar = "";
       state.role = "";
       state.token = null;
       state.isUserLoggedIn = false;

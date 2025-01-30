@@ -6,6 +6,8 @@
     "@craco/craco": "^7.1.0",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-avatar": "^1.1.2",
+    "@radix-ui/react-dropdown-menu": "^2.1.5",
+    "@radix-ui/react-slot": "^1.1.1",
     "@react-oauth/google": "^0.12.1",
     "@reduxjs/toolkit": "^2.5.0",
     "@testing-library/jest-dom": "^5.17.0",
@@ -39,7 +41,8 @@
     "yup": "^1.6.1"
   },
   "scripts": {
-    "start": "craco start",
+    "start:dev": "env-cmd -f .env.dev craco start",
+    "start:prod": "env-cmd -f .env.prod craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
@@ -62,6 +65,7 @@
     "@eslint/js": "^9.19.0",
     "ajv": "^7.2.4",
     "autoprefixer": "^9.8.8",
+    "env-cmd": "^10.1.0",
     "eslint": "^9.19.0",
     "eslint-plugin-react": "^7.37.4",
     "globals": "^15.14.0",

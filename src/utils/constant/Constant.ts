@@ -11,6 +11,7 @@ const CONSTANTS = {
     SEND_OTP: "user/send-otp",
     LOGIN: "user/login",
     REGISTER: "user/register",
+    ALL_GROUPS: "group",
   },
 };
 export default CONSTANTS;
