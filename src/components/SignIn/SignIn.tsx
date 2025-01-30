@@ -11,7 +11,7 @@ import Messages from "../../utils/constant/Messages";
 import { setUserLoggedIn } from "../../store/features/userSlice";
 import { decodeJWT } from "../../utils/helpers/authHelper";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Label } from "../ui/label";
+// import { Label } from "../ui/label";
 import { ArrowRight, Mail } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -138,9 +138,9 @@ function SignIn(props: PropsType) {
             <OTPComponent animateClassName={animate} setValues={setValues} values={values} />
           ) : (
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+              {/* <Label htmlFor="email" className="text-sm font-medium text-gray-700">
                 Email address
-              </Label>
+              </Label> */}
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <Input

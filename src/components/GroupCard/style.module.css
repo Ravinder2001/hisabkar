@@ -1,24 +1,6 @@
-/* From Uiverse.io by andrew-demchenk0 */
-.card {
-  --main-color: #000;
-  --bg-color: #ebd18d;
-  width: 250px;
-  padding: 15px;
-  background: var(--bg-color);
-  border-radius: 20px;
-  position: relative;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+.cardCon {
+  width: 100%;
 }
-.travel_image {
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 40px;
-  height: 40px;
-  /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
-  border-radius: 50%;
-}
-
 .card_wrapper {
   display: flex;
   flex-direction: row;
@@ -68,28 +50,4 @@
 .card_acounts svg {
   width: 100%;
   height: 100%;
-}
-
-.card_menu {
-  width: 40px;
-  height: 40px;
-  background: #f6db96;
-  border-radius: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.card_title {
-  margin-top: 20px;
-  font-weight: 900;
-  font-size: 20px;
-  color: var(--main-color);
-}
-
-.card_sub_title {
-  /* font-weight: 500; */
-  font-size: 14px;
-  color: rgb(54, 53, 53);
 }

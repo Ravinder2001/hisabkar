@@ -3,6 +3,7 @@ import ExpenseCard from "../../components/GroupCard/GroupCard";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
 import { GroupType } from "../../utils/comman/CommanTypes";
+import styles from "./style.module.css";
 
 function Home() {
   const { fetchData, response } = useApiFetch(CONSTANTS.API_ROUTES.ALL_GROUPS);
@@ -19,8 +20,42 @@ function Home() {
     }
   }, [response]);
   return (
-    <div>
-      <div>
+    <div className={styles.container}>
+      <div className={styles.header}></div>
+      <div className={styles.cardCon}>
+        {groupList.map((group) => (
+          <ExpenseCard key={group.group_id} {...group} />
+        ))}
+        {groupList.map((group) => (
+          <ExpenseCard key={group.group_id} {...group} />
+        ))}
+        {groupList.map((group) => (
+          <ExpenseCard key={group.group_id} {...group} />
+        ))}
+        {groupList.map((group) => (
+          <ExpenseCard key={group.group_id} {...group} />
+        ))}
+        {groupList.map((group) => (
+          <ExpenseCard key={group.group_id} {...group} />
+        ))}
+        {groupList.map((group) => (
+          <ExpenseCard key={group.group_id} {...group} />
+        ))}
+        {groupList.map((group) => (
+          <ExpenseCard key={group.group_id} {...group} />
+        ))}
+        {groupList.map((group) => (
+          <ExpenseCard key={group.group_id} {...group} />
+        ))}
+        {groupList.map((group) => (
+          <ExpenseCard key={group.group_id} {...group} />
+        ))}
+        {groupList.map((group) => (
+          <ExpenseCard key={group.group_id} {...group} />
+        ))}
+        {groupList.map((group) => (
+          <ExpenseCard key={group.group_id} {...group} />
+        ))}
         {groupList.map((group) => (
           <ExpenseCard key={group.group_id} {...group} />
         ))}

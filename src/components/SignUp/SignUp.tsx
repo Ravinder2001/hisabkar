@@ -7,7 +7,7 @@ import { setUserLoggedIn } from "../../store/features/userSlice";
 import { decodeJWT } from "../../utils/helpers/authHelper";
 import useApiFetch from "../../hooks/useAPIFetch";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Label } from "../ui/label";
+// import { Label } from "../ui/label";
 import { ArrowRight, Mail, User, Wallet } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -114,9 +114,9 @@ function SignUp(props: PropsType) {
             <OTPComponent animateClassName={animate} setValues={setValues} values={values} />
           ) : (
             <div className="space-y-2">
-              <Label htmlFor="Name" className="text-sm font-medium text-gray-700">
+              {/* <Label htmlFor="Name" className="text-sm font-medium text-gray-700">
                 Name
-              </Label>
+              </Label> */}
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <Input
@@ -128,10 +128,10 @@ function SignUp(props: PropsType) {
                   onChange={(e) => setValues({ ...values, name: e.target.value })}
                 />
               </div>
-              <div className="mt-2"></div>
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+              <div className="mt-4"></div>
+              {/* <Label htmlFor="email" className="text-sm font-medium text-gray-700">
                 Email address
-              </Label>
+              </Label> */}
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <Input
@@ -144,9 +144,9 @@ function SignUp(props: PropsType) {
                 />
               </div>
               <div className="mt-2"></div>
-              <Label htmlFor="upiAddress" className="text-sm font-medium text-gray-700">
+              {/* <Label htmlFor="upiAddress" className="text-sm font-medium text-gray-700">
                 UPI Address
-              </Label>
+              </Label> */}
               <div className="relative">
                 <Wallet className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <Input

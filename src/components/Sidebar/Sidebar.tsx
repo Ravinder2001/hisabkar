@@ -31,7 +31,7 @@ function SidebarComponent() {
   // };
 
   return (
-    <Sidebar className={styles.container} collapsed={isCollapsed} breakPoint="sm" toggled={!isCollapsed}>
+    <Sidebar className={styles.container} collapsed={isCollapsed} toggled={!isCollapsed}>
       <Menu className={styles.menu}>
         <div className={styles.header}>
           <MenuItem icon={<LucideIcon name={isCollapsed ? "ChevronRight" : "ChevronLeft"} />} onClick={toggleSidebar}>

@@ -6,12 +6,35 @@
   /* background: linear-gradient(to right, #4A148C, #1E3A8A, #1B5E20); */
 }
 .sideBar {
-  width: var(--sideBarWidth);
+  max-width: var(--sideBarWidth);
   height: 100%;
+  background-color: white;
 }
 .children {
   height: 100%;
-  width: calc(100% - var(--sideBarWidth));
+  overflow: auto;
+  width: 100%;
   padding: 10px;
   box-sizing: border-box;
+}
+
+/* Mobile screen layout (width 768px or less) */
+@media (max-width: 768px) {
+  .privateCon {
+    display: block; /* Allows the sidebar and content to stack */
+  }
+
+  .sideBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: auto; /* Sidebar takes full width */
+    height: 100%; /* Full height */
+    z-index: 10; /* Sidebar on top */
+  }
+
+  .children {
+    width: calc(100% - 80px);
+    margin-left: 80px; /* No left margin */
+  }
 }
