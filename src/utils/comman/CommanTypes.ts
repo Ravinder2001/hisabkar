@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 export type GroupType = {
   group_id: number;
   total_members_count: number;
@@ -9,4 +11,9 @@ export type GroupType = {
   is_settled: boolean;
   is_you_admin: boolean;
   members: string[];
+};
+
+export type ModalType = {
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
 };

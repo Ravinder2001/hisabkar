@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { useState } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Badge } from "../../components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { ScrollArea } from "../../components/ui/scroll-area";
 import { Separator } from "../../components/ui/separator";
-import { Users2, Wallet, Receipt, MoreVertical } from "lucide-react";
+import { Users2, Wallet, Receipt, MoreVertical, Plus } from "lucide-react";
 import styles from "./style.module.css";
+import { Button } from "../../components/ui/button";
+import AddExpenseModal from "../../components/AddExpense/AddExpense";
 
 export default function GroupDetails() {
   const groupData = {
@@ -69,6 +70,12 @@ export default function GroupDetails() {
     ],
   };
 
+  const [isAddExpModal, setAddExpModal] = useState<boolean>(true);
+
+  const handleExpModal = () => {
+    setAddExpModal(!isAddExpModal);
+  };
+
   return (
     <div className="container space-y-6">
       <div className="grid lg:grid-cols-12 lg:gap-6">
@@ -99,13 +106,17 @@ export default function GroupDetails() {
               </Badge>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[400px] lg:h-[400px]">
-                <ExpensesTimeline expenses={groupData.expenses} />
-              </ScrollArea>
+              {/* <ScrollArea className="h-[400px] lg:h-[400px]"> */}
+              <ExpensesTimeline expenses={groupData.expenses} />
+              {/* </ScrollArea> */}
             </CardContent>
           </Card>
         </div>
       </div>
+      <Button className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg bg-black text-white" onClick={handleExpModal}>
+        <Plus className="w-6 h-6" />
+      </Button>
+      <AddExpenseModal isOpen={isAddExpModal} setIsOpen={setAddExpModal} />
     </div>
   );
 }
@@ -163,10 +174,10 @@ function GroupDetailsContent({ data }: any) {
 
 function ExpensesTimeline({ expenses }: any) {
   return (
-    <div className="relative">
+    <div className={styles.expenseCon}>
       {expenses.map((expense: any, index: number) => (
         <div key={expense.id} className="relative">
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-2">
             <div className="relative h-[100%]">
               <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
                 <Receipt className="h-4 w-4 text-green-600" />

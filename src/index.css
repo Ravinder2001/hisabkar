@@ -117,3 +117,7 @@ body {
 #email:focus {
   outline: none !important;
 }
+input[type='radio'] {
+  accent-color: #232323;
+  cursor: pointer;
+}
