@@ -1,12 +1,15 @@
-import React from "react";
+import React, { ChangeEvent, useEffect } from "react";
 import { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import { Check } from "lucide-react";
-import { ModalType } from "../../utils/comman/CommanTypes";
+import { ModalType, OptionType } from "../../utils/comman/CommanTypes";
 import CustomSelect from "../CustomSelect/CustomSelect";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
+import { Textarea } from "../ui/textarea";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 interface User {
   id: number;
@@ -24,16 +27,28 @@ const MOCK_USERS: User[] = [
   { id: 7, name: "David", avatar: "/placeholder.svg?height=40&width=40" },
 ];
 
-const MOCK_EXPENSE_TYPES = [
-  { value: "1", label: "Food" },
-  { value: "2", label: "Transport" },
-  { value: "3", label: "Entertainment" },
-];
+type ValueType = {
+  expenseName: string;
+  description: string;
+  expenseTypeId: OptionType;
+  amount: string;
+};
 
 function AddExpenseModal(props: ModalType) {
-  const [expenseName, setExpenseName] = useState("");
-  const [expenseTypeId, setExpenseTypeId] = useState<string>("");
-  const [amount, setAmount] = useState("");
+  const { expenseTypeList } = useSelector((state: RootState) => state.data);
+
+  const [optionList, setOptionList] = useState<OptionType[]>([]);
+
+  const [values, setValues] = useState<ValueType>({
+    expenseName: "",
+    description: "",
+    expenseTypeId: {
+      value: "",
+      label: "",
+    },
+    amount: "",
+  });
+
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [splitType, setSplitType] = useState("equal");
 
@@ -45,28 +60,58 @@ function AddExpenseModal(props: ModalType) {
     setSelectedUsers((prev) => (prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]));
   };
 
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setValues((prev) => ({ ...prev, [name]: [value] }));
+  };
+  const handleSelectChange = (optionValue: OptionType) => {
+    setValues((prev) => ({ ...prev, expenseTypeId: [optionValue] }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ expenseName, expenseTypeId, amount, selectedUsers, splitType });
+    console.log(values);
     // onClose();
   };
+
+  useEffect(() => {
+    if (expenseTypeList.length) {
+      setOptionList(
+        expenseTypeList.map((item) => ({
+          value: item.id,
+          label: item.name,
+        }))
+      );
+    }
+  }, [expenseTypeList]);
 
   return (
     <ModalComponent isOpen={props.isOpen} setIsOpen={props.setIsOpen}>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
           <label className="text-sm font-medium">Expense Name</label>
-          <Input value={expenseName} onChange={(e) => setExpenseName(e.target.value)} className="border-[#e5e7eb] rounded-lg" required />
+          <Input name="expenseName" value={values.expenseName} onChange={handleChange} className="border-[#e5e7eb] rounded-lg" required />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Description</label>
+          <Textarea name="description" value={values.description} onChange={handleChange} className="border-[#e5e7eb] rounded-lg" required />
         </div>
 
         <div className="space-y-2">
           <label className="text-sm font-medium">Expense Type</label>
-          <CustomSelect options={MOCK_EXPENSE_TYPES} placeholder="Select expense type" />
+          <CustomSelect
+            name="expenseTypeId"
+            value={values.expenseTypeId}
+            onChange={handleSelectChange}
+            options={optionList}
+            placeholder="Select expense type"
+          />
         </div>
 
         <div className="space-y-2">
           <label className="text-sm font-medium">Amount</label>
-          <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} className="border-[#e5e7eb] rounded-lg" required />
+          <Input type="number" name="amount" value={values.amount} onChange={handleChange} className="border-[#e5e7eb] rounded-lg" required />
         </div>
 
         <div className="space-y-2">

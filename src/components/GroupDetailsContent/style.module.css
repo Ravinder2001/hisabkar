@@ -1,3 +1,8 @@
+.membersCon {
+  height: 300px;
+  overflow: auto;
+}
+
 @media only screen and (max-width: 1024px) {
   .cardHeader {
     padding: 0px !important;

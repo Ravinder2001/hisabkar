@@ -9,13 +9,14 @@ interface Option {
 
 interface CustomSelectProps {
   options: Option[];
-  value?: Option | null;
+  value?: string;
+  name?: string;
   onChange?: (selectedOption: Option | null) => void;
   placeholder?: string;
   isDisabled?: boolean;
 }
 
-const CustomSelect: React.FC<CustomSelectProps> = ({ options, value, onChange, placeholder = "Select an option", isDisabled = false }) => {
+const CustomSelect: React.FC<CustomSelectProps> = ({ options, value, onChange, placeholder = "Select an option", isDisabled = false, name }) => {
   const customStyles = {
     control: (provided: any, state: any) => ({
       ...provided,
@@ -52,7 +53,9 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, value, onChange, p
     }),
   };
 
-  return <Select options={options} value={value} onChange={onChange} placeholder={placeholder} styles={customStyles} isDisabled={isDisabled} />;
+  return (
+    <Select name={name} options={options} value={value} onChange={onChange} placeholder={placeholder} styles={customStyles} isDisabled={isDisabled} />
+  );
 };
 
 export default CustomSelect;
