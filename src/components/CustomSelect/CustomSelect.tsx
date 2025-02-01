@@ -9,9 +9,9 @@ interface Option {
 
 interface CustomSelectProps {
   options: Option[];
-  value?: string;
+  value: Option | null; // Ensure it's an object
   name?: string;
-  onChange?: (selectedOption: Option | null) => void;
+  onChange: any;
   placeholder?: string;
   isDisabled?: boolean;
 }

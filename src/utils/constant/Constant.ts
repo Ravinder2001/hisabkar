@@ -17,6 +17,7 @@ const CONSTANTS = {
     GROUP_TYPE_LIST: "/group/groupTypeList",
     GROUP_DETAILS: "/group/single/",
     ALL_EXPENSES: "/expense/getAllExpenses/",
+    ADD_EXPENSE: "/expense/addExpense/",
   },
 };
 export default CONSTANTS;

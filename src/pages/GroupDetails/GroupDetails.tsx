@@ -1,4 +1,3 @@
- 
 import React, { useEffect, useState } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
 
@@ -99,7 +98,7 @@ export default function GroupDetails() {
       <Button className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg bg-black text-white" onClick={handleExpModal}>
         <Plus className="w-6 h-6" />
       </Button>
-      <AddExpenseModal isOpen={isAddExpModal} setIsOpen={setAddExpModal} />
+      <AddExpenseModal isOpen={isAddExpModal} setIsOpen={setAddExpModal} groupId={GroupId} memberList={groupData.members} />
     </div>
   );
 }

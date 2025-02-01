@@ -4,28 +4,14 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import { Check } from "lucide-react";
-import { ModalType, OptionType } from "../../utils/comman/CommanTypes";
+import { MemberType, ModalType, OptionType } from "../../utils/comman/CommanTypes";
 import CustomSelect from "../CustomSelect/CustomSelect";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
 import { Textarea } from "../ui/textarea";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-
-interface User {
-  id: number;
-  name: string;
-  avatar: string;
-}
-
-const MOCK_USERS: User[] = [
-  { id: 1, name: "Alice", avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 2, name: "Bob", avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 3, name: "Charlie", avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 4, name: "David", avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 5, name: "David", avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 6, name: "David", avatar: "/placeholder.svg?height=40&width=40" },
-  { id: 7, name: "David", avatar: "/placeholder.svg?height=40&width=40" },
-];
+import useApiFetch from "../../hooks/useAPIFetch";
+import CONSTANTS from "../../utils/constant/Constant";
 
 type ValueType = {
   expenseName: string;
@@ -34,8 +20,15 @@ type ValueType = {
   amount: string;
 };
 
-function AddExpenseModal(props: ModalType) {
+type PropsType = ModalType & {
+  groupId: string;
+  memberList: MemberType;
+};
+
+function AddExpenseModal(props: PropsType) {
   const { expenseTypeList } = useSelector((state: RootState) => state.data);
+
+  const { fetchData: AddExpense, response: addRes } = useApiFetch("");
 
   const [optionList, setOptionList] = useState<OptionType[]>([]);
 
@@ -49,14 +42,14 @@ function AddExpenseModal(props: ModalType) {
     amount: "",
   });
 
-  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [splitType, setSplitType] = useState("equal");
 
   const handleCheckboxChange = (value: string) => {
     setSplitType(value);
   };
 
-  const handleUserToggle = (userId: number) => {
+  const handleUserToggle = (userId: string) => {
     setSelectedUsers((prev) => (prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]));
   };
 
@@ -65,14 +58,35 @@ function AddExpenseModal(props: ModalType) {
     const value = event.target.value;
     setValues((prev) => ({ ...prev, [name]: [value] }));
   };
+  const handleTextAreaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setValues((prev) => ({ ...prev, [name]: [value] }));
+  };
   const handleSelectChange = (optionValue: OptionType) => {
-    setValues((prev) => ({ ...prev, expenseTypeId: [optionValue] }));
+    setValues((prev) => ({ ...prev, expenseTypeId: optionValue }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(values);
-    // onClose();
+    await AddExpense(CONSTANTS.API_ROUTES.ADD_EXPENSE + props.groupId, {
+      data: {
+        expenseName: "Taxi Fare",
+        description: "Cricket matach tickets",
+        expenseTypeId: 1,
+        amount: 100,
+        members: [
+          {
+            userId: 1,
+            amount: 50,
+          },
+          {
+            userId: 4,
+            amount: 50,
+          },
+        ],
+      },
+    });
   };
 
   useEffect(() => {
@@ -86,6 +100,12 @@ function AddExpenseModal(props: ModalType) {
     }
   }, [expenseTypeList]);
 
+  useEffect(() => {
+    if (addRes?.success == 1) {
+      props.setIsOpen(false);
+    }
+  }, [addRes]);
+
   return (
     <ModalComponent isOpen={props.isOpen} setIsOpen={props.setIsOpen}>
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -95,7 +115,7 @@ function AddExpenseModal(props: ModalType) {
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium">Description</label>
-          <Textarea name="description" value={values.description} onChange={handleChange} className="border-[#e5e7eb] rounded-lg" required />
+          <Textarea name="description" value={values.description} onChange={handleTextAreaChange} className="border-[#e5e7eb] rounded-lg" required />
         </div>
 
         <div className="space-y-2">
@@ -117,7 +137,7 @@ function AddExpenseModal(props: ModalType) {
         <div className="space-y-2">
           <label className="text-sm font-medium">Select Users</label>
           <div className="flex flex-wrap gap-4 mt-2">
-            {MOCK_USERS.map((user) => (
+            {props.memberList.map((user) => (
               <div key={user.id}>
                 <button
                   type="button"
@@ -126,14 +146,14 @@ function AddExpenseModal(props: ModalType) {
                     selectedUsers.includes(user.id) ? "bg-blue-100 text-blue-600 border-2 border-blue-200" : "bg-gray-100 text-gray-600"
                   }`}
                 >
-                  <UserAvatar />
+                  <UserAvatar userImage={user.avatar} userName={user.name} />
                   {selectedUsers.includes(user.id) && (
                     <div className="absolute -top-1 -right-1 bg-blue-500 rounded-full p-0.5">
                       <Check className="w-3 h-3 text-white" />
                     </div>
                   )}
                 </button>
-                <div className="text-xs">Ravinder</div>
+                <div className="text-xs text-center">{user.name.split(" ")[0]}</div>
               </div>
             ))}
           </div>
@@ -185,12 +205,12 @@ function AddExpenseModal(props: ModalType) {
           <label className="text-sm font-medium">Split Details</label>
           <div className="space-y-3 mt-2">
             {selectedUsers.map((userId) => {
-              const user = MOCK_USERS.find((u) => u.id === userId);
+              const user = props.memberList.find((u) => u.id === userId);
               if (!user) return null;
               return (
                 <div key={user.id} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm">{user.initial}</div>
-                  <span className="flex-1">{user.name}</span>
+                  <UserAvatar userImage={user.avatar} userName={user.name} />
+                  <span className="flex-1">{user.name.split(" ")[0]}</span>
                   <Input type="text" className="w-24 border-[#e5e7eb] rounded-lg text-right" placeholder={splitType === "percentage" ? "%" : "0"} />
                 </div>
               );
