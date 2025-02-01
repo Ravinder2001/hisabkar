@@ -12,11 +12,20 @@ interface CustomSelectProps {
   value: Option | null; // Ensure it's an object
   name?: string;
   onChange: any;
+  onBlur: any;
   placeholder?: string;
   isDisabled?: boolean;
 }
 
-const CustomSelect: React.FC<CustomSelectProps> = ({ options, value, onChange, placeholder = "Select an option", isDisabled = false, name }) => {
+const CustomSelect: React.FC<CustomSelectProps> = ({
+  options,
+  value,
+  onChange,
+  placeholder = "Select an option",
+  isDisabled = false,
+  name,
+  onBlur,
+}) => {
   const customStyles = {
     control: (provided: any, state: any) => ({
       ...provided,
@@ -54,7 +63,16 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, value, onChange, p
   };
 
   return (
-    <Select name={name} options={options} value={value} onChange={onChange} placeholder={placeholder} styles={customStyles} isDisabled={isDisabled} />
+    <Select
+      onBlur={onBlur}
+      name={name}
+      options={options}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      styles={customStyles}
+      isDisabled={isDisabled}
+    />
   );
 };
 

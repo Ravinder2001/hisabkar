@@ -1,5 +1,7 @@
-import React, { ChangeEvent, useEffect } from "react";
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect } from "react";
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import ModalComponent from "../ModalComponent/ModalComponent";
@@ -13,215 +15,273 @@ import { RootState } from "../../store/store";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
 
-type ValueType = {
+type SplitType = "equal" | "percentage" | "custom";
+
+interface UserSplit {
+  userId: string;
+  amount: string;
+}
+
+interface FormValues {
   expenseName: string;
   description: string;
   expenseTypeId: OptionType;
   amount: string;
-};
+  selectedUsers: string[];
+  splitType: SplitType;
+  userSplits: UserSplit[];
+}
 
-type PropsType = ModalType & {
+const validationSchema = Yup.object().shape({
+  expenseName: Yup.string().required("Expense name is required").min(3, "Must be at least 3 characters"),
+  description: Yup.string().required("Description is required").min(5, "Must be at least 5 characters"),
+  expenseTypeId: Yup.object().shape({
+    value: Yup.string().required("Expense type is required"),
+    label: Yup.string().required("Please select an expense type"),
+  }),
+  amount: Yup.number().required("Amount is required").positive("Amount must be positive").min(0.01, "Amount must be greater than 0"),
+  selectedUsers: Yup.array().min(1, "Select at least one user").required("Select users to split with"),
+});
+
+function AddExpenseModal({
+  isOpen,
+  setIsOpen,
+  groupId,
+  memberList,
+}: ModalType & {
   groupId: string;
   memberList: MemberType;
-};
-
-function AddExpenseModal(props: PropsType) {
+}) {
   const { expenseTypeList } = useSelector((state: RootState) => state.data);
+  const { fetchData: addExpense, response: addRes } = useApiFetch("");
 
-  const { fetchData: AddExpense, response: addRes } = useApiFetch("");
+  useEffect(() => {
+    if (addRes?.success === 1) {
+      setIsOpen(false);
+    }
+  }, [addRes, setIsOpen]);
 
-  const [optionList, setOptionList] = useState<OptionType[]>([]);
+  const validateSplits = (values: FormValues): boolean => {
+    const totalAmount = parseFloat(values.amount);
+    if (!totalAmount || values.selectedUsers.length === 0) return false;
 
-  const [values, setValues] = useState<ValueType>({
+    if (values.splitType === "percentage") {
+      const totalPercentage = values.userSplits.reduce((sum, split) => sum + (parseFloat(split.amount) || 0), 0);
+      return Math.abs(totalPercentage - 100) < 0.01;
+    }
+
+    if (values.splitType === "custom") {
+      const totalSplit = values.userSplits.reduce((sum, split) => sum + (parseFloat(split.amount) || 0), 0);
+      return Math.abs(totalSplit - totalAmount) < 0.01;
+    }
+
+    return true;
+  };
+
+  const initialValues: FormValues = {
     expenseName: "",
     description: "",
-    expenseTypeId: {
-      value: "",
-      label: "",
-    },
+    expenseTypeId: { value: "", label: "" },
     amount: "",
-  });
-
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const [splitType, setSplitType] = useState("equal");
-
-  const handleCheckboxChange = (value: string) => {
-    setSplitType(value);
+    selectedUsers: [],
+    splitType: "equal",
+    userSplits: [],
   };
-
-  const handleUserToggle = (userId: string) => {
-    setSelectedUsers((prev) => (prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]));
-  };
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setValues((prev) => ({ ...prev, [name]: [value] }));
-  };
-  const handleTextAreaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setValues((prev) => ({ ...prev, [name]: [value] }));
-  };
-  const handleSelectChange = (optionValue: OptionType) => {
-    setValues((prev) => ({ ...prev, expenseTypeId: optionValue }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await AddExpense(CONSTANTS.API_ROUTES.ADD_EXPENSE + props.groupId, {
-      data: {
-        expenseName: "Taxi Fare",
-        description: "Cricket matach tickets",
-        expenseTypeId: 1,
-        amount: 100,
-        members: [
-          {
-            userId: 1,
-            amount: 50,
-          },
-          {
-            userId: 4,
-            amount: 50,
-          },
-        ],
-      },
-    });
-  };
-
-  useEffect(() => {
-    if (expenseTypeList.length) {
-      setOptionList(
-        expenseTypeList.map((item) => ({
-          value: item.id,
-          label: item.name,
-        }))
-      );
-    }
-  }, [expenseTypeList]);
-
-  useEffect(() => {
-    if (addRes?.success == 1) {
-      props.setIsOpen(false);
-    }
-  }, [addRes]);
 
   return (
-    <ModalComponent isOpen={props.isOpen} setIsOpen={props.setIsOpen}>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Expense Name</label>
-          <Input name="expenseName" value={values.expenseName} onChange={handleChange} className="border-[#e5e7eb] rounded-lg" required />
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Description</label>
-          <Textarea name="description" value={values.description} onChange={handleTextAreaChange} className="border-[#e5e7eb] rounded-lg" required />
-        </div>
+    <ModalComponent isOpen={isOpen} setIsOpen={setIsOpen}>
+      <div className="text-md font-bold mb-6">Add Expense</div>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={async (values, { setSubmitting, setErrors }) => {
+          try {
+            if (!validateSplits(values)) {
+              setErrors({ userSplits: "Split amounts are invalid" });
+              return;
+            }
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Expense Type</label>
-          <CustomSelect
-            name="expenseTypeId"
-            value={values.expenseTypeId}
-            onChange={handleSelectChange}
-            options={optionList}
-            placeholder="Select expense type"
-          />
-        </div>
+            const members = values.userSplits.map((split) => ({
+              userId: split.userId,
+              amount: values.splitType === "percentage" ? ((parseFloat(values.amount) * parseFloat(split.amount)) / 100).toFixed(2) : split.amount,
+            }));
+            console.log("🚀  members:", members);
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Amount</label>
-          <Input type="number" name="amount" value={values.amount} onChange={handleChange} className="border-[#e5e7eb] rounded-lg" required />
-        </div>
+            await addExpense(CONSTANTS.API_ROUTES.ADD_EXPENSE + groupId, {
+              data: {
+                expenseName: values.expenseName,
+                description: values.description,
+                expenseTypeId: values.expenseTypeId.value,
+                amount: parseFloat(values.amount),
+                members,
+              },
+            });
+          } finally {
+            setSubmitting(false);
+          }
+        }}
+      >
+        {({ values, errors, touched, setFieldValue, isSubmitting, handleBlur }) => {
+          // Update splits when amount, selectedUsers, or splitType changes
+          useEffect(() => {
+            const amount = parseFloat(values.amount) || 0;
+            const splits = values.selectedUsers.map((userId) => ({
+              userId,
+              amount: values.splitType === "equal" && amount ? (amount / values.selectedUsers.length).toFixed(2) : "",
+            }));
+            setFieldValue("userSplits", splits, false);
+          }, [values.amount, values.selectedUsers, values.splitType]);
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Select Users</label>
-          <div className="flex flex-wrap gap-4 mt-2">
-            {props.memberList.map((user) => (
-              <div key={user.id}>
-                <button
-                  type="button"
-                  onClick={() => handleUserToggle(user.id)}
-                  className={`relative w-12 h-12 rounded-full flex items-center justify-center text-base font-medium ${
-                    selectedUsers.includes(user.id) ? "bg-blue-100 text-blue-600 border-2 border-blue-200" : "bg-gray-100 text-gray-600"
-                  }`}
-                >
-                  <UserAvatar userImage={user.avatar} userName={user.name} />
-                  {selectedUsers.includes(user.id) && (
-                    <div className="absolute -top-1 -right-1 bg-blue-500 rounded-full p-0.5">
-                      <Check className="w-3 h-3 text-white" />
-                    </div>
+          return (
+            <Form className="space-y-6" noValidate>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Expense Name</label>
+                <Field name="expenseName">
+                  {({ field }: any) => (
+                    <Input
+                      {...field}
+                      onBlur={handleBlur}
+                      className={`border-[#e5e7eb] rounded-lg ${touched.expenseName && errors.expenseName ? "border-red-500" : ""}`}
+                    />
                   )}
-                </button>
-                <div className="text-xs text-center">{user.name.split(" ")[0]}</div>
+                </Field>
+                {touched.expenseName && errors.expenseName && <div className="text-red-500 text-xs">{errors.expenseName}</div>}
               </div>
-            ))}
-          </div>
-        </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Split Type</label>
-          <div className="flex flex-wrap gap-4 mt-2">
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="equal"
-                checked={splitType === "equal"}
-                onChange={() => handleCheckboxChange("equal")}
-                className="border-2 border-gray-200"
-              />
-              <label htmlFor="equal" className="ml-2 text-sm">
-                Equal
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="percentage"
-                checked={splitType === "percentage"}
-                onChange={() => handleCheckboxChange("percentage")}
-                className="border-2 border-gray-200"
-              />
-              <label htmlFor="percentage" className="ml-2 text-sm">
-                Percentage
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="custom"
-                checked={splitType === "custom"}
-                onChange={() => handleCheckboxChange("custom")}
-                className="border-2 border-gray-200"
-              />
-              <label htmlFor="custom" className="ml-2 text-sm">
-                Custom
-              </label>
-            </div>
-          </div>
-        </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Description</label>
+                <Field name="description">
+                  {({ field }: any) => (
+                    <Textarea
+                      {...field}
+                      onBlur={handleBlur}
+                      className={`border-[#e5e7eb] rounded-lg ${touched.description && errors.description ? "border-red-500" : ""}`}
+                    />
+                  )}
+                </Field>
+                {touched.description && errors.description && <div className="text-red-500 text-xs">{errors.description}</div>}
+              </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Split Details</label>
-          <div className="space-y-3 mt-2">
-            {selectedUsers.map((userId) => {
-              const user = props.memberList.find((u) => u.id === userId);
-              if (!user) return null;
-              return (
-                <div key={user.id} className="flex items-center gap-3">
-                  <UserAvatar userImage={user.avatar} userName={user.name} />
-                  <span className="flex-1">{user.name.split(" ")[0]}</span>
-                  <Input type="text" className="w-24 border-[#e5e7eb] rounded-lg text-right" placeholder={splitType === "percentage" ? "%" : "0"} />
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Expense Type</label>
+                <Field name="expenseTypeId">
+                  {({ field, form }: any) => (
+                    <CustomSelect
+                      {...field}
+                      options={expenseTypeList.map((type) => ({
+                        value: type.id,
+                        label: type.name,
+                      }))}
+                      onChange={(option: OptionType) => {
+                        form.setFieldValue("expenseTypeId", option);
+                        form.setFieldTouched("expenseTypeId", true, false);
+                      }}
+                      placeholder="Select expense type"
+                      className={touched.expenseTypeId && errors.expenseTypeId?.value ? "border-red-500" : ""}
+                    />
+                  )}
+                </Field>
+                {touched.expenseTypeId && errors.expenseTypeId?.value && <div className="text-red-500 text-xs">{errors.expenseTypeId.value}</div>}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Amount</label>
+                <Field name="amount">
+                  {({ field }: any) => (
+                    <Input
+                      type="number"
+                      {...field}
+                      onBlur={handleBlur}
+                      className={`border-[#e5e7eb] rounded-lg ${touched.amount && errors.amount ? "border-red-500" : ""}`}
+                    />
+                  )}
+                </Field>
+                {touched.amount && errors.amount && <div className="text-red-500 text-xs">{errors.amount}</div>}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Split Type</label>
+                <div className="flex gap-4">
+                  {["equal", "percentage", "custom"].map((type) => (
+                    <div key={type} className="flex items-center">
+                      <Field type="radio" name="splitType" value={type} id={type} className="border-2 border-gray-200" />
+                      <label htmlFor={type} className="ml-2 text-sm capitalize">
+                        {type}
+                      </label>
+                    </div>
+                  ))}
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              </div>
 
-        <Button type="submit" className="w-full bg-black hover:bg-gray-800 text-white rounded-lg py-2">
-          Add Expense
-        </Button>
-      </form>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select Users</label>
+                <div className="flex flex-wrap gap-4">
+                  {memberList.map((user) => (
+                    <div key={user.id} className="text-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newSelected = values.selectedUsers.includes(user.id)
+                            ? values.selectedUsers.filter((id) => id !== user.id)
+                            : [...values.selectedUsers, user.id];
+                          setFieldValue("selectedUsers", newSelected);
+                        }}
+                        className={`relative w-12 h-12 rounded-full ${
+                          values.selectedUsers.includes(user.id) ? "bg-blue-100 border-2 border-blue-200" : "bg-gray-100"
+                        }`}
+                      >
+                        <UserAvatar userImage={user.avatar} userName={user.name} />
+                        {values.selectedUsers.includes(user.id) && (
+                          <div className="absolute -top-1 -right-1 bg-blue-500 rounded-full p-0.5">
+                            <Check className="w-3 h-3 text-white" />
+                          </div>
+                        )}
+                      </button>
+                      <div className="text-xs mt-1">{user.name.split(" ")[0]}</div>
+                    </div>
+                  ))}
+                </div>
+                {touched.selectedUsers && errors.selectedUsers && <div className="text-red-500 text-xs mt-1">{errors.selectedUsers}</div>}
+              </div>
+
+              {values.selectedUsers.length > 0 && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Split Details</label>
+                  <div className="space-y-3">
+                    {values.userSplits.map(({ userId }, index) => {
+                      const user = memberList.find((u) => u.id === userId);
+                      if (!user) return null;
+
+                      return (
+                        <div key={userId} className="flex items-center gap-3">
+                          <UserAvatar userImage={user.avatar} userName={user.name} />
+                          <span className="flex-1">{user.name}</span>
+                          <Field name={`userSplits.${index}.amount`}>
+                            {({ field }: any) => (
+                              <Input
+                                {...field}
+                                type="text"
+                                disabled={values.splitType === "equal"}
+                                className="w-24 text-right"
+                                placeholder={values.splitType === "percentage" ? "%" : "0"}
+                              />
+                            )}
+                          </Field>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {/* {errors.userSplits && <div className="text-red-500 text-xs mt-1">{errors.userSplits}</div>} */}
+                </div>
+              )}
+
+              <Button type="submit" className="w-full bg-black hover:bg-gray-800 text-white rounded-lg py-2" disabled={isSubmitting}>
+                {isSubmitting ? "Adding Expense..." : "Add Expense"}
+              </Button>
+            </Form>
+          );
+        }}
+      </Formik>
     </ModalComponent>
   );
 }

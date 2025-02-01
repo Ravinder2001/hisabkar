@@ -25,7 +25,7 @@ export default function GroupDetails() {
   const [groupData, setGroupData] = useState<GroupDataType | null>();
   const [expenseList, setExpenseList] = useState<ExpenseType[]>([]);
 
-  const [isAddExpModal, setAddExpModal] = useState<boolean>(false);
+  const [isAddExpModal, setAddExpModal] = useState<boolean>(true);
 
   const handleExpModal = () => {
     setAddExpModal(!isAddExpModal);
