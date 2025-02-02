@@ -5,6 +5,8 @@
   --text-color: #ffffff;
   --primary-color: #6200ea;
   --sideBarWidth: 250px;
+  --borderRadius: 8px;
+  --boxShadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 [data-theme="dark"] {
@@ -131,4 +133,11 @@ input[type="number"]::-webkit-inner-spin-button {
 /* Hide spinner in Firefox */
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+.css-dip3t8 {
+  border-radius: var(--borderRadius);
+}
+.css-1wvake5 {
+  border: none !important;
 }

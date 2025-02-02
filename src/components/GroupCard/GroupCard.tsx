@@ -3,15 +3,20 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../comp
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
-import { Users, DollarSign, MoreVertical, Trash2 } from "lucide-react";
+import { Users, MoreVertical, Trash2, IndianRupee } from "lucide-react";
 import { GroupType } from "../../utils/comman/CommanTypes";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
 import styles from "./style.module.css";
 import { useNavigate } from "react-router-dom";
 import CONSTANTS from "../../utils/constant/Constant";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 export function propsCard(props: GroupType) {
   const navigate = useNavigate();
+  const groupTypeList = useSelector((state: RootState) => state.data.groupTypeList);
+
+  const groupType = groupTypeList.find((type) => type.id === props.group_type_id);
   return (
     <Card
       onClick={() => navigate(CONSTANTS.PROJECT_ROUTES.GROUP + "/1")}
@@ -42,9 +47,9 @@ export function propsCard(props: GroupType) {
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-center space-x-2">
             <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full">
-              <img src={props.group_type_image || "/placeholder.svg"} alt={props.group_type} className="w-6 h-6 object-cover" />
+              <img src={groupType?.icon ?? ""} alt={groupType?.name} className="w-6 h-6 object-cover" />
             </div>
-            <span className="text-sm font-medium text-purple-600 dark:text-purple-300">{props.group_type}</span>
+            <span className="text-sm font-medium text-purple-600 dark:text-purple-300">{groupType?.name}</span>
           </div>
           <div className="flex items-center space-x-2 justify-self-end">
             <Users className="w-5 h-5 text-blue-500" />
@@ -52,9 +57,9 @@ export function propsCard(props: GroupType) {
           </div>
           <div className="flex items-center space-x-2">
             <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full">
-              <DollarSign className="w-5 h-5 text-green-500" />
+              <IndianRupee className="w-5 h-5 text-green-500" />
             </div>
-            <span className="text-lg font-bold text-green-600 dark:text-green-300">${props.total_amount}</span>
+            <span className="text-lg font-bold text-green-600 dark:text-green-300">₹{props.total_amount}</span>
           </div>
           <div className="justify-self-end">
             {props.is_you_admin && (

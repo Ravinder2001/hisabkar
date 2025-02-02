@@ -2,13 +2,12 @@ import { Dispatch, SetStateAction } from "react";
 
 export type GroupType = {
   group_id: number;
+  group_name: string;
+  total_amount: number;
+  group_type_id: string;
+  is_settled: boolean;
   total_members_count: number;
   remaining_members: number;
-  group_name: string;
-  group_type_image: string;
-  group_type: string;
-  total_amount: string;
-  is_settled: boolean;
   is_you_admin: boolean;
   members: string[];
 };
