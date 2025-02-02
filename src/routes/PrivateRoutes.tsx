@@ -4,7 +4,8 @@ import { Navigate } from "react-router-dom";
 import { RootState } from "../store/store";
 import CONSTANTS from "../utils/constant/Constant";
 import styles from "../App.module.css";
-import SidebarComponent from "../components/Sidebar/Sidebar";
+import Navbar from "../components/Navbar/Navbar";
+// import SidebarComponent from "../components/Sidebar/Sidebar";
 
 type PrivateRouteProps = {
   children: React.ReactNode;
@@ -15,8 +16,8 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
 
   return isUserLoggedIn ? (
     <div className={styles.privateCon}>
-      <div className={styles.sideBar}>
-        <SidebarComponent />
+      <div className={styles.navBar}>
+        <Navbar />
       </div>
       <div className={styles.children}>{children}</div>
     </div>

@@ -21,7 +21,6 @@ function Home() {
   }, [response]);
   return (
     <div className={styles.container}>
-      <div className={styles.header}></div>
       <div className={styles.cardCon}>
         {groupList.map((group) => (
           <ExpenseCard key={group.group_id} {...group} />
