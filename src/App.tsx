@@ -10,11 +10,12 @@ import { isTokenExpired } from "./utils/helpers/authHelper";
 import useApiFetch from "./hooks/useAPIFetch";
 import CONSTANTS from "./utils/constant/Constant";
 import { setExpenseTypeList, setGroupTypeList } from "./store/features/dataSlice";
+import Loader from "./components/Loader/Loader";
 
 // Lazy load the component
 const ProjectRoutes = withSuspense(
   lazy(() => import("./routes/ProjectRoutes")),
-  <div>...Loading</div>
+  <Loader />
 );
 
 const App: React.FC = () => {

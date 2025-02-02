@@ -14,6 +14,7 @@ import GroupDetailsContent from "../../components/GroupDetailsContent/GroupDetai
 import { Plus } from "lucide-react";
 import { ExpenseType, GroupDataType } from "../../utils/comman/CommanTypes";
 import ExpenseCard from "../../components/ExpenseCard/ExpenseCard";
+import Loader from "../../components/Loader/Loader";
 
 export default function GroupDetails() {
   const location = useLocation();
@@ -49,7 +50,7 @@ export default function GroupDetails() {
   }, [expenseRes]);
 
   return !groupData ? (
-    <div>...Loading</div>
+    <Loader />
   ) : (
     <div className={styles.container}>
       <div className={styles.detailsCon}>
