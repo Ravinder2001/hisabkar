@@ -15,6 +15,7 @@ import { RootState } from "../../store/store";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
 import showToast from "../../utils/helpers/toastHelper";
+import Messages from "../../utils/constant/Messages";
 
 type SplitType = "equal" | "percentage" | "custom";
 
@@ -49,9 +50,11 @@ function AddExpenseModal({
   setIsOpen,
   groupId,
   memberList,
+  callbackFunc,
 }: ModalType & {
   groupId: string;
   memberList: MemberType;
+  callbackFunc: () => void;
 }) {
   const { expenseTypeList } = useSelector((state: RootState) => state.data);
   const { fetchData: addExpense, response: addRes } = useApiFetch("");
@@ -131,8 +134,9 @@ function AddExpenseModal({
 
   useEffect(() => {
     if (addRes?.success === 1) {
-      // setIsOpen(false);
-      showToast("Expense Added", "success");
+      setIsOpen(false);
+      callbackFunc();
+      showToast(Messages.LOGS.ADD_EXPENSE, "success");
     }
   }, [addRes, setIsOpen]);
 
@@ -236,7 +240,7 @@ function AddExpenseModal({
                           : [...values.selectedUsers, user.id];
                         setFieldValue("selectedUsers", newSelected);
                       }}
-                      className={`relative w-12 h-12 rounded-full ${
+                      className={`flex items-center justify-center relative w-12 h-12 rounded-full ${
                         values.selectedUsers.includes(user.id) ? "bg-blue-100 border-2 border-blue-200" : "bg-gray-100"
                       }`}
                     >

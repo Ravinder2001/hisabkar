@@ -19,6 +19,7 @@ const Messages = {
     FETCH_SUCCESS: "Expense logs retrieved successfully.",
     FETCH_ERROR: "Failed to retrieve expense logs. Please try again.",
     NO_LOGS: "No logs available for this group.",
+    ADD_EXPENSE: "Expense added successfully!",
   },
 
   // General Messages
