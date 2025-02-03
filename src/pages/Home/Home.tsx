@@ -5,11 +5,13 @@ import CONSTANTS from "../../utils/constant/Constant";
 import { GroupType } from "../../utils/comman/CommanTypes";
 import styles from "./style.module.css";
 import FloatingActionButton from "../../components/FloatingActionButton/FloatingActionButton";
+import CreateGroupModal from "../../components/CreateGroup/CreateGroup";
 
 function Home() {
   const { fetchData, response } = useApiFetch(CONSTANTS.API_ROUTES.ALL_GROUPS);
 
   const [groupList, setGroupList] = useState<GroupType[]>([]);
+  const [isCreateModal, setIsCreateModal] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -27,7 +29,12 @@ function Home() {
           <ExpenseCard key={group.group_id} {...group} />
         ))}
       </div>
-      <FloatingActionButton onCreateGroup={() => {}} onJoinGroup={() => {}} />
+      <FloatingActionButton
+        onCreateGroup={() => {
+          setIsCreateModal(true);
+        }}
+      />
+      <CreateGroupModal isOpen={isCreateModal} setIsOpen={setIsCreateModal} callbackFunc={fetchData} />
     </div>
   );
 }

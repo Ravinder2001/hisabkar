@@ -18,6 +18,7 @@ const CONSTANTS = {
     GROUP_DETAILS: "/group/single/",
     ALL_EXPENSES: "/expense/getAllExpenses/",
     ADD_EXPENSE: "/expense/addExpense/",
+    CREATE_GROUP: "/group/createGroup/",
   },
 };
 export default CONSTANTS;
