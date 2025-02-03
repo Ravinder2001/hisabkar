@@ -7,6 +7,7 @@ import Home from "../pages/Home/Home";
 import PrivateRoute from "./PrivateRoutes";
 import Authentication from "../pages/Authentication/Authentication";
 import Group from "../pages/GroupDetails/GroupDetails";
+import JoinGroup from "../pages/JoinGroup/JoinGroup";
 
 // import StaffGroups from "../pages/Admin/StaffGroups/StaffGroups";
 
@@ -27,6 +28,14 @@ const ProjectRoutes = () => {
         element={
           <PrivateRoute>
             <Group />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={CONSTANTS.PROJECT_ROUTES.JOIN_GROUP + "/:group_code"}
+        element={
+          <PrivateRoute>
+            <JoinGroup />
           </PrivateRoute>
         }
       />

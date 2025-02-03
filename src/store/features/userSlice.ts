@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import CONSTANTS from "../../utils/constant/Constant";
 
 export interface userState {
   id: string;
@@ -7,6 +8,7 @@ export interface userState {
   role: string;
   token: string | null;
   isUserLoggedIn: boolean;
+  reDirectURL: string;
 }
 
 const initialState: userState = {
@@ -16,6 +18,7 @@ const initialState: userState = {
   role: "",
   token: "",
   isUserLoggedIn: false,
+  reDirectURL: CONSTANTS.PROJECT_ROUTES.HOME,
 };
 
 export const userSlice = createSlice({
@@ -38,10 +41,13 @@ export const userSlice = createSlice({
       state.token = null;
       state.isUserLoggedIn = false;
     },
+    setReDirectURL: (state, { payload }) => {
+      state.reDirectURL = payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setUserLoggedIn, setUserLoggedOut } = userSlice.actions;
+export const { setUserLoggedIn, setUserLoggedOut, setReDirectURL } = userSlice.actions;
 
 export default userSlice.reducer;

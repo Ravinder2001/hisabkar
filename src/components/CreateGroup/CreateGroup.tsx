@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { Input } from "../ui/input";
@@ -31,8 +31,10 @@ function CreateGroupModal({
   isOpen,
   setIsOpen,
   callbackFunc,
+  setIsShareGroupModal,
 }: ModalType & {
   callbackFunc: () => void;
+  setIsShareGroupModal: Dispatch<SetStateAction<{ status: boolean; groupCode: string }>>;
 }) {
   const { groupTypeList } = useSelector((state: RootState) => state.data);
   const { fetchData: createGroup, response: createRes } = useApiFetch("");
@@ -59,6 +61,10 @@ function CreateGroupModal({
   useEffect(() => {
     if (createRes?.success === 1) {
       setIsOpen(false);
+      setIsShareGroupModal({
+        status: true,
+        groupCode: createRes.data.code,
+      });
       callbackFunc();
       showToast(Messages.LOGS.GROUP_CREATED, "success");
     }

@@ -5,6 +5,7 @@ const CONSTANTS = {
     AUTHTICATION: "/authentication",
     HOME: "/",
     GROUP: "/group",
+    JOIN_GROUP: "/join-group",
   },
   API_ROUTES: {
     GOOGLE_SIGN_IN: "/user/google-signin",
@@ -19,6 +20,7 @@ const CONSTANTS = {
     ALL_EXPENSES: "/expense/getAllExpenses/",
     ADD_EXPENSE: "/expense/addExpense/",
     CREATE_GROUP: "/group/createGroup/",
+    JOIN_GROUP: "/group/joinGroup/",
   },
 };
 export default CONSTANTS;

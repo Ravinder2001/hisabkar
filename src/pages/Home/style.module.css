@@ -8,11 +8,15 @@
   height: 100%;
   overflow: auto;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: flex-start;
   flex-wrap: wrap;
   gap: 10px;
   padding-right: 10px;
+}
+
+.cardCon > div {
+  width: 400px;
 }
 
 @media (max-width: 768px) {

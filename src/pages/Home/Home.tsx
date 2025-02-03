@@ -6,15 +6,24 @@ import { GroupType } from "../../utils/comman/CommanTypes";
 import styles from "./style.module.css";
 import FloatingActionButton from "../../components/FloatingActionButton/FloatingActionButton";
 import CreateGroupModal from "../../components/CreateGroup/CreateGroup";
+import GroupSharingModal from "../../components/ShareGroup/ShareGroup";
+import { useDispatch } from "react-redux";
+import { setReDirectURL } from "../../store/features/userSlice";
 
 function Home() {
+  const dispatch = useDispatch();
   const { fetchData, response } = useApiFetch(CONSTANTS.API_ROUTES.ALL_GROUPS);
 
   const [groupList, setGroupList] = useState<GroupType[]>([]);
   const [isCreateModal, setIsCreateModal] = useState(false);
+  const [isShareGroupModal, setIsShareGroupModal] = useState<{ status: boolean; groupCode: string }>({
+    status: false,
+    groupCode: "",
+  });
 
   useEffect(() => {
     fetchData();
+    dispatch(setReDirectURL(CONSTANTS.PROJECT_ROUTES.HOME));
   }, []);
 
   useEffect(() => {
@@ -34,7 +43,14 @@ function Home() {
           setIsCreateModal(true);
         }}
       />
-      <CreateGroupModal isOpen={isCreateModal} setIsOpen={setIsCreateModal} callbackFunc={fetchData} />
+      <CreateGroupModal isOpen={isCreateModal} setIsOpen={setIsCreateModal} setIsShareGroupModal={setIsShareGroupModal} callbackFunc={fetchData} />
+      <GroupSharingModal
+        isOpen={isShareGroupModal.status}
+        setIsOpen={() => {
+          setIsShareGroupModal({ status: false, groupCode: "" });
+        }}
+        groupCode={isShareGroupModal.groupCode}
+      />
     </div>
   );
 }
