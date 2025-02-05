@@ -48,7 +48,8 @@
   "scripts": {
     "start:dev": "env-cmd -f .env.dev craco start",
     "start:prod": "env-cmd -f .env.prod craco start",
-    "build": "craco build",
+    "build:dev": "env-cmd -f .env.dev craco build",
+    "build:prod": "env-cmd -f .env.prod craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
     "prepare": "husky",

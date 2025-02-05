@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ExpenseType, MemberType } from "../../utils/comman/CommanTypes";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import { formatDateTime } from "../../utils/helpers/commanHelper";
 
 type PropsType = ExpenseType & {
   allMembersList: MemberType;
@@ -40,12 +41,15 @@ function ExpenseCard(expense: PropsType) {
               <div className="flex flex-wrap items-start justify-between">
                 <div className="min-w-0">
                   <h4 className="font-semibold text-base sm:text-lg truncate">{expense.expense_name}</h4>
-                  <h4 className="font-semibold text-sm sm:text-lg truncate">{expenseType?.name}</h4>
                   <p className="text-xs sm:text-sm text-gray-600 truncate">{expense.description}</p>
+                  <div className="flex items-center gap-2 text-gray-600 mt-2">
+                    <img src={expenseType?.icon ?? ""} alt={expenseType?.name} className="w-4 h-4" />
+                    <div className="text-sm">{expenseType?.name}</div>
+                  </div>
                 </div>
                 <div className="text-right min-w-[80px] sm:min-w-[100px]">
                   <p className="font-semibold text-green-600 text-sm sm:text-base">₹{expense.amount}</p>
-                  <p className="text-xs text-gray-500">{new Date(expense.created_at).toLocaleDateString()}</p>
+                  <p className="text-xs text-gray-500">{formatDateTime(expense.created_at)}</p>
                 </div>
               </div>
 
