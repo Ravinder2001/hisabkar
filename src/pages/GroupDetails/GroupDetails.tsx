@@ -15,6 +15,7 @@ import { Plus } from "lucide-react";
 import { ExpenseType, GroupDataType } from "../../utils/comman/CommanTypes";
 import ExpenseCard from "../../components/ExpenseCard/ExpenseCard";
 import CircularLoader from "../../components/CircularLoader/CircularLoader";
+import GroupPairs from "../../components/GroupPairs/GroupPairs";
 
 export default function GroupDetails() {
   const location = useLocation();
@@ -78,6 +79,20 @@ export default function GroupDetails() {
           ) : (
             <CardContent className="hidden lg:block">{groupData ? <GroupDetailsContent {...groupData} /> : null}</CardContent>
           )}
+        </Card>
+      </div>
+      <div className={styles.pairsCon}>
+        <Card className="bg-white p-0 h-full">
+          <CardHeader className={styles.cardHeader}>
+            <CardTitle className="lg:block hidden">Your Expense Summary</CardTitle>
+            <Accordion type="single" collapsible className="w-full lg:hidden">
+              <AccordionItem value="group-pairs">
+                <AccordionTrigger className="text-xl font-semibold">Your Expense Summary</AccordionTrigger>
+                <AccordionContent>{groupData ? <GroupPairs /> : null}</AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </CardHeader>
+          {groupDetailsLoading ? <CircularLoader /> : <CardContent className="hidden lg:block">{groupData ? <GroupPairs /> : null}</CardContent>}
         </Card>
       </div>
 
