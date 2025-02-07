@@ -1,17 +1,20 @@
 import React from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
 import styles from "./style.module.css";
-import { Receipt } from "lucide-react";
+import { Edit, MoreVertical, Receipt, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ExpenseType, MemberType } from "../../utils/comman/CommanTypes";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { formatDateTime } from "../../utils/helpers/commanHelper";
+import { Button } from "../../components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
 
 type PropsType = ExpenseType & {
   allMembersList: MemberType;
   index: number;
   totalItemsCount: number;
+  setAddExpModal: () => void;
 };
 
 function ExpenseCard(expense: PropsType) {
@@ -59,9 +62,31 @@ function ExpenseCard(expense: PropsType) {
                   <AvatarImage src={paidByUser?.avatar} />
                   <AvatarFallback>{paidByUser?.name[0].toUpperCase()}</AvatarFallback>
                 </Avatar>
-                <span className="text-xs sm:text-sm text-gray-600">
-                  Paid by <span className="font-medium">{paidByUser?.name}</span>
-                </span>
+                <div className="flex justify-between w-full">
+                  <span className="text-xs sm:text-sm text-gray-600">
+                    Paid by <span className="font-medium">{paidByUser?.name}</span>
+                  </span>
+                  {expense.is_own_expense ? (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-white">
+                        <DropdownMenuItem onClick={expense.setAddExpModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+                          <Edit className="mr-2 h-4 w-4" />
+                          <span>Edit this Expense</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-600 dark:text-red-400 bg-white  cursor-pointer">
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          <span>Delete this Expense</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : null}
+                </div>
               </div>
 
               {/* Split Between */}

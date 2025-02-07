@@ -1,5 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type GroupType = {
   group_id: number;
   group_name: string;
@@ -14,7 +13,7 @@ export type GroupType = {
 
 export type ModalType = {
   isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  setIsOpen: any;
 };
 
 export type OptionType = {
@@ -41,14 +40,17 @@ export type GroupDataType = {
   members: MemberType;
 };
 
+export type SplitType = "EQUAL" | "PERCENTAGE" | "CUSTOM";
+
 export type ExpenseType = {
   expense_id: number;
   expense_name: string;
   expense_type_id: string;
-  description: string | null;
+  description: string;
   amount: number;
   paid_by: string;
   members_count: string;
+  split_type: SplitType;
   created_at: string;
   members: {
     id: string;

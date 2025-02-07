@@ -9,10 +9,11 @@ import CreateGroupModal from "../../components/CreateGroup/CreateGroup";
 import GroupSharingModal from "../../components/ShareGroup/ShareGroup";
 import { useDispatch } from "react-redux";
 import { setReDirectURL } from "../../store/features/userSlice";
+import CircularLoader from "../../components/CircularLoader/CircularLoader";
 
 function Home() {
   const dispatch = useDispatch();
-  const { fetchData, response } = useApiFetch(CONSTANTS.API_ROUTES.ALL_GROUPS);
+  const { fetchData, response, isLoading } = useApiFetch(CONSTANTS.API_ROUTES.ALL_GROUPS);
 
   const [groupList, setGroupList] = useState<GroupType[]>([]);
   const [isCreateModal, setIsCreateModal] = useState(false);
@@ -31,7 +32,9 @@ function Home() {
       setGroupList(response.data);
     }
   }, [response]);
-  return (
+  return isLoading ? (
+    <CircularLoader />
+  ) : (
     <div className={styles.container}>
       <div className={styles.cardCon}>
         {groupList.map((group) => (

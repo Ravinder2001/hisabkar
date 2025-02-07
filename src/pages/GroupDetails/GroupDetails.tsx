@@ -14,21 +14,32 @@ import GroupDetailsContent from "../../components/GroupDetailsContent/GroupDetai
 import { Plus } from "lucide-react";
 import { ExpenseType, GroupDataType } from "../../utils/comman/CommanTypes";
 import ExpenseCard from "../../components/ExpenseCard/ExpenseCard";
-import Loader from "../../components/Loader/Loader";
+import CircularLoader from "../../components/CircularLoader/CircularLoader";
 
 export default function GroupDetails() {
   const location = useLocation();
   const GroupId = location.pathname.split("/")[2];
 
-  const { fetchData: fetchGroupDetails, response: groupRes } = useApiFetch(CONSTANTS.API_ROUTES.GROUP_DETAILS + GroupId);
-  const { fetchData: fetchAllExpenses, response: expenseRes } = useApiFetch(CONSTANTS.API_ROUTES.ALL_EXPENSES + GroupId);
+  const {
+    fetchData: fetchGroupDetails,
+    response: groupRes,
+    isLoading: groupDetailsLoading,
+  } = useApiFetch(CONSTANTS.API_ROUTES.GROUP_DETAILS + GroupId);
+  const {
+    fetchData: fetchAllExpenses,
+    response: expenseRes,
+    isLoading: expenseListLoading,
+  } = useApiFetch(CONSTANTS.API_ROUTES.ALL_EXPENSES + GroupId);
 
   const [groupData, setGroupData] = useState<GroupDataType | null>();
   const [expenseList, setExpenseList] = useState<ExpenseType[]>([]);
-
   const [isAddExpModal, setAddExpModal] = useState<boolean>(false);
+  const [selectedRow, setSelectedRow] = useState<ExpenseType | null>(null);
 
   const handleExpModal = () => {
+    if (isAddExpModal && selectedRow) {
+      setSelectedRow(null);
+    }
     setAddExpModal(!isAddExpModal);
   };
 
@@ -49,9 +60,7 @@ export default function GroupDetails() {
     }
   }, [expenseRes]);
 
-  return !groupData ? (
-    <Loader />
-  ) : (
+  return (
     <div className={styles.container}>
       <div className={styles.detailsCon}>
         <Card className="bg-white p-0 h-full">
@@ -60,17 +69,18 @@ export default function GroupDetails() {
             <Accordion type="single" collapsible className="w-full lg:hidden">
               <AccordionItem value="group-details">
                 <AccordionTrigger className="text-xl font-semibold">Group Details</AccordionTrigger>
-                <AccordionContent>
-                  <GroupDetailsContent {...groupData} />
-                </AccordionContent>
+                <AccordionContent>{groupData ? <GroupDetailsContent {...groupData} /> : null}</AccordionContent>
               </AccordionItem>
             </Accordion>
           </CardHeader>
-          <CardContent className="hidden lg:block">
-            <GroupDetailsContent {...groupData} />
-          </CardContent>
+          {groupDetailsLoading ? (
+            <CircularLoader />
+          ) : (
+            <CardContent className="hidden lg:block">{groupData ? <GroupDetailsContent {...groupData} /> : null}</CardContent>
+          )}
         </Card>
       </div>
+
       <div className={styles.expCon}>
         <Card className="bg-white h-full">
           <CardHeader className="flex flex-row items-center justify-between">
@@ -79,31 +89,42 @@ export default function GroupDetails() {
               Unsettled
             </Badge>
           </CardHeader>
-          <CardContent className={styles.expBox}>
-            {/* <ScrollArea className="h-[400px] lg:h-[400px]"> */}
-            {expenseList.map((expense, index) => (
-              <ExpenseCard
-                key={expense.expense_id}
-                {...expense}
-                allMembersList={groupData.members}
-                index={index}
-                totalItemsCount={expenseList.length}
-              />
-            ))}
-            {/* </ScrollArea> */}
-          </CardContent>
+          {expenseListLoading ? (
+            <CircularLoader />
+          ) : (
+            <CardContent className={styles.expBox}>
+              {/* <ScrollArea className="h-[400px] lg:h-[400px]"> */}
+              {expenseList.map((expense, index) => (
+                <ExpenseCard
+                  key={expense.expense_id}
+                  {...expense}
+                  allMembersList={groupData?.members ?? []}
+                  index={index}
+                  totalItemsCount={expenseList.length}
+                  setAddExpModal={() => {
+                    handleExpModal();
+                    setSelectedRow(expense);
+                  }}
+                />
+              ))}
+              {/* </ScrollArea> */}
+            </CardContent>
+          )}
         </Card>
       </div>
       <Button className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg bg-black text-white" onClick={handleExpModal}>
         <Plus className="w-6 h-6" />
       </Button>
-      <AddExpenseModal
-        isOpen={isAddExpModal}
-        setIsOpen={setAddExpModal}
-        groupId={GroupId}
-        memberList={groupData.members}
-        callbackFunc={fetchAllExpenses}
-      />
+      {isAddExpModal ? (
+        <AddExpenseModal
+          isOpen={isAddExpModal}
+          setIsOpen={handleExpModal}
+          groupId={GroupId}
+          memberList={groupData?.members ?? []}
+          setExpenseList={setExpenseList}
+          selectedRow={selectedRow}
+        />
+      ) : null}
     </div>
   );
 }
