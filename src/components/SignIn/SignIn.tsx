@@ -122,25 +122,6 @@ function SignIn(props: PropsType) {
     }
   }, [values]);
 
-  const UpiPayment = () => {
-    const upiId = "9756726341@axisb"; // Replace with actual UPI ID
-    const payeeName = "Ravinder Singh Negi";
-    const amount = 1;
-    const remark = "Payment for Order 123";
-    const currency = "INR";
-
-    const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${amount}&tn=${encodeURIComponent(remark)}&cu=${currency}`;
-
-    return (
-      <div>
-        <h2>UPI Payment</h2>
-        <a href={upiLink}>
-          <button style={{ padding: "10px 20px", fontSize: "16px", cursor: "pointer" }}>Pay ₹{amount}</button>
-        </a>
-      </div>
-    );
-  };
-
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 p-4">
       <div className="absolute inset-0 bg-white/30 backdrop-blur-[100px]" />
@@ -206,7 +187,6 @@ function SignIn(props: PropsType) {
               Create an account
             </div>
           </p>
-          <UpiPayment />
         </CardContent>
       </Card>
     </div>
