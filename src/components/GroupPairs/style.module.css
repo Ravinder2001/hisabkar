@@ -1,0 +1,14 @@
+.activeTab {
+  background-color: black;
+  color: white;
+  text-align: center;
+  padding: 5px 10px;
+  border-radius: 10px;
+}
+.inActiveTab {
+  background-color: white;
+  color: black;
+  padding: 5px 10px;
+  border-radius: 10px;
+  text-align: center;
+}

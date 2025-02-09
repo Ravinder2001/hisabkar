@@ -88,11 +88,15 @@ export default function GroupDetails() {
             <Accordion type="single" collapsible className="w-full lg:hidden">
               <AccordionItem value="group-pairs">
                 <AccordionTrigger className="text-xl font-semibold">Your Expense Summary</AccordionTrigger>
-                <AccordionContent>{groupData ? <GroupPairs /> : null}</AccordionContent>
+                <AccordionContent>{groupData ? <GroupPairs GroupId={GroupId} /> : null}</AccordionContent>
               </AccordionItem>
             </Accordion>
           </CardHeader>
-          {groupDetailsLoading ? <CircularLoader /> : <CardContent className="hidden lg:block">{groupData ? <GroupPairs /> : null}</CardContent>}
+          {groupDetailsLoading ? (
+            <CircularLoader />
+          ) : (
+            <CardContent className="hidden lg:block">{groupData ? <GroupPairs GroupId={GroupId} /> : null}</CardContent>
+          )}
         </Card>
       </div>
 

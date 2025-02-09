@@ -6,10 +6,13 @@
 }
 
 .detailsCon {
+  width: 25%;
+}
+.pairsCon {
   width: 30%;
 }
 .expCon {
-  width: 70%;
+  width: 45%;
 }
 
 .expBox {

@@ -1,7 +1,111 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
+import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
+import styles from "./style.module.css";
+import useApiFetch from "../../hooks/useAPIFetch";
+import CONSTANTS from "../../utils/constant/Constant";
 
-function GroupPairs() {
-  return <div>GroupPairs</div>;
+interface GroupPairsData {
+  send: Array<{
+    user_name: string;
+    amount: string;
+  }>;
+  receive: Array<{
+    user_name: string;
+    amount: string;
+  }>;
 }
 
-export default GroupPairs;
+type PropType = {
+  GroupId: string;
+};
+
+export default function GroupPairs(props: PropType) {
+  const { fetchData, response } = useApiFetch(CONSTANTS.API_ROUTES.MY_PAIRS + props.GroupId);
+
+  const [selectedTab, setSelectedTab] = useState("SEND");
+  const [pairsData, setPairsData] = useState<GroupPairsData>({
+    send: [],
+    receive: [],
+  });
+
+  const handleTabClick = () => {
+    setSelectedTab(selectedTab == "SEND" ? "RECEIVE" : "SEND");
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (response?.success == 1) {
+      setPairsData(response.data);
+    }
+  }, [response]);
+
+  return (
+    <div className="w-full">
+      <div className="grid w-full grid-cols-2 cursor-pointer">
+        <div onClick={handleTabClick} className={selectedTab == "SEND" ? styles.activeTab : styles.inActiveTab}>
+          Send ({pairsData?.send.length})
+        </div>
+        <div onClick={handleTabClick} className={selectedTab == "RECEIVE" ? styles.activeTab : styles.inActiveTab}>
+          Receive ({pairsData?.receive.length})
+        </div>
+      </div>
+      {selectedTab == "SEND" ? (
+        <div>
+          <div className="space-y-4">
+            {pairsData?.send.length > 0 ? (
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-gray-500">You will pay</h3>
+                {pairsData?.send.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-red-50">
+                    <div className="flex items-center gap-3">
+                      <UserAvatar />
+                      <div>
+                        <p className="text-sm font-medium">{item.user_name}</p>
+                        <p className="text-xs text-gray-500">you will pay</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-red-600 font-medium">₹{item.amount}</span>
+                      <ArrowRight className="h-4 w-4 text-red-600" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-6 text-gray-500">No pending payments</div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {pairsData?.receive.length > 0 ? (
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-gray-500">You will receive</h3>
+              {pairsData?.receive.map((item, index) => (
+                <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-green-50">
+                  <div className="flex items-center gap-3">
+                    <UserAvatar />
+                    <div>
+                      <p className="text-sm font-medium">{item.user_name}</p>
+                      <p className="text-xs text-gray-500">will pay you</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-green-600 font-medium">₹{item.amount}</span>
+                    <ArrowRight className="h-4 w-4 text-green-600" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-6 text-gray-500">No pending receivables</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
