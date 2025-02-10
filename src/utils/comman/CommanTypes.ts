@@ -58,3 +58,14 @@ export type ExpenseType = {
   }[];
   is_own_expense: boolean;
 };
+
+export type GroupPairsData = {
+  send: Array<{
+    user_name: string;
+    amount: string;
+  }>;
+  receive: Array<{
+    user_name: string;
+    amount: string;
+  }>;
+};

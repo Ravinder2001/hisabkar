@@ -12,10 +12,13 @@ import CONSTANTS from "../../utils/constant/Constant";
 import { useLocation } from "react-router-dom";
 import GroupDetailsContent from "../../components/GroupDetailsContent/GroupDetailsContent";
 import { Plus } from "lucide-react";
-import { ExpenseType, GroupDataType } from "../../utils/comman/CommanTypes";
+import { ExpenseType, GroupDataType, GroupPairsData } from "../../utils/comman/CommanTypes";
 import ExpenseCard from "../../components/ExpenseCard/ExpenseCard";
 import CircularLoader from "../../components/CircularLoader/CircularLoader";
 import GroupPairs from "../../components/GroupPairs/GroupPairs";
+import CustomAlert from "../../components/CustomAlert/CustomAlert";
+import Messages from "../../utils/constant/Messages";
+import showToast from "../../utils/helpers/toastHelper";
 
 export default function GroupDetails() {
   const location = useLocation();
@@ -31,10 +34,17 @@ export default function GroupDetails() {
     response: expenseRes,
     isLoading: expenseListLoading,
   } = useApiFetch(CONSTANTS.API_ROUTES.ALL_EXPENSES + GroupId);
+  const { fetchData: fetchMyPairs, response: pairsRes, isLoading: pairsLoading } = useApiFetch(CONSTANTS.API_ROUTES.MY_PAIRS + GroupId);
+  const { fetchData: deleteExpense, response: deleteExpRes, isLoading: deleteExpLoading } = useApiFetch("");
 
   const [groupData, setGroupData] = useState<GroupDataType | null>();
   const [expenseList, setExpenseList] = useState<ExpenseType[]>([]);
+  const [pairsData, setPairsData] = useState<GroupPairsData>({
+    send: [],
+    receive: [],
+  });
   const [isAddExpModal, setAddExpModal] = useState<boolean>(false);
+  const [isDeleteModal, setDeleteModal] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<ExpenseType | null>(null);
 
   const handleExpModal = () => {
@@ -44,9 +54,23 @@ export default function GroupDetails() {
     setAddExpModal(!isAddExpModal);
   };
 
+  const handleDeleteModal = () => {
+    if (isDeleteModal && selectedRow) {
+      setSelectedRow(null);
+    }
+    setDeleteModal(!isDeleteModal);
+  };
+
+  const handleDelete = async () => {
+    await deleteExpense(CONSTANTS.API_ROUTES.DELETE_EXPENSE + selectedRow?.expense_id, {
+      method: "DELETE",
+    });
+  };
+
   useEffect(() => {
     fetchGroupDetails();
     fetchAllExpenses();
+    fetchMyPairs();
   }, [GroupId]);
 
   useEffect(() => {
@@ -61,18 +85,40 @@ export default function GroupDetails() {
     }
   }, [expenseRes]);
 
+  useEffect(() => {
+    if (pairsRes?.success == 1) {
+      setPairsData(pairsRes?.data);
+    }
+  }, [pairsRes]);
+
+  useEffect(() => {
+    if (deleteExpRes) {
+      if (deleteExpRes.success == 1) {
+        fetchGroupDetails();
+        fetchMyPairs();
+        setExpenseList((prevExpenses) => prevExpenses.filter((expense) => expense.expense_id !== selectedRow?.expense_id));
+        showToast("Expense deleted Succesfully", "success");
+      }
+      handleDeleteModal();
+    }
+  }, [deleteExpRes]);
+
   return (
     <div className={styles.container}>
       <div className={styles.detailsCon}>
         <Card className="bg-white p-0 h-full">
           <CardHeader className={styles.cardHeader}>
             <CardTitle className="lg:block hidden">Group Details</CardTitle>
-            <Accordion type="single" collapsible className="w-full lg:hidden">
-              <AccordionItem value="group-details">
-                <AccordionTrigger className="text-xl font-semibold">Group Details</AccordionTrigger>
-                <AccordionContent>{groupData ? <GroupDetailsContent {...groupData} /> : null}</AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            {groupDetailsLoading ? (
+              <CircularLoader />
+            ) : (
+              <Accordion type="single" collapsible className="w-full lg:hidden">
+                <AccordionItem value="group-details">
+                  <AccordionTrigger className="text-xl font-semibold">Group Details</AccordionTrigger>
+                  <AccordionContent>{groupData ? <GroupDetailsContent {...groupData} /> : null}</AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            )}
           </CardHeader>
           {groupDetailsLoading ? (
             <CircularLoader />
@@ -86,16 +132,20 @@ export default function GroupDetails() {
           <CardHeader className={styles.cardHeader}>
             <CardTitle className="lg:block hidden">Your Expense Summary</CardTitle>
             <Accordion type="single" collapsible className="w-full lg:hidden">
-              <AccordionItem value="group-pairs">
-                <AccordionTrigger className="text-xl font-semibold">Your Expense Summary</AccordionTrigger>
-                <AccordionContent>{groupData ? <GroupPairs GroupId={GroupId} /> : null}</AccordionContent>
-              </AccordionItem>
+              {pairsLoading ? (
+                <CircularLoader />
+              ) : (
+                <AccordionItem value="group-pairs">
+                  <AccordionTrigger className="text-xl font-semibold">Your Expense Summary</AccordionTrigger>
+                  <AccordionContent>{groupData ? <GroupPairs pairsData={pairsData} /> : null}</AccordionContent>
+                </AccordionItem>
+              )}
             </Accordion>
           </CardHeader>
-          {groupDetailsLoading ? (
+          {pairsLoading ? (
             <CircularLoader />
           ) : (
-            <CardContent className="hidden lg:block">{groupData ? <GroupPairs GroupId={GroupId} /> : null}</CardContent>
+            <CardContent className="hidden lg:block">{groupData ? <GroupPairs pairsData={pairsData} /> : null}</CardContent>
           )}
         </Card>
       </div>
@@ -124,6 +174,10 @@ export default function GroupDetails() {
                     handleExpModal();
                     setSelectedRow(expense);
                   }}
+                  setDeleteModal={() => {
+                    handleDeleteModal();
+                    setSelectedRow(expense);
+                  }}
                 />
               ))}
               {/* </ScrollArea> */}
@@ -144,6 +198,13 @@ export default function GroupDetails() {
           selectedRow={selectedRow}
         />
       ) : null}
+      <CustomAlert
+        isOpen={isDeleteModal}
+        onClose={handleDeleteModal}
+        onSubmit={handleDelete}
+        description={Messages.EXPENSE.DELETE_ALERT(selectedRow?.expense_name ?? "")}
+        isLoading={deleteExpLoading}
+      />
     </div>
   );
 }

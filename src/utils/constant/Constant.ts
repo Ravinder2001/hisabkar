@@ -21,7 +21,8 @@ const CONSTANTS = {
     ADD_EXPENSE: "/expense/addExpense/",
     CREATE_GROUP: "/group/createGroup/",
     JOIN_GROUP: "/group/joinGroup/",
-    MY_PAIRS: "group/myPairs/",
+    MY_PAIRS: "/group/myPairs/",
+    DELETE_EXPENSE: "/expense/",
   },
 };
 export default CONSTANTS;

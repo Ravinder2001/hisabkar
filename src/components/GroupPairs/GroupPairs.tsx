@@ -1,65 +1,37 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
 import styles from "./style.module.css";
-import useApiFetch from "../../hooks/useAPIFetch";
-import CONSTANTS from "../../utils/constant/Constant";
-
-interface GroupPairsData {
-  send: Array<{
-    user_name: string;
-    amount: string;
-  }>;
-  receive: Array<{
-    user_name: string;
-    amount: string;
-  }>;
-}
+import { GroupPairsData } from "../../utils/comman/CommanTypes";
 
 type PropType = {
-  GroupId: string;
+  pairsData: GroupPairsData;
 };
 
 export default function GroupPairs(props: PropType) {
-  const { fetchData, response } = useApiFetch(CONSTANTS.API_ROUTES.MY_PAIRS + props.GroupId);
-
   const [selectedTab, setSelectedTab] = useState("SEND");
-  const [pairsData, setPairsData] = useState<GroupPairsData>({
-    send: [],
-    receive: [],
-  });
 
   const handleTabClick = () => {
     setSelectedTab(selectedTab == "SEND" ? "RECEIVE" : "SEND");
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (response?.success == 1) {
-      setPairsData(response?.data);
-    }
-  }, [response]);
-
   return (
     <div className={styles.container}>
       <div className="grid w-full grid-cols-2 cursor-pointer">
         <div onClick={handleTabClick} className={selectedTab == "SEND" ? styles.activeTab : styles.inActiveTab}>
-          Send ({pairsData?.send.length})
+          Send ({props.pairsData?.send.length})
         </div>
         <div onClick={handleTabClick} className={selectedTab == "RECEIVE" ? styles.activeTab : styles.inActiveTab}>
-          Receive ({pairsData?.receive.length})
+          Receive ({props.pairsData?.receive.length})
         </div>
       </div>
       {selectedTab == "SEND" ? (
         <div className="space-y-4">
-          {pairsData?.send.length > 0 ? (
+          {props.pairsData?.send.length > 0 ? (
             <div className="space-y-3">
               <h3 className="text-sm font-medium text-gray-500 mt-2">You will pay</h3>
               <div className={styles.pairsBox}>
-                {pairsData?.send.map((item, index) => (
+                {props.pairsData?.send.map((item, index) => (
                   <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-red-50 mb-2">
                     <div className="flex items-center gap-3">
                       <UserAvatar />
@@ -82,11 +54,11 @@ export default function GroupPairs(props: PropType) {
         </div>
       ) : (
         <div className="space-y-4">
-          {pairsData?.receive.length > 0 ? (
+          {props.pairsData?.receive.length > 0 ? (
             <div className="space-y-3">
               <h3 className="text-sm font-medium text-gray-500 mt-2">You will receive</h3>
               <div className={styles.pairsBox}>
-                {pairsData?.receive.map((item, index) => (
+                {props.pairsData?.receive.map((item, index) => (
                   <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-green-50 mb-2">
                     <div className="flex items-center gap-3">
                       <UserAvatar />
