@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { ArrowRight, Mail } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import ButtonComponent from "../Atoms/ButtonComponent/ButtonComponent";
 
 type PropsType = {
   setPageType: Dispatch<SetStateAction<string>>;
@@ -94,6 +95,25 @@ function SignIn(props: PropsType) {
         email: values.email,
         otp: values.otp,
       },
+    });
+  };
+
+  const showNotification = () => {
+    if (!("Notification" in window)) {
+      showToast("This browser does not support notifications.", "error");
+      return;
+    }
+
+    // Request notification permission
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        new Notification("Expense Splitter", {
+          body: "Your expense has been updated!",
+          icon: "/icon.png", // Replace with your app icon path
+        });
+      } else {
+        showToast("Permission denied for notifications.", "error");
+      }
     });
   };
 
@@ -187,6 +207,7 @@ function SignIn(props: PropsType) {
               Create an account
             </div>
           </p>
+          <ButtonComponent onClick={showNotification} text="Click me" />
         </CardContent>
       </Card>
     </div>
