@@ -39,12 +39,12 @@ export default function GroupPairs(props: PropType) {
 
   useEffect(() => {
     if (response?.success == 1) {
-      setPairsData(response.data);
+      setPairsData(response?.data);
     }
   }, [response]);
 
   return (
-    <div className="w-full">
+    <div className={styles.container}>
       <div className="grid w-full grid-cols-2 cursor-pointer">
         <div onClick={handleTabClick} className={selectedTab == "SEND" ? styles.activeTab : styles.inActiveTab}>
           Send ({pairsData?.send.length})
@@ -54,13 +54,13 @@ export default function GroupPairs(props: PropType) {
         </div>
       </div>
       {selectedTab == "SEND" ? (
-        <div>
-          <div className="space-y-4">
-            {pairsData?.send.length > 0 ? (
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium text-gray-500">You will pay</h3>
+        <div className="space-y-4">
+          {pairsData?.send.length > 0 ? (
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-gray-500 mt-2">You will pay</h3>
+              <div className={styles.pairsBox}>
                 {pairsData?.send.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-red-50">
+                  <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-red-50 mb-2">
                     <div className="flex items-center gap-3">
                       <UserAvatar />
                       <div>
@@ -75,31 +75,32 @@ export default function GroupPairs(props: PropType) {
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="text-center py-6 text-gray-500">No pending payments</div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="text-center py-6 text-gray-500">No pending payments</div>
+          )}
         </div>
       ) : (
         <div className="space-y-4">
           {pairsData?.receive.length > 0 ? (
             <div className="space-y-3">
-              <h3 className="text-sm font-medium text-gray-500">You will receive</h3>
-              {pairsData?.receive.map((item, index) => (
-                <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-green-50">
-                  <div className="flex items-center gap-3">
-                    <UserAvatar />
-                    <div>
-                      <p className="text-sm font-medium">{item.user_name}</p>
-                      <p className="text-xs text-gray-500">will pay you</p>
+              <h3 className="text-sm font-medium text-gray-500 mt-2">You will receive</h3>
+              <div className={styles.pairsBox}>
+                {pairsData?.receive.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-green-50 mb-2">
+                    <div className="flex items-center gap-3">
+                      <UserAvatar />
+                      <div>
+                        <p className="text-sm font-medium">{item.user_name}</p>
+                        <p className="text-xs text-gray-500">will pay you</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-green-600 font-medium">₹{item.amount}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-green-600 font-medium">₹{item.amount}</span>
-                    <ArrowRight className="h-4 w-4 text-green-600" />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           ) : (
             <div className="text-center py-6 text-gray-500">No pending receivables</div>
