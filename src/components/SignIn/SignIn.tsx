@@ -99,23 +99,23 @@ function SignIn(props: PropsType) {
   };
 
   const showNotification = () => {
-    if (!("Notification" in window)) {
-      showToast("This browser does not support notifications.", "error");
-      return;
+    if (Notification.permission === "granted") {
+      new Notification("Hello!", {
+        body: "This is a local notification from your React app.",
+        icon: "/path/to/icon.png",
+      });
     }
-
-    // Request notification permission
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        new Notification("Expense Splitter", {
-          body: "Your expense has been updated!",
-          icon: "/icon.png", // Replace with your app icon path
-        });
-      } else {
-        showToast("Permission denied for notifications.", "error");
-      }
-    });
   };
+
+  useEffect(() => {
+    if ("Notification" in window) {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          console.log("Notification permission granted.");
+        }
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (loginOTPRes?.success === 1) {
