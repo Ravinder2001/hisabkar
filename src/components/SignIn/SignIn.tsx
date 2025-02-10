@@ -99,11 +99,22 @@ function SignIn(props: PropsType) {
   };
 
   const showNotification = () => {
-    if (Notification.permission === "granted") {
-      new Notification("Hello!", {
-        body: "This is a local notification from your React app.",
-        icon: "/path/to/icon.png",
-      });
+    // Example notification data
+    const notificationData = {
+      title: "Custom Notification",
+      options: {
+        body: "This is a custom notification triggered from React!",
+        icon: "/logo192.png", // Path to your icon
+        // You can add other options here, like actions, etc.
+      },
+    };
+
+    // Send the notification data to the service worker
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage(notificationData);
+      console.log("Notification sent to service worker");
+    } else {
+      console.log("Service worker is not active.  Try reloading the page.");
     }
   };
 
