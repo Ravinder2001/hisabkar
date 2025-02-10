@@ -98,7 +98,7 @@ function SignIn(props: PropsType) {
     });
   };
 
-  const showNotification = () => {
+  const sendNotification = async () => {
     // Example notification data
     const notificationData = {
       title: "Custom Notification",
@@ -117,16 +117,6 @@ function SignIn(props: PropsType) {
       console.log("Service worker is not active.  Try reloading the page.");
     }
   };
-
-  useEffect(() => {
-    if ("Notification" in window) {
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          console.log("Notification permission granted.");
-        }
-      });
-    }
-  }, []);
 
   useEffect(() => {
     if (loginOTPRes?.success === 1) {
@@ -218,7 +208,7 @@ function SignIn(props: PropsType) {
               Create an account
             </div>
           </p>
-          <ButtonComponent onClick={showNotification} text="Click me" />
+          <ButtonComponent onClick={sendNotification} text="Click me" />
         </CardContent>
       </Card>
     </div>
