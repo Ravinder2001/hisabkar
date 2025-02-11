@@ -15,7 +15,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { ArrowRight, Mail } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import ButtonComponent from "../Atoms/ButtonComponent/ButtonComponent";
 
 type PropsType = {
   setPageType: Dispatch<SetStateAction<string>>;
@@ -96,26 +95,6 @@ function SignIn(props: PropsType) {
         otp: values.otp,
       },
     });
-  };
-
-  const sendNotification = async () => {
-    // Example notification data
-    const notificationData = {
-      title: "Custom Notification",
-      options: {
-        body: "This is a custom notification triggered from React!",
-        icon: "/logo192.png", // Path to your icon
-        // You can add other options here, like actions, etc.
-      },
-    };
-
-    // Send the notification data to the service worker
-    if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage(notificationData);
-      console.log("Notification sent to service worker");
-    } else {
-      console.log("Service worker is not active.  Try reloading the page.");
-    }
   };
 
   useEffect(() => {
@@ -208,7 +187,6 @@ function SignIn(props: PropsType) {
               Create an account
             </div>
           </p>
-          <ButtonComponent onClick={sendNotification} text="Click me" />
         </CardContent>
       </Card>
     </div>

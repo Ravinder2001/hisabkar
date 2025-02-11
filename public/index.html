@@ -41,17 +41,3 @@
     -->
   </body>
 </html>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker
-      .register("/sw.js", {
-        scope: "/",
-      })
-      .then(function (registration) {
-        console.log("service worker register");
-      });
-    navigator.serviceWorker.ready.then(function (registration) {
-      console.log("Service worker ready");
-    });
-  }
-</script>
