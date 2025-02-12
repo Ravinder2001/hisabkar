@@ -1,4 +1,5 @@
 import ENVConfig from "../../config/config";
+import CONSTANTS from "../constant/Constant";
 import axiosInstance from "./axiosInstance";
 
 export const registerServiceWorker = () => {
@@ -21,8 +22,7 @@ export const subscribeUser = async () => {
       userVisibleOnly: true,
       applicationServerKey: ENVConfig.vapidKey,
     });
-
-    await axiosInstance.post(`/subscribe`, JSON.stringify(subscription), {
+    await axiosInstance.post(CONSTANTS.API_ROUTES.SW_SUBSCRIPTION, JSON.stringify(subscription), {
       headers: {
         "Content-Type": "application/json",
       },

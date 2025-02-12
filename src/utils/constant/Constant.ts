@@ -23,6 +23,7 @@ const CONSTANTS = {
     JOIN_GROUP: "/group/joinGroup/",
     MY_PAIRS: "/group/myPairs/",
     DELETE_EXPENSE: "/expense/",
+    SW_SUBSCRIPTION: "/user/service-worker-subscribe",
   },
 };
 export default CONSTANTS;
