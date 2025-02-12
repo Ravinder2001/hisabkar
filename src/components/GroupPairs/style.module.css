@@ -17,7 +17,7 @@
 }
 .pairsBox {
   /* border: 1px solid red; */
-  height: 450px;
+  max-height: 450px;
   overflow: auto;
   padding-right: 5px;
 }
@@ -27,6 +27,6 @@
     padding: 15px;
   }
   .pairsBox {
-    height: 400px;
+    max-height: 400px;
   }
 }

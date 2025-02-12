@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { ArrowRight, Mail } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import CustomCircularLoading from "../Atoms/CustomCircularLoading/CustomCircularLoading";
 
 type PropsType = {
   setPageType: Dispatch<SetStateAction<string>>;
@@ -28,9 +29,9 @@ type ValuesType = {
 function SignIn(props: PropsType) {
   const dispatch = useDispatch();
 
-  const { fetchData: postGoogleSignIn, response: googleSignInRes } = useApiFetch("");
-  const { fetchData: getSendLoginOTP, response: loginOTPRes } = useApiFetch("");
-  const { fetchData: postLogin, response: loginRes } = useApiFetch("");
+  const { fetchData: postGoogleSignIn, response: googleSignInRes, isLoading: googleLoading } = useApiFetch("");
+  const { fetchData: getSendLoginOTP, response: loginOTPRes, isLoading: otpLoading } = useApiFetch("");
+  const { fetchData: postLogin, response: loginRes, isLoading: signInLoading } = useApiFetch("");
 
   const [showOTP, setShowOTP] = useState(false);
   const [animate, setAnimate] = useState("animateIn");
@@ -46,6 +47,8 @@ function SignIn(props: PropsType) {
       setError("Email is required.");
       return;
     }
+
+    if (otpLoading) return;
 
     await getSendLoginOTP(CONSTANTS.API_ROUTES.SEND_LOGIN_OTP + `/${values.email}`, {
       method: "GET",
@@ -63,7 +66,7 @@ function SignIn(props: PropsType) {
     }, 500); // Match animation duration
   };
 
-  const login = useGoogleLogin({
+  const handleGoogleSignIn = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       await postGoogleSignIn(CONSTANTS.API_ROUTES.GOOGLE_SIGN_IN, {
         method: "POST",
@@ -87,6 +90,7 @@ function SignIn(props: PropsType) {
       setError("OTP is required.");
       return;
     }
+    if (signInLoading) return;
 
     await postLogin(CONSTANTS.API_ROUTES.LOGIN, {
       method: "POST",
@@ -161,8 +165,13 @@ function SignIn(props: PropsType) {
             onClick={!showOTP ? handleSubmit : handleOTPSubmit}
             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
           >
-            Sign In
-            <ArrowRight className="ml-2 h-5 w-5" />
+            {otpLoading || signInLoading ? (
+              <CustomCircularLoading />
+            ) : (
+              <>
+                Sign In <ArrowRight className="ml-2 h-5 w-5" />
+              </>
+            )}
           </Button>
 
           <div className="relative">
@@ -174,12 +183,12 @@ function SignIn(props: PropsType) {
             </div>
           </div>
           <Button
-            onClick={() => login()}
+            onClick={() => !googleLoading && handleGoogleSignIn()}
             variant="outline"
             className="w-full border-gray-300 hover:bg-gray-50 transition-all duration-300 ease-in-out"
           >
             <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google Logo" className="w-5 h-5 mr-2" />
-            Sign in with Google
+            {googleLoading ? <CustomCircularLoading /> : "Sign in with Google"}
           </Button>
           <p className="text-center text-sm text-gray-600">
             Don&apos;t have an account?{" "}

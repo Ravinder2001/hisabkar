@@ -1,33 +1,32 @@
 import cogoToast from "cogo-toast";
 
-type ToastType = "success" | "error" | "info";
+type ToastType = "success" | "error" | "info" | "loading";
 
 interface ToastOptions {
   hideAfter?: number;
   position?: "top-right" | "top-center" | "top-left" | "bottom-right" | "bottom-center" | "bottom-left";
+  onClick?: () => void;
 }
 
 const showToast = (message: string, type: ToastType, options?: ToastOptions) => {
   const defaultOptions: ToastOptions = {
-    position: "top-right", // Default position
-    hideAfter: 3, // Default duration in seconds
+    position: "top-right",
+    hideAfter: type === "loading" ? 0 : 3,
   };
 
   const mergedOptions = { ...defaultOptions, ...options };
 
   switch (type) {
     case "success":
-      cogoToast.success(message, mergedOptions);
-      break;
+      return cogoToast.success(message, mergedOptions);
     case "error":
-      cogoToast.error(message, mergedOptions);
-      break;
+      return cogoToast.error(message, mergedOptions);
     case "info":
-      cogoToast.info(message, mergedOptions);
-      break;
+      return cogoToast.info(message, mergedOptions);
+    case "loading":
+      return cogoToast.loading(message, mergedOptions);
     default:
-      cogoToast.info(message, mergedOptions);
-      break;
+      return cogoToast.info(message, mergedOptions);
   }
 };
 

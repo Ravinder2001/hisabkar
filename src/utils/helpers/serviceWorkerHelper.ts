@@ -6,8 +6,8 @@ export const registerServiceWorker = () => {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker
       .register("/service-worker.js")
-      .then((registration) => {
-        console.log("Service Worker Registered", registration);
+      .then(() => {
+        console.log("Service Worker Registered");
       })
       .catch((error) => {
         console.error("Service Worker Registration Failed", error);
@@ -28,6 +28,6 @@ export const subscribeUser = async () => {
       },
     });
 
-    console.log("User Subscribed:", subscription);
+    console.log("User Subscribed:");
   }
 };
