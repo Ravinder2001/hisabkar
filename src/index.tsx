@@ -10,6 +10,8 @@ import { BrowserRouter } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import ENVConfig from "./config/config";
 import { injectStore } from "./utils/helpers/axiosInstance";
+import { registerServiceWorker } from "./utils/helpers/serviceWorkerHelper";
+registerServiceWorker();
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 injectStore(store);

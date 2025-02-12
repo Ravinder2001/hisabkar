@@ -11,6 +11,7 @@ import useApiFetch from "./hooks/useAPIFetch";
 import CONSTANTS from "./utils/constant/Constant";
 import { setExpenseTypeList, setGroupTypeList } from "./store/features/dataSlice";
 import Loader from "./components/Loader/Loader";
+import { subscribeUser } from "./utils/helpers/serviceWorkerHelper";
 
 // Lazy load the component
 const ProjectRoutes = withSuspense(
@@ -33,6 +34,7 @@ const App: React.FC = () => {
     }
     fetchExpenseTypeList();
     fetchGroupTypeList();
+    subscribeUser();
   }, [token, dispatch]);
 
   useEffect(() => {
