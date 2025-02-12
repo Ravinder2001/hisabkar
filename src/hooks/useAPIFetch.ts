@@ -3,6 +3,8 @@ import { useState } from "react";
 import { AxiosRequestConfig } from "axios";
 import axiosInstance from "../utils/helpers/axiosInstance";
 import showToast from "../utils/helpers/toastHelper";
+import useDecryption from "./useDecryption";
+import ENVConfig from "../config/config";
 
 const useApiFetch = (initialUrl: string, initialOptions?: AxiosRequestConfig) => {
   const [response, setResponse] = useState<{
@@ -20,8 +22,14 @@ const useApiFetch = (initialUrl: string, initialOptions?: AxiosRequestConfig) =>
     try {
       // console.log(url, options);
       const { data } = await axiosInstance(url, options);
+      let decryptedData = data.data;
+
+      if (ENVConfig.enviroment === "prod") {
+        decryptedData = useDecryption(data.data);
+      }
+      console.log("🚀  decryptedData:", decryptedData);
       setResponse({
-        data: data.data,
+        data: decryptedData,
         message: data.message,
         success: data.success,
       });
