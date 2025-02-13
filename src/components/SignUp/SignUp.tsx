@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { ArrowRight, Mail, User, Wallet } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import CustomCircularLoading from "../Atoms/CustomCircularLoading/CustomCircularLoading";
 
 type PropsType = {
   setPageType: Dispatch<SetStateAction<string>>;
@@ -26,11 +27,10 @@ type InitialValuesType = {
 function SignUp(props: PropsType) {
   const dispatch = useDispatch();
 
-  const { fetchData: getSendOTP, response: loginOTPRes } = useApiFetch("");
-  const { fetchData: postRegister, response: registerRes } = useApiFetch("");
+  const { fetchData: getSendOTP, response: loginOTPRes, isLoading: otpLoading } = useApiFetch("");
+  const { fetchData: postRegister, response: registerRes, isLoading: registerLoading } = useApiFetch("");
 
   const [showOTP, setShowOTP] = useState(false);
-  const [animate, setAnimate] = useState("animateIn");
   const [values, setValues] = useState<InitialValuesType>({
     name: "",
     upiAddress: "",
@@ -45,16 +45,15 @@ function SignUp(props: PropsType) {
       return;
     }
 
+    if (otpLoading) return;
+
     await getSendOTP(CONSTANTS.API_ROUTES.SEND_OTP + `/${values.email}`, {
       method: "GET",
     });
   };
 
   const handleClose = () => {
-    setAnimate("animateOut");
-    setTimeout(() => {
-      props.setPageType("SIGN_IN");
-    }, 500);
+    props.setPageType("SIGN_IN");
   };
 
   const handleLogin = (registerValues: any) => {
@@ -69,6 +68,8 @@ function SignUp(props: PropsType) {
       setErrorMessage("Please enter the OTP.");
       return;
     }
+
+    if (registerLoading) return;
 
     // Clear any previous errors
     setErrorMessage("");
@@ -111,7 +112,7 @@ function SignUp(props: PropsType) {
         </CardHeader>
         <CardContent className="space-y-4">
           {showOTP ? (
-            <OTPComponent animateClassName={animate} setValues={setValues} values={values} />
+            <OTPComponent setValues={setValues} values={values} />
           ) : (
             <div className="space-y-4">
               <div className="relative">
@@ -154,8 +155,13 @@ function SignUp(props: PropsType) {
             onClick={!showOTP ? handleSubmit : handleOTPSubmit}
             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
           >
-            Sign In
-            <ArrowRight className="ml-2 h-5 w-5" />
+            {otpLoading || registerLoading ? (
+              <CustomCircularLoading />
+            ) : (
+              <>
+                Sign Up <ArrowRight className="ml-2 h-5 w-5" />
+              </>
+            )}
           </Button>
 
           <div className="relative">

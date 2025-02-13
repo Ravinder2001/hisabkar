@@ -4,7 +4,6 @@ import styles from "./style.module.css";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "../ui/input-otp";
 
 type PropsType = {
-  animateClassName: string;
   setValues: Dispatch<SetStateAction<any>>;
   values: any;
 };
@@ -15,7 +14,7 @@ function OTPComponent(props: PropsType) {
   };
 
   return (
-    <div className={`${styles.container} ${styles[props.animateClassName]}`}>
+    <div className={styles.container}>
       <InputOTP maxLength={6} value={props.values.otp} onChange={handleOTP}>
         <InputOTPGroup>
           <InputOTPSlot index={0} />

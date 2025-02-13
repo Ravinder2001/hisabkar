@@ -34,7 +34,6 @@ function SignIn(props: PropsType) {
   const { fetchData: postLogin, response: loginRes, isLoading: signInLoading } = useApiFetch("");
 
   const [showOTP, setShowOTP] = useState(false);
-  const [animate, setAnimate] = useState("animateIn");
   const [values, setValues] = useState<ValuesType>({
     email: "",
     otp: "",
@@ -60,10 +59,7 @@ function SignIn(props: PropsType) {
   };
 
   const handleClose = () => {
-    setAnimate("animateOut");
-    setTimeout(() => {
-      props.setPageType("SIGN_UP");
-    }, 500); // Match animation duration
+    props.setPageType("SIGN_UP");
   };
 
   const handleGoogleSignIn = useGoogleLogin({
@@ -139,7 +135,7 @@ function SignIn(props: PropsType) {
         </CardHeader>
         <CardContent className="space-y-4">
           {showOTP ? (
-            <OTPComponent animateClassName={animate} setValues={setValues} values={values} />
+            <OTPComponent setValues={setValues} values={values} />
           ) : (
             <div className="space-y-2">
               {/* <Label htmlFor="email" className="text-sm font-medium text-gray-700">

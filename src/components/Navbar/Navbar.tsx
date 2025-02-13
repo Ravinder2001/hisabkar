@@ -36,8 +36,8 @@ const Navbar = () => {
         <DropdownMenuContent className="bg-white">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">Settings</DropdownMenuItem>
+          {/* <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer">Settings</DropdownMenuItem> */}
           <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
             Sign out
           </DropdownMenuItem>
@@ -58,11 +58,11 @@ const Navbar = () => {
             </Link>
           </div>
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
+            {/* <div className="ml-10 flex items-baseline space-x-4">
               <Link to="/" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                 Home
               </Link>
-            </div>
+            </div> */}
           </div>
           <div className="hidden md:block">
             <UserMenu />
