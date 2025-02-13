@@ -24,10 +24,9 @@ const useApiFetch = (initialUrl: string, initialOptions?: AxiosRequestConfig) =>
       const { data } = await axiosInstance(url, options);
       let decryptedData = data.data;
 
-      if (ENVConfig.enviroment === "prod") {
+      if (ENVConfig.enviroment === "prod" && data.data) {
         decryptedData = useDecryption(data.data);
       }
-      console.log("🚀  decryptedData:", decryptedData);
       setResponse({
         data: decryptedData,
         message: data.message,
