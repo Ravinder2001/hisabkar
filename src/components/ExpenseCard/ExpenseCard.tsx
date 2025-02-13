@@ -9,6 +9,7 @@ import { RootState } from "../../store/store";
 import { formatDateTime } from "../../utils/helpers/commanHelper";
 import { Button } from "../../components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
+import CustomCountUp from "../CustomCountUp/CustomCountUp";
 
 type PropsType = ExpenseType & {
   allMembersList: MemberType;
@@ -52,7 +53,9 @@ function ExpenseCard(expense: PropsType) {
                   </div>
                 </div>
                 <div className="text-right min-w-[80px] sm:min-w-[100px]">
-                  <p className="font-semibold text-green-600 text-sm sm:text-base">₹{expense.amount}</p>
+                  <p className="font-semibold text-green-600 text-sm sm:text-base">
+                    ₹<CustomCountUp count={Number(expense.amount)} />
+                  </p>
                   <p className="text-xs text-gray-500">{formatDateTime(expense.created_at)}</p>
                 </div>
               </div>

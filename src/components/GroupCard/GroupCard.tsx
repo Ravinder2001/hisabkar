@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import CONSTANTS from "../../utils/constant/Constant";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import CustomCountUp from "../CustomCountUp/CustomCountUp";
 
 export function propsCard(props: GroupType) {
   const navigate = useNavigate();
@@ -59,7 +60,9 @@ export function propsCard(props: GroupType) {
             <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full">
               <IndianRupee className="w-5 h-5 text-green-500" />
             </div>
-            <span className="text-lg font-bold text-green-600 dark:text-green-300">₹{props.total_amount}</span>
+            <span className="text-lg font-bold text-green-600 dark:text-green-300">
+              ₹<CustomCountUp count={props.total_amount} />
+            </span>
           </div>
           <div className="justify-self-end">
             {props.is_you_admin && (

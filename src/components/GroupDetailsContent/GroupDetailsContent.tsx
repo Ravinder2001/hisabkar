@@ -7,6 +7,7 @@ import styles from "./style.module.css";
 import { GroupDataType } from "../../utils/comman/CommanTypes";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import CustomCountUp from "../CustomCountUp/CustomCountUp";
 
 function GroupDetailsContent(data: GroupDataType) {
   const GroupTypeList = useSelector((state: RootState) => state.data.groupTypeList);
@@ -44,7 +45,9 @@ function GroupDetailsContent(data: GroupDataType) {
 
       <div className="flex items-center gap-2">
         <Wallet className="h-5 w-5 text-green-500" />
-        <span className="text-green-600 font-semibold">₹{data.total_amount}</span>
+        <span className="text-green-600 font-semibold">
+          ₹<CustomCountUp count={data.total_amount} />
+        </span>
       </div>
 
       <Separator />
@@ -60,7 +63,9 @@ function GroupDetailsContent(data: GroupDataType) {
               </Avatar>
               <div className="flex-1">
                 <p className="font-medium">{member.name}</p>
-                <p className="text-sm text-gray-500">Spent: ₹{member.total_spent}</p>
+                <p className="text-sm text-gray-500">
+                  Spent: ₹<CustomCountUp count={member.total_spent} />
+                </p>
               </div>
             </div>
           ))}

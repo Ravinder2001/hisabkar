@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
 import styles from "./style.module.css";
 import { GroupPairsData } from "../../utils/comman/CommanTypes";
+import CustomCountUp from "../CustomCountUp/CustomCountUp";
 
 type PropType = {
   pairsData: GroupPairsData;
@@ -41,7 +42,9 @@ export default function GroupPairs(props: PropType) {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-red-600 font-medium">₹{item.amount}</span>
+                      <span className="text-red-600 font-medium">
+                        ₹<CustomCountUp count={Number(item.amount)} />
+                      </span>
                       <ArrowRight className="h-4 w-4 text-red-600" />
                     </div>
                   </div>
@@ -68,7 +71,9 @@ export default function GroupPairs(props: PropType) {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-green-600 font-medium">₹{item.amount}</span>
+                      <span className="text-green-600 font-medium">
+                        ₹<CustomCountUp count={Number(item.amount)} />
+                      </span>
                     </div>
                   </div>
                 ))}
