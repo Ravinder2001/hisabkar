@@ -33,13 +33,17 @@ interface FormValues {
 }
 
 const validationSchema = Yup.object().shape({
-  expenseName: Yup.string().required("Expense name is required").min(3, "Must be at least 3 characters"),
-  description: Yup.string().min(5, "Must be at least 5 characters"),
+  expenseName: Yup.string().required("Expense name is required").min(3, "Must be at least 3 characters").max(20, "Must be at most 20 characters"),
+  description: Yup.string().min(5, "Must be at least 5 characters").max(100, "Must be at most 100 characters"),
   expenseTypeId: Yup.object().shape({
     value: Yup.string().required("Expense type is required"),
     label: Yup.string().required("Please select an expense type"),
   }),
-  amount: Yup.number().required("Amount is required").positive("Amount must be positive").min(0.01, "Amount must be greater than 0"),
+  amount: Yup.number()
+    .required("Amount is required")
+    .positive("Amount must be positive")
+    .min(0.01, "Amount must be greater than 0")
+    .max(999999, "Amount must be lesser than 999999"),
   selectedUsers: Yup.array().min(1, "Select at least one user").required("Select users to split with"),
 });
 
@@ -114,6 +118,13 @@ function AddExpenseModal({
     }
   };
 
+  const DetectFormChanges = ({ values, setFieldValue }: any) => {
+    useEffect(() => {
+      setFieldValue("selectedUsers", []);
+    }, [values.amount, values.splitType]);
+    return null;
+  };
+
   useEffect(() => {
     if (addRes?.success === 1) {
       setIsOpen();
@@ -170,6 +181,7 @@ function AddExpenseModal({
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
         {({ values, errors, touched, setFieldValue, handleBlur }) => (
           <Form className="space-y-6" noValidate>
+            <DetectFormChanges values={values} setFieldValue={setFieldValue} />
             <div className="space-y-2">
               <label className="text-sm font-medium">Expense Name</label>
               <Field name="expenseName">
