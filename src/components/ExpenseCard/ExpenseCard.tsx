@@ -41,7 +41,7 @@ function ExpenseCard(expense: PropsType) {
 
           {/* Expense Card */}
           <div className="flex-1 mb-8 w-full">
-            <div className="bg-gradient-to-br from-purple-50 to-blue-50 p-3 sm:p-4 rounded-lg space-y-3 sm:space-y-4">
+            <div className="p-3 sm:p-4 rounded-lg space-y-3 sm:space-y-4" id={expense.is_own_expense ? styles.expOwnCard : styles.expCard}>
               {/* Expense Info */}
               <div className="flex flex-wrap items-start justify-between">
                 <div className="min-w-0">
@@ -53,7 +53,7 @@ function ExpenseCard(expense: PropsType) {
                   </div>
                 </div>
                 <div className="text-right min-w-[80px] sm:min-w-[100px]">
-                  <p className="font-semibold text-green-600 text-sm sm:text-base">
+                  <p className="font-semibold text-green-600 text-sm sm:text-base" id={styles.amount}>
                     ₹<CustomCountUp count={Number(expense.amount)} />
                   </p>
                   <p className="text-xs text-gray-500">{formatDateTime(expense.created_at)}</p>
@@ -66,7 +66,7 @@ function ExpenseCard(expense: PropsType) {
                   <AvatarImage src={paidByUser?.avatar} />
                   <AvatarFallback>{paidByUser?.name[0].toUpperCase()}</AvatarFallback>
                 </Avatar>
-                <div className="flex justify-between w-full">
+                <div className="flex justify-between items-center w-full">
                   <span className="text-xs sm:text-sm text-gray-600">
                     Paid by <span className="font-medium">{paidByUser?.name}</span>
                   </span>

@@ -25,6 +25,8 @@ const CONSTANTS = {
     MY_PAIRS: "/group/myPairs/",
     DELETE_EXPENSE: "/expense/",
     SW_SUBSCRIPTION: "/user/service-worker-subscribe",
+    GROUP_SETTLEMENT: "/group/toggleGroupSettlement",
+    GROUP_VISIBILITY: "/group/toggleGroupVisibilty",
   },
 };
 export default CONSTANTS;

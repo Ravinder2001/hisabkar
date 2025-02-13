@@ -55,11 +55,13 @@ function AddExpenseModal({
   memberList,
   setExpenseList,
   selectedRow,
+  callback,
 }: ModalType & {
   groupId: string;
   memberList: MemberType;
   setExpenseList: Dispatch<SetStateAction<any>>;
   selectedRow: ExpenseType | null;
+  callback: () => void;
 }) {
   const { expenseTypeList } = useSelector((state: RootState) => state.data);
   const { fetchData: addExpense, response: addRes, isLoading } = useApiFetch("");
@@ -152,6 +154,7 @@ function AddExpenseModal({
       setIsOpen();
       setExpenseList((prev: any) => [addRes.data[0], ...prev]);
       showToast(Messages.LOGS.ADD_EXPENSE, "success");
+      callback();
     }
   }, [addRes, setIsOpen]);
 
@@ -162,6 +165,7 @@ function AddExpenseModal({
         prev.map((expense: any) => (expense.expense_id === editRes.data[0].expense_id ? { ...editRes.data[0] } : expense))
       );
       showToast(Messages.LOGS.EDIT_EXPENSE, "success");
+      callback();
     }
   }, [editRes, setIsOpen]);
 

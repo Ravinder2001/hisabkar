@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
-import ExpenseCard from "../../components/GroupCard/GroupCard";
+import GroupCard from "../../components/GroupCard/GroupCard";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
 import { GroupType } from "../../utils/comman/CommanTypes";
@@ -39,7 +39,7 @@ function Home() {
     <div className={styles.container}>
       <div className={styles.cardCon}>
         {groupList.map((group) => (
-          <ExpenseCard key={group.group_id} {...group} />
+          <GroupCard key={group.group_id} {...group} setGroupList={setGroupList} />
         ))}
       </div>
       <FloatingActionButton
@@ -64,6 +64,7 @@ function Home() {
       />
     </div>
   );
+  console.log("🚀  isLoading:", isLoading);
 }
 
 export default Home;

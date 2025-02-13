@@ -37,7 +37,7 @@ export default function GroupDetails() {
   const { fetchData: fetchMyPairs, response: pairsRes, isLoading: pairsLoading } = useApiFetch(CONSTANTS.API_ROUTES.MY_PAIRS + GroupId);
   const { fetchData: deleteExpense, response: deleteExpRes, isLoading: deleteExpLoading } = useApiFetch("");
 
-  const [groupData, setGroupData] = useState<GroupDataType | null>();
+  const [groupData, setGroupData] = useState<GroupDataType | null>(null);
   const [expenseList, setExpenseList] = useState<ExpenseType[]>([]);
   const [pairsData, setPairsData] = useState<GroupPairsData>({
     send: [],
@@ -115,7 +115,9 @@ export default function GroupDetails() {
               <Accordion type="single" collapsible className="w-full lg:hidden">
                 <AccordionItem value="group-details">
                   <AccordionTrigger className="text-xl font-semibold">Group Details</AccordionTrigger>
-                  <AccordionContent>{groupData ? <GroupDetailsContent {...groupData} /> : null}</AccordionContent>
+                  <AccordionContent>
+                    {groupData ? <GroupDetailsContent {...groupData} GroupId={GroupId} setGroupData={setGroupData} /> : null}
+                  </AccordionContent>
                 </AccordionItem>
               </Accordion>
             )}
@@ -123,7 +125,9 @@ export default function GroupDetails() {
           {groupDetailsLoading ? (
             <CircularLoader />
           ) : (
-            <CardContent className="hidden lg:block">{groupData ? <GroupDetailsContent {...groupData} /> : null}</CardContent>
+            <CardContent className="hidden lg:block">
+              {groupData ? <GroupDetailsContent {...groupData} GroupId={GroupId} setGroupData={setGroupData} /> : null}
+            </CardContent>
           )}
         </Card>
       </div>
@@ -154,8 +158,8 @@ export default function GroupDetails() {
         <Card className="bg-white h-full">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Expenses Timeline</CardTitle>
-            <Badge variant="outline" className="bg-black text-white">
-              Unsettled
+            <Badge variant="outline" className={`${groupData?.is_settled ? "bg-green-500" : "bg-black"} text-white`}>
+              {groupData?.is_settled ? "Settled" : "Unsettled"}
             </Badge>
           </CardHeader>
           {expenseListLoading ? (
@@ -185,9 +189,12 @@ export default function GroupDetails() {
           )}
         </Card>
       </div>
-      <Button className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg bg-black text-white" onClick={handleExpModal}>
-        <Plus className="w-6 h-6" />
-      </Button>
+      {!groupData?.is_settled ? (
+        <Button className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg bg-black text-white" onClick={handleExpModal}>
+          <Plus className="w-6 h-6" />
+        </Button>
+      ) : null}
+
       {isAddExpModal ? (
         <AddExpenseModal
           isOpen={isAddExpModal}
@@ -196,6 +203,9 @@ export default function GroupDetails() {
           memberList={groupData?.members ?? []}
           setExpenseList={setExpenseList}
           selectedRow={selectedRow}
+          callback={() => {
+            fetchMyPairs();
+          }}
         />
       ) : null}
       <CustomAlert

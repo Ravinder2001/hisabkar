@@ -1,10 +1,9 @@
-import React from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
-// import { Button } from "../../components/ui/button";
-// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
-// import { Users, MoreVertical, Trash2, IndianRupee } from "lucide-react";
-import { Users, IndianRupee } from "lucide-react";
+import { Button } from "../../components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
+import { Users, MoreVertical, Trash2, IndianRupee } from "lucide-react";
 import { GroupType } from "../../utils/comman/CommanTypes";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
 import styles from "./style.module.css";
@@ -13,21 +12,45 @@ import CONSTANTS from "../../utils/constant/Constant";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import CustomCountUp from "../CustomCountUp/CustomCountUp";
+import CustomAlert from "../CustomAlert/CustomAlert";
+import useApiFetch from "../../hooks/useAPIFetch";
+import showToast from "../../utils/helpers/toastHelper";
+import Messages from "../../utils/constant/Messages";
 
-export function propsCard(props: GroupType) {
+export function propsCard(
+  props: GroupType & {
+    setGroupList: Dispatch<SetStateAction<GroupType[]>>;
+  }
+) {
   const navigate = useNavigate();
   const groupTypeList = useSelector((state: RootState) => state.data.groupTypeList);
-
   const groupType = groupTypeList.find((type) => type.id === props.group_type_id);
+
+  const { fetchData: toggleGroupVisibility, response: visibilityRes, isLoading: visibilityLoading } = useApiFetch("");
+
+  const [confirmationModal, setConfirmationModal] = useState<boolean>(false);
+
+  const handleSettlement = () => {
+    toggleGroupVisibility(CONSTANTS.API_ROUTES.GROUP_VISIBILITY + "/" + props.group_id);
+  };
+  const handleConfirmModal = () => {
+    setConfirmationModal(!confirmationModal);
+  };
+
+  useEffect(() => {
+    if (visibilityRes?.success == 1) {
+      showToast(visibilityRes?.message ?? "", "success");
+      handleConfirmModal();
+      props.setGroupList((prev) => prev.filter((group) => group.group_id !== props.group_id));
+    }
+  }, [visibilityRes]);
+
   return (
-    <Card
-      onClick={() => navigate(CONSTANTS.PROJECT_ROUTES.GROUP + `/${props.group_id}`)}
-      className="w-[100%] max-w-sm overflow-hidden transition-all duration-300 ease-in-out transform hover:shadow-xl bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 cursor-pointer"
-    >
+    <Card className="w-[100%] max-w-sm overflow-hidden transition-all duration-300 ease-in-out transform hover:shadow-xl bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 cursor-pointer">
       <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-400 to-blue-500 rounded-bl-full opacity-20"></div>
       <CardHeader className="relative z-10 flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-2xl font-bold text-purple-700 dark:text-purple-300">{props.group_name}</CardTitle>
-        {/* <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
@@ -36,15 +59,15 @@ export function propsCard(props: GroupType) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-white">
-              <DropdownMenuItem className="text-red-600 dark:text-red-400 bg-white">
+              <DropdownMenuItem onClick={handleConfirmModal} className="text-red-600 dark:text-red-400 bg-white cursor-pointer">
                 <Trash2 className="mr-2 h-4 w-4" />
                 <span>Delete this group</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div> */}
+        </div>
       </CardHeader>
-      <CardContent>
+      <CardContent onClick={() => navigate(CONSTANTS.PROJECT_ROUTES.GROUP + `/${props.group_id}`)}>
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-center space-x-2">
             <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full">
@@ -92,6 +115,13 @@ export function propsCard(props: GroupType) {
           {props.is_settled ? "Settled" : "Unsettled"}
         </Badge>
       </CardFooter>
+      <CustomAlert
+        isOpen={confirmationModal}
+        onClose={handleConfirmModal}
+        onSubmit={handleSettlement}
+        description={Messages.EXPENSE.DELETE_GROUP(props.group_name)}
+        isLoading={visibilityLoading}
+      />
     </Card>
   );
 }

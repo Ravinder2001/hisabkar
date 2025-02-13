@@ -1,5 +1,5 @@
-import React from "react";
-import { Users2, Wallet, MoreVertical } from "lucide-react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { CircleCheckBig, MoreVertical, Users2, Wallet } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Badge } from "../../components/ui/badge";
@@ -8,19 +8,62 @@ import { GroupDataType } from "../../utils/comman/CommanTypes";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import CustomCountUp from "../CustomCountUp/CustomCountUp";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
+import { Button } from "../../components/ui/button";
+import useApiFetch from "../../hooks/useAPIFetch";
+import CustomAlert from "../CustomAlert/CustomAlert";
+import Messages from "../../utils/constant/Messages";
+import CONSTANTS from "../../utils/constant/Constant";
+import showToast from "../../utils/helpers/toastHelper";
 
-function GroupDetailsContent(data: GroupDataType) {
+function GroupDetailsContent(
+  data: GroupDataType & {
+    GroupId: string;
+    setGroupData: Dispatch<SetStateAction<GroupDataType | null>>;
+  }
+) {
   const GroupTypeList = useSelector((state: RootState) => state.data.groupTypeList);
-
   const groupType = GroupTypeList.find((type) => type.id === data.group_type_id);
 
+  const { fetchData: toggleSettlement, response: settlementRes, isLoading: settlementLoading } = useApiFetch("");
+
+  const [confirmationModal, setConfirmationModal] = useState<boolean>(false);
+
+  const handleSettlement = () => {
+    toggleSettlement(CONSTANTS.API_ROUTES.GROUP_SETTLEMENT + "/" + data.GroupId);
+  };
+  const handleConfirmModal = () => {
+    setConfirmationModal(!confirmationModal);
+  };
+
+  useEffect(() => {
+    if (settlementRes?.success == 1) {
+      showToast(settlementRes?.message ?? "", "success");
+      handleConfirmModal();
+      data.setGroupData((prev) => (prev ? { ...prev, is_settled: !prev.is_settled } : prev));
+    }
+  }, [settlementRes]);
+
   return (
-    <div className="space-y-6 p-4">
+    <div className={`space-y-6 ${styles.container}`}>
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-purple-600">{data.group_name}</h2>
-        <button className="hover:bg-gray-100 p-2 rounded-full">
-          <MoreVertical className="h-5 w-5" />
-        </button>
+        {data.is_you_admin ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-white">
+              <DropdownMenuItem onClick={handleConfirmModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+                <CircleCheckBig className="mr-2 h-4 w-4" color="green" />
+                <span className="text-green-800">{data.is_settled ? "Un-settle this group" : "Make Settlement"}</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
       </div>
 
       <div className="flex items-center gap-2 text-gray-600">
@@ -71,6 +114,13 @@ function GroupDetailsContent(data: GroupDataType) {
           ))}
         </div>
       </div>
+      <CustomAlert
+        isOpen={confirmationModal}
+        onClose={handleConfirmModal}
+        onSubmit={handleSettlement}
+        description={Messages.EXPENSE.SETTLEMENT_ALERT(data.is_settled)}
+        isLoading={settlementLoading}
+      />
     </div>
   );
 }

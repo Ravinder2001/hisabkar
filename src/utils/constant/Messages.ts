@@ -10,6 +10,8 @@ const Messages = {
     DELETE_SUCCESS: "Expense deleted successfully.",
     DELETE_ERROR: "Failed to delete expense. Please try again.",
     DELETE_ALERT: (expenseName: string) => `Are you sure you want to delete this ${expenseName} expense?`,
+    DELETE_GROUP: (expenseName: string) => `Are you sure you want to delete this ${expenseName} group?`,
+    SETTLEMENT_ALERT: (status: boolean) => `Are you sure you want to ${status ? "Un-settle" : "Settle"} this group?`,
 
     NOT_FOUND: "Expense not found.",
     INVALID_AMOUNT: "Invalid amount. Please enter a valid number.",
