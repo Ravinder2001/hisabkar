@@ -19,6 +19,7 @@ const CONSTANTS = {
     GROUP_DETAILS: "/group/single",
     ALL_EXPENSES: "/expense/getAllExpenses",
     ADD_EXPENSE: "/expense/addExpense",
+    EDIT_EXPENSE: "/expense/editExpense",
     CREATE_GROUP: "/group/createGroup",
     JOIN_GROUP: "/group/joinGroup/",
     MY_PAIRS: "/group/myPairs/",

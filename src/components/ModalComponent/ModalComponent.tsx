@@ -12,9 +12,8 @@ const customStyles: any = {
     right: "auto",
     bottom: "auto",
     transform: "translate(-50%, -50%)",
-    width: "90%", // Responsive width
-    maxWidth: "500px", // Maximum width for larger screens
-    maxHeight: "90vh", // Prevents overflowing on small screens
+    width: "auto", // Responsive width
+    height: "auto", // Prevents overflowing on small screens
     overflow: "visible", // Enables scrolling for long content
     borderRadius: "10px",
     padding: "20px",

@@ -62,7 +62,7 @@ export default function GroupDetails() {
   };
 
   const handleDelete = async () => {
-    await deleteExpense(CONSTANTS.API_ROUTES.DELETE_EXPENSE + selectedRow?.expense_id, {
+    await deleteExpense(CONSTANTS.API_ROUTES.DELETE_EXPENSE + `/${GroupId}/${selectedRow?.expense_id}`, {
       method: "DELETE",
     });
   };

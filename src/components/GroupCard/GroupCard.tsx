@@ -1,9 +1,10 @@
 import React from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
-import { Button } from "../../components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
-import { Users, MoreVertical, Trash2, IndianRupee } from "lucide-react";
+// import { Button } from "../../components/ui/button";
+// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
+// import { Users, MoreVertical, Trash2, IndianRupee } from "lucide-react";
+import { Users, IndianRupee } from "lucide-react";
 import { GroupType } from "../../utils/comman/CommanTypes";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
 import styles from "./style.module.css";
@@ -25,7 +26,7 @@ export function propsCard(props: GroupType) {
       <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-400 to-blue-500 rounded-bl-full opacity-20"></div>
       <CardHeader className="relative z-10 flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-2xl font-bold text-purple-700 dark:text-purple-300">{props.group_name}</CardTitle>
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
@@ -38,10 +39,9 @@ export function propsCard(props: GroupType) {
                 <Trash2 className="mr-2 h-4 w-4" />
                 <span>Delete this group</span>
               </DropdownMenuItem>
-              {/* Add more menu items here as needed */}
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+        </div> */}
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-4">
