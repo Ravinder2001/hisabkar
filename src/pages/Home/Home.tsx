@@ -39,7 +39,14 @@ function Home() {
     <div className={styles.container}>
       <div className={styles.cardCon}>
         {groupList.map((group) => (
-          <GroupCard key={group.group_id} {...group} setGroupList={setGroupList} />
+          <GroupCard
+            key={group.group_id}
+            {...group}
+            setGroupList={setGroupList}
+            handleLinkShare={() => {
+              setIsShareGroupModal({ status: true, groupCode: group.code });
+            }}
+          />
         ))}
       </div>
       <FloatingActionButton

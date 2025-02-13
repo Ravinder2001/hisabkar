@@ -2,6 +2,7 @@
 export type GroupType = {
   group_id: number;
   group_name: string;
+  code: string;
   total_amount: number;
   group_type_id: string;
   is_settled: boolean;

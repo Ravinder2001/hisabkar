@@ -3,7 +3,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../comp
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
-import { Users, MoreVertical, Trash2, IndianRupee } from "lucide-react";
+import { Users, MoreVertical, Trash2, IndianRupee, Share } from "lucide-react";
 import { GroupType } from "../../utils/comman/CommanTypes";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
 import styles from "./style.module.css";
@@ -20,6 +20,7 @@ import Messages from "../../utils/constant/Messages";
 export function propsCard(
   props: GroupType & {
     setGroupList: Dispatch<SetStateAction<GroupType[]>>;
+    handleLinkShare: () => void;
   }
 ) {
   const navigate = useNavigate();
@@ -59,6 +60,10 @@ export function propsCard(
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-white">
+              <DropdownMenuItem onClick={props.handleLinkShare} className="text-black-600 dark:text-black-400 bg-white cursor-pointer">
+                <Share className="mr-2 h-4 w-4" />
+                <span>Share this group</span>
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleConfirmModal} className="text-red-600 dark:text-red-400 bg-white cursor-pointer">
                 <Trash2 className="mr-2 h-4 w-4" />
                 <span>Delete this group</span>
