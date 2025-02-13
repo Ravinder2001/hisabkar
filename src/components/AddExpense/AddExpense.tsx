@@ -102,7 +102,7 @@ function AddExpenseModal({
         amount: Number(values.splitType === "PERCENTAGE" ? ((parseFloat(values.amount) * parseFloat(split.amount)) / 100).toFixed(2) : split.amount),
       }));
 
-      await addExpense(CONSTANTS.API_ROUTES.ADD_EXPENSE + groupId, {
+      await addExpense(CONSTANTS.API_ROUTES.ADD_EXPENSE + "/" + groupId, {
         method: "POST",
         data: {
           expenseName: values.expenseName,

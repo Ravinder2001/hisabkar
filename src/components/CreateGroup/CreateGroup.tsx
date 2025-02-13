@@ -13,6 +13,7 @@ import showToast from "../../utils/helpers/toastHelper";
 import Messages from "../../utils/constant/Messages";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import CustomCircularLoading from "../Atoms/CustomCircularLoading/CustomCircularLoading";
 
 interface FormValues {
   groupName: string;
@@ -33,11 +34,11 @@ function CreateGroupModal({
   callbackFunc,
   setIsShareGroupModal,
 }: ModalType & {
-  callbackFunc: () => void;
+  callbackFunc: (e: any) => void;
   setIsShareGroupModal: Dispatch<SetStateAction<{ status: boolean; groupCode: string }>>;
 }) {
   const { groupTypeList } = useSelector((state: RootState) => state.data);
-  const { fetchData: createGroup, response: createRes } = useApiFetch("");
+  const { fetchData: createGroup, response: createRes, isLoading: createGroupLoading } = useApiFetch("");
 
   const initialValues: FormValues = {
     groupName: "",
@@ -65,7 +66,7 @@ function CreateGroupModal({
         status: true,
         groupCode: createRes.data.code,
       });
-      callbackFunc();
+      callbackFunc(createRes.data.group_data);
       showToast(Messages.LOGS.GROUP_CREATED, "success");
     }
   }, [createRes]);
@@ -114,7 +115,7 @@ function CreateGroupModal({
             </div>
 
             <Button type="submit" className="w-full bg-black hover:bg-gray-800 text-white rounded-lg py-2" disabled={isSubmitting}>
-              {isSubmitting ? "Creating Group..." : "Create Group"}
+              {createGroupLoading ? <CustomCircularLoading /> : "Create Group"}
             </Button>
           </Form>
         )}

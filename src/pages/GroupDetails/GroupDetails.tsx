@@ -28,12 +28,12 @@ export default function GroupDetails() {
     fetchData: fetchGroupDetails,
     response: groupRes,
     isLoading: groupDetailsLoading,
-  } = useApiFetch(CONSTANTS.API_ROUTES.GROUP_DETAILS + GroupId);
+  } = useApiFetch(CONSTANTS.API_ROUTES.GROUP_DETAILS + "/" + GroupId);
   const {
     fetchData: fetchAllExpenses,
     response: expenseRes,
     isLoading: expenseListLoading,
-  } = useApiFetch(CONSTANTS.API_ROUTES.ALL_EXPENSES + GroupId);
+  } = useApiFetch(CONSTANTS.API_ROUTES.ALL_EXPENSES + "/" + GroupId);
   const { fetchData: fetchMyPairs, response: pairsRes, isLoading: pairsLoading } = useApiFetch(CONSTANTS.API_ROUTES.MY_PAIRS + GroupId);
   const { fetchData: deleteExpense, response: deleteExpRes, isLoading: deleteExpLoading } = useApiFetch("");
 

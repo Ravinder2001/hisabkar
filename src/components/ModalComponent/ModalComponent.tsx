@@ -15,7 +15,7 @@ const customStyles: any = {
     width: "90%", // Responsive width
     maxWidth: "500px", // Maximum width for larger screens
     maxHeight: "90vh", // Prevents overflowing on small screens
-    overflowY: "auto", // Enables scrolling for long content
+    overflow: "visible", // Enables scrolling for long content
     borderRadius: "10px",
     padding: "20px",
     backgroundColor: "#fff",
@@ -52,7 +52,7 @@ function ModalComponent(props: PropsType) {
           cursor: "pointer",
         }}
       >
-        <X size={18}/>
+        <X size={18} />
       </button>
 
       {props.children}

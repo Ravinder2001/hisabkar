@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import ExpenseCard from "../../components/GroupCard/GroupCard";
 import useApiFetch from "../../hooks/useAPIFetch";
@@ -46,7 +47,14 @@ function Home() {
           setIsCreateModal(true);
         }}
       />
-      <CreateGroupModal isOpen={isCreateModal} setIsOpen={setIsCreateModal} setIsShareGroupModal={setIsShareGroupModal} callbackFunc={fetchData} />
+      <CreateGroupModal
+        isOpen={isCreateModal}
+        setIsOpen={setIsCreateModal}
+        setIsShareGroupModal={setIsShareGroupModal}
+        callbackFunc={(data: any) => {
+          setGroupList((prev) => [data, ...prev]);
+        }}
+      />
       <GroupSharingModal
         isOpen={isShareGroupModal.status}
         setIsOpen={() => {
