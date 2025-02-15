@@ -25,6 +25,12 @@ function ExpenseCard(expense: PropsType) {
   const expenseType = expenseTypeList.find((type) => type.id === expense.expense_type_id);
   const paidByUser = expense.allMembersList.find((member) => member.id === expense.paid_by);
 
+  // Format description into bullet points
+  const descriptionPoints = expense.description
+    .split(".")
+    .map((point) => point.trim())
+    .filter((point) => point.length > 0);
+
   return (
     <div className={`${styles.expenseCon} w-full`}>
       <div className="relative w-full">
@@ -42,55 +48,73 @@ function ExpenseCard(expense: PropsType) {
           {/* Expense Card */}
           <div className="flex-1 mb-8 w-full">
             <div className="p-3 sm:p-4 rounded-lg space-y-3 sm:space-y-4" id={expense.is_own_expense ? styles.expOwnCard : styles.expCard}>
-              {/* Expense Info */}
-              <div className="flex flex-wrap items-start justify-between">
-                <div className="min-w-0">
-                  <h4 className="font-semibold text-base sm:text-lg truncate">{expense.expense_name}</h4>
-                  <p className="text-xs sm:text-sm text-gray-600 truncate">{expense.description}</p>
-                  <div className="flex items-center gap-2 text-gray-600 mt-2">
+              <div className="flex flex-row items-start justify-between space-y-0 p-0">
+                <div className="space-y-1 flex-1">
+                  <div className="flex items-center gap-2">
                     <img src={expenseType?.icon ?? ""} alt={expenseType?.name} className="w-4 h-4" />
                     <div className="text-sm">{expenseType?.name}</div>
                   </div>
+                  <h2 className="text-2xl font-semibold tracking-tight">{expense.expense_name}</h2>
                 </div>
-                <div className="text-right min-w-[80px] sm:min-w-[100px]">
-                  <p className="font-semibold text-green-600 text-sm sm:text-base" id={styles.amount}>
-                    ₹<CustomCountUp count={Number(expense.amount)} />
-                  </p>
-                  <p className="text-xs text-gray-500">{formatDateTime(expense.created_at)}</p>
-                </div>
+                {expense.is_own_expense ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="bg-white">
+                      <DropdownMenuItem onClick={expense.setAddExpModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+                        <Edit className="mr-2 h-4 w-4" />
+                        <span>Edit this Expense</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={expense.setDeleteModal} className="text-red-600 dark:text-red-400 bg-white  cursor-pointer">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        <span>Delete this Expense</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : null}
               </div>
 
-              {/* Paid By */}
-              <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={paidByUser?.avatar} />
-                  <AvatarFallback>{paidByUser?.name[0].toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div className="flex justify-between items-center w-full">
-                  <span className="text-xs sm:text-sm text-gray-600">
-                    Paid by <span className="font-medium">{paidByUser?.name}</span>
-                  </span>
-                  {expense.is_own_expense ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-white">
-                        <DropdownMenuItem onClick={expense.setAddExpModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
-                          <Edit className="mr-2 h-4 w-4" />
-                          <span>Edit this Expense</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={expense.setDeleteModal} className="text-red-600 dark:text-red-400 bg-white  cursor-pointer">
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          <span>Delete this Expense</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  ) : null}
+              <div className="space-y-4 px-0">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">{formatDateTime(expense.created_at)}</p>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-6 w-6">
+                          <AvatarImage src={paidByUser?.avatar} />
+                          <AvatarFallback>{paidByUser?.name[0].toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <p className="text-sm">Paid By {paidByUser?.name.split(" ")[0]}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold" id={styles.amount}>
+                        ₹<CustomCountUp count={Number(expense.amount)} />
+                      </p>
+                    </div>
+                  </div>
                 </div>
+
+                {descriptionPoints.length ? (
+                  <>
+                    <div className={styles.line}></div>
+
+                    <div className="space-y-2">
+                      <h3 className="font-medium">Description</h3>
+                      <ul className="list-disc pl-4 space-y-1">
+                        {descriptionPoints.map((point, index) => (
+                          <li key={index} className="text-sm text-muted-foreground">
+                            {point}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </>
+                ) : null}
               </div>
 
               {/* Split Between */}
@@ -103,7 +127,7 @@ function ExpenseCard(expense: PropsType) {
                     {expense.members.map((exMember) => {
                       const expenseMember = expense.allMembersList.find((member) => member.id === exMember.id);
                       return (
-                        <div key={expenseMember?.id} className="flex flex-wrap items-center justify-between bg-white/50 p-2 rounded-md">
+                        <div key={expenseMember?.id} className="flex flex-wrap items-center justify-between bg-white/50 rounded-md">
                           <div className="flex items-center gap-2 min-w-0">
                             <Avatar className="h-6 w-6">
                               <AvatarImage src={expenseMember?.avatar} />
@@ -111,7 +135,7 @@ function ExpenseCard(expense: PropsType) {
                             </Avatar>
                             <span className="text-xs sm:text-sm font-medium truncate">{expenseMember?.name}</span>
                           </div>
-                          <span className="text-xs sm:text-sm text-green-600 font-medium">₹{exMember.amount}</span>
+                          <span className="text-md sm:text-sm text-black-600 font-medium">₹{exMember.amount}</span>
                         </div>
                       );
                     })}
