@@ -5,54 +5,42 @@
 /* F2F5FE */
 #expOwnCard {
   background-image: linear-gradient(
-      135deg,
-      transparent 0%,
-      transparent 38%,
-      rgba(225, 229, 181, 0.5) 38%,
-      rgba(225, 229, 181, 0.5) 62%,
-      transparent 62%,
-      transparent 64%,
-      rgba(181, 207, 111, 0.5) 64%,
-      rgba(181, 207, 111, 0.5) 100%
+      229deg,
+      rgba(248, 248, 248, 0.04) 0%,
+      rgba(248, 248, 248, 0.04) 54%,
+      rgba(112, 112, 112, 0.04) 54%,
+      rgba(112, 112, 112, 0.04) 100%
     ),
     linear-gradient(
-      45deg,
-      transparent 0%,
-      transparent 56%,
-      rgb(208, 213, 166) 56%,
-      rgb(208, 213, 166) 64%,
-      rgb(185, 225, 137) 64%,
-      rgb(185, 225, 137) 91%,
-      transparent 91%,
-      transparent 100%
+      239deg,
+      rgba(252, 252, 252, 0.04) 0%,
+      rgba(252, 252, 252, 0.04) 66%,
+      rgba(111, 111, 111, 0.04) 66%,
+      rgba(111, 111, 111, 0.04) 100%
     ),
-    linear-gradient(90deg, rgb(217, 251, 234), rgb(217, 251, 234));
+    linear-gradient(141deg, rgba(40, 40, 40, 0.04) 0%, rgba(40, 40, 40, 0.04) 44%, rgba(168, 168, 168, 0.04) 44%, rgba(168, 168, 168, 0.04) 100%),
+    linear-gradient(287deg, rgba(40, 40, 40, 0.04) 0%, rgba(40, 40, 40, 0.04) 78%, rgba(141, 141, 141, 0.04) 78%, rgba(141, 141, 141, 0.04) 100%),
+    linear-gradient(90deg, rgb(227, 254, 236), rgb(210, 252, 230));
 }
 
 #expCard {
   background-image: linear-gradient(
-      135deg,
-      transparent 0%,
-      transparent 38%,
-      rgba(143, 238, 192, 0.5) 38%,
-      rgba(143, 238, 192, 0.5) 62%,
-      transparent 62%,
-      transparent 64%,
-      rgba(159, 242, 230, 0.5) 64%,
-      rgba(159, 242, 230, 0.5) 100%
+      229deg,
+      rgba(248, 248, 248, 0.04) 0%,
+      rgba(248, 248, 248, 0.04) 54%,
+      rgba(112, 112, 112, 0.04) 54%,
+      rgba(112, 112, 112, 0.04) 100%
     ),
     linear-gradient(
-      45deg,
-      transparent 0%,
-      transparent 56%,
-      rgb(173, 189, 240) 56%,
-      rgb(173, 189, 240) 64%,
-      rgb(163, 244, 244) 64%,
-      rgb(163, 244, 244) 91%,
-      transparent 91%,
-      transparent 100%
+      239deg,
+      rgba(252, 252, 252, 0.04) 0%,
+      rgba(252, 252, 252, 0.04) 66%,
+      rgba(111, 111, 111, 0.04) 66%,
+      rgba(111, 111, 111, 0.04) 100%
     ),
-    linear-gradient(90deg, rgb(233, 237, 252), rgb(233, 237, 252));
+    linear-gradient(141deg, rgba(40, 40, 40, 0.04) 0%, rgba(40, 40, 40, 0.04) 44%, rgba(168, 168, 168, 0.04) 44%, rgba(168, 168, 168, 0.04) 100%),
+    linear-gradient(287deg, rgba(40, 40, 40, 0.04) 0%, rgba(40, 40, 40, 0.04) 78%, rgba(141, 141, 141, 0.04) 78%, rgba(141, 141, 141, 0.04) 100%),
+    linear-gradient(90deg, rgb(180, 229, 242), rgb(174, 230, 238));
 }
 
 #amount {
@@ -63,7 +51,7 @@
 .line {
   width: 100%;
   height: 1px;
-  background-color: #e4e4e7;
+  background-color: #c3c3c7;
 }
 
 @media only screen and (max-width: 1024px) {

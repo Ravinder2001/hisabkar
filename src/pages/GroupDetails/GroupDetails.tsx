@@ -109,18 +109,18 @@ export default function GroupDetails() {
         <Card className="bg-white p-0 h-full">
           <CardHeader className={styles.cardHeader}>
             <CardTitle className="lg:block hidden">Group Details</CardTitle>
-            {groupDetailsLoading ? (
-              <CircularLoader />
-            ) : (
-              <Accordion type="single" collapsible className={`w-full lg:hidden ${styles.accordion}`}>
-                <AccordionItem value="group-details">
-                  <AccordionTrigger className="text-sm font-semibold">Group Details</AccordionTrigger>
-                  <AccordionContent>
-                    {groupData ? <GroupDetailsContent {...groupData} GroupId={GroupId} setGroupData={setGroupData} /> : null}
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            )}
+            <Accordion type="single" collapsible className={`w-full lg:hidden ${styles.accordion}`}>
+              <AccordionItem value="group-details">
+                <AccordionTrigger className="text-sm font-semibold px-4">Group Details</AccordionTrigger>
+                <AccordionContent>
+                  {groupDetailsLoading ? (
+                    <CircularLoader />
+                  ) : groupData ? (
+                    <GroupDetailsContent {...groupData} GroupId={GroupId} setGroupData={setGroupData} />
+                  ) : null}
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </CardHeader>
           {groupDetailsLoading ? (
             <CircularLoader />
@@ -136,14 +136,10 @@ export default function GroupDetails() {
           <CardHeader className={styles.cardHeader}>
             <CardTitle className="lg:block hidden">Your Expense Summary</CardTitle>
             <Accordion type="single" collapsible className={`w-full lg:hidden ${styles.accordion}`}>
-              {pairsLoading ? (
-                <CircularLoader />
-              ) : (
-                <AccordionItem value="group-pairs">
-                  <AccordionTrigger className="text-sm font-semibold">Your Expense Summary</AccordionTrigger>
-                  <AccordionContent>{groupData ? <GroupPairs pairsData={pairsData} /> : null}</AccordionContent>
-                </AccordionItem>
-              )}
+              <AccordionItem value="group-pairs">
+                <AccordionTrigger className="text-sm font-semibold px-4">Your Expense Summary</AccordionTrigger>
+                <AccordionContent>{pairsLoading ? <CircularLoader /> : groupData ? <GroupPairs pairsData={pairsData} /> : null}</AccordionContent>
+              </AccordionItem>
             </Accordion>
           </CardHeader>
           {pairsLoading ? (
