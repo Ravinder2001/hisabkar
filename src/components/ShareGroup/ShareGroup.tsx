@@ -4,6 +4,7 @@ import ModalComponent from "../ModalComponent/ModalComponent";
 import { ModalType } from "../../utils/comman/CommanTypes";
 import { Copy } from "lucide-react";
 import showToast from "../../utils/helpers/toastHelper";
+import styles from "./style.module.css";
 
 function GroupSharingModal({ isOpen, setIsOpen, groupCode }: ModalType & { groupCode: string }) {
   const currentUrl = window.location.origin;
@@ -20,7 +21,7 @@ function GroupSharingModal({ isOpen, setIsOpen, groupCode }: ModalType & { group
   };
 
   return (
-    <ModalComponent isOpen={isOpen} setIsOpen={setIsOpen}>
+    <ModalComponent isOpen={isOpen} setIsOpen={setIsOpen} className={styles.container}>
       <div className="bg-gray-100 p-3 rounded-lg flex justify-between items-center mb-4 mt-4">
         <span className="truncate text-sm text-gray-700">{fullGroupLink}</span>
         <button onClick={copyToClipboard} className="text-gray-500 hover:text-black">
