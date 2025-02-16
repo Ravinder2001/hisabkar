@@ -201,6 +201,7 @@ export default function GroupDetails() {
           selectedRow={selectedRow}
           callback={() => {
             fetchMyPairs();
+            fetchGroupDetails();
           }}
         />
       ) : null}
