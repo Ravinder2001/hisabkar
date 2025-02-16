@@ -131,3 +131,9 @@
 .confirmButton.success:hover {
   background-color: #218838;
 }
+
+@media only screen and (max-width: 768px) {
+  .container {
+    width: 90% !important;
+  }
+}

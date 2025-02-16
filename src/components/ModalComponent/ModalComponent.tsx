@@ -3,7 +3,6 @@ import { X } from "lucide-react";
 import { ModalType } from "../../utils/comman/CommanTypes";
 import React, { ReactNode } from "react";
 import Modal from "react-modal";
-import styles from "./style.module.css";
 
 const customStyles: any = {
   content: {
@@ -28,6 +27,7 @@ const customStyles: any = {
 
 type PropsType = ModalType & {
   children: ReactNode;
+  className?: string;
 };
 
 function ModalComponent(props: PropsType) {
@@ -38,7 +38,7 @@ function ModalComponent(props: PropsType) {
       style={customStyles}
       contentLabel="Example Modal"
       ariaHideApp={false} // Prevents accessibility warning
-      className={styles.container}
+      className={props.className}
     >
       {/* Close Button */}
       <button

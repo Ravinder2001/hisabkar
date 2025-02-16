@@ -14,6 +14,7 @@ import Messages from "../../utils/constant/Messages";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import CustomCircularLoading from "../Atoms/CustomCircularLoading/CustomCircularLoading";
+import styles from "./style.module.css";
 
 interface FormValues {
   groupName: string;
@@ -72,7 +73,7 @@ function CreateGroupModal({
   }, [createRes]);
 
   return (
-    <ModalComponent isOpen={isOpen} setIsOpen={setIsOpen}>
+    <ModalComponent isOpen={isOpen} setIsOpen={setIsOpen} className={styles.container}>
       <div className="text-md font-bold mb-6">Create Group</div>
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
         {({ errors, touched, isSubmitting, handleBlur }) => (

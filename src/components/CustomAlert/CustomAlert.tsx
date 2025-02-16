@@ -13,7 +13,7 @@ type PropsType = {
 
 function CustomAlert(props: PropsType) {
   return (
-    <ModalComponent isOpen={props.isOpen} setIsOpen={props.onClose}>
+    <ModalComponent isOpen={props.isOpen} setIsOpen={props.onClose} className={styles.container}>
       <div className={styles.modalBody}>
         <p className={styles.modalDescription}>{props.description}</p>
       </div>
