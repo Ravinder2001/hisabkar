@@ -11,6 +11,9 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import ENVConfig from "./config/config";
 import { injectStore } from "./utils/helpers/axiosInstance";
 import { registerServiceWorker } from "./utils/helpers/serviceWorkerHelper";
+
+import "react-tooltip/dist/react-tooltip.css";
+
 registerServiceWorker();
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);

@@ -26,7 +26,7 @@ const initialData = {
 export default function Profile() {
   const dispatch = useDispatch();
 
-  const { fetchData: fetchProfileDetails, response: profileRes } = useApiFetch(CONSTANTS.API_ROUTES.PROFILE_DETAILS);
+  const { fetchData: fetchProfileDetails, response: profileRes, isLoading: profileLoading } = useApiFetch(CONSTANTS.API_ROUTES.PROFILE_DETAILS);
   const { fetchData: fetchNewAvatarList, response: avatarRes } = useApiFetch("");
   const { fetchData: updateProfileRes, response: editProfileRes, isLoading } = useApiFetch("");
 
@@ -127,9 +127,7 @@ export default function Profile() {
             <Label htmlFor="is_available">Available</Label>
           </div>
         </CardContent>
-        <CardFooter>
-          <ButtonComponent text="Submit" isLoading={isLoading} />
-        </CardFooter>
+        <CardFooter>{profileLoading ? null : <ButtonComponent text="Submit" isLoading={isLoading} />}</CardFooter>
       </Card>
     </form>
   );
