@@ -103,7 +103,7 @@ function AddExpenseModal({
 
       const members = values.userSplits.map((split) => ({
         userId: split.userId,
-        amount: Number(values.splitType === "PERCENTAGE" ? ((parseFloat(values.amount) * parseFloat(split.amount)) / 100).toFixed(2) : split.amount),
+        amount: Number(values.splitType === "PERCENTAGE" ? (parseFloat(values.amount) * parseFloat(split.amount)) / 100 : split.amount),
       }));
 
       await addExpense(CONSTANTS.API_ROUTES.ADD_EXPENSE + "/" + groupId, {
@@ -130,7 +130,7 @@ function AddExpenseModal({
 
       const members = values.userSplits.map((split) => ({
         userId: split.userId,
-        amount: Number(values.splitType === "PERCENTAGE" ? ((parseFloat(values.amount) * parseFloat(split.amount)) / 100).toFixed(2) : split.amount),
+        amount: Number(values.splitType === "PERCENTAGE" ? (parseFloat(values.amount) * parseFloat(split.amount)) / 100 : split.amount),
       }));
 
       await editExpense(CONSTANTS.API_ROUTES.EDIT_EXPENSE + `/${groupId}/${selectedRow?.expense_id}`, {
@@ -308,7 +308,31 @@ function AddExpenseModal({
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Select Users</label>
+                <div className="flex gap-1">
+                  <div className="text-sm font-medium">Select Users</div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      checked={values.selectedUsers.length === memberList.length}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          const allUserIds = memberList.map((user) => user.id);
+                          setFieldValue("selectedUsers", allUserIds);
+                          const amount = parseFloat(values.amount) || 0;
+                          const splits = allUserIds.map((userId) => ({
+                            userId,
+                            amount: values.splitType === "EQUAL" && amount ? ((amount / allUserIds.length) * 100) / 100 : "",
+                          }));
+                          setFieldValue("userSplits", splits);
+                        } else {
+                          setFieldValue("selectedUsers", []);
+                          setFieldValue("userSplits", []);
+                        }
+                      }}
+                      className="cursor-pointer"
+                    />
+                  </div>
+                </div>
                 <div className="flex flex-wrap gap-4">
                   {memberList.map((user) => (
                     <div key={user.id} className="text-center">
@@ -322,7 +346,7 @@ function AddExpenseModal({
                           const amount = parseFloat(values.amount) || 0;
                           const splits = newSelected.map((userId) => ({
                             userId,
-                            amount: values.splitType === "EQUAL" && amount ? (amount / newSelected.length).toFixed(2) : "",
+                            amount: values.splitType === "EQUAL" && amount ? ((amount / newSelected.length) * 100) / 100 : "",
                           }));
                           setFieldValue("userSplits", splits);
                         }}
@@ -354,7 +378,7 @@ function AddExpenseModal({
                       return (
                         <div key={userId} className="flex items-center gap-3">
                           <UserAvatar userImage={user.avatar} userName={user.name} />
-                          <span className="flex-1">{user.name}</span>
+                          <span className="flex-1">{user.name.split(" ")[0]}</span>
                           <Field name={`userSplits.${index}.amount`}>
                             {({ field }: any) => (
                               <Input
@@ -363,6 +387,7 @@ function AddExpenseModal({
                                 disabled={values.splitType === "EQUAL"}
                                 className="w-24 text-right"
                                 placeholder={values.splitType === "PERCENTAGE" ? "%" : "0"}
+                                value={Number(values.userSplits[index].amount).toFixed(2)}
                               />
                             )}
                           </Field>

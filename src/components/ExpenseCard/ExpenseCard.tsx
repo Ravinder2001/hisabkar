@@ -85,7 +85,7 @@ function ExpenseCard(expense: PropsType) {
                       <p className="text-sm text-muted-foreground">{formatDateTime(expense.created_at)}</p>
                       <div className="flex items-center gap-2">
                         <Avatar className="h-6 w-6">
-                          <AvatarImage src={paidByUser?.avatar} crossOrigin="anonymous" />
+                          <AvatarImage src={paidByUser?.avatar} />
                           <AvatarFallback>{paidByUser?.name[0].toUpperCase()}</AvatarFallback>
                         </Avatar>
                         <p className="text-sm">Paid By {paidByUser?.name.split(" ")[0]}</p>
