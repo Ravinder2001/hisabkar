@@ -40,6 +40,7 @@ export const userSlice = createSlice({
       state.role = "";
       state.token = null;
       state.isUserLoggedIn = false;
+      state.reDirectURL = CONSTANTS.PROJECT_ROUTES.HOME;
     },
     setReDirectURL: (state, { payload }) => {
       state.reDirectURL = payload;

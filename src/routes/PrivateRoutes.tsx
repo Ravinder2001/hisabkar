@@ -1,20 +1,17 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Navigate, useLocation, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Navigate, useParams } from "react-router-dom";
 import { RootState } from "../store/store";
 import CONSTANTS from "../utils/constant/Constant";
 import styles from "../App.module.css";
 import Navbar from "../components/Navbar/Navbar";
 import useApiFetch from "../hooks/useAPIFetch";
-import { setReDirectURL } from "../store/features/userSlice";
 
 type PrivateRouteProps = {
   children: React.ReactNode;
 };
 
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
-  const location = useLocation();
-  const dispatch = useDispatch();
   const { isUserLoggedIn } = useSelector((state: RootState) => state.user);
   const { group_code } = useParams<{ group_code?: string }>();
   const { fetchData: joinGroup, response: joinRes } = useApiFetch("");
@@ -34,9 +31,6 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   }, [joinRes]);
 
   if (!isUserLoggedIn) {
-    // Redirect to login with a return URL
-    dispatch(setReDirectURL(location.pathname));
-
     return <Navigate to={CONSTANTS.PROJECT_ROUTES.AUTHTICATION} />;
   }
 

@@ -28,7 +28,7 @@ const Navbar = () => {
           <UserAvatar />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="bg-white">
-          <DropdownMenuItem className="cursor-pointer">
+          <DropdownMenuItem className="cursor-pointer" onClick={toggleMenu}>
             <Link to={CONSTANTS.PROJECT_ROUTES.PROFILE}>Profile</Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>

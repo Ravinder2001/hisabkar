@@ -13,6 +13,7 @@ import showToast from "../../utils/helpers/toastHelper";
 import { useDispatch } from "react-redux";
 import { setUserProfileData } from "../../store/features/userSlice";
 import { formatDateTime } from "../../utils/helpers/commanHelper";
+import CustomCircularLoading from "../../components/Atoms/CustomCircularLoading/CustomCircularLoading";
 
 const initialData = {
   email: "",
@@ -27,7 +28,7 @@ export default function Profile() {
   const dispatch = useDispatch();
 
   const { fetchData: fetchProfileDetails, response: profileRes, isLoading: profileLoading } = useApiFetch(CONSTANTS.API_ROUTES.PROFILE_DETAILS);
-  const { fetchData: fetchNewAvatarList, response: avatarRes } = useApiFetch("");
+  const { fetchData: fetchNewAvatarList, response: avatarRes, isLoading: avatarListLoading } = useApiFetch("");
   const { fetchData: updateProfileRes, response: editProfileRes, isLoading } = useApiFetch("");
 
   const [formData, setFormData] = useState(initialData);
@@ -98,7 +99,9 @@ export default function Profile() {
             <div className="cursor-pointer text-blue-500" onClick={fetchAvatarList}>
               Change Avatar
             </div>
-            {avatarList.length ? (
+            {avatarListLoading ? (
+              <CustomCircularLoading />
+            ) : avatarList.length ? (
               <div className="flex justify-around p-4 gap-5">
                 {avatarList.map((avatar, index) => (
                   <UserAvatar userImage={avatar} key={index} onClick={handleAvatarChange} />
