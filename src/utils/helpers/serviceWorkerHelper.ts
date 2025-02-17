@@ -7,10 +7,10 @@ export const registerServiceWorker = () => {
     navigator.serviceWorker
       .register("/service-worker.js")
       .then(() => {
-        console.log("Service Worker Registered");
+        // console.log("Service Worker Registered");
       })
-      .catch((error) => {
-        console.error("Service Worker Registration Failed", error);
+      .catch(() => {
+        // console.error("Service Worker Registration Failed", error);
       });
   }
 };
@@ -27,7 +27,5 @@ export const subscribeUser = async () => {
         "Content-Type": "application/json",
       },
     });
-
-    console.log("User Subscribed:");
   }
 };
