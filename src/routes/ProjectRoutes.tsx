@@ -9,6 +9,7 @@ import Authentication from "../pages/Authentication/Authentication";
 import Group from "../pages/GroupDetails/GroupDetails";
 import JoinGroup from "../pages/JoinGroup/JoinGroup";
 import Profile from "../pages/Profile/Profile";
+import LegalPage from "../pages/Legals/Legals";
 
 // import StaffGroups from "../pages/Admin/StaffGroups/StaffGroups";
 
@@ -55,6 +56,14 @@ const ProjectRoutes = () => {
         element={
           <PublicRoute>
             <Authentication />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path={CONSTANTS.PROJECT_ROUTES.LEGAL + "/:pageType"}
+        element={
+          <PublicRoute>
+            <LegalPage />
           </PublicRoute>
         }
       />

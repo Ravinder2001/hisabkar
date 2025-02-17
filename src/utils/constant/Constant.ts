@@ -7,6 +7,7 @@ const CONSTANTS = {
     GROUP: "/group",
     JOIN_GROUP: "/join-group",
     PROFILE: "/profile",
+    LEGAL: "/legal",
   },
   API_ROUTES: {
     GOOGLE_SIGN_IN: "/user/google-signin",
