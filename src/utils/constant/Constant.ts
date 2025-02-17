@@ -6,6 +6,7 @@ const CONSTANTS = {
     HOME: "/",
     GROUP: "/group",
     JOIN_GROUP: "/join-group",
+    PROFILE: "/profile",
   },
   API_ROUTES: {
     GOOGLE_SIGN_IN: "/user/google-signin",
@@ -27,6 +28,10 @@ const CONSTANTS = {
     SW_SUBSCRIPTION: "/user/service-worker-subscribe",
     GROUP_SETTLEMENT: "/group/toggleGroupSettlement",
     GROUP_VISIBILITY: "/group/toggleGroupVisibilty",
+    PROFILE_DETAILS: "/user",
+    TOGGLE_AVAILIBILTY: "/user/toggleAvailibiltyStatus",
+    UPDATE_PROFILE_DETAILS: "/user",
+    GEN_NEW_AVATARS: "/user/generateAvatars",
   },
 };
 export default CONSTANTS;

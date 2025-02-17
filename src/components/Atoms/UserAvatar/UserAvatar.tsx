@@ -1,3 +1,4 @@
+ 
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import { useSelector } from "react-redux";
@@ -6,6 +7,7 @@ import { RootState } from "../../../store/store";
 type PropsType = {
   userImage?: string;
   userName?: string;
+  onClick?: (e: string) => void;
 };
 
 function UserAvatar(props: PropsType) {
@@ -20,8 +22,15 @@ function UserAvatar(props: PropsType) {
 
   const fallbackText = getInitials(props.userName ?? User.name);
 
+  // Handle onClick properly by calling it if it exists
+  const handleAvatarClick = () => {
+    if (props?.onClick) {
+      props.onClick(props.userImage ?? ""); // Execute onClick callback
+    }
+  };
+
   return (
-    <Avatar>
+    <Avatar onClick={handleAvatarClick}>
       <AvatarImage src={props.userImage ?? User.avatar} />
       <AvatarFallback style={{ background: "grey", color: "white", fontSize: "14px" }}>{fallbackText}</AvatarFallback>
     </Avatar>
