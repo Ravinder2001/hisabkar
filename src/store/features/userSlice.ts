@@ -44,10 +44,14 @@ export const userSlice = createSlice({
     setReDirectURL: (state, { payload }) => {
       state.reDirectURL = payload;
     },
+    setUserProfileData: (state, { payload }) => {
+      state.name = payload.name;
+      state.avatar = payload.avatar;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setUserLoggedIn, setUserLoggedOut, setReDirectURL } = userSlice.actions;
+export const { setUserLoggedIn, setUserLoggedOut, setReDirectURL, setUserProfileData } = userSlice.actions;
 
 export default userSlice.reducer;

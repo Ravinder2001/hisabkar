@@ -1,11 +1,16 @@
-export const formatDateTime = (dateString: string) => {
+export const formatDateTime = (dateString: string, includeTime: boolean = false) => {
   const date = new Date(dateString);
-  return date.toLocaleString(undefined, {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true, // Adjust based on preference
-  });
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  let formattedDate = `${day}/${month}/${year}`;
+
+  if (includeTime) {
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    formattedDate += ` ${hours}:${minutes}`;
+  }
+
+  return formattedDate;
 };

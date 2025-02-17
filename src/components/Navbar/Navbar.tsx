@@ -2,18 +2,12 @@ import React from "react";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
 import styles from "./style.module.css";
 import { useDispatch } from "react-redux";
 import { setUserLoggedOut } from "../../store/features/userSlice";
+import CONSTANTS from "../../utils/constant/Constant";
 const Navbar = () => {
   const dispatch = useDispatch();
 
@@ -34,10 +28,9 @@ const Navbar = () => {
           <UserAvatar />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="bg-white">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {/* <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">Settings</DropdownMenuItem> */}
+          <DropdownMenuItem className="cursor-pointer">
+            <Link to={CONSTANTS.PROJECT_ROUTES.PROFILE}>Profile</Link>
+          </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
             Sign out
           </DropdownMenuItem>

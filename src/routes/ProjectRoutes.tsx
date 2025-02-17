@@ -8,6 +8,7 @@ import PrivateRoute from "./PrivateRoutes";
 import Authentication from "../pages/Authentication/Authentication";
 import Group from "../pages/GroupDetails/GroupDetails";
 import JoinGroup from "../pages/JoinGroup/JoinGroup";
+import Profile from "../pages/Profile/Profile";
 
 // import StaffGroups from "../pages/Admin/StaffGroups/StaffGroups";
 
@@ -36,6 +37,14 @@ const ProjectRoutes = () => {
         element={
           <PrivateRoute>
             <JoinGroup />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={CONSTANTS.PROJECT_ROUTES.PROFILE}
+        element={
+          <PrivateRoute>
+            <Profile />
           </PrivateRoute>
         }
       />
