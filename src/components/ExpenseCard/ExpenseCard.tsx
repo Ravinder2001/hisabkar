@@ -78,11 +78,11 @@ function ExpenseCard(expense: PropsType) {
                 ) : null}
               </div>
 
-              <div className="space-y-4 px-0">
+              <div className={styles.middleCon}>
                 <div className="space-y-2">
                   <div className="flex justify-between items-start">
                     <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">{formatDateTime(expense.created_at, true)}</p>
+                      <p className="text-sm text-gray-500 text-muted-foreground">{formatDateTime(expense.created_at, true)}</p>
                       <div className="flex items-center gap-2">
                         <Avatar className="h-6 w-6">
                           <AvatarImage src={paidByUser?.avatar} />

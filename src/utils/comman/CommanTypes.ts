@@ -27,6 +27,7 @@ export type MemberType = {
   name: string;
   avatar: string;
   total_spent: number;
+  is_available: boolean;
 }[];
 
 export type GroupDataType = {

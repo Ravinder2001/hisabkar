@@ -64,10 +64,12 @@ export function propsCard(
                 <Share className="mr-2 h-4 w-4" />
                 <span>Share this group</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleConfirmModal} className="text-red-600 dark:text-red-400 bg-white cursor-pointer">
-                <Trash2 className="mr-2 h-4 w-4" />
-                <span>Delete this group</span>
-              </DropdownMenuItem>
+              {props.is_you_admin ? (
+                <DropdownMenuItem onClick={handleConfirmModal} className="text-red-600 dark:text-red-400 bg-white cursor-pointer">
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  <span>Delete this group</span>
+                </DropdownMenuItem>
+              ) : null}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

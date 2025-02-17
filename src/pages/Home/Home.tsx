@@ -71,7 +71,6 @@ function Home() {
       />
     </div>
   );
-  console.log("🚀  isLoading:", isLoading);
 }
 
 export default Home;

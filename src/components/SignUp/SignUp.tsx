@@ -101,7 +101,7 @@ function SignUp(props: PropsType) {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 p-4">
-      <div className="absolute inset-0 bg-white/30 backdrop-blur-[100px]" />
+      {/* <div className="absolute inset-0 bg-white/30 backdrop-blur-[100px]" /> */}
       <Card className="w-full max-w-md mx-auto overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl relative bg-white backdrop-blur-sm">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
         <CardHeader className="space-y-1 pb-6">
