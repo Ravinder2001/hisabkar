@@ -16,6 +16,9 @@ export default function GroupPairs(props: PropType) {
     setSelectedTab(selectedTab == "SEND" ? "RECEIVE" : "SEND");
   };
 
+  const totalSend = props.pairsData?.send.reduce((acc, item) => acc + Number(item.amount), 0);
+  const totalReceive = props.pairsData?.receive.reduce((acc, item) => acc + Number(item.amount), 0);
+
   return (
     <div className={styles.container}>
       <div className="grid w-full grid-cols-2 cursor-pointer">
@@ -30,7 +33,12 @@ export default function GroupPairs(props: PropType) {
         <div className="space-y-4">
           {props.pairsData?.send.length > 0 ? (
             <div className="space-y-3">
-              <h3 className="text-sm font-medium text-gray-500 mt-2">You will pay</h3>
+              <h3 className="text-sm font-medium text-gray-500 mt-2">
+                You will pay{" "}
+                <span className="text-red-600 font-medium">
+                  ₹<CustomCountUp count={totalSend} />
+                </span>
+              </h3>
               <div className={styles.pairsBox}>
                 {props.pairsData?.send.map((item, index) => (
                   <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-red-50 mb-2">
@@ -59,7 +67,12 @@ export default function GroupPairs(props: PropType) {
         <div className="space-y-4">
           {props.pairsData?.receive.length > 0 ? (
             <div className="space-y-3">
-              <h3 className="text-sm font-medium text-gray-500 mt-2">You will receive</h3>
+              <h3 className="text-sm font-medium text-gray-500 mt-2">
+                You will receive{" "}
+                <span className="text-green-600 font-medium">
+                  ₹<CustomCountUp count={totalReceive} />
+                </span>
+              </h3>
               <div className={styles.pairsBox}>
                 {props.pairsData?.receive.map((item, index) => (
                   <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-green-50 mb-2">

@@ -118,7 +118,10 @@ export function propsCard(
             ))}
           </div>
         </div>
-        <Badge variant={props.is_settled ? "secondary" : "default"} className="bg-black text-white backdrop-blur-sm">
+        <Badge
+          variant={props.is_settled ? "secondary" : "default"}
+          className={`bg-${props.is_settled ? "green-500" : "black"} text-white backdrop-blur-sm`}
+        >
           {props.is_settled ? "Settled" : "Unsettled"}
         </Badge>
       </CardFooter>
