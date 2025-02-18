@@ -46,7 +46,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0">
               <div className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-                Hisabkar<span className="text-black">.</span>
+                {/* Hisabkar<span className="text-black">.</span> */}
               </div>
             </Link>
           </div>
