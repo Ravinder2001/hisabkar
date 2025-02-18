@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import AboutUs from "./components/about";
 import PrivacyPolicy from "./components/privacy";
@@ -8,33 +8,38 @@ import TermsAndConditions from "./components/terms";
 type PageType = "terms" | "privacy" | "disclaimer" | "about";
 
 // Define the content for each page
-const pages: Record<PageType, { title: string; content: ReactNode }> = {
+const pages: Record<PageType, { title: string; Component: React.ComponentType }> = {
   terms: {
     title: "Terms & Conditions",
-    content: <TermsAndConditions />,
+    Component: TermsAndConditions,
   },
   privacy: {
     title: "Privacy Policy",
-    content: <PrivacyPolicy />,
+    Component: PrivacyPolicy,
   },
   disclaimer: {
     title: "Disclaimer",
-    content: <Disclaimer />,
+    Component: Disclaimer,
   },
   about: {
     title: "About Us",
-    content: <AboutUs />,
+    Component: AboutUs,
   },
 };
 
-const LegalPage = () => {
+const LegalPage: React.FC = () => {
   // Get the page type from URL params
   const { pageType } = useParams<{ pageType: string }>();
 
   // Ensure the pageType is valid, otherwise fallback to "terms"
-  const page = pages[pageType as PageType] || pages.terms;
+  const validPageType = (pageType as PageType) in pages ? (pageType as PageType) : "terms";
+  const { Component } = pages[validPageType];
 
-  return page.content;
+  return (
+    <div className="legal-page">
+      <Component />
+    </div>
+  );
 };
 
 export default LegalPage;
