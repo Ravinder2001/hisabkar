@@ -21,7 +21,7 @@ const ProjectRoutes = withSuspense(
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
-  const { token } = useSelector((state: RootState) => state.user);
+  const { token, id } = useSelector((state: RootState) => state.user);
 
   const { fetchData: fetchExpenseTypeList, response } = useApiFetch(CONSTANTS.API_ROUTES.EXPENSE_TYPE_LIST);
   const { fetchData: fetchGroupTypeList, response: groupTypeRes } = useApiFetch(CONSTANTS.API_ROUTES.GROUP_TYPE_LIST);
@@ -35,6 +35,10 @@ const App: React.FC = () => {
     fetchExpenseTypeList();
     fetchGroupTypeList();
     subscribeUser();
+    if (window.NREUM) {
+      // Custom New Relic API usage
+      window.NREUM.setCustomAttribute("userId", id);
+    }
   }, [token, dispatch]);
 
   useEffect(() => {
