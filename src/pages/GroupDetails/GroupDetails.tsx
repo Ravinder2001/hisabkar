@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
 
-import { Badge } from "../../components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 
 import styles from "./style.module.css";
@@ -11,7 +10,7 @@ import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
 import { useLocation } from "react-router-dom";
 import GroupDetailsContent from "../../components/GroupDetailsContent/GroupDetailsContent";
-import { Plus } from "lucide-react";
+import { Logs, Plus } from "lucide-react";
 import { ExpenseType, GroupDataType, GroupPairsData } from "../../utils/comman/CommanTypes";
 import ExpenseCard from "../../components/ExpenseCard/ExpenseCard";
 import CircularLoader from "../../components/CircularLoader/CircularLoader";
@@ -19,6 +18,7 @@ import GroupPairs from "../../components/GroupPairs/GroupPairs";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import Messages from "../../utils/constant/Messages";
 import showToast from "../../utils/helpers/toastHelper";
+import GroupLogs from "../../components/GroupLogs/GroupLogs";
 
 export default function GroupDetails() {
   const location = useLocation();
@@ -46,6 +46,7 @@ export default function GroupDetails() {
   const [isAddExpModal, setAddExpModal] = useState<boolean>(false);
   const [isDeleteModal, setDeleteModal] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<ExpenseType | null>(null);
+  const [logModal, setLogModal] = useState<boolean>(false);
 
   const handleExpModal = () => {
     if (isAddExpModal && selectedRow) {
@@ -65,6 +66,10 @@ export default function GroupDetails() {
     await deleteExpense(CONSTANTS.API_ROUTES.DELETE_EXPENSE + `/${GroupId}/${selectedRow?.expense_id}`, {
       method: "DELETE",
     });
+  };
+
+  const handleLogModal = () => {
+    setLogModal(!logModal);
   };
 
   useEffect(() => {
@@ -158,9 +163,9 @@ export default function GroupDetails() {
         <Card className="bg-white h-full">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Expenses Timeline</CardTitle>
-            <Badge variant="outline" className={`${groupData?.is_settled ? "bg-green-500" : "bg-black"} text-white`}>
-              {groupData?.is_settled ? "Settled" : "Unsettled"}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Logs onClick={handleLogModal} size={18} />
+            </div>
           </CardHeader>
           {expenseListLoading ? (
             <CircularLoader />
@@ -216,6 +221,7 @@ export default function GroupDetails() {
         description={Messages.EXPENSE.DELETE_ALERT(selectedRow?.expense_name ?? "")}
         isLoading={deleteExpLoading}
       />
+      {logModal ? <GroupLogs groupId={GroupId} isOpen={logModal} setIsOpen={handleLogModal} /> : null}
     </div>
   );
 }
