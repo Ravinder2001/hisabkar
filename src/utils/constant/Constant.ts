@@ -35,6 +35,8 @@ const CONSTANTS = {
     GEN_NEW_AVATARS: "/user/generateAvatars",
     DOWNLOAD_GROUP_DATA: "/group/downloadGroupData",
     GROUP_LOGS: "/group/groupLogs",
+    SPEND_ANALYSIS: "/group/spendAnalysis",
   },
+  FONT_FAMILY: "Nunito",
 };
 export default CONSTANTS;

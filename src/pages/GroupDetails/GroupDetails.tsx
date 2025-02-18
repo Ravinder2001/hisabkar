@@ -19,6 +19,7 @@ import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import Messages from "../../utils/constant/Messages";
 import showToast from "../../utils/helpers/toastHelper";
 import GroupLogs from "../../components/GroupLogs/GroupLogs";
+import GroupSpendAnalysis from "../../components/GroupSpendAnalysis/GroupSpendAnalysis";
 
 export default function GroupDetails() {
   const location = useLocation();
@@ -47,6 +48,7 @@ export default function GroupDetails() {
   const [isDeleteModal, setDeleteModal] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<ExpenseType | null>(null);
   const [logModal, setLogModal] = useState<boolean>(false);
+  const [spendAnalysisModal, setSpendAnalysisModal] = useState<boolean>(true);
 
   const handleExpModal = () => {
     if (isAddExpModal && selectedRow) {
@@ -70,6 +72,9 @@ export default function GroupDetails() {
 
   const handleLogModal = () => {
     setLogModal(!logModal);
+  };
+  const handleSpendAnalysisModal = () => {
+    setSpendAnalysisModal(!spendAnalysisModal);
   };
 
   useEffect(() => {
@@ -222,6 +227,14 @@ export default function GroupDetails() {
         isLoading={deleteExpLoading}
       />
       {logModal ? <GroupLogs groupId={GroupId} isOpen={logModal} setIsOpen={handleLogModal} /> : null}
+      {spendAnalysisModal ? (
+        <GroupSpendAnalysis
+          groupId={GroupId}
+          isOpen={spendAnalysisModal}
+          setIsOpen={handleSpendAnalysisModal}
+          groupMembers={groupData?.members ?? []}
+        />
+      ) : null}
     </div>
   );
 }
