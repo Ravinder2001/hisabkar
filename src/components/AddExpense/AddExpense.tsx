@@ -216,7 +216,12 @@ function AddExpenseModal({
     <ModalComponent isOpen={isOpen} setIsOpen={setIsOpen}>
       <div className={styles.container}>
         <div className="text-md font-bold mb-6">Add Expense</div>
-        <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={selectedRow ? handleEditSubmit : handleSubmit}>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          validateOnBlur={false}
+          onSubmit={selectedRow ? handleEditSubmit : handleSubmit}
+        >
           {({ values, errors, touched, setFieldValue, handleBlur }) => (
             <Form className="space-y-6" noValidate>
               <div className="space-y-2">
