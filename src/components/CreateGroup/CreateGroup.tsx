@@ -75,7 +75,7 @@ function CreateGroupModal({
   return (
     <ModalComponent isOpen={isOpen} setIsOpen={setIsOpen} className={styles.container}>
       <div className="text-md font-bold mb-6">Create Group</div>
-      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
+      <Formik initialValues={initialValues} validationSchema={validationSchema} validateOnBlur={false} onSubmit={handleSubmit}>
         {({ errors, touched, isSubmitting, handleBlur }) => (
           <Form className="space-y-6" noValidate>
             <div className="space-y-2">
