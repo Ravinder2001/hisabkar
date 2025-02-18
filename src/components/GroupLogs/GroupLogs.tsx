@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import useApiFetch from "../../hooks/useAPIFetch";
@@ -14,6 +15,7 @@ type PropsType = {
   groupId: string;
   isOpen: boolean;
   setIsOpen: () => void;
+  onExpenseClick: (id: any) => void;
 };
 
 type LogType = {
@@ -108,19 +110,20 @@ function GroupLogs(props: PropsType) {
                           <span className="font-medium">{log.new_amount}</span>
                         </p>
                       )}
-                      {log.expense_id && (
+                      {log.expense_id ? (
                         <Button
                           variant="outline"
                           size="sm"
                           className="mt-3"
                           onClick={() => {
-                            console.log(`Redirect to expense ${log.expense_id}`);
+                            props.setIsOpen();
+                            props.onExpenseClick(log.expense_id);
                           }}
                         >
                           <ExternalLink className="w-4 h-4 mr-2" />
                           View Expense
                         </Button>
-                      )}
+                      ) : null}
                     </CardContent>
                   </Card>
                 </div>

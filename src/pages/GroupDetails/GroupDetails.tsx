@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useRef, useState } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
 
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
@@ -10,7 +11,7 @@ import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
 import { useLocation } from "react-router-dom";
 import GroupDetailsContent from "../../components/GroupDetailsContent/GroupDetailsContent";
-import { Logs, Plus } from "lucide-react";
+import { ChartColumnDecreasing, Logs, Plus } from "lucide-react";
 import { ExpenseType, GroupDataType, GroupPairsData } from "../../utils/comman/CommanTypes";
 import ExpenseCard from "../../components/ExpenseCard/ExpenseCard";
 import CircularLoader from "../../components/CircularLoader/CircularLoader";
@@ -24,6 +25,7 @@ import GroupSpendAnalysis from "../../components/GroupSpendAnalysis/GroupSpendAn
 export default function GroupDetails() {
   const location = useLocation();
   const GroupId = location.pathname.split("/")[2];
+  const expenseRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const {
     fetchData: fetchGroupDetails,
@@ -75,6 +77,13 @@ export default function GroupDetails() {
   };
   const handleSpendAnalysisModal = () => {
     setSpendAnalysisModal(!spendAnalysisModal);
+  };
+
+  const handleScrollToExpense = (id: any) => {
+    const element = expenseRefs.current[id];
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
   };
 
   useEffect(() => {
@@ -169,7 +178,8 @@ export default function GroupDetails() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Expenses Timeline</CardTitle>
             <div className="flex items-center gap-2">
-              <Logs onClick={handleLogModal} size={18} />
+              <ChartColumnDecreasing onClick={handleSpendAnalysisModal} size={20} className="cursor-pointer" />
+              <Logs onClick={handleLogModal} size={20} className="cursor-pointer" />
             </div>
           </CardHeader>
           {expenseListLoading ? (
@@ -192,6 +202,7 @@ export default function GroupDetails() {
                     handleDeleteModal();
                     setSelectedRow(expense);
                   }}
+                  ref={(el) => (expenseRefs.current[expense.expense_id] = el)}
                 />
               ))}
               {/* </ScrollArea> */}
@@ -226,7 +237,9 @@ export default function GroupDetails() {
         description={Messages.EXPENSE.DELETE_ALERT(selectedRow?.expense_name ?? "")}
         isLoading={deleteExpLoading}
       />
-      {logModal ? <GroupLogs groupId={GroupId} isOpen={logModal} setIsOpen={handleLogModal} /> : null}
+      {logModal ? (
+        <GroupLogs groupId={GroupId} isOpen={logModal} setIsOpen={handleLogModal} onExpenseClick={(id) => handleScrollToExpense(id)} />
+      ) : null}
       {spendAnalysisModal ? (
         <GroupSpendAnalysis
           groupId={GroupId}
