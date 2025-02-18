@@ -33,6 +33,7 @@ const CONSTANTS = {
     TOGGLE_AVAILIBILTY: "/user/toggleAvailibiltyStatus",
     UPDATE_PROFILE_DETAILS: "/user",
     GEN_NEW_AVATARS: "/user/generateAvatars",
+    DOWNLOAD_GROUP_DATA: "/group/downloadGroupData",
   },
 };
 export default CONSTANTS;
