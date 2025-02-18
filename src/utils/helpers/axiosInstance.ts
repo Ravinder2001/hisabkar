@@ -1,4 +1,4 @@
-/* eslint-disable*/
+/* eslint-disable */
 import axios, { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from "axios";
 import { Store } from "redux"; // Ensure you have redux types installed
 import ENVConfig from "../../config/config";
@@ -27,6 +27,15 @@ axiosInstance.interceptors.request.use(
       config.headers["X-User-Id"] = userId; // Add user ID to custom header
     }
 
+    // Track the request in New Relic
+    if (window.NREUM) {
+      window.NREUM.addPageAction("apiRequest", {
+        url: config.url,
+        method: config.method,
+        headers: config.headers,
+      });
+    }
+
     return config;
   },
   (error: AxiosError) => {
@@ -37,9 +46,27 @@ axiosInstance.interceptors.request.use(
 // Add a response interceptor
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
+    // Track the response in New Relic
+    if (window.NREUM) {
+      window.NREUM.addPageAction("apiResponse", {
+        url: response.config.url,
+        status: response.status,
+        responseTime: response.headers["x-response-time"], // Or use another metric
+      });
+    }
+
     return response;
   },
   (error: AxiosError) => {
+    // Handle error and track it
+    if (window.NREUM) {
+      window.NREUM.addPageAction("apiError", {
+        url: error.config?.url,
+        status: error.response?.status,
+        message: error.message,
+      });
+    }
+
     if (error.response && error.response.status === 401) {
       // store.dispatch(logout());
       // window.location.reload();
