@@ -48,7 +48,7 @@ export default function GroupDetails() {
   const [isDeleteModal, setDeleteModal] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<ExpenseType | null>(null);
   const [logModal, setLogModal] = useState<boolean>(false);
-  const [spendAnalysisModal, setSpendAnalysisModal] = useState<boolean>(true);
+  const [spendAnalysisModal, setSpendAnalysisModal] = useState<boolean>(false);
 
   const handleExpModal = () => {
     if (isAddExpModal && selectedRow) {

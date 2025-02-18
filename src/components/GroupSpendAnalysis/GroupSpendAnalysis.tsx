@@ -53,6 +53,7 @@ function GroupSpendAnalysis(props: PropsType) {
             onChange={(option: OptionType) => setSelectedMember(option)}
             placeholder="Select expense type"
             value={selectedMember}
+            isSearchable={false}
           />
         </div>
         {isLoading ? (
