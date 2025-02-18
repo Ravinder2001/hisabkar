@@ -15,6 +15,7 @@ interface CustomSelectProps {
   onBlur?: any;
   placeholder?: string;
   isDisabled?: boolean;
+  isSearchable?: boolean;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -25,6 +26,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   isDisabled = false,
   name,
   onBlur,
+  isSearchable,
 }) => {
   const customStyles = {
     control: (provided: any, state: any) => ({
@@ -72,6 +74,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       placeholder={placeholder}
       styles={customStyles}
       isDisabled={isDisabled}
+      isSearchable={isSearchable ?? true}
     />
   );
 };

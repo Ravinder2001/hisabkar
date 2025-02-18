@@ -26,7 +26,6 @@ function GroupSpendAnalysis(props: PropsType) {
   const { fetchData, response, isLoading } = useApiFetch("");
 
   const [barData, setBarData] = useState<LogType[]>([]);
-  console.log("🚀  barData:", barData);
   const [selectedMember, setSelectedMember] = useState<OptionType>({
     value: "-1",
     label: "All",
@@ -54,6 +53,7 @@ function GroupSpendAnalysis(props: PropsType) {
             onChange={(option: OptionType) => setSelectedMember(option)}
             placeholder="Select expense type"
             value={selectedMember}
+            isSearchable={false}
           />
         </div>
         {isLoading ? (
