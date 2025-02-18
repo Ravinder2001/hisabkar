@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
 import styles from "./style.module.css";
 import { Edit, MoreVertical, Receipt, Trash2 } from "lucide-react";
@@ -19,7 +19,7 @@ type PropsType = ExpenseType & {
   setDeleteModal: () => void;
 };
 
-function ExpenseCard(expense: PropsType) {
+const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
   const expenseTypeList = useSelector((state: RootState) => state.data.expenseTypeList);
 
   const expenseType = expenseTypeList.find((type) => type.id === expense.expense_type_id);
@@ -32,7 +32,7 @@ function ExpenseCard(expense: PropsType) {
     .filter((point) => point.length > 0);
 
   return (
-    <div className={`${styles.expenseCon} w-full`}>
+    <div className={`${styles.expenseCon} w-full`} ref={ref}>
       <div className="relative w-full">
         <div className="flex flex-wrap items-start gap-x-2 sm:gap-x-4">
           {/* Left Icon */}
@@ -148,6 +148,8 @@ function ExpenseCard(expense: PropsType) {
       </div>
     </div>
   );
-}
+});
 
+// ✅ Set display name for debugging
+ExpenseCard.displayName = "ExpenseCard";
 export default ExpenseCard;
