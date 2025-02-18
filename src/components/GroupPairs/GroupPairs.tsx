@@ -7,6 +7,7 @@ import CustomCountUp from "../CustomCountUp/CustomCountUp";
 
 type PropType = {
   pairsData: GroupPairsData;
+  isSettled: boolean;
 };
 
 export default function GroupPairs(props: PropType) {
@@ -53,7 +54,7 @@ export default function GroupPairs(props: PropType) {
                       <span className="text-red-600 font-medium">
                         ₹<CustomCountUp count={Number(item.amount)} />
                       </span>
-                      <ArrowRight className="h-4 w-4 text-red-600" />
+                      {props.isSettled ? <ArrowRight className="h-4 w-4 text-red-600" /> : null}
                     </div>
                   </div>
                 ))}

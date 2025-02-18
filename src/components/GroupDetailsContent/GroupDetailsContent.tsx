@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { CircleCheckBig, MoreVertical, Users2, Wallet } from "lucide-react";
+import { CircleCheckBig, Download, MoreVertical, Users2, Wallet } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Badge } from "../../components/ui/badge";
@@ -15,6 +15,8 @@ import CustomAlert from "../CustomAlert/CustomAlert";
 import Messages from "../../utils/constant/Messages";
 import CONSTANTS from "../../utils/constant/Constant";
 import showToast from "../../utils/helpers/toastHelper";
+import axiosInstance from "../../utils/helpers/axiosInstance";
+import { AxiosError } from "axios";
 
 function GroupDetailsContent(
   data: GroupDataType & {
@@ -31,6 +33,57 @@ function GroupDetailsContent(
 
   const handleSettlement = () => {
     toggleSettlement(CONSTANTS.API_ROUTES.GROUP_SETTLEMENT + "/" + data.GroupId);
+  };
+
+  const handleDownloadGroupData = async () => {
+    try {
+      const response = await axiosInstance({
+        url: CONSTANTS.API_ROUTES.DOWNLOAD_GROUP_DATA + "/" + data.GroupId,
+        method: "GET",
+        responseType: "blob", // Important: This tells axios to handle the response as binary data
+        headers: {
+          Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        },
+      });
+
+      // Get filename from response headers if available
+      const contentDisposition = response.headers["content-disposition"];
+      let filename = "group_data.xlsx";
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, "");
+        }
+      }
+
+      // Create blob from response data
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      if (link.parentNode) {
+        link?.parentNode.removeChild(link);
+      }
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      let errorMessage = "Error downloading file";
+
+      if (err instanceof AxiosError) {
+        errorMessage = err.response?.data?.message || err.message;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      showToast(errorMessage, "error");
+    }
   };
   const handleConfirmModal = () => {
     setConfirmationModal(!confirmationModal);
@@ -61,6 +114,12 @@ function GroupDetailsContent(
                 <CircleCheckBig className="mr-2 h-4 w-4" color="green" />
                 <span className="text-green-800">{data.is_settled ? "Un-settle this group" : "Make Settlement"}</span>
               </DropdownMenuItem>
+              {data.is_settled ? (
+                <DropdownMenuItem onClick={handleDownloadGroupData} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+                  <Download className="mr-2 h-4 w-4" color="black" />
+                  <span className="text-black-800">Download Group Data</span>
+                </DropdownMenuItem>
+              ) : null}
             </DropdownMenuContent>
           </DropdownMenu>
         ) : null}

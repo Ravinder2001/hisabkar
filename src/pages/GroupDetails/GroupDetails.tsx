@@ -138,14 +138,18 @@ export default function GroupDetails() {
             <Accordion type="single" collapsible className={`w-full lg:hidden ${styles.accordion}`}>
               <AccordionItem value="group-pairs">
                 <AccordionTrigger className="text-sm font-semibold px-4">Your Expense Summary</AccordionTrigger>
-                <AccordionContent>{pairsLoading ? <CircularLoader /> : groupData ? <GroupPairs pairsData={pairsData} /> : null}</AccordionContent>
+                <AccordionContent>
+                  {pairsLoading ? <CircularLoader /> : groupData ? <GroupPairs isSettled={groupData.is_settled} pairsData={pairsData} /> : null}
+                </AccordionContent>
               </AccordionItem>
             </Accordion>
           </CardHeader>
           {pairsLoading ? (
             <CircularLoader />
           ) : (
-            <CardContent className="hidden lg:block">{groupData ? <GroupPairs pairsData={pairsData} /> : null}</CardContent>
+            <CardContent className="hidden lg:block">
+              {groupData ? <GroupPairs isSettled={groupData.is_settled} pairsData={pairsData} /> : null}
+            </CardContent>
           )}
         </Card>
       </div>
