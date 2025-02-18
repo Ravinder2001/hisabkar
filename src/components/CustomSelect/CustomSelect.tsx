@@ -12,7 +12,7 @@ interface CustomSelectProps {
   value: Option | null; // Ensure it's an object
   name?: string;
   onChange: any;
-  onBlur: any;
+  onBlur?: any;
   placeholder?: string;
   isDisabled?: boolean;
 }

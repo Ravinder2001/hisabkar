@@ -1,0 +1,23 @@
+.container {
+  width: 70vw;
+  height: auto;
+  overflow: auto;
+}
+.selectBox {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+.selectBox > div {
+  width: 200px;
+}
+
+@media only screen and (max-width: 768px) {
+  .container {
+    width: 85vw;
+    height: auto;
+  }
+  .selectBox > div {
+    width: 150px;
+  }
+}
