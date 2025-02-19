@@ -29,8 +29,8 @@ Hisabkar is a **PWA-based React web app** that helps users split expenses effici
 1. Clone the repository:
 
    ```sh
-   git clone https://github.com/yourusername/hisabkar-client.git
-   cd hisabkar-client
+   git clone https://github.com/Ravinder2001/hisabkar.git
+   cd hisabkar
    ```
 
 2. Install dependencies
