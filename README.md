@@ -58,3 +58,69 @@ Hisabkar is a **PWA-based React web app** that helps users split expenses effici
    ```sh
    npm run start
    ```
+
+## Screens Overview
+
+### 1. Authentication
+
+- **Sign Up**:
+  - Enter **Name, Email, and UPI Address**
+  - Receive **OTP** → Verify to create an account
+- **Sign In**:
+  - Choose **Email OTP** or **Google Sign-In**
+
+### 2. Home Screen
+
+- Displays all **groups** you created or joined.
+- **Create a new group**:
+  - Enter **Group Name** & **Type**.
+  - Get an **invitation link** to share.
+
+### 3. Group Details
+
+- **Group Name, Total Expense, Group Type, and Members.**
+- **Options:**
+  - ✅ **Settle Group** (For Owner)
+  - 📥 **Download Group Data (Excel)**
+
+### 4. Expenses
+
+- **View all added expenses.**
+
+#### **Add New Expense:**
+
+- **Expense Name & Description**
+- **Expense Type**
+- **Amount**
+- **Split Type**: **Equal, Percentage, or Custom**
+- **Select Users** (Unavailable users are auto-excluded but can be added manually)
+- **Submit**
+
+#### **Expense Actions:**
+
+- ✏️ **Edit** (Tracks previous & new amounts)
+- ❌ **Delete** (Logs history)
+- 📜 **View Expense Audit Logs**
+
+### 5. Spend Analysis
+
+- 📊 **Category-wise spending breakdown**
+- View analysis **for the group** or **for a specific user**.
+
+### 6. Notifications
+
+- 🔔 Get alerts when someone **adds, edits, or deletes** an expense.
+- Works even if the app is closed (via **Service Workers**).
+
+### 7. Profile Section
+
+- Update **avatar**, edit **name**, view **masked email**.
+- **Availability Toggle**: Prevents others from adding you to expenses.
+
+---
+
+## Contributing
+
+Feel free to contribute by creating **pull requests** or raising **issues**.
+
+---
