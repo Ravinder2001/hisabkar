@@ -331,7 +331,7 @@ function AddExpenseModal({
                           const amount = parseFloat(values.amount) || 0;
                           const splits = allUserIds.map((userId) => ({
                             userId,
-                            amount: values.splitType === "EQUAL" && amount ? (amount / allUserIds.length).toFixed(2) : "",
+                            amount: values.splitType === "EQUAL" && amount ? amount / allUserIds.length : "",
                           }));
 
                           setFieldValue("userSplits", splits);
