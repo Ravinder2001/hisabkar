@@ -1,22 +1,26 @@
 self.addEventListener("push", function (event) {
   const data = event.data.json();
-  console.log("Push Event Received:", data);
 
   const options = {
     body: data.body,
-    icon: "/logo192.png", // Change this to your app’s logo
+    icon: "/logo192.png",
     badge: "/logo192.png",
-    vibrate: [200, 100, 200], // Vibration pattern
+    vibrate: [200, 100, 200],
     actions: [{ action: "open_url", title: "Open App" }],
+    data: { group_id: data.group_id },
   };
 
   event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
-// Handle Notification Click
 self.addEventListener("notificationclick", function (event) {
   event.notification.close();
-  event.waitUntil(
-    clients.openWindow("https://your-app-url.com") // Change to your app’s URL
-  );
+
+  // Get the base URL from the service worker's location
+  const baseUrl = self.location.origin;
+  const dynamicUrl = `${baseUrl}/group/${event.notification.data.group_id}`;
+
+  if (event.action === "open_url") {
+    event.waitUntil(clients.openWindow(dynamicUrl));
+  }
 });

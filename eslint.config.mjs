@@ -14,6 +14,16 @@ export default [
       "@typescript-eslint/no-explicit-any": "off",
       "no-empty-function": "warn",
     },
+    languageOptions: {
+      globals: {
+        localStorage: true,
+        window: true,
+        document: true,
+        console: true,
+        navigator: true,
+        clients:true
+      },
+    },
   },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
