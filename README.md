@@ -1,46 +1,126 @@
-# Getting Started with Create React App
+# Hisabkar - Expense Splitting Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Hisabkar is a **PWA-based React web app** that helps users split expenses efficiently within groups.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **User Authentication**: OTP-based login & Google Sign-In.
+- **Group Expense Management**: Create groups, invite members, and track expenses.
+- **Flexible Expense Splitting**: Choose from **equal, percentage-based, or custom splits**.
+- **Real-time Expense Overview**: View **send** & **receive** amounts for easy settlements.
+- **Audit Logs**: Track all modifications to expenses and group activities.
+- **Interactive Analytics**: Expense breakdown using **charts**.
+- **User Availability Toggle**: Exclude unavailable users when adding expenses.
+- **Progressive Web App (PWA)**: Works offline & sends push notifications.
+- **Data Export**: Download group reports in Excel format.
+- **Profile Management**: Update name, avatar, and view masked email.
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **Frontend**: React.js (TypeScript)
+- **State Management**: Redux Toolkit
+- **API Calls**: Axios
+- **UI Components**: shadcn/ui
+- **PWA Support**: Service Workers for notifications
+- **Security**: AES Encryption for sensitive data
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Installation
 
-### `npm test`
+1. Clone the repository:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+   ```sh
+   git clone https://github.com/Ravinder2001/hisabkar.git
+   cd hisabkar
+   ```
 
-### `npm run build`
+2. Install dependencies
+   ```sh
+   npm install
+   ```
+3. Setup .env
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   ```sh
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+   PORT=3000
+   REACT_APP_GOOGLE_CLIENT_ID=
+   REACT_APP_API_BASE_URL=
+   DISABLE_ESLINT_PLUGIN=true
+   REACT_APP_VAPID_KEY=
+   REACT_APP_ENV=prod
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+   # Crypto Encryption
+   REACT_APP_CRYPTO_SECRET_KEY=
+   REACT_APP_CRYPTO_IV=
 
-### `npm run eject`
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+4. Start the server
+   ```sh
+   npm run start
+   ```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Screens Overview
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### 1. Authentication
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- **Sign Up**:
+  - Enter **Name, Email, and UPI Address**
+  - Receive **OTP** → Verify to create an account
+- **Sign In**:
+  - Choose **Email OTP** or **Google Sign-In**
 
-## Learn More
+### 2. Home Screen
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- Displays all **groups** you created or joined.
+- **Create a new group**:
+  - Enter **Group Name** & **Type**.
+  - Get an **invitation link** to share.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 3. Group Details
+
+- **Group Name, Total Expense, Group Type, and Members.**
+- **Options:**
+  - ✅ **Settle Group** (For Owner)
+  - 📥 **Download Group Data (Excel)**
+
+### 4. Expenses
+
+- **View all added expenses.**
+
+#### **Add New Expense:**
+
+- **Expense Name & Description**
+- **Expense Type**
+- **Amount**
+- **Split Type**: **Equal, Percentage, or Custom**
+- **Select Users** (Unavailable users are auto-excluded but can be added manually)
+- **Submit**
+
+#### **Expense Actions:**
+
+- ✏️ **Edit** (Tracks previous & new amounts)
+- ❌ **Delete** (Logs history)
+- 📜 **View Expense Audit Logs**
+
+### 5. Spend Analysis
+
+- 📊 **Category-wise spending breakdown**
+- View analysis **for the group** or **for a specific user**.
+
+### 6. Notifications
+
+- 🔔 Get alerts when someone **adds, edits, or deletes** an expense.
+- Works even if the app is closed (via **Service Workers**).
+
+### 7. Profile Section
+
+- Update **avatar**, edit **name**, view **masked email**.
+- **Availability Toggle**: Prevents others from adding you to expenses.
+
+---
+
+## Contributing
+
+Feel free to contribute by creating **pull requests** or raising **issues**.
+
+---
