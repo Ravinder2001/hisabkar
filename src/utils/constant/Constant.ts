@@ -25,7 +25,7 @@ const CONSTANTS = {
     CREATE_GROUP: "/group/createGroup",
     JOIN_GROUP: "/group/joinGroup/",
     MY_PAIRS: "/group/myPairs/",
-    DELETE_EXPENSE: "/expense/",
+    DELETE_EXPENSE: "/expense",
     SW_SUBSCRIPTION: "/user/service-worker-subscribe",
     GROUP_SETTLEMENT: "/group/toggleGroupSettlement",
     GROUP_VISIBILITY: "/group/toggleGroupVisibilty",

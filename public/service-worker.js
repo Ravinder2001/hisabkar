@@ -1,5 +1,6 @@
 self.addEventListener("push", function (event) {
   const data = event.data.json();
+  console.log("Push Event Received:", data);
 
   const options = {
     body: data.body,
@@ -16,11 +17,40 @@ self.addEventListener("push", function (event) {
 self.addEventListener("notificationclick", function (event) {
   event.notification.close();
 
-  // Get the base URL from the service worker's location
+  // Construct the dynamic URL
   const baseUrl = self.location.origin;
-  const dynamicUrl = `${baseUrl}/group/${event.notification.data.group_id}`;
+  const dynamicUrl = `${baseUrl}/${event.notification.data.group_id}`;
 
-  if (event.action === "open_url") {
-    event.waitUntil(clients.openWindow(dynamicUrl));
-  }
+  // Handle the click event (both action and general click)
+  event.waitUntil(
+    clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clientList) => {
+        // Check if there's an existing client to focus
+        for (const client of clientList) {
+          if (client.url === dynamicUrl && "focus" in client) {
+            return client.focus(); // Focus existing tab if URL matches
+          }
+        }
+
+        // If no matching client found, try to open/focus any window, then navigate
+        if (clientList.length > 0) {
+          const client = clientList[0];
+          if ("focus" in client) {
+            client.focus();
+            return client.navigate(dynamicUrl); // Navigate existing tab
+          }
+        }
+
+        // If no clients exist, open a new window
+        if (clients.openWindow) {
+          return clients.openWindow(dynamicUrl);
+        }
+      })
+      .catch((error) => {
+        console.error("Error handling notification click:", error);
+        // Fallback: try opening the URL anyway
+        return clients.openWindow(dynamicUrl);
+      })
+  );
 });
