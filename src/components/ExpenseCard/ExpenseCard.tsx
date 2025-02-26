@@ -46,7 +46,14 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
           </div>
 
           {/* Expense Card */}
-          <div className="flex-1 mb-8 w-full">
+          <div className="flex-1 mb-8 w-full relative">
+            <div className={styles.paidByBox}>
+              <Avatar className="h-6 w-6">
+                <AvatarImage src={paidByUser?.avatar} />
+                <AvatarFallback>{paidByUser?.name[0].toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <p className="text-sm">Paid By {paidByUser?.name.split(" ")[0]}</p>
+            </div>
             <div className="p-3 sm:p-4 rounded-lg space-y-3 sm:space-y-4" id={expense.is_own_expense ? styles.expOwnCard : styles.expCard}>
               <div className="flex flex-row items-start justify-between space-y-0 p-0">
                 <div className="space-y-1 flex-1">
@@ -83,13 +90,6 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
                   <div className="flex justify-between items-start">
                     <div className="space-y-1">
                       <p className="text-sm text-gray-500 text-muted-foreground">{formatDateTime(expense.created_at, true)}</p>
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage src={paidByUser?.avatar} />
-                          <AvatarFallback>{paidByUser?.name[0].toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                        <p className="text-sm">Paid By {paidByUser?.name.split(" ")[0]}</p>
-                      </div>
                     </div>
                     <div className="text-right">
                       <p className="text-2xl font-bold" id={styles.amount}>

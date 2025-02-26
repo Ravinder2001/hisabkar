@@ -1,5 +1,5 @@
 .expenseCon {
-  overflow: auto;
+  /* overflow: auto; */
 }
 /* D9FBEA */
 /* F2F5FE */
@@ -59,6 +59,25 @@
 }
 .middleCon {
   margin-top: 0px !important;
+}
+
+.paidByBox {
+  position: absolute;
+  top: -15px;
+  left: 40%;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 20px;
+  padding: 4px 10px;
+  gap: 5px;
+  z-index: 99;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+@media only screen and (max-width: 768px) {
+  .paidByBox {
+    padding: 4px 6px;
+  }
 }
 @media only screen and (max-width: 1024px) {
   .expenseCon {
