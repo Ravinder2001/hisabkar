@@ -3,47 +3,42 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  /* height: 100vh; */
-  margin-top: 100px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
-/* Loader styles */
+/* From Uiverse.io by JaydipPrajapati1910 */
 .loader {
-  position: relative; /* No absolute positioning */
-}
-
-.loader:before {
-  content: "";
   display: block;
-  width: 5em;
-  height: 0.5em;
-  border-radius: 0.5em;
-  animation: slide 2.5s infinite;
+  --height-of-loader: 4px;
+  --loader-color: blueviolet;
+  width: 130px;
+  height: var(--height-of-loader);
+  border-radius: 30px;
+  background-color: rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 
-@keyframes slide {
-  0% {
-    width: 5em;
-    box-shadow:
-      1em -0.5em #2b546b,
-      -1em 0.5em #aabbc4;
+.loader::before {
+  content: "";
+  position: absolute;
+  background: var(--loader-color);
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  border-radius: 30px;
+  animation: moving 1s ease-in-out infinite;
+}
+
+@keyframes moving {
+  50% {
+    width: 100%;
   }
-  35% {
-    width: 0.5em;
-    box-shadow:
-      0 -0.5em #2b546b,
-      0 0.5em #aabbc4;
-  }
-  70% {
-    width: 0.5em;
-    box-shadow:
-      -1em -0.5em #2b546b,
-      1em 0.5em #aabbc4;
-  }
+
   100% {
-    width: 5em;
-    box-shadow:
-      1em -0.5em #2b546b,
-      -1em 0.5em #aabbc4;
+    width: 0;
+    right: 0;
+    left: unset;
   }
 }
