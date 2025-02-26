@@ -71,7 +71,6 @@
   border-radius: 20px;
   padding: 4px 10px;
   gap: 5px;
-  z-index: 99;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 @media only screen and (max-width: 768px) {
