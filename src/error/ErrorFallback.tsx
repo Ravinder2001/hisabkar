@@ -13,7 +13,14 @@ const ErrorFallback = () => {
       <p className={styles.text}>Oops! Something went wrong.</p>
 
       <div className={styles.submitBtn}>
-        <div onClick={() => navigate(CONSTANTS.PROJECT_ROUTES.HOME)}>Go to Home</div>
+        <div
+          onClick={() => {
+            navigate(CONSTANTS.PROJECT_ROUTES.HOME);
+            window.location.reload();
+          }}
+        >
+          Go to Home
+        </div>
       </div>
     </div>
   );

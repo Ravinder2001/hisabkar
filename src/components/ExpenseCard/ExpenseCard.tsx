@@ -118,7 +118,7 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
               </div>
 
               {/* Split Between */}
-              <Accordion type="single" collapsible className="w-full">
+              <Accordion type="single" collapsible className="w-full" style={{ marginTop: "0px" }}>
                 <AccordionItem value="split-details">
                   <AccordionTrigger className="text-sm sm:text-base font-medium text-gray-700">
                     Split between ({expense.members_count} People)
