@@ -27,6 +27,14 @@ type LogType = {
   created_at: string;
   expense_id: number | null;
   expense_name: string | null;
+  details: {
+    amount: number;
+    members: {
+      name: string;
+      amount: number;
+    }[];
+    expense_name: string;
+  } | null;
 };
 
 const getActionDetails = (actionType: LogType["action_type"]) => {
@@ -93,23 +101,46 @@ function GroupLogs(props: PropsType) {
           <div className="flex flex-col items-center space-y-8 relative before:absolute before:inset-0 before:left-4 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-300 before:to-transparent">
             {logData.map((log) => {
               const { icon: Icon, color, textColor } = getActionDetails(log.action_type);
+
               return (
-                <div key={log.log_id} className="relative flex items-center w-full">
+                <div key={log.log_id} className="relative flex items-center w-full" style={{ marginTop: "0px" }}>
                   <div className={`absolute left-0 p-2 rounded-full ${color} shadow-lg`}>
                     <Icon className="w-6 h-6 text-white" />
                   </div>
-                  <Card className="ml-12 w-full transition-all duration-300 hover:shadow-lg">
+                  <Card className="ml-12 w-full">
                     <CardContent className="p-4">
                       <p className={`font-semibold ${textColor}`}>
                         {log.name} {getActionMessage(log)}
                       </p>
                       <p className="text-sm text-gray-500 mt-1">{new Date(log.created_at).toLocaleString()}</p>
-                      {log.old_amount && log.new_amount && (
+                      {log.old_amount && log.new_amount && log.action_type !== "DELETE" && (
                         <p className="text-sm mt-2">
                           Amount changed from <span className="font-medium">{log.old_amount}</span> to{" "}
                           <span className="font-medium">{log.new_amount}</span>
                         </p>
                       )}
+
+                      {log.action_type === "DELETE" && log.details && (
+                        <div className="mt-3 p-3 bg-gray-50 rounded-md border border-gray-200">
+                          <h4 className="font-medium text-gray-900">{log.details.expense_name}</h4>
+                          <p className="text-sm text-gray-700 mt-1">
+                            Total amount: <span className="font-medium">{log.details.amount}</span>
+                          </p>
+
+                          <div className="mt-3">
+                            <p className="text-xs text-gray-500 uppercase font-medium mb-2">Split between</p>
+                            <div className="space-y-2">
+                              {log.details.members.map((member, index) => (
+                                <div key={index} className="flex justify-between text-sm">
+                                  <span className="text-gray-700">{member.name}</span>
+                                  <span className="font-medium">{member.amount}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       {log.expense_id ? (
                         <Button
                           variant="outline"
