@@ -49,7 +49,7 @@ export default function GroupDetails() {
   const [isAddExpModal, setAddExpModal] = useState<boolean>(false);
   const [isDeleteModal, setDeleteModal] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<ExpenseType | null>(null);
-  const [logModal, setLogModal] = useState<boolean>(false);
+  const [logModal, setLogModal] = useState<boolean>(true);
   const [spendAnalysisModal, setSpendAnalysisModal] = useState<boolean>(false);
 
   const handleExpModal = () => {
