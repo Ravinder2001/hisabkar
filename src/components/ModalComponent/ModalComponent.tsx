@@ -28,6 +28,7 @@ const customStyles: any = {
 type PropsType = ModalType & {
   children: ReactNode;
   className?: string;
+  hideCloseBtn?: boolean;
 };
 
 function ModalComponent(props: PropsType) {
@@ -40,21 +41,22 @@ function ModalComponent(props: PropsType) {
       ariaHideApp={false} // Prevents accessibility warning
       className={props.className}
     >
-      {/* Close Button */}
-      <button
-        onClick={() => props.setIsOpen(false)}
-        style={{
-          position: "absolute",
-          top: "8px",
-          right: "10px",
-          background: "transparent",
-          border: "none",
-          fontSize: "18px",
-          cursor: "pointer",
-        }}
-      >
-        <X size={18} />
-      </button>
+      {!props.hideCloseBtn ? (
+        <button
+          onClick={() => props.setIsOpen(false)}
+          style={{
+            position: "absolute",
+            top: "8px",
+            right: "10px",
+            background: "transparent",
+            border: "none",
+            fontSize: "18px",
+            cursor: "pointer",
+          }}
+        >
+          <X size={18} />
+        </button>
+      ) : null}
 
       {props.children}
     </Modal>

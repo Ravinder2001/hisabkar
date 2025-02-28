@@ -1,0 +1,12 @@
+.container {
+  width: 400px;
+}
+.container::-webkit-scrollbar {
+  display: none;
+}
+
+@media only screen and (max-width: 768px) {
+  .container {
+    width: 70vw;
+  }
+}

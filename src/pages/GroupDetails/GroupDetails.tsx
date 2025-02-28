@@ -21,6 +21,7 @@ import Messages from "../../utils/constant/Messages";
 import showToast from "../../utils/helpers/toastHelper";
 import GroupLogs from "../../components/GroupLogs/GroupLogs";
 import GroupSpendAnalysis from "../../components/GroupSpendAnalysis/GroupSpendAnalysis";
+import SuccessModal from "../../components/SuccessModal/SuccessModal";
 
 export default function GroupDetails() {
   const location = useLocation();
@@ -51,6 +52,7 @@ export default function GroupDetails() {
   const [selectedRow, setSelectedRow] = useState<ExpenseType | null>(null);
   const [logModal, setLogModal] = useState<boolean>(false);
   const [spendAnalysisModal, setSpendAnalysisModal] = useState<boolean>(false);
+  const [successModal, setSuccessModal] = useState<boolean>(false);
 
   const handleExpModal = () => {
     if (isAddExpModal && selectedRow) {
@@ -210,6 +212,7 @@ export default function GroupDetails() {
           )}
         </Card>
       </div>
+
       {!groupData?.is_settled ? (
         <Button className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg bg-black text-white" onClick={handleExpModal}>
           <Plus className="w-6 h-6" />
@@ -227,6 +230,7 @@ export default function GroupDetails() {
           callback={() => {
             fetchMyPairs();
             fetchGroupDetails();
+            setSuccessModal(true);
           }}
         />
       ) : null}
@@ -248,6 +252,7 @@ export default function GroupDetails() {
           groupMembers={groupData?.members ?? []}
         />
       ) : null}
+      {successModal ? <SuccessModal open={successModal} setOpen={setSuccessModal} /> : null}
     </div>
   );
 }
