@@ -13,8 +13,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
-import showToast from "../../utils/helpers/toastHelper";
-import Messages from "../../utils/constant/Messages";
 import ButtonComponent from "../Atoms/ButtonComponent/ButtonComponent";
 import styles from "./style.module.css";
 import { Tooltip } from "react-tooltip";
@@ -154,7 +152,6 @@ function AddExpenseModal({
     if (addRes?.success === 1) {
       setIsOpen();
       setExpenseList((prev: any) => [addRes.data[0], ...prev]);
-      showToast(Messages.LOGS.ADD_EXPENSE, "success");
       callback();
     }
   }, [addRes, setIsOpen]);
@@ -165,7 +162,6 @@ function AddExpenseModal({
       setExpenseList((prev: any) =>
         prev.map((expense: any) => (expense.expense_id === editRes.data[0].expense_id ? { ...editRes.data[0] } : expense))
       );
-      showToast(Messages.LOGS.EDIT_EXPENSE, "success");
       callback();
     }
   }, [editRes, setIsOpen]);
