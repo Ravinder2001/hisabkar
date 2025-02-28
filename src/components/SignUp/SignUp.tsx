@@ -123,7 +123,12 @@ function SignUp(props: PropsType) {
                   placeholder="Enter your name"
                   className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none"
                   value={values.name}
-                  onChange={(e) => setValues({ ...values, name: e.target.value })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^[a-zA-Z\s]*$/.test(value)) {
+                      setValues({ ...values, name: value });
+                    }
+                  }}
                 />
               </div>
               <div className="relative">

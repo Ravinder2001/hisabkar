@@ -33,8 +33,15 @@ interface FormValues {
 }
 
 const validationSchema = Yup.object().shape({
-  expenseName: Yup.string().required("Expense name is required").min(3, "Must be at least 3 characters").max(20, "Must be at most 20 characters"),
-  description: Yup.string().min(5, "Must be at least 5 characters").max(100, "Must be at most 100 characters"),
+  expenseName: Yup.string()
+    .required("Expense name is required")
+    .min(3, "Must be at least 3 characters")
+    .max(20, "Must be at most 20 characters")
+    .matches(/^[a-zA-Z\s]*$/, "Only letters and spaces are allowed"),
+  description: Yup.string()
+    .min(5, "Must be at least 5 characters")
+    .max(100, "Must be at most 100 characters")
+    .matches(/^[a-zA-Z\s]*$/, "Only letters and spaces are allowed"),
   expenseTypeId: Yup.object().shape({
     value: Yup.string().required("Expense type is required"),
     label: Yup.string().required("Please select an expense type"),

@@ -35,7 +35,10 @@ export default function Profile() {
   const [avatarList, setAvatarList] = useState<string[]>([]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, name: e.target.value });
+    const value = e.target.value;
+    // Allow only letters and spaces, remove anything else
+    const sanitizedValue = value.replace(/[^a-zA-Z\s]/g, "");
+    setFormData({ ...formData, name: sanitizedValue });
   };
   const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, is_available: e.target.checked });
@@ -111,7 +114,7 @@ export default function Profile() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" value={formData.name} onChange={handleNameChange} />
+            <Input id="name" value={formData.name} onChange={handleNameChange} maxLength={20} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
