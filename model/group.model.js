@@ -85,9 +85,11 @@ module.exports = {
         `,
         [GroupID, values.userId]
       );
+      const groupMembers = await client.query(`SELECT user_id FROM tbl_group_members WHERE group_id = $1`, [GroupID]);
       await client.query("COMMIT");
       return {
         group_id: GroupID,
+        groupMembers: groupMembers.rows.map((item) => item.user_id),
       };
     } catch (error) {
       await client.query("ROLLBACK");
@@ -272,7 +274,29 @@ GROUP BY g.group_id;
   },
   getMyPairs: async ({ group_id, user_id }) => {
     try {
-      // Fetch all expenses related to the group
+      // Step 1: Fetch group members (excluding the requesting user) to initialize pairs
+      const membersQuery = await client.query(
+        `
+        SELECT gm.user_id, u.name
+        FROM tbl_group_members gm
+        JOIN tbl_users u ON gm.user_id = u.user_id
+        WHERE gm.group_id = $1 AND gm.user_id != $2
+        `,
+        [group_id, user_id]
+      );
+
+      const otherUsers = membersQuery.rows;
+
+      // Initialize send and receive pairs
+      const sendPairs = new Map();
+      const receivePairs = new Map();
+
+      otherUsers.forEach(({ user_id, name }) => {
+        sendPairs.set(user_id, { user_name: name, amount: 0 });
+        receivePairs.set(user_id, { user_name: name, amount: 0 });
+      });
+
+      // Step 2: Fetch all expenses and their participants
       const expenseQuery = await client.query(
         `
         SELECT e.expense_id, e.amount AS total_amount, e.paid_by, em.user_id AS participant, em.amount AS share,
@@ -281,45 +305,124 @@ GROUP BY g.group_id;
         JOIN tbl_expense_members em ON e.expense_id = em.expense_id
         JOIN tbl_users u ON em.user_id = u.user_id
         JOIN tbl_users up ON e.paid_by = up.user_id
-        WHERE e.group_id = $1
+        WHERE e.group_id = $1 AND e.is_active = TRUE
         `,
         [group_id]
       );
 
       const transactions = expenseQuery.rows;
-      const balances = new Map();
 
+      // Step 3: Process transactions to update pairs
       transactions.forEach(({ paid_by, participant, share }) => {
         if (paid_by === participant) return; // Ignore self-payments
 
-        // If user paid, others owe them
+        const shareAmount = parseFloat(share);
+
+        // If the requesting user paid, others owe them (increase receivePairs)
         if (paid_by === user_id) {
-          balances.set(participant, (balances.get(participant) || 0) + parseFloat(share));
+          if (receivePairs.has(participant)) {
+            const current = receivePairs.get(participant);
+            receivePairs.set(participant, { ...current, amount: current.amount + shareAmount });
+          }
         }
-        // If user participated, they owe the payer
+
+        // If the requesting user is a participant, they owe the payer (increase sendPairs)
         if (participant === user_id) {
-          balances.set(paid_by, (balances.get(paid_by) || 0) - parseFloat(share));
+          if (sendPairs.has(paid_by)) {
+            const current = sendPairs.get(paid_by);
+            sendPairs.set(paid_by, { ...current, amount: current.amount + shareAmount });
+          }
         }
       });
 
+      // Step 4: Prepare final send and receive arrays
       const send = [];
       const receive = [];
 
-      // Process final balances
-      balances.forEach((amount, user) => {
-        if (amount > 0) {
-          receive.push({ user_name: transactions.find((t) => t.participant === user)?.participant_name, amount });
-        } else if (amount < 0) {
-          send.push({ user_name: transactions.find((t) => t.paid_by === user)?.payer_name, amount: Math.abs(amount) });
-        }
-      });
+      // Process sendPairs and receivePairs
+      for (const [otherUserId, sendData] of sendPairs) {
+        const receiveData = receivePairs.get(otherUserId);
 
-      return { send, receive };
+        // Net the amounts for this user pair
+        const netAmount = sendData.amount - receiveData.amount;
+
+        if (netAmount > 0) {
+          // User owes more than they are owed, so they need to send
+          send.push({ user_name: sendData.user_name, amount: netAmount });
+        } else if (netAmount < 0) {
+          // User is owed more than they owe, so they need to receive
+          receive.push({ user_name: receiveData.user_name, amount: Math.abs(netAmount) });
+        }
+        // If netAmount === 0, no entry in send or receive (they cancel out)
+      }
+
+      const result = { send, receive, pairs: { sendPairs: Object.values(Object.fromEntries(sendPairs)), receivePairs: Object.values(Object.fromEntries(receivePairs)) } };
+
+      return result;
     } catch (error) {
       console.error("Error in fetching expense data:", error.message);
       throw error;
     }
   },
+  // getMyPairs: async ({ group_id, user_id }) => {
+  //   try {
+  //     // Fetch all expenses related to the group
+  //     const expenseQuery = await client.query(
+  //       `
+  //       SELECT e.expense_id, e.amount AS total_amount, e.paid_by,
+  //              em.user_id AS participant, em.amount AS share,
+  //              u.name AS participant_name, up.name AS payer_name
+  //       FROM tbl_expenses e
+  //       JOIN tbl_expense_members em ON e.expense_id = em.expense_id
+  //       JOIN tbl_users u ON em.user_id = u.user_id
+  //       JOIN tbl_users up ON e.paid_by = up.user_id
+  //       WHERE e.group_id = $1 AND e.is_active = TRUE
+  //       `,
+  //       [group_id]
+  //     );
+
+  //     const transactions = expenseQuery.rows;
+  //     const balances = new Map(); // Key: user_id, Value: { amount: number, name: string }
+
+  //     transactions.forEach(({ paid_by, participant, share, participant_name, payer_name }) => {
+  //       if (paid_by === participant) return;
+
+  //       // User is the payer; others owe them
+  //       if (paid_by === user_id) {
+  //         const current = balances.get(participant) || { amount: 0, name: participant_name };
+  //         balances.set(participant, {
+  //           amount: current.amount + parseFloat(share),
+  //           name: participant_name,
+  //         });
+  //       }
+
+  //       // User is a participant; they owe the payer
+  //       if (participant === user_id) {
+  //         const current = balances.get(paid_by) || { amount: 0, name: payer_name };
+  //         balances.set(paid_by, {
+  //           amount: current.amount - parseFloat(share),
+  //           name: payer_name,
+  //         });
+  //       }
+  //     });
+
+  //     const send = [];
+  //     const receive = [];
+
+  //     balances.forEach((value) => {
+  //       if (value.amount > 0) {
+  //         receive.push({ user_name: value.name, amount: value.amount });
+  //       } else if (value.amount < 0) {
+  //         send.push({ user_name: value.name, amount: Math.abs(value.amount) });
+  //       }
+  //     });
+
+  //     return { send, receive };
+  //   } catch (error) {
+  //     console.error("Error in fetching expense data:", error.message);
+  //     throw error;
+  //   }
+  // },
   toggleGroupSettlement: async ({ group_id, user_id }) => {
     try {
       const result = await client.query(
