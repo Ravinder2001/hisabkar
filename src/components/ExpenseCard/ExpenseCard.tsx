@@ -17,6 +17,7 @@ type PropsType = ExpenseType & {
   totalItemsCount: number;
   setAddExpModal: () => void;
   setDeleteModal: () => void;
+  isSettled: boolean;
 };
 
 const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
@@ -65,12 +66,15 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
                 </div>
                 {expense.is_own_expense ? (
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
+                    {expense.isSettled ? null : (
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                    )}
+
                     <DropdownMenuContent align="end" className="bg-white">
                       <DropdownMenuItem onClick={expense.setAddExpModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
                         <Edit className="mr-2 h-4 w-4" />
