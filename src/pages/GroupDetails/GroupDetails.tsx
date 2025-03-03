@@ -43,6 +43,7 @@ export default function GroupDetails() {
 
   const [groupData, setGroupData] = useState<GroupDataType | null>(null);
   const [expenseList, setExpenseList] = useState<ExpenseType[]>([]);
+  const [tempExpenseList, setTempExpenseList] = useState<ExpenseType[]>([]);
   const [pairsData, setPairsData] = useState<GroupPairsData>({
     send: [],
     receive: [],
@@ -53,7 +54,15 @@ export default function GroupDetails() {
   const [logModal, setLogModal] = useState<boolean>(false);
   const [spendAnalysisModal, setSpendAnalysisModal] = useState<boolean>(false);
   const [successModal, setSuccessModal] = useState<boolean>(false);
+  const [selectedUser, setSelectedUser] = useState<string>("-1");
 
+  const groupMemberOptionsList = [
+    { value: "-1", label: "All" },
+    ...(groupData?.members?.map((item) => ({
+      label: item.name,
+      value: item.id,
+    })) || []),
+  ];
   const handleExpModal = () => {
     if (isAddExpModal && selectedRow) {
       setSelectedRow(null);
@@ -103,6 +112,7 @@ export default function GroupDetails() {
   useEffect(() => {
     if (expenseRes?.success == 1) {
       setExpenseList(expenseRes.data);
+      setTempExpenseList(expenseRes.data);
     }
   }, [expenseRes]);
 
@@ -117,13 +127,20 @@ export default function GroupDetails() {
       if (deleteExpRes.success == 1) {
         fetchGroupDetails();
         fetchMyPairs();
-        setExpenseList((prevExpenses) => prevExpenses.filter((expense) => expense.expense_id !== selectedRow?.expense_id));
+        setTempExpenseList((prevExpenses) => prevExpenses.filter((expense) => expense.expense_id !== selectedRow?.expense_id));
         showToast("Expense deleted Succesfully", "success");
       }
       handleDeleteModal();
     }
   }, [deleteExpRes]);
 
+  useEffect(() => {
+    if (selectedUser == "-1") {
+      setTempExpenseList(expenseList);
+    } else {
+      setTempExpenseList(expenseList.filter((expense) => expense.paid_by == selectedUser));
+    }
+  }, [selectedUser]);
   return (
     <div className={styles.container}>
       <div className={styles.detailsCon}>
@@ -180,8 +197,17 @@ export default function GroupDetails() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Expenses Timeline</CardTitle>
             <div className="flex items-center gap-2">
-              <ChartColumnDecreasing onClick={handleSpendAnalysisModal} size={20} className="cursor-pointer" />
-              <Logs onClick={handleLogModal} size={20} className="cursor-pointer" />
+              <div className={styles.selectWrapper}>
+                <select value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)} className={styles.customSelect}>
+                  {groupMemberOptionsList.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <ChartColumnDecreasing onClick={handleSpendAnalysisModal} size={28} className="cursor-pointer" />
+              <Logs onClick={handleLogModal} size={28} className="cursor-pointer" />
             </div>
           </CardHeader>
           {expenseListLoading ? (
@@ -189,7 +215,7 @@ export default function GroupDetails() {
           ) : (
             <CardContent className={styles.expBox}>
               {/* <ScrollArea className="h-[400px] lg:h-[400px]"> */}
-              {expenseList.map((expense, index) => (
+              {tempExpenseList.map((expense, index) => (
                 <ExpenseCard
                   key={expense.expense_id}
                   {...expense}
@@ -205,6 +231,7 @@ export default function GroupDetails() {
                     setSelectedRow(expense);
                   }}
                   ref={(el) => (expenseRefs.current[expense.expense_id] = el)}
+                  isSettled={groupData?.is_settled ?? false}
                 />
               ))}
               {/* </ScrollArea> */}
@@ -225,7 +252,7 @@ export default function GroupDetails() {
           setIsOpen={handleExpModal}
           groupId={GroupId}
           memberList={groupData?.members ?? []}
-          setExpenseList={setExpenseList}
+          setExpenseList={setTempExpenseList}
           selectedRow={selectedRow}
           callback={() => {
             fetchMyPairs();

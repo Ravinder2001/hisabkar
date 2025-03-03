@@ -24,6 +24,27 @@
   margin-top: 0px !important;
 }
 
+/* CustomSelect.module.css */
+.selectWrapper {
+  width: 100%;
+  max-width: 300px; /* Default max-width for desktop */
+}
+
+.customSelect {
+  width: 100%;
+  font-size: 12px; /* Smaller font size for desktop */
+  border: 1px solid rgba(229, 231, 235, var(--tw-border-opacity));
+  border-radius: 4px; /* Smaller border radius */
+  background-color: white;
+  cursor: pointer;
+  padding: 5px 8px;
+}
+
+/* Remove default focus outline and add custom focus style */
+.customSelect:focus {
+  outline: none;
+}
+
 @media only screen and (max-width: 1024px) {
   .cardHeader {
     padding: 0px !important;
@@ -58,5 +79,14 @@
 @media only screen and (max-width: 768px) {
   .expBox {
     padding: 12px !important;
+  }
+  .customSelect {
+    height: 20px; /* Even smaller height for mobile */
+    font-size: 12px; /* Smaller font size for mobile */
+    padding: 0px 3px;
+  }
+
+  .selectWrapper {
+    max-width: 100%; /* Full width on mobile */
   }
 }
