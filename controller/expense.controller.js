@@ -12,7 +12,7 @@ module.exports = {
       const response = await expenseModel.addExpense({ ...req.body, groupId: req.params.group_id, paidBy: req.user.user_id });
 
       // Extract all user IDs from req.body.members except the current user
-      const userIds = response.groupData.user_ids.filter((id) => id !== req.user.user_id);
+      const userIds = response.groupData.user_ids.map((id) => id.user_id).filter((id) => id !== req.user.user_id);
 
       if (userIds.length) {
         let subscriptions = await usersModel.getUsersSWData(userIds);
@@ -36,6 +36,22 @@ module.exports = {
   editExpense: async (req, res) => {
     try {
       const response = await expenseModel.editExpense({ ...req.body, expenseId: req.params.expense_id, paidBy: req.user.user_id });
+
+      // Extract all user IDs from req.body.members except the current user
+      const userIds = response.groupData.user_ids.map((id) => id.user_id).filter((id) => id !== req.user.user_id);
+
+      if (userIds.length) {
+        let subscriptions = await usersModel.getUsersSWData(userIds);
+
+        if (subscriptions.length) {
+          // Send notifications to each subscription
+          const payload = {
+            title: response.groupData.group_name,
+            body: `${response.groupData.user_ids.find((item) => item.user_id == req.user.user_id).name} has edited an expense.`,
+          };
+          subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
+        }
+      }
 
       await trackExpenseChange({
         groupId: response.groupId,
@@ -65,7 +81,23 @@ module.exports = {
   },
   deleteExpense: async (req, res) => {
     try {
-      await expenseModel.deleteExpense(req.params.expense_id, req.user.user_id);
+      let response = await expenseModel.deleteExpense(req.params.expense_id, req.user.user_id);
+
+      // Extract all user IDs from req.body.members except the current user
+      const userIds = response.groupData.user_ids.map((id) => id.user_id).filter((id) => id !== req.user.user_id);
+
+      if (userIds.length) {
+        let subscriptions = await usersModel.getUsersSWData(userIds);
+
+        if (subscriptions.length) {
+          // Send notifications to each subscription
+          const payload = {
+            title: response.groupData.group_name,
+            body: `${response.groupData.user_ids.find((item) => item.user_id == req.user.user_id).name} has deleted an expense.`,
+          };
+          subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
+        }
+      }
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
     } catch (error) {

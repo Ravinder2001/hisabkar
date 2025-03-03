@@ -173,10 +173,11 @@ module.exports = {
   getUsersSWData: async (usersArray) => {
     try {
       const { rows } = await client.query(
-        `SELECT user_id, endpoint, 
+        `SELECT tbl_sw_subscriptions.user_id, endpoint, tbl_users.name,
               jsonb_build_object('p256dh', p256dh, 'auth', auth) AS keys
-       FROM tbl_sw_subscriptions 
-       WHERE user_id = ANY($1)`,
+       FROM tbl_sw_subscriptions
+       LEFT JOIN tbl_users ON tbl_sw_subscriptions.user_id = tbl_users.user_id
+       WHERE tbl_sw_subscriptions.user_id = ANY($1)`,
         [usersArray]
       );
 

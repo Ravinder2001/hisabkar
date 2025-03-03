@@ -48,6 +48,28 @@ const getExpenseById = async (values) => {
   }
 };
 
+const getGroupDataById = async (groupId) => {
+  const groupData = await client.query(
+    `
+      SELECT 
+        g.group_name, 
+        jsonb_agg(
+          jsonb_build_object(
+            'user_id', m.user_id,
+            'name', u.name
+          )
+        ) AS user_ids
+      FROM tbl_groups g
+      LEFT JOIN tbl_group_members m ON g.group_id = m.group_id
+      LEFT JOIN tbl_users u ON m.user_id = u.user_id
+      WHERE g.group_id = $1
+      GROUP BY g.group_name
+    `,
+    [groupId]
+  );
+  return groupData.rows[0];
+};
+
 module.exports = {
   addExpense: async (values) => {
     const { expenseName, expenseTypeId, description, amount, groupId, paidBy, members, splitType } = values;
@@ -94,22 +116,9 @@ module.exports = {
         [groupId, amount]
       );
 
-      const groupData = await client.query(
-        `
-          SELECT 
-          g.group_name, 
-          jsonb_agg(m.user_id) AS user_ids
-          FROM tbl_groups g
-          LEFT JOIN tbl_group_members m ON g.group_id = m.group_id
-          WHERE g.group_id = $1
-          GROUP BY g.group_name
-        `,
-        [groupId]
-      );
-
       const expenseData = await getExpenseById({ groupId, userId: paidBy, expenseId: expense_id });
       await client.query("COMMIT");
-      return { expenseData, groupData: groupData.rows[0], expense_data };
+      return { expenseData, groupData: await getGroupDataById(groupId), expense_data };
     } catch (error) {
       await client.query("ROLLBACK");
       console.error("Error in creating group:", error.message);
@@ -161,7 +170,7 @@ module.exports = {
       const expenseData = await getExpenseById({ groupId, userId: paidBy, expenseId });
       await client.query("COMMIT");
 
-      return { oldAmount, groupId, expenseData };
+      return { oldAmount, groupId, expenseData, groupData: await getGroupDataById(groupId) };
     } catch (error) {
       await client.query("ROLLBACK");
       console.error("Error in editing expense:", error.message);
@@ -281,11 +290,23 @@ module.exports = {
       await client.query(`DELETE FROM tbl_expense_members WHERE expense_id = $1`, [expenseId]);
 
       // Step 4: Remove Expense from tbl_expenses
-      await client.query(`DELETE FROM tbl_expenses WHERE expense_id = $1`, [expenseId]);
+      await client.query(
+        `DELETE FROM tbl_expenses WHERE expense_id = $1
+        
+        `,
+        [expenseId]
+      );
+
+      await client.query(
+        `UPDATE tbl_groups
+        SET total_amount = total_amount - $2
+        WHERE group_id = $1`,
+        [expense.group_id, expense.amount]
+      );
 
       await client.query("COMMIT");
       console.log("Expense deleted successfully.");
-      return;
+      return { groupData: await getGroupDataById(expense.group_id) };
     } catch (error) {
       await client.query("ROLLBACK");
       console.error("Error in deleting expense:", error.message);

@@ -1,9 +1,11 @@
 const groupModel = require("../model/group.model");
+const usersModel = require("../model/users.model");
 const common = require("./common.controller");
 const { HttpStatus } = require("../utils/constant/constant");
 const Messages = require("../utils/constant/messages");
 const { getExpenseChangeLog, trackExpenseChange } = require("../helpers/expenseLog");
 const ExcelJS = require("exceljs");
+const { sendNotificationsToUsers } = require("../helpers/pushService");
 
 module.exports = {
   createGroup: async (req, res) => {
@@ -24,6 +26,24 @@ module.exports = {
         groupCode: req.params.group_code,
         userId: req.user.user_id,
       });
+
+      // Extract all user IDs from req.body.members except the current user
+      const userIds = response.groupMembers.filter((id) => id !== req.user.user_id);
+
+      if (userIds.length) {
+        let subscriptions = await usersModel.getUsersSWData(userIds);
+
+        if (subscriptions.length) {
+          // Send notifications to each subscription
+          const payload = {
+            title: response.groupData.group_name,
+            body: `${subscriptions.name} has joined the group.`,
+            group_id: req.params.group_id,
+          };
+          delete subscriptions.name;
+          subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
+        }
+      }
 
       await trackExpenseChange({
         groupId: response.group_id,

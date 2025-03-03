@@ -85,9 +85,11 @@ module.exports = {
         `,
         [GroupID, values.userId]
       );
+      const groupMembers = await client.query(`SELECT user_id FROM tbl_group_members WHERE group_id = $1`, [GroupID]);
       await client.query("COMMIT");
       return {
         group_id: GroupID,
+        groupMembers: groupMembers.rows.map((item) => item.user_id),
       };
     } catch (error) {
       await client.query("ROLLBACK");
@@ -354,14 +356,9 @@ GROUP BY g.group_id;
         // If netAmount === 0, no entry in send or receive (they cancel out)
       }
 
-      // Step 5: Optional verification
-      // Verify that send and receive pairs balance out (for debugging purposes)
-      const totalSent = send.reduce((sum, { amount }) => sum + amount, 0);
-      const totalReceived = receive.reduce((sum, { amount }) => sum + amount, 0);
-      console.log(`Total sent: ${totalSent}, Total received: ${totalReceived}`);
-      console.log("🚀 sendPairs:", sendPairs);
-      console.log("🚀 receivePairs:", receivePairs);
-      return { send, receive };
+      const result = { send, receive, pairs: { sendPairs: Object.values(Object.fromEntries(sendPairs)), receivePairs: Object.values(Object.fromEntries(receivePairs)) } };
+
+      return result;
     } catch (error) {
       console.error("Error in fetching expense data:", error.message);
       throw error;
