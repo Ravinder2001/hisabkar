@@ -35,5 +35,7 @@ router.get(
 router.get("/downloadGroupData/:group_id", authenticateJWT, validateData.validateGroupId, validateExpData.validateGroupMembership, GroupController.downloadGroupData);
 router.get("/groupLogs/:group_id", authenticateJWT, validateData.validateGroupId, validateExpData.validateGroupMembership, GroupController.getGroupLogs);
 router.get("/spendAnalysis/:group_id/:user_id", authenticateJWT, validateData.validateGroupId, validateExpData.validateGroupMembership, GroupController.getGrpupSpendAnalysis);
+router.get("/friendsList/:group_id", authenticateJWT, validateData.validateGroupId, validateData.validateGroupOwnerShip, GroupController.getFriendsList);
+router.post("/addGroupMember/:group_id", authenticateJWT, validateBody(schemas.addGroupMember), validateData.validateGroupId, validateData.validateGroupOwnerShip, GroupController.addGroupMember);
 
 module.exports = router;

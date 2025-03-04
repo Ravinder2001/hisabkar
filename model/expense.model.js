@@ -331,7 +331,7 @@ module.exports = {
           el.action_type,
           el.old_amount,
           el.new_amount,
-          el.created_at 
+          el.created_at
          FROM tbl_group_logs el
          JOIN tbl_users u ON el.user_id = u.user_id
          WHERE el.group_id = $1 
