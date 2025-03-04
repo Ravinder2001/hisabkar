@@ -190,7 +190,7 @@ module.exports = {
         return {
           ...group,
           members: avatars.slice(0, 2), // Only first 5 avatars
-          remaining_members: avatars.length > 3 ? avatars.length - 3 : undefined, // Remaining count
+          remaining_members: avatars.length > 2 ? avatars.length - 2 : undefined, // Remaining count
           members_avatars: undefined, // Removing the raw avatars array
         };
       });
