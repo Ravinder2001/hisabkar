@@ -21,7 +21,7 @@ module.exports = {
           // Send notifications to each subscription
           const payload = {
             title: response.groupData.group_name,
-            body: `${response.expense_data.name} has added ₹${response.expenseData[0].amount}.`,
+            body: `${req.user.name} has added ₹${response.expenseData[0].amount}.`,
             group_id: req.params.group_id,
           };
           subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
@@ -47,7 +47,7 @@ module.exports = {
           // Send notifications to each subscription
           const payload = {
             title: response.groupData.group_name,
-            body: `${response.groupData.user_ids.find((item) => item.user_id == req.user.user_id).name} has edited an expense.`,
+            body: `${req.user.name} has edited an expense.`,
           };
           subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
         }
@@ -93,7 +93,7 @@ module.exports = {
           // Send notifications to each subscription
           const payload = {
             title: response.groupData.group_name,
-            body: `${response.groupData.user_ids.find((item) => item.user_id == req.user.user_id).name} has deleted an expense.`,
+            body: `${req.user.name} has deleted an expense.`,
           };
           subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
         }

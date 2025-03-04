@@ -36,9 +36,9 @@ module.exports = {
         if (subscriptions.length) {
           // Send notifications to each subscription
           const payload = {
-            title: response.groupData.group_name,
-            body: `${subscriptions.name} has joined the group.`,
-            group_id: req.params.group_id,
+            title: response.group_name,
+            body: `${req.user.name} has joined the group.`,
+            group_id: response.group_id,
           };
           delete subscriptions.name;
           subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));

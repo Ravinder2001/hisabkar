@@ -78,7 +78,7 @@ module.exports = {
 
       // Step 1: Add Expense
       const expenseResult = await client.query(
-        `WITH inserted_expense AS (
+        `
           INSERT INTO tbl_expenses (
               group_id,
               expense_type_id, 
@@ -90,10 +90,6 @@ module.exports = {
           ) 
           VALUES ($1, $2, $3, $4, $5, $6, $7)
           RETURNING expense_id, paid_by
-      )
-      SELECT inserted_expense.expense_id, tbl_users.name
-      FROM inserted_expense
-      LEFT JOIN tbl_users ON tbl_users.user_id = inserted_expense.paid_by;
       `,
         [groupId, expenseTypeId, expenseName, amount, paidBy, description, splitType]
       );

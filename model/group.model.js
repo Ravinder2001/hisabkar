@@ -75,7 +75,12 @@ module.exports = {
   joinGroup: async (values) => {
     try {
       await client.query("BEGIN");
-      const groupIdQuery = await client.query(`SELECT * FROM tbl_groups WHERE code = $1`, [values.groupCode]);
+      const groupIdQuery = await client.query(
+        `
+        SELECT * FROM tbl_groups WHERE code = $1
+        `,
+        [values.groupCode]
+      );
       // Insert the group with the unique code
       let GroupID = groupIdQuery.rows[0].group_id;
       await client.query(
@@ -90,6 +95,7 @@ module.exports = {
       return {
         group_id: GroupID,
         groupMembers: groupMembers.rows.map((item) => item.user_id),
+        group_name: groupIdQuery.rows[0].group_name,
       };
     } catch (error) {
       await client.query("ROLLBACK");
