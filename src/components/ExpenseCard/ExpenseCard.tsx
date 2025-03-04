@@ -28,9 +28,11 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
 
   // Format description into bullet points
   const descriptionPoints = expense.description
-    .split(".")
-    .map((point) => point.trim())
-    .filter((point) => point.length > 0);
+    ? expense.description
+        .split(".")
+        .map((point) => point.trim())
+        .filter((point) => point.length > 0)
+    : [""];
 
   return (
     <div className={`${styles.expenseCon} w-full`} ref={ref}>
