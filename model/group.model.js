@@ -547,7 +547,8 @@ SELECT DISTINCT
             )
           )
           FROM jsonb_array_elements(gl.details->'members') AS m
-        )
+        ),
+        'added_by', (SELECT name FROM tbl_users u2 WHERE u2.user_id = (gl.details->>'added_by')::INTEGER)
       )
     ELSE NULL
   END AS details
@@ -648,6 +649,70 @@ ORDER BY gl.created_at DESC;
     } catch (error) {
       await client.query("ROLLBACK");
       console.error("Error in fetching group logs:", error.message);
+      throw error;
+    }
+  },
+  getFriendsList: async (user_id, group_id) => {
+    try {
+      const result = await client.query(
+        `SELECT DISTINCT u.user_id, u.name, u.avatar, u.email
+         FROM tbl_users u
+         INNER JOIN tbl_group_members gm1 ON u.user_id = gm1.user_id
+         INNER JOIN tbl_group_members gm2 ON gm1.group_id = gm2.group_id
+         WHERE gm2.user_id = $1  
+         AND u.user_id != $1     
+         AND u.is_active = TRUE                 
+         AND gm1.is_active = TRUE
+         AND NOT EXISTS (
+           SELECT 1 
+           FROM tbl_group_members gm3 
+           WHERE gm3.group_id = $2 
+           AND gm3.user_id = u.user_id 
+           AND gm3.is_active = TRUE
+         );`,
+        [user_id, group_id]
+      );
+
+      return result.rows;
+    } catch (error) {
+      console.error("Error in fetching friends list:", error.message);
+      throw error;
+    }
+  },
+  addGroupMember: async (values) => {
+    try {
+      await client.query("BEGIN");
+
+      // Step 1: Insert new members into tbl_group_members
+      const placeholders = values.userIds.map((_, index) => `($1, $${index + 2})`).join(", ");
+      const insertMembersQuery = `
+        INSERT INTO tbl_group_members (group_id, user_id)
+        VALUES ${placeholders}
+        RETURNING member_id, group_id, user_id, is_active, created_at
+      `;
+      const queryParams = [values.groupId, ...values.userIds];
+      const result = await client.query(insertMembersQuery, queryParams);
+
+      // Step 2: Log each added member in tbl_group_logs
+      const addedMembers = result.rows;
+      const numUsers = addedMembers.length;
+      const logPlaceholders = addedMembers.map((_, index) => `($1, $${index + 2}, 'ADDED', $${numUsers + 2}::jsonb)`).join(", ");
+      const logQuery = `
+        INSERT INTO tbl_group_logs (group_id, user_id, action_type, details)
+        VALUES ${logPlaceholders}
+        RETURNING log_id, group_id, user_id, action_type, created_at
+      `;
+      const logParams = [values.groupId, ...addedMembers.map((member) => member.user_id), JSON.stringify({ added_by: values.userId || null })];
+
+      await client.query(logQuery, logParams);
+
+      // Step 3: Commit the transaction
+      await client.query("COMMIT");
+
+      return addedMembers;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      console.error("Error in adding group members:", error.message);
       throw error;
     }
   },

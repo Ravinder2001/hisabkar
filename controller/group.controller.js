@@ -6,6 +6,7 @@ const Messages = require("../utils/constant/messages");
 const { getExpenseChangeLog, trackExpenseChange } = require("../helpers/expenseLog");
 const ExcelJS = require("exceljs");
 const { sendNotificationsToUsers } = require("../helpers/pushService");
+const { maskEmail } = require("../utils/common/common");
 
 module.exports = {
   createGroup: async (req, res) => {
@@ -260,6 +261,31 @@ module.exports = {
       });
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response, response.length);
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
+  getFriendsList: async (req, res) => {
+    try {
+      let response = await groupModel.getFriendsList(req.user.user_id, req.params.group_id);
+      if (response.length) {
+        response = await Promise.all(
+          response.map(async (item) => {
+            const maskedEmail = maskEmail(item.email);
+            return { ...item, email: maskedEmail };
+          })
+        );
+      }
+      return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response, response.length);
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
+  addGroupMember: async (req, res) => {
+    try {
+      await groupModel.addGroupMember({ userId: req.user.user_id, groupId: req.params.group_id, ...req.body });
+
+      return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
     } catch (error) {
       common.handleAsyncError(error, res);
     }

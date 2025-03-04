@@ -13,4 +13,7 @@ module.exports = {
       .pattern(/^\d{6}$/)
       .required(),
   }),
+  addGroupMember: Joi.object().keys({
+    userIds: Joi.array().items(Joi.number().integer().required().max(constant.LENGTH_VALIDATIONS.ID)).required(),
+  }),
 };
