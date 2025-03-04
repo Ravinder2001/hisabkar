@@ -111,7 +111,7 @@ function GroupDetailsContent(
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-white">
-              {!data.is_settled ? (
+              {data.is_you_admin && !data.is_settled ? (
                 <DropdownMenuItem onClick={data.handleAddMemModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
                   <UserPlus className="mr-2 h-4 w-4" color="black" />
                   <span className="text-black-800">Add Members</span>
