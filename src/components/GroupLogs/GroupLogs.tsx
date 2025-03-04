@@ -21,7 +21,7 @@ type PropsType = {
 type LogType = {
   log_id: number;
   name: string;
-  action_type: "EDIT" | "DELETE" | "SETTLED" | "UNSETTLED" | "JOINED" | "LEFT";
+  action_type: "EDIT" | "DELETE" | "SETTLED" | "UNSETTLED" | "JOINED" | "LEFT" | "ADDED";
   old_amount: string | null;
   new_amount: string | null;
   created_at: string;
@@ -34,6 +34,7 @@ type LogType = {
       amount: number;
     }[];
     expense_name: string;
+    added_by: string;
   } | null;
 };
 
@@ -51,6 +52,8 @@ const getActionDetails = (actionType: LogType["action_type"]) => {
       return { icon: UserPlus, color: "bg-purple-500", textColor: "text-purple-700" };
     case "LEFT":
       return { icon: UserMinus, color: "bg-pink-500", textColor: "text-pink-700" };
+    case "ADDED":
+      return { icon: UserPlus, color: "bg-pink-500", textColor: "text-pink-700" };
     default:
       return { icon: ExternalLink, color: "bg-gray-500", textColor: "text-gray-700" };
   }
@@ -70,6 +73,8 @@ const getActionMessage = (log: LogType) => {
       return `joined the group`;
     case "LEFT":
       return `left the group`;
+    case "ADDED":
+      return `added to group`;
     default:
       return `performed an action`;
   }
@@ -110,7 +115,7 @@ function GroupLogs(props: PropsType) {
                   <Card className="ml-12 w-full">
                     <CardContent className="p-4">
                       <p className={`font-semibold ${textColor}`}>
-                        {log.name} {getActionMessage(log)}
+                        {log.name} {getActionMessage(log)} {log.action_type === "ADDED" ? `by ${log.details?.added_by}` : ""}
                       </p>
                       <p className="text-sm text-gray-500 mt-1">{new Date(log.created_at).toLocaleString()}</p>
                       {log.old_amount && log.new_amount && log.action_type !== "DELETE" && (
