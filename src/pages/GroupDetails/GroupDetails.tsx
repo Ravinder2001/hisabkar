@@ -22,6 +22,7 @@ import showToast from "../../utils/helpers/toastHelper";
 import GroupLogs from "../../components/GroupLogs/GroupLogs";
 import GroupSpendAnalysis from "../../components/GroupSpendAnalysis/GroupSpendAnalysis";
 import SuccessModal from "../../components/SuccessModal/SuccessModal";
+import AddMemberModal from "../../components/AddMemberModal/AddMemberModal";
 
 export default function GroupDetails() {
   const location = useLocation();
@@ -55,6 +56,7 @@ export default function GroupDetails() {
   const [spendAnalysisModal, setSpendAnalysisModal] = useState<boolean>(false);
   const [successModal, setSuccessModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<string>("-1");
+  const [addMemberModal, setAddMemberModal] = useState<boolean>(false);
 
   const groupMemberOptionsList = [
     { value: "-1", label: "All" },
@@ -68,6 +70,9 @@ export default function GroupDetails() {
       setSelectedRow(null);
     }
     setAddExpModal(!isAddExpModal);
+  };
+  const handleAddMemModal = () => {
+    setAddMemberModal(!addMemberModal);
   };
 
   const handleDeleteModal = () => {
@@ -154,7 +159,7 @@ export default function GroupDetails() {
                   {groupDetailsLoading ? (
                     <CircularLoader />
                   ) : groupData ? (
-                    <GroupDetailsContent {...groupData} GroupId={GroupId} setGroupData={setGroupData} />
+                    <GroupDetailsContent {...groupData} GroupId={GroupId} setGroupData={setGroupData} handleAddMemModal={handleAddMemModal} />
                   ) : null}
                 </AccordionContent>
               </AccordionItem>
@@ -164,7 +169,9 @@ export default function GroupDetails() {
             <CircularLoader />
           ) : (
             <CardContent className="hidden lg:block">
-              {groupData ? <GroupDetailsContent {...groupData} GroupId={GroupId} setGroupData={setGroupData} /> : null}
+              {groupData ? (
+                <GroupDetailsContent {...groupData} GroupId={GroupId} setGroupData={setGroupData} handleAddMemModal={handleAddMemModal} />
+              ) : null}
             </CardContent>
           )}
         </Card>
@@ -280,6 +287,7 @@ export default function GroupDetails() {
         />
       ) : null}
       {successModal ? <SuccessModal open={successModal} setOpen={setSuccessModal} /> : null}
+      {addMemberModal ? <AddMemberModal isOpen={addMemberModal} onClose={handleAddMemModal} groupId={GroupId} /> : null}
     </div>
   );
 }

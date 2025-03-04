@@ -36,6 +36,8 @@ const CONSTANTS = {
     DOWNLOAD_GROUP_DATA: "/group/downloadGroupData",
     GROUP_LOGS: "/group/groupLogs",
     SPEND_ANALYSIS: "/group/spendAnalysis",
+    FRIENDS_LIT: "/group/friendsList",
+    ADD_GROUP_MEMBERS: "/group/addGroupMember",
   },
   FONT_FAMILY: "Nunito",
 };

@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { CircleCheckBig, Download, MoreVertical, Users2, Wallet } from "lucide-react";
+import { CircleCheckBig, Download, MoreVertical, UserPlus, Users2, Wallet } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Badge } from "../../components/ui/badge";
@@ -22,6 +22,7 @@ function GroupDetailsContent(
   data: GroupDataType & {
     GroupId: string;
     setGroupData: Dispatch<SetStateAction<GroupDataType | null>>;
+    handleAddMemModal: () => void;
   }
 ) {
   const GroupTypeList = useSelector((state: RootState) => state.data.groupTypeList);
@@ -110,6 +111,13 @@ function GroupDetailsContent(
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-white">
+              {data.is_you_admin && !data.is_settled ? (
+                <DropdownMenuItem onClick={data.handleAddMemModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+                  <UserPlus className="mr-2 h-4 w-4" color="black" />
+                  <span className="text-black-800">Add Members</span>
+                </DropdownMenuItem>
+              ) : null}
+
               <DropdownMenuItem onClick={handleConfirmModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
                 <CircleCheckBig className="mr-2 h-4 w-4" color="green" />
                 <span className="text-green-800">{data.is_settled ? "Un-settle this group" : "Make Settlement"}</span>
