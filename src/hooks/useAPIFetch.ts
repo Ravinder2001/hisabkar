@@ -20,7 +20,6 @@ const useApiFetch = (initialUrl: string, initialOptions?: AxiosRequestConfig) =>
   const fetchData = async (url = initialUrl, options = initialOptions) => {
     setIsLoading(true);
     try {
-      // console.log(url, options);
       const { data } = await axiosInstance(url, options);
       let decryptedData = data.data;
 
@@ -35,6 +34,10 @@ const useApiFetch = (initialUrl: string, initialOptions?: AxiosRequestConfig) =>
     } catch (error: any) {
       const errorMessage = error?.data?.message || error.response?.data?.message || "Something went wrong";
       showToast(errorMessage, "error");
+      if (error.status === 401) {
+        localStorage.clear();
+        window.location.href = "/";
+      }
       setResponse({ error: errorMessage, success: error?.data?.success || error.response?.data?.success });
     } finally {
       setIsLoading(false);
