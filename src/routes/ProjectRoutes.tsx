@@ -5,11 +5,11 @@ import ErrorFallback from "../error/ErrorFallback";
 import CONSTANTS from "../utils/constant/Constant";
 import Home from "../pages/Home/Home";
 import PrivateRoute from "./PrivateRoutes";
-import Authentication from "../pages/Authentication/Authentication";
 import Group from "../pages/GroupDetails/GroupDetails";
 import JoinGroup from "../pages/JoinGroup/JoinGroup";
 import Profile from "../pages/Profile/Profile";
 import LegalPage from "../pages/Legals/Legals";
+import SignIn from "../pages/SignIn/SignIn";
 
 // import StaffGroups from "../pages/Admin/StaffGroups/StaffGroups";
 
@@ -55,7 +55,7 @@ const ProjectRoutes = () => {
         path={CONSTANTS.PROJECT_ROUTES.AUTHTICATION}
         element={
           <PublicRoute>
-            <Authentication />
+            <SignIn />
           </PublicRoute>
         }
       />
