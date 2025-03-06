@@ -229,6 +229,7 @@ module.exports = {
     LEFT JOIN tbl_user_options uo ON uo.user_id = u.user_id -- Join user options table
     WHERE gm2.group_id = g.group_id
     GROUP BY u.user_id, uo.availibilty_status
+    ORDER BY COALESCE(SUM(e.amount), 0) DESC
   ) AS members
 FROM tbl_groups g
 LEFT JOIN tbl_group_members gm ON gm.group_id = g.group_id
