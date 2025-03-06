@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
-
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 
 import styles from "./style.module.css";
@@ -23,6 +21,7 @@ import GroupLogs from "../../components/GroupLogs/GroupLogs";
 import GroupSpendAnalysis from "../../components/GroupSpendAnalysis/GroupSpendAnalysis";
 import SuccessModal from "../../components/SuccessModal/SuccessModal";
 import AddMemberModal from "../../components/AddMemberModal/AddMemberModal";
+import CustomAccordion from "../../components/CustomAccordian/CustomAccordian";
 
 export default function GroupDetails() {
   const location = useLocation();
@@ -146,56 +145,29 @@ export default function GroupDetails() {
       setTempExpenseList(expenseList.filter((expense) => expense.paid_by == selectedUser));
     }
   }, [selectedUser]);
+
   return (
     <div className={styles.container}>
       <div className={styles.detailsCon}>
         <Card className="bg-white p-0 h-full">
           <CardHeader className={styles.cardHeader}>
-            <CardTitle className="lg:block hidden">Group Details</CardTitle>
-            <Accordion type="single" collapsible className={`w-full lg:hidden ${styles.accordion}`}>
-              <AccordionItem value="group-details">
-                <AccordionTrigger className="text-sm font-semibold px-4">Group Details</AccordionTrigger>
-                <AccordionContent>
-                  {groupDetailsLoading ? (
-                    <CircularLoader />
-                  ) : groupData ? (
-                    <GroupDetailsContent {...groupData} GroupId={GroupId} setGroupData={setGroupData} handleAddMemModal={handleAddMemModal} />
-                  ) : null}
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </CardHeader>
-          {groupDetailsLoading ? (
-            <CircularLoader />
-          ) : (
-            <CardContent className="hidden lg:block">
-              {groupData ? (
+            <CustomAccordion header="Group Details">
+              {groupDetailsLoading ? (
+                <CircularLoader />
+              ) : groupData ? (
                 <GroupDetailsContent {...groupData} GroupId={GroupId} setGroupData={setGroupData} handleAddMemModal={handleAddMemModal} />
               ) : null}
-            </CardContent>
-          )}
+            </CustomAccordion>
+          </CardHeader>
         </Card>
       </div>
       <div className={styles.pairsCon}>
         <Card className="bg-white p-0 h-full">
           <CardHeader className={styles.cardHeader}>
-            <CardTitle className="lg:block hidden">Your Expense Summary</CardTitle>
-            <Accordion type="single" collapsible className={`w-full lg:hidden ${styles.accordion}`}>
-              <AccordionItem value="group-pairs">
-                <AccordionTrigger className="text-sm font-semibold px-4">Your Expense Summary</AccordionTrigger>
-                <AccordionContent>
-                  {pairsLoading ? <CircularLoader /> : groupData ? <GroupPairs isSettled={groupData.is_settled} pairsData={pairsData} /> : null}
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <CustomAccordion header="Your Expense Summary">
+              {pairsLoading ? <CircularLoader /> : groupData ? <GroupPairs isSettled={groupData.is_settled} pairsData={pairsData} /> : null}
+            </CustomAccordion>
           </CardHeader>
-          {pairsLoading ? (
-            <CircularLoader />
-          ) : (
-            <CardContent className="hidden lg:block">
-              {groupData ? <GroupPairs isSettled={groupData.is_settled} pairsData={pairsData} /> : null}
-            </CardContent>
-          )}
         </Card>
       </div>
 
