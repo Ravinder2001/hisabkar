@@ -3,9 +3,7 @@ CREATE TABLE IF NOT EXISTS tbl_users (
   email VARCHAR(255) UNIQUE NOT NULL,               
   name VARCHAR(100),          
   avatar TEXT,
-  otp INT NOT NULL,
   role VARCHAR(10) NOT NULL DEFAULT 'USER' CHECK (role IN ('ADMIN', 'USER')),            
-  is_verified BOOLEAN NOT NULL DEFAULT FALSE,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
