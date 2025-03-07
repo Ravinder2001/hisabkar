@@ -45,7 +45,7 @@ function SimplifiedComponent(props: PropsType) {
     const member = props.groupMembers.find((member) => {
       return member.id == String(id);
     });
-    return member?.name || "Unknown";
+    return member?.name.split(" ")[0] || "Unknown";
   };
 
   // Helper function to get member avatar by ID
