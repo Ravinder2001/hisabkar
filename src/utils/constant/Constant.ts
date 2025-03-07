@@ -38,6 +38,7 @@ const CONSTANTS = {
     SPEND_ANALYSIS: "/group/spendAnalysis",
     FRIENDS_LIT: "/group/friendsList",
     ADD_GROUP_MEMBERS: "/group/addGroupMember",
+    GET_SIMPLIFIED: "/group/simplified",
   },
   FONT_FAMILY: "Nunito",
 };
