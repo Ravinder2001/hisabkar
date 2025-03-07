@@ -345,6 +345,8 @@ GROUP BY g.group_id;
       // Step 4: Prepare final send and receive arrays
       const send = [];
       const receive = [];
+      let totalSend = 0;
+      let totalReceive = 0;
 
       // Process sendPairs and receivePairs
       for (const [otherUserId, sendData] of sendPairs) {
@@ -355,15 +357,20 @@ GROUP BY g.group_id;
 
         if (netAmount > 0) {
           // User owes more than they are owed, so they need to send
-          send.push({ user_name: sendData.user_name, amount: netAmount });
+          // send.push({ user_name: sendData.user_name, amount: netAmount });
+          send.push({ user_id: otherUserId, amount: netAmount });
+          totalSend += netAmount;
         } else if (netAmount < 0) {
           // User is owed more than they owe, so they need to receive
-          receive.push({ user_name: receiveData.user_name, amount: Math.abs(netAmount) });
+          // receive.push({ user_name: receiveData.user_name, amount: Math.abs(netAmount) });
+          receive.push({ user_id: otherUserId, amount: Math.abs(netAmount) });
+          totalReceive += Math.abs(netAmount);
         }
         // If netAmount === 0, no entry in send or receive (they cancel out)
       }
 
-      const result = { send, receive, pairs: { sendPairs: Object.values(Object.fromEntries(sendPairs)), receivePairs: Object.values(Object.fromEntries(receivePairs)) } };
+      // const result = { send, receive, totalSend, totalReceive, pairs: { sendPairs: Object.values(Object.fromEntries(sendPairs)), receivePairs: Object.values(Object.fromEntries(receivePairs)) } };
+      const result = { send, receive, totalSend, totalReceive };
 
       return result;
     } catch (error) {
@@ -714,6 +721,78 @@ ORDER BY gl.created_at DESC;
     } catch (error) {
       await client.query("ROLLBACK");
       console.error("Error in adding group members:", error.message);
+      throw error;
+    }
+  },
+  getSimplifiedPairs: async ({ group_id }) => {
+    try {
+      // Step 2: Fetch all expenses and their participants
+      const expenseQuery = await client.query(
+        `
+        SELECT e.expense_id, e.amount AS total_amount, e.paid_by, em.user_id AS participant, em.amount AS share
+        FROM tbl_expenses e
+        JOIN tbl_expense_members em ON e.expense_id = em.expense_id
+        WHERE e.group_id = $1 AND e.is_active = TRUE
+        `,
+        [group_id]
+      );
+
+      const transactions = expenseQuery.rows;
+
+      // Step 3: Calculate net balances
+      const balances = new Map();
+
+      transactions.forEach(({ paid_by, participant, share }) => {
+        if (!balances.has(paid_by)) balances.set(paid_by, 0);
+        if (!balances.has(participant)) balances.set(participant, 0);
+
+        balances.set(paid_by, balances.get(paid_by) + parseFloat(share)); // Creditor
+        balances.set(participant, balances.get(participant) - parseFloat(share)); // Debtor
+      });
+
+      // Step 4: Separate payers and receivers
+      let payers = [],
+        receivers = [];
+
+      balances.forEach((balance, user_id) => {
+        if (balance < 0) payers.push({ user_id, amount: Math.abs(balance) });
+        if (balance > 0) receivers.push({ user_id, amount: balance });
+      });
+
+      // Step 5: Sort payers and receivers
+      payers.sort((a, b) => a.amount - b.amount);
+      receivers.sort((a, b) => b.amount - a.amount);
+
+      // Step 6: Simplify transactions
+      let simplifiedTransactions = [];
+
+      let i = 0,
+        j = 0;
+      while (i < payers.length && j < receivers.length) {
+        let payer = payers[i];
+        let receiver = receivers[j];
+
+        let transferAmount = Math.min(payer.amount, receiver.amount);
+
+        // Direct transaction from payer to receiver
+        simplifiedTransactions.push({
+          from: payer.user_id,
+          to: receiver.user_id,
+          amount: transferAmount,
+        });
+
+        // Update balances
+        payer.amount -= transferAmount;
+        receiver.amount -= transferAmount;
+
+        // Move to the next payer/receiver if their balance is settled
+        if (payer.amount === 0) i++;
+        if (receiver.amount === 0) j++;
+      }
+
+      return simplifiedTransactions;
+    } catch (error) {
+      console.error("Error in fetching expense data:", error.message);
       throw error;
     }
   },
