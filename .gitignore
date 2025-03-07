@@ -74,10 +74,11 @@ Thumbs.db
 db-data
 Dockerfile
 initdb
-.git1
-
+.git
 # Certificates
 certs/
 
 #html files
 index.html
+
+.zip
