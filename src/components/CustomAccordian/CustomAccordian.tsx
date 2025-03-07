@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react";
 type AccordionItemProps = {
   header: string;
   children: ReactNode;
+  expanded?: boolean;
 };
 
 const AccordionItem: React.FC<AccordionItemProps & { defaultOpen?: boolean }> = ({ header, children, defaultOpen, ...rest }) => (
@@ -40,7 +41,7 @@ const CustomAccordion = (props: AccordionItemProps) => {
 
   return (
     <Accordion transition transitionTimeout={300}>
-      <AccordionItem header={props.header} defaultOpen={isDesktop}>
+      <AccordionItem header={props.header} defaultOpen={props.expanded ?? isDesktop}>
         {props.children}
       </AccordionItem>
     </Accordion>
