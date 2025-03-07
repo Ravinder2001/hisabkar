@@ -4,7 +4,7 @@ import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
-import { ArrowRight, DollarSign } from "lucide-react";
+import { ArrowRight, IndianRupee } from "lucide-react";
 import CustomAccordion from "../CustomAccordian/CustomAccordian";
 
 type PropsType = {
@@ -66,7 +66,7 @@ function SimplifiedComponent(props: PropsType) {
       {userTransactions.length > 0 && (
         <div className="mb-8 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 shadow-lg border border-indigo-100 transform transition-all duration-300 hover:scale-[1.01]">
           <h3 className="text-sm sm:text-lg font-semibold text-indigo-700 mb-3 flex items-center">
-            <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            <IndianRupee className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
             Your Simplified Expenses
           </h3>
           <div className="space-y-3">
@@ -118,7 +118,7 @@ function SimplifiedComponent(props: PropsType) {
         ) : simplifiedData.length === 0 ? (
           <div className="text-center text-gray-500 py-8 bg-gray-50 rounded-lg">
             <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-full flex items-center justify-center mb-3">
-              <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
+              <IndianRupee className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
             </div>
             <p className="text-sm sm:text-base font-medium">No settlements to display</p>
             <p className="text-xs sm:text-sm text-gray-400 mt-1">All expenses are already balanced</p>
