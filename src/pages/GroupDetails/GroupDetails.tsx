@@ -165,7 +165,11 @@ export default function GroupDetails() {
         <Card className="bg-white p-0 h-full">
           <CardHeader className={styles.cardHeader}>
             <CustomAccordion header="Your Expense Summary">
-              {pairsLoading ? <CircularLoader /> : groupData ? <GroupPairs isSettled={groupData.is_settled} pairsData={pairsData} /> : null}
+              {pairsLoading ? (
+                <CircularLoader />
+              ) : groupData ? (
+                <GroupPairs isSettled={groupData.is_settled} pairsData={pairsData} GroupId={GroupId} groupData={groupData} />
+              ) : null}
             </CustomAccordion>
           </CardHeader>
         </Card>

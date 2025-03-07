@@ -63,11 +63,11 @@ export type ExpenseType = {
 
 export type GroupPairsData = {
   send: Array<{
-    user_name: string;
+    user_id: string;
     amount: string;
   }>;
   receive: Array<{
-    user_name: string;
+    user_id: string;
     amount: string;
   }>;
 };
