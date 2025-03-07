@@ -61,7 +61,7 @@ function SimplifiedComponent(props: PropsType) {
 
   return (
     <div id={styles.container} className="max-w-3xl mx-auto bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl">
-      <h2 className="text-lg sm:text-2xl font-bold text-gray-800 mb-2">Expense Simplification</h2>
+      <h2 className="text-md sm:text-2xl font-bold text-gray-800 mb-2 p-2">Expense Simplification</h2>
 
       {userTransactions.length > 0 && (
         <div className="mb-8 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 shadow-lg border border-indigo-100 transform transition-all duration-300 hover:scale-[1.01]">
@@ -93,7 +93,9 @@ function SimplifiedComponent(props: PropsType) {
                     </div>
                   </div>
                   <div className="ml-3">
-                    <p className="text-xs sm:text-sm text-gray-700 font-medium">{transaction.from === LoggedInUser ? "You owe" : "You get from"}</p>
+                    <p className="text-xs sm:text-sm text-gray-700 font-medium">
+                      {transaction.from === LoggedInUser ? "You need to send to" : "You will get from"}
+                    </p>
                     <p className="text-sm sm:text-base font-semibold text-gray-900">
                       {transaction.from === LoggedInUser ? getMemberName(transaction.to) : getMemberName(transaction.from)}
                     </p>
@@ -167,9 +169,9 @@ function SimplifiedComponent(props: PropsType) {
       </CustomAccordion>
 
       {!isLoading && simplifiedData.length > 0 && (
-        <div className="mt-6 pt-6 border-t border-gray-100">
-          <h4 className="text-xs sm:text-sm font-medium text-gray-500 mb-4">Transaction Flow</h4>
+        <div className="mt-2 border-t border-gray-100">
           <div className="relative bg-gray-50 p-4 rounded-lg overflow-x-auto">
+            <h4 className="text-md sm:text-2xl font-bold text-gray-800 mb-2">Transaction Flow</h4>
             <div className="flex flex-wrap justify-center gap-4 min-w-[500px]">
               {Array.from(new Set(simplifiedData.flatMap((transaction) => [transaction.from, transaction.to]))).map((memberId) => (
                 <div
@@ -195,19 +197,6 @@ function SimplifiedComponent(props: PropsType) {
                 </div>
               ))}
             </div>
-            <svg className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
-              {simplifiedData.map((transaction, index) => (
-                <path
-                  key={index}
-                  d={`M 0,0 C 100,100 200,100 300,0`}
-                  stroke="rgba(99, 102, 241, 0.2)"
-                  strokeWidth="2"
-                  fill="none"
-                  strokeDasharray="5,5"
-                  className="opacity-50"
-                />
-              ))}
-            </svg>
           </div>
         </div>
       )}
