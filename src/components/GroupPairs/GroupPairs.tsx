@@ -17,7 +17,7 @@ export default function GroupPairs(props: PropType) {
   const groupMembers = props.groupData.members;
 
   const [selectedTab, setSelectedTab] = useState("SEND");
-  const [viewMode, setViewMode] = useState(props.isSettled ? "SIMPLIFIED" : "DETAILED"); // Default to Simplified if settled, else Detailed
+  const [viewMode, setViewMode] = useState("SIMPLIFIED"); // Default to Simplified if settled, else Detailed
 
   const handleTabClick = () => {
     setSelectedTab(selectedTab === "SEND" ? "RECEIVE" : "SEND");
@@ -34,11 +34,10 @@ export default function GroupPairs(props: PropType) {
     <div className={styles.container}>
       {/* New Tab for Simplified/Detailed View */}
       <div className="grid w-full grid-cols-2 cursor-pointer mb-4">
-        {props.isSettled && (
-          <div onClick={() => handleViewModeClick("SIMPLIFIED")} className={viewMode === "SIMPLIFIED" ? styles.activeTab : styles.inActiveTab}>
-            Simplified
-          </div>
-        )}
+        <div onClick={() => handleViewModeClick("SIMPLIFIED")} className={viewMode === "SIMPLIFIED" ? styles.activeTab : styles.inActiveTab}>
+          Simplified
+        </div>
+
         <div onClick={() => handleViewModeClick("DETAILED")} className={viewMode === "DETAILED" ? styles.activeTab : styles.inActiveTab}>
           Detailed
         </div>
