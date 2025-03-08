@@ -78,7 +78,6 @@ app.use(passport.initialize());
 app.use(express.json());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
-app.set("trust proxy", true);
 
 // Middleware to set Cache-Control header for all routes
 app.use((req, res, next) => {
