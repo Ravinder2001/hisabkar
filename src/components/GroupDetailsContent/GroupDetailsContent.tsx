@@ -165,17 +165,31 @@ function GroupDetailsContent(
       <div className="space-y-4">
         <h3 className="font-semibold">Members</h3>
         <div className={`${styles.membersCon} space-y-3`}>
-          {data.members.map((member) => (
+          {data.members.map((member, index) => (
             <div key={member.name} className="flex items-center gap-3">
               <Avatar>
                 <AvatarImage src={member.avatar} />
                 <AvatarFallback>{member.name[0]}</AvatarFallback>
               </Avatar>
-              <div className="flex-1">
-                <p className="font-medium">{member.name}</p>
-                <p className="text-sm text-gray-500">
-                  Spent: ₹<CustomCountUp count={member.total_spent} />
-                </p>
+              <div className="flex justify-between items-center w-full">
+                <div>
+                  <p className="font-medium">{member.name}</p>
+                  <p className="text-sm text-gray-500">
+                    Spent: ₹<CustomCountUp count={member.total_spent} />
+                  </p>
+                </div>
+                {index < 3 && (
+                  <img
+                    className={styles.bdgeIcon}
+                    src={
+                      index == 0
+                        ? "https://cdn-icons-png.flaticon.com/512/16274/16274663.png"
+                        : index == 1
+                          ? "https://cdn-icons-png.flaticon.com/512/16274/16274699.png"
+                          : "https://cdn-icons-png.flaticon.com/512/16274/16274723.png"
+                    }
+                  />
+                )}
               </div>
             </div>
           ))}
