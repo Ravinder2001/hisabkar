@@ -5,7 +5,6 @@ const cors = require("cors");
 const morgan = require("morgan");
 const moment = require("moment");
 const helmet = require("helmet");
-const serverless = require("serverless-http");
 
 // const { Server } = require("socket.io");
 
@@ -110,5 +109,3 @@ app.use("/", mainRouter);
 app.listen(port, () => {
   process.stdout.write(`Server is running on port ${port}\n`);
 });
-
-module.exports.handler = serverless(app);
