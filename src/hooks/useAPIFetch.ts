@@ -20,7 +20,10 @@ const useApiFetch = (initialUrl: string, initialOptions?: AxiosRequestConfig) =>
   const fetchData = async (url = initialUrl, options = initialOptions) => {
     setIsLoading(true);
     try {
-      const { data } = await axiosInstance(url, options);
+      const { data } = await axiosInstance(url, {
+        ...options, // Spread existing options
+        withCredentials: true, // Include credentials (cookies, authorization headers)
+      });
       let decryptedData = data.data;
 
       if (ENVConfig.enviroment === "prod" && data.data) {
