@@ -41,7 +41,7 @@ app.disable("x-powered-by"); // Disable the X-Powered-By header
 app.use(helmet());
 app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
-app;
+app.set("trust proxy", true);
 // app.use(encryptResponseMiddleware);
 app.use((req, res, next) => {
   const originalSend = res.json; // Store original res.json
