@@ -20,17 +20,9 @@ const port = config.PORT;
 
 const app = express();
 
-const allowedOrigins = ["https://www.hisabkar.com", "http://localhost:8877", "https://hisabkar-server.vercel.app"];
-
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (allowedOrigins.includes(origin) || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  origin: ["https://www.hisabkar.com", "http://localhost:8877", "https://hisabkar-server.vercel.app"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   optionsSuccessStatus: 200,
   credentials: true,
@@ -49,7 +41,7 @@ app.disable("x-powered-by"); // Disable the X-Powered-By header
 app.use(helmet());
 app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
-// app.set("trust proxy", true);
+
 // app.use(encryptResponseMiddleware);
 app.use((req, res, next) => {
   const originalSend = res.json; // Store original res.json
@@ -68,18 +60,18 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use(
-//   helmet.contentSecurityPolicy({
-//     directives: {
-//       defaultSrc: ["'self'"], // Allow only the same origin (your server)
-//       scriptSrc: ["'self'"], // Only allow scripts from your domain
-//       styleSrc: ["'self'"], // Only allow styles from your domain
-//       imgSrc: ["'self'"], // Only allow images from your domain
-//       connectSrc: ["'self'"], // Allow only API requests to your domain
-//       frameAncestors: ["'none'"], // Block Clickjacking (no iframes)
-//     },
-//   })
-// );
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"], // Allow only the same origin (your server)
+      scriptSrc: ["'self'"], // Only allow scripts from your domain
+      styleSrc: ["'self'"], // Only allow styles from your domain
+      imgSrc: ["'self'"], // Only allow images from your domain
+      connectSrc: ["'self'"], // Allow only API requests to your domain
+      frameAncestors: ["'none'"], // Block Clickjacking (no iframes)
+    },
+  })
+);
 
 // ? Passport initialization
 app.use(passport.initialize());
