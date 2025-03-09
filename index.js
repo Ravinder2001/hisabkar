@@ -22,7 +22,8 @@ const app = express();
 
 const corsOptions = {
   origin: "*",
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allow these methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Allow these headers
   optionsSuccessStatus: 200,
   credentials: true, // Enable credentials (cookies, authorization headers) if needed
 };
@@ -40,6 +41,7 @@ app.disable("x-powered-by"); // Disable the X-Powered-By header
 app.use(helmet());
 app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
+app;
 // app.use(encryptResponseMiddleware);
 app.use((req, res, next) => {
   const originalSend = res.json; // Store original res.json
