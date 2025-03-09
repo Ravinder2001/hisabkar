@@ -20,12 +20,20 @@ const port = config.PORT;
 
 const app = express();
 
+const allowedOrigins = ["https://www.hisabkar.com", "http://localhost:8877"];
+
 const corsOptions = {
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allow these methods
-  allowedHeaders: ["Content-Type", "Authorization"], // Allow these headers
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   optionsSuccessStatus: 200,
-  credentials: true, // Enable credentials (cookies, authorization headers) if needed
+  credentials: true,
 };
 
 morgan.token("ist-date", () => {
@@ -41,7 +49,7 @@ app.disable("x-powered-by"); // Disable the X-Powered-By header
 app.use(helmet());
 app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
-app.set("trust proxy", true);
+// app.set("trust proxy", true);
 // app.use(encryptResponseMiddleware);
 app.use((req, res, next) => {
   const originalSend = res.json; // Store original res.json
