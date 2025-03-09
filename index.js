@@ -1,7 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const bodyParser = require("body-parser");
-// const cors = require("cors");
+const cors = require("cors");
 const morgan = require("morgan");
 const moment = require("moment");
 const helmet = require("helmet");
@@ -20,12 +20,12 @@ const port = config.PORT;
 
 const app = express();
 
-// const corsOptions = {
-//   origin: ["http://localhost:8877", "https://hisabkar.com", "https://hisabkar-server.vercel.app"],
-//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-//   optionsSuccessStatus: 200,
-//   credentials: true, // Enable credentials (cookies, authorization headers) if needed
-// };
+const corsOptions = {
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  optionsSuccessStatus: 200,
+  credentials: true, // Enable credentials (cookies, authorization headers) if needed
+};
 
 morgan.token("ist-date", () => {
   return moment().utcOffset("+05:30").format("DD/MMM/YYYY:HH:mm:ss Z");
@@ -38,8 +38,8 @@ morgan.token("user", (req) => {
 
 app.disable("x-powered-by"); // Disable the X-Powered-By header
 app.use(helmet());
-// app.options("*", cors(corsOptions));
-// app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+app.use(cors(corsOptions));
 // app.use(encryptResponseMiddleware);
 app.use((req, res, next) => {
   const originalSend = res.json; // Store original res.json
