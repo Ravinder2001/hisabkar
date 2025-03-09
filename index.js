@@ -30,7 +30,7 @@ const corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   optionsSuccessStatus: 200,
   credentials: true,
@@ -92,6 +92,7 @@ app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 // Middleware to set Cache-Control header for all routes
 app.use((req, res, next) => {
   res.setHeader("Cache-Control", "no-cache, no-store");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
 
