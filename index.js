@@ -21,7 +21,7 @@ const port = config.PORT;
 const app = express();
 
 const corsOptions = {
-  origin: ["http://localhost:8877", "https://hisabkar.com"],
+  origin: ["http://localhost:8877", "https://hisabkar.com", "https://hisabkar-server.vercel.app"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   optionsSuccessStatus: 200,
   credentials: true, // Enable credentials (cookies, authorization headers) if needed
