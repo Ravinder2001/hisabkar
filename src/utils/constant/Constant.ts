@@ -39,6 +39,7 @@ const CONSTANTS = {
     FRIENDS_LIT: "/group/friendsList",
     ADD_GROUP_MEMBERS: "/group/addGroupMember",
     GET_SIMPLIFIED: "/group/simplified",
+    LEAVE_GROUP: "/group/leaveGroup",
   },
   FONT_FAMILY: "Nunito",
 };

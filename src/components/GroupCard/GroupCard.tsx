@@ -32,7 +32,9 @@ export function propsCard(
   const [confirmationModal, setConfirmationModal] = useState<boolean>(false);
 
   const handleSettlement = () => {
-    toggleGroupVisibility(CONSTANTS.API_ROUTES.GROUP_VISIBILITY + "/" + props.group_id);
+    toggleGroupVisibility(
+      props.is_you_admin ? CONSTANTS.API_ROUTES.GROUP_VISIBILITY + "/" + props.group_id : CONSTANTS.API_ROUTES.LEAVE_GROUP + "/" + props.group_id
+    );
   };
   const handleConfirmModal = () => {
     setConfirmationModal(!confirmationModal);
@@ -40,7 +42,7 @@ export function propsCard(
 
   useEffect(() => {
     if (visibilityRes?.success == 1) {
-      showToast(visibilityRes?.message ?? "", "success");
+      showToast(props.is_you_admin ? "Group deleted successfully" : "Left the group successfully", "success");
       handleConfirmModal();
       props.setGroupList((prev) => prev.filter((group) => group.group_id !== props.group_id));
     }
@@ -69,7 +71,12 @@ export function propsCard(
                   <Trash2 className="mr-2 h-4 w-4" />
                   <span>Delete this group</span>
                 </DropdownMenuItem>
-              ) : null}
+              ) : (
+                <DropdownMenuItem onClick={handleConfirmModal} className="text-red-600 dark:text-red-400 bg-white cursor-pointer">
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  <span>Leave this group</span>
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -129,7 +136,7 @@ export function propsCard(
         isOpen={confirmationModal}
         onClose={handleConfirmModal}
         onSubmit={handleSettlement}
-        description={Messages.EXPENSE.DELETE_GROUP(props.group_name)}
+        description={props.is_you_admin ? Messages.EXPENSE.DELETE_GROUP(props.group_name) : Messages.EXPENSE.LEAVE_GROUP(props.group_name)}
         isLoading={visibilityLoading}
       />
     </Card>
