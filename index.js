@@ -61,18 +61,18 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use(
-//   helmet.contentSecurityPolicy({
-//     directives: {
-//       defaultSrc: ["'self'"], // Allow only the same origin (your server)
-//       scriptSrc: ["'self'"], // Only allow scripts from your domain
-//       styleSrc: ["'self'"], // Only allow styles from your domain
-//       imgSrc: ["'self'"], // Only allow images from your domain
-//       connectSrc: ["'self'"], // Allow only API requests to your domain
-//       frameAncestors: ["'none'"], // Block Clickjacking (no iframes)
-//     },
-//   })
-// );
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"], // Allow only the same origin (your server)
+      scriptSrc: ["'self'"], // Only allow scripts from your domain
+      styleSrc: ["'self'"], // Only allow styles from your domain
+      imgSrc: ["'self'"], // Only allow images from your domain
+      connectSrc: ["'self'"], // Allow only API requests to your domain
+      frameAncestors: ["'none'"], // Block Clickjacking (no iframes)
+    },
+  })
+);
 
 // ? Passport initialization
 app.use(passport.initialize());
