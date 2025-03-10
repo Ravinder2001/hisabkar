@@ -1,10 +1,10 @@
 const express = require("express");
 const passport = require("passport");
 const bodyParser = require("body-parser");
-const cors = require("cors");
+// const cors = require("cors");
 const morgan = require("morgan");
 const moment = require("moment");
-const helmet = require("helmet");
+// const helmet = require("helmet");
 
 // const { Server } = require("socket.io");
 
@@ -20,13 +20,13 @@ const port = config.PORT;
 
 const app = express();
 
-const corsOptions = {
-  origin: ["https://www.hisabkar.com", "http://localhost:8877", "https://hisabkar-server.vercel.app"],
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  optionsSuccessStatus: 200,
-  credentials: true,
-};
+// const corsOptions = {
+//   origin: ["https://www.hisabkar.com", "http://localhost:8877", "https://hisabkar-server.vercel.app"],
+//   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+//   optionsSuccessStatus: 200,
+//   credentials: true,
+// };
 
 morgan.token("ist-date", () => {
   return moment().utcOffset("+05:30").format("DD/MMM/YYYY:HH:mm:ss Z");
@@ -38,9 +38,9 @@ morgan.token("user", (req) => {
 });
 
 app.disable("x-powered-by"); // Disable the X-Powered-By header
-app.use(helmet());
-app.options("*", cors(corsOptions));
-app.use(cors(corsOptions));
+// app.use(helmet());
+// app.options("*", cors(corsOptions));
+// app.use(cors(corsOptions));
 
 // app.use(encryptResponseMiddleware);
 app.use((req, res, next) => {
@@ -60,18 +60,18 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"], // Allow only the same origin (your server)
-      scriptSrc: ["'self'"], // Only allow scripts from your domain
-      styleSrc: ["'self'"], // Only allow styles from your domain
-      imgSrc: ["'self'"], // Only allow images from your domain
-      connectSrc: ["'self'"], // Allow only API requests to your domain
-      frameAncestors: ["'none'"], // Block Clickjacking (no iframes)
-    },
-  })
-);
+// app.use(
+//   helmet.contentSecurityPolicy({
+//     directives: {
+//       defaultSrc: ["'self'"], // Allow only the same origin (your server)
+//       scriptSrc: ["'self'"], // Only allow scripts from your domain
+//       styleSrc: ["'self'"], // Only allow styles from your domain
+//       imgSrc: ["'self'"], // Only allow images from your domain
+//       connectSrc: ["'self'"], // Allow only API requests to your domain
+//       frameAncestors: ["'none'"], // Block Clickjacking (no iframes)
+//     },
+//   })
+// );
 
 // ? Passport initialization
 app.use(passport.initialize());
