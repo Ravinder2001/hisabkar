@@ -1,10 +1,10 @@
 const express = require("express");
 const passport = require("passport");
 const bodyParser = require("body-parser");
-// const cors = require("cors");
+const cors = require("cors");
 const morgan = require("morgan");
 const moment = require("moment");
-// const helmet = require("helmet");
+const helmet = require("helmet");
 
 // const { Server } = require("socket.io");
 
@@ -20,13 +20,15 @@ const port = config.PORT;
 
 const app = express();
 
-// const corsOptions = {
-//   origin: ["https://www.hisabkar.com", "http://localhost:8877", "https://hisabkar-server.vercel.app"],
-//   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   optionsSuccessStatus: 200,
-//   credentials: true,
-// };
+// const allowedOrigins = ["https://www.hisabkar.com", "http://localhost:8877", "https://hisabkar-server.vercel.app"];
+
+const corsOptions = {
+  origin: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200,
+  credentials: true,
+};
 
 morgan.token("ist-date", () => {
   return moment().utcOffset("+05:30").format("DD/MMM/YYYY:HH:mm:ss Z");
@@ -38,10 +40,9 @@ morgan.token("user", (req) => {
 });
 
 app.disable("x-powered-by"); // Disable the X-Powered-By header
-// app.use(helmet());
-// app.options("*", cors(corsOptions));
-// app.use(cors(corsOptions));
-
+app.use(helmet());
+app.use(cors(corsOptions));
+// app.set("trust proxy", true);
 // app.use(encryptResponseMiddleware);
 app.use((req, res, next) => {
   const originalSend = res.json; // Store original res.json
@@ -83,10 +84,8 @@ app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 // Middleware to set Cache-Control header for all routes
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, x-user-id");
-  res.header("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Cache-Control", "no-cache, no-store");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
 
