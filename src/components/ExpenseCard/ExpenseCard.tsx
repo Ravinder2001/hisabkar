@@ -1,5 +1,4 @@
 import React, { forwardRef } from "react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
 import styles from "./style.module.css";
 import { Edit, MoreVertical, Receipt, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -10,6 +9,7 @@ import { formatDateTime } from "../../utils/helpers/commanHelper";
 import { Button } from "../../components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
 import CustomCountUp from "../CustomCountUp/CustomCountUp";
+import CustomAccordion from "../CustomAccordian/CustomAccordian";
 
 type PropsType = ExpenseType & {
   allMembersList: MemberType;
@@ -124,30 +124,23 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
               </div>
 
               {/* Split Between */}
-              <Accordion type="single" collapsible className="w-full" style={{ marginTop: "0px" }}>
-                <AccordionItem value="split-details">
-                  <AccordionTrigger className="text-sm sm:text-base font-medium text-gray-700">
-                    Split between ({expense.members_count} People)
-                  </AccordionTrigger>
-                  <AccordionContent className="space-y-2">
-                    {expense.members.map((exMember) => {
-                      const expenseMember = expense.allMembersList.find((member) => member.id === exMember.id);
-                      return (
-                        <div key={expenseMember?.id} className="flex flex-wrap items-center justify-between bg-white/50 rounded-md">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <Avatar className="h-6 w-6">
-                              <AvatarImage src={expenseMember?.avatar} />
-                              <AvatarFallback>{expenseMember?.name[0].toUpperCase()}</AvatarFallback>
-                            </Avatar>
-                            <span className="text-xs sm:text-sm font-medium truncate">{expenseMember?.name}</span>
-                          </div>
-                          <span className="text-md sm:text-sm text-black-600 font-medium">₹{exMember.amount}</span>
-                        </div>
-                      );
-                    })}
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+              <CustomAccordion header={`Split between (${expense.members_count} People)`} expanded={false}>
+                {expense.members.map((exMember) => {
+                  const expenseMember = expense.allMembersList.find((member) => member.id === exMember.id);
+                  return (
+                    <div key={expenseMember?.id} className="flex flex-wrap items-center justify-between bg-white/50 rounded-md">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Avatar className="h-6 w-6">
+                          <AvatarImage src={expenseMember?.avatar} />
+                          <AvatarFallback>{expenseMember?.name[0].toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <span className="text-xs sm:text-sm font-medium truncate">{expenseMember?.name}</span>
+                      </div>
+                      <span className="text-md sm:text-sm text-black-600 font-medium">₹{exMember.amount}</span>
+                    </div>
+                  );
+                })}
+              </CustomAccordion>
             </div>
           </div>
         </div>
