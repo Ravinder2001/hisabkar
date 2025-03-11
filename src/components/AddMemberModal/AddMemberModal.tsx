@@ -20,18 +20,86 @@ type UserType = {
   email: string;
 };
 
+// Email validation regex
+const isValidEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+// Simple debounce function
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 function AddMemberModal(props: PropsType) {
   const { fetchData: fetchFriendsList, response: friendsRes } = useApiFetch(CONSTANTS.API_ROUTES.FRIENDS_LIT + "/" + props.groupId);
+  const { fetchData: searchFriends, response: searchRes } = useApiFetch(""); // Empty initial URL for search requests
   const { fetchData: addMember, response: addMemberRes } = useApiFetch("");
 
   const [users, setUsers] = useState<UserType[]>([]);
-
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500); // 500ms debounce delay
   const [selectedUsers, setSelectedUsers] = useState<UserType[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
 
-  const filteredUsers = users.filter(
-    (user) => user.name.toLowerCase().includes(searchTerm.toLowerCase()) || user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Initial fetch of friends list when modal opens
+  useEffect(() => {
+    if (props.isOpen) {
+      fetchFriendsList();
+    }
+  }, [props.isOpen]);
+
+  // Handle response from initial friends list fetch
+  useEffect(() => {
+    if (friendsRes?.success == 1) {
+      setUsers(friendsRes.data);
+      setFilteredUsers(friendsRes.data);
+    }
+  }, [friendsRes]);
+
+  // Handle search results response
+  useEffect(() => {
+    if (searchRes?.success == 1) {
+      setFilteredUsers(searchRes.data);
+    }
+  }, [searchRes]);
+
+  // Handle add member response
+  useEffect(() => {
+    if (addMemberRes?.success == 1) {
+      showToast("Members added successfully", "success");
+      props.onClose();
+    }
+  }, [addMemberRes]);
+
+  // Handle debounced search term changes
+  useEffect(() => {
+    // For empty search or invalid email, filter the already fetched users locally
+    if (!debouncedSearchTerm || !isValidEmail(debouncedSearchTerm)) {
+      const filtered = users.filter(
+        (user) =>
+          user.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) || user.email.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    }
+    // For valid email, make an API call
+    else if (isValidEmail(debouncedSearchTerm)) {
+      const searchUrl = `${CONSTANTS.API_ROUTES.FRIENDS_LIT}/${props.groupId}?search=${debouncedSearchTerm}`;
+      searchFriends(searchUrl);
+    }
+  }, [debouncedSearchTerm, props.groupId, users]);
 
   const handleSelectUser = (user: UserType) => {
     if (!selectedUsers.some((selectedUser) => selectedUser.user_id === user.user_id)) {
@@ -53,22 +121,9 @@ function AddMemberModal(props: PropsType) {
     });
   };
 
-  useEffect(() => {
-    fetchFriendsList();
-  }, []);
-
-  useEffect(() => {
-    if (friendsRes?.success == 1) {
-      setUsers(friendsRes.data);
-    }
-  }, [friendsRes]);
-
-  useEffect(() => {
-    if (addMemberRes?.success == 1) {
-      showToast("Members added successfully", "success");
-      props.onClose();
-    }
-  }, [addMemberRes]);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
   return (
     <ModalComponent isOpen={props.isOpen} setIsOpen={props.onClose}>
@@ -103,10 +158,10 @@ function AddMemberModal(props: PropsType) {
             <Search size={18} className={styles.searchIcon} />
             <input
               type="text"
-              placeholder="Search by name or email"
+              placeholder="Search by name or email. Enter full email for precise search."
               className={styles.searchInput}
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearchChange}
             />
           </div>
 
