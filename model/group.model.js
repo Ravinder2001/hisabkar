@@ -660,27 +660,34 @@ ORDER BY gl.created_at DESC;
       throw error;
     }
   },
-  getFriendsList: async (user_id, group_id) => {
+  getFriendsList: async (user_id, group_id, search) => {
     try {
-      const result = await client.query(
-        `SELECT DISTINCT u.user_id, u.name, u.avatar, u.email
-         FROM tbl_users u
-         INNER JOIN tbl_group_members gm1 ON u.user_id = gm1.user_id
-         INNER JOIN tbl_group_members gm2 ON gm1.group_id = gm2.group_id
-         WHERE gm2.user_id = $1  
-         AND u.user_id != $1     
-         AND u.is_active = TRUE                 
-         AND gm1.is_active = TRUE
-         AND NOT EXISTS (
-           SELECT 1 
-           FROM tbl_group_members gm3 
-           WHERE gm3.group_id = $2 
-           AND gm3.user_id = u.user_id 
-           AND gm3.is_active = TRUE
-         );`,
-        [user_id, group_id]
-      );
+      let query = `
+        SELECT DISTINCT u.user_id, u.name, u.avatar, u.email
+        FROM tbl_users u
+        INNER JOIN tbl_group_members gm1 ON u.user_id = gm1.user_id
+        INNER JOIN tbl_group_members gm2 ON gm1.group_id = gm2.group_id
+        WHERE gm2.user_id = $1  
+        AND u.user_id != $1     
+        AND u.is_active = TRUE                 
+        AND gm1.is_active = TRUE
+        AND NOT EXISTS (
+          SELECT 1 
+          FROM tbl_group_members gm3 
+          WHERE gm3.group_id = $2 
+          AND gm3.user_id = u.user_id 
+          AND gm3.is_active = TRUE
+        )`;
 
+      // Add email search condition if search parameter is provided
+      const queryParams = [user_id, group_id];
+
+      if (search && search.trim() !== "") {
+        query += ` AND u.email ILIKE $3`;
+        queryParams.push(`%${search}%`);
+      }
+
+      const result = await client.query(query, queryParams);
       return result.rows;
     } catch (error) {
       console.error("Error in fetching friends list:", error.message);

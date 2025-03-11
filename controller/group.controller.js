@@ -267,7 +267,7 @@ module.exports = {
   },
   getFriendsList: async (req, res) => {
     try {
-      let response = await groupModel.getFriendsList(req.user.user_id, req.params.group_id);
+      let response = await groupModel.getFriendsList(req.user.user_id, req.params.group_id, req.query.search);
       if (response.length) {
         response = await Promise.all(
           response.map(async (item) => {
