@@ -40,6 +40,7 @@ const CONSTANTS = {
     ADD_GROUP_MEMBERS: "/group/addGroupMember",
     GET_SIMPLIFIED: "/group/simplified",
     LEAVE_GROUP: "/group/leaveGroup",
+    GROUP_SETTINGS: "/group/groupSetting",
   },
   FONT_FAMILY: "Nunito",
 };

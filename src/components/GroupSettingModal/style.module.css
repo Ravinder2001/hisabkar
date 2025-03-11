@@ -1,0 +1,13 @@
+.container {
+  width: 90vw;
+  height: 80vh;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.fieldBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

@@ -55,7 +55,7 @@ export default function GroupDetails() {
   const [spendAnalysisModal, setSpendAnalysisModal] = useState<boolean>(false);
   const [successModal, setSuccessModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<string>("-1");
-  const [addMemberModal, setAddMemberModal] = useState<boolean>(true);
+  const [addMemberModal, setAddMemberModal] = useState<boolean>(false);
 
   const groupMemberOptionsList = [
     { value: "-1", label: "All" },

@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { CircleCheckBig, Download, MoreVertical, UserPlus, Users2, Wallet } from "lucide-react";
+import { CircleCheckBig, Download, MoreVertical, Settings, UserPlus, Users2, Wallet } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Badge } from "../../components/ui/badge";
@@ -17,6 +17,7 @@ import CONSTANTS from "../../utils/constant/Constant";
 import showToast from "../../utils/helpers/toastHelper";
 import axiosInstance from "../../utils/helpers/axiosInstance";
 import { AxiosError } from "axios";
+import GroupSettingModal from "../GroupSettingModal/GroupSettingModal";
 
 function GroupDetailsContent(
   data: GroupDataType & {
@@ -31,6 +32,7 @@ function GroupDetailsContent(
   const { fetchData: toggleSettlement, response: settlementRes, isLoading: settlementLoading } = useApiFetch("");
 
   const [confirmationModal, setConfirmationModal] = useState<boolean>(false);
+  const [groupSettingModal, setGroupSettingModal] = useState<boolean>(false);
 
   const handleSettlement = () => {
     toggleSettlement(CONSTANTS.API_ROUTES.GROUP_SETTLEMENT + "/" + data.GroupId);
@@ -89,6 +91,9 @@ function GroupDetailsContent(
   const handleConfirmModal = () => {
     setConfirmationModal(!confirmationModal);
   };
+  const handleGroupSettingModal = () => {
+    setGroupSettingModal(!confirmationModal);
+  };
 
   useEffect(() => {
     if (settlementRes?.success == 1) {
@@ -115,6 +120,12 @@ function GroupDetailsContent(
                 <DropdownMenuItem onClick={data.handleAddMemModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
                   <UserPlus className="mr-2 h-4 w-4" color="black" />
                   <span className="text-black-800">Add Members</span>
+                </DropdownMenuItem>
+              ) : null}
+              {data.is_you_admin && !data.is_settled ? (
+                <DropdownMenuItem onClick={handleGroupSettingModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" color="black" />
+                  <span className="text-black-800">Group Settings</span>
                 </DropdownMenuItem>
               ) : null}
 
@@ -202,6 +213,7 @@ function GroupDetailsContent(
         description={Messages.EXPENSE.SETTLEMENT_ALERT(data.is_settled)}
         isLoading={settlementLoading}
       />
+      <GroupSettingModal isOpen={groupSettingModal} setIsOpen={setGroupSettingModal} data={data} groupId={data.GroupId} />
     </div>
   );
 }
