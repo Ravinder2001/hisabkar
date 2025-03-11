@@ -165,7 +165,6 @@ module.exports = {
       common.handleAsyncError(error, res);
     }
   },
-
   downloadGroupData: async (req, res) => {
     try {
       const response = await groupModel.downloadGroupData({
@@ -295,6 +294,18 @@ module.exports = {
       const response = await groupModel.getSimplifiedPairs(req.params);
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response, response.length);
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
+  editGroupDetails: async (req, res) => {
+    try {
+      await groupModel.editGroupDetails({
+        groupId: req.params.group_id,
+        ...req.body,
+      });
+
+      return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
     } catch (error) {
       common.handleAsyncError(error, res);
     }

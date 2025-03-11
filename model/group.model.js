@@ -662,30 +662,50 @@ ORDER BY gl.created_at DESC;
   },
   getFriendsList: async (user_id, group_id, search) => {
     try {
-      let query = `
-        SELECT DISTINCT u.user_id, u.name, u.avatar, u.email
-        FROM tbl_users u
-        INNER JOIN tbl_group_members gm1 ON u.user_id = gm1.user_id
-        INNER JOIN tbl_group_members gm2 ON gm1.group_id = gm2.group_id
-        WHERE gm2.user_id = $1  
-        AND u.user_id != $1     
-        AND u.is_active = TRUE                 
-        AND gm1.is_active = TRUE
-        AND NOT EXISTS (
-          SELECT 1 
-          FROM tbl_group_members gm3 
-          WHERE gm3.group_id = $2 
-          AND gm3.user_id = u.user_id 
-          AND gm3.is_active = TRUE
-        )`;
-
-      // Add email search condition if search parameter is provided
-      const queryParams = [user_id, group_id];
+      let query;
+      let queryParams;
 
       if (search && search.trim() !== "") {
-        query += ` AND u.email ILIKE $3`;
-        queryParams.push(`%${search}%`);
+        // Search directly in tbl_users if search parameter is provided
+        query = `
+          SELECT u.user_id, u.name, u.avatar, u.email
+          FROM tbl_users u
+          WHERE u.is_active = TRUE
+          AND u.email ILIKE $1
+          AND u.user_id != $2
+          AND NOT EXISTS (
+            SELECT 1
+            FROM tbl_group_members gm
+            WHERE gm.group_id = $3
+            AND gm.user_id = u.user_id
+            AND gm.is_active = TRUE
+          )
+        `;
+        queryParams = [`%${search}%`, user_id, group_id];
+      } else {
+        // Fetch friends who share common groups but are not in the specified group
+        query = `
+          SELECT DISTINCT u.user_id, u.name, u.avatar, u.email
+          FROM tbl_users u
+          INNER JOIN tbl_group_members gm1 ON u.user_id = gm1.user_id
+          INNER JOIN tbl_group_members gm2 ON gm1.group_id = gm2.group_id
+          WHERE gm2.user_id = $1
+          AND u.user_id != $1
+          AND u.is_active = TRUE
+          AND gm1.is_active = TRUE
+          AND NOT EXISTS (
+            SELECT 1
+            FROM tbl_group_members gm3
+            WHERE gm3.group_id = $2
+            AND gm3.user_id = u.user_id
+            AND gm3.is_active = TRUE
+          )
+        `;
+        queryParams = [user_id, group_id];
       }
+
+      console.log("🚀 query:", query);
+      console.log("🚀 queryParams:", queryParams);
 
       const result = await client.query(query, queryParams);
       return result.rows;
@@ -800,6 +820,37 @@ ORDER BY gl.created_at DESC;
       return simplifiedTransactions;
     } catch (error) {
       console.error("Error in fetching expense data:", error.message);
+      throw error;
+    }
+  },
+  editGroupDetails: async (values) => {
+    const { groupId, groupName, groupTypeId, removedMembers } = values;
+
+    try {
+      // Step 1: Update group details in tbl_groups
+      await client.query(
+        `
+        UPDATE tbl_groups
+        SET group_name = $1, group_type_id = $2
+        WHERE group_id = $3
+        `,
+        [groupName, groupTypeId, groupId]
+      );
+
+      // Step 2: Physically remove members if removedMembers array is provided
+      if (removedMembers && removedMembers.length > 0) {
+        await client.query(
+          `
+          DELETE FROM tbl_group_members
+          WHERE group_id = $1 AND user_id = ANY($2::int[])
+          `,
+          [groupId, removedMembers]
+        );
+      }
+
+      return;
+    } catch (error) {
+      console.error("Error in updating group details:", error.message);
       throw error;
     }
   },
