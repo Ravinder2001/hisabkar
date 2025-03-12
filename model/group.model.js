@@ -829,7 +829,30 @@ ORDER BY gl.created_at DESC;
     const { groupId, groupName, groupTypeId, removedMembers, userId } = values;
 
     try {
-      const groupDetails = await client.query(`SELECT group_name, group_type_id FROM tbl_groups WHERE group_id = $1`, [groupId]);
+      // Start transaction
+      await client.query("BEGIN");
+
+      // Get group details including admin_user
+      const groupDetails = await client.query(
+        `SELECT group_name, group_type_id, admin_user 
+         FROM tbl_groups 
+         WHERE group_id = $1`,
+        [groupId]
+      );
+
+      // Check if group exists
+      if (groupDetails.rows.length === 0) {
+        throw new Error("Group not found");
+      }
+
+      const adminUserId = groupDetails.rows[0].admin_user;
+
+      // Check if admin is in removedMembers
+      if (removedMembers && removedMembers.length > 0 && removedMembers.includes(adminUserId)) {
+        await client.query("ROLLBACK");
+        throw new Error("Admin cannot be removed from the group");
+      }
+
       // Step 1: Update group details in tbl_groups
       await client.query(
         `
@@ -848,12 +871,12 @@ ORDER BY gl.created_at DESC;
         `,
         [
           groupId,
-          userId, // The user who made the changes
-          "EDIT_GROUP", // Action type
+          userId,
+          "EDIT_GROUP",
           JSON.stringify({
-            old_group_name: groupDetails.rows[0].group_name, // Pass the old group name if available
+            old_group_name: groupDetails.rows[0].group_name,
             new_group_name: groupName,
-            old_group_type: groupDetails.rows[0].group_type_id, // Pass the old group type ID if available
+            old_group_type: groupDetails.rows[0].group_type_id,
             new_group_type: groupTypeId,
           }),
         ]
@@ -878,18 +901,23 @@ ORDER BY gl.created_at DESC;
             `,
             [
               groupId,
-              userId, // The user who removed the member
-              "REMOVED", // Action type
+              userId,
+              "REMOVED",
               JSON.stringify({
-                removed_user: removedMemberId, // The user who was removed
+                removed_user: removedMemberId,
               }),
             ]
           );
         }
       }
 
+      // Commit transaction
+      await client.query("COMMIT");
+
       return { success: true, message: "Group details updated and logged successfully." };
     } catch (error) {
+      // Rollback transaction on error
+      await client.query("ROLLBACK");
       console.error("Error in updating group details:", error.message);
       throw error;
     }
