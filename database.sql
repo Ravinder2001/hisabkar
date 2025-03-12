@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS tbl_group_logs (
   group_id INT NOT NULL REFERENCES tbl_groups(group_id),
   expense_id INT,  -- Nullable for non-expense actions
   user_id INT NOT NULL REFERENCES tbl_users(user_id),
-  action_type VARCHAR(15) NOT NULL CHECK (action_type IN ('EDIT', 'DELETE', 'SETTLED', 'UNSETTLED' ,'JOINED', 'LEFT','ADDED')),
+  action_type VARCHAR(15) NOT NULL CHECK (action_type IN ('EDIT', 'DELETE', 'SETTLED', 'UNSETTLED' ,'JOINED', 'LEFT','ADDED','REMOVED','EDIT_GROUP')),
   old_amount DECIMAL(10,2), -- Nullable for non-expense actions
   new_amount DECIMAL(10,2), -- Nullable for non-expense actions
   details JSONB DEFAULT NULL, -- New column to store JSON data

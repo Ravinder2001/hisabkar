@@ -16,4 +16,9 @@ module.exports = {
   addGroupMember: Joi.object().keys({
     userIds: Joi.array().items(Joi.number().integer().required().max(constant.LENGTH_VALIDATIONS.ID)).required(),
   }),
+  editGroupDetails: Joi.object().keys({
+    groupName: Joi.string().min(3).max(constant.LENGTH_VALIDATIONS.NAME).required(),
+    groupTypeId: Joi.number().integer().required().max(constant.LENGTH_VALIDATIONS.ID),
+    removedMembers: Joi.array().items(Joi.number().integer()),
+  }),
 };

@@ -556,7 +556,12 @@ SELECT DISTINCT
           )
           FROM jsonb_array_elements(gl.details->'members') AS m
         ),
-        'added_by', (SELECT name FROM tbl_users u2 WHERE u2.user_id = (gl.details->>'added_by')::INTEGER)
+        'added_by', (SELECT name FROM tbl_users u2 WHERE u2.user_id = (gl.details->>'added_by')::INTEGER),
+        'removed_user', (SELECT name FROM tbl_users u2 WHERE u2.user_id = (gl.details->>'removed_user')::INTEGER),
+        'old_group_name', gl.details->'old_group_name',
+        'new_group_name', gl.details->'new_group_name',
+        'old_group_type', (SELECT type_name FROM tbl_group_types gt WHERE gt.group_type_id = (gl.details->>'old_group_type')::integer),
+        'new_group_type', (SELECT type_name FROM tbl_group_types gt WHERE gt.group_type_id = (gl.details->>'new_group_type')::integer)
       )
     ELSE NULL
   END AS details
@@ -660,27 +665,51 @@ ORDER BY gl.created_at DESC;
       throw error;
     }
   },
-  getFriendsList: async (user_id, group_id) => {
+  getFriendsList: async (user_id, group_id, search) => {
     try {
-      const result = await client.query(
-        `SELECT DISTINCT u.user_id, u.name, u.avatar, u.email
-         FROM tbl_users u
-         INNER JOIN tbl_group_members gm1 ON u.user_id = gm1.user_id
-         INNER JOIN tbl_group_members gm2 ON gm1.group_id = gm2.group_id
-         WHERE gm2.user_id = $1  
-         AND u.user_id != $1     
-         AND u.is_active = TRUE                 
-         AND gm1.is_active = TRUE
-         AND NOT EXISTS (
-           SELECT 1 
-           FROM tbl_group_members gm3 
-           WHERE gm3.group_id = $2 
-           AND gm3.user_id = u.user_id 
-           AND gm3.is_active = TRUE
-         );`,
-        [user_id, group_id]
-      );
+      let query;
+      let queryParams;
 
+      if (search && search.trim() !== "") {
+        // Search directly in tbl_users if search parameter is provided
+        query = `
+          SELECT u.user_id, u.name, u.avatar, u.email
+          FROM tbl_users u
+          WHERE u.is_active = TRUE
+          AND u.email ILIKE $1
+          AND u.user_id != $2
+          AND NOT EXISTS (
+            SELECT 1
+            FROM tbl_group_members gm
+            WHERE gm.group_id = $3
+            AND gm.user_id = u.user_id
+            AND gm.is_active = TRUE
+          )
+        `;
+        queryParams = [`%${search}%`, user_id, group_id];
+      } else {
+        // Fetch friends who share common groups but are not in the specified group
+        query = `
+          SELECT DISTINCT u.user_id, u.name, u.avatar, u.email
+          FROM tbl_users u
+          INNER JOIN tbl_group_members gm1 ON u.user_id = gm1.user_id
+          INNER JOIN tbl_group_members gm2 ON gm1.group_id = gm2.group_id
+          WHERE gm2.user_id = $1
+          AND u.user_id != $1
+          AND u.is_active = TRUE
+          AND gm1.is_active = TRUE
+          AND NOT EXISTS (
+            SELECT 1
+            FROM tbl_group_members gm3
+            WHERE gm3.group_id = $2
+            AND gm3.user_id = u.user_id
+            AND gm3.is_active = TRUE
+          )
+        `;
+        queryParams = [user_id, group_id];
+      }
+
+      const result = await client.query(query, queryParams);
       return result.rows;
     } catch (error) {
       console.error("Error in fetching friends list:", error.message);
@@ -793,6 +822,75 @@ ORDER BY gl.created_at DESC;
       return simplifiedTransactions;
     } catch (error) {
       console.error("Error in fetching expense data:", error.message);
+      throw error;
+    }
+  },
+  editGroupDetails: async (values) => {
+    const { groupId, groupName, groupTypeId, removedMembers, userId } = values;
+
+    try {
+      const groupDetails = await client.query(`SELECT group_name, group_type_id FROM tbl_groups WHERE group_id = $1`, [groupId]);
+      // Step 1: Update group details in tbl_groups
+      await client.query(
+        `
+        UPDATE tbl_groups
+        SET group_name = $1, group_type_id = $2
+        WHERE group_id = $3
+        `,
+        [groupName, groupTypeId, groupId]
+      );
+
+      // Log the group details update
+      await client.query(
+        `
+        INSERT INTO tbl_group_logs (group_id, user_id, action_type, details)
+        VALUES ($1, $2, $3, $4)
+        `,
+        [
+          groupId,
+          userId, // The user who made the changes
+          "EDIT_GROUP", // Action type
+          JSON.stringify({
+            old_group_name: groupDetails.rows[0].group_name, // Pass the old group name if available
+            new_group_name: groupName,
+            old_group_type: groupDetails.rows[0].group_type_id, // Pass the old group type ID if available
+            new_group_type: groupTypeId,
+          }),
+        ]
+      );
+
+      // Step 2: Physically remove members if removedMembers array is provided
+      if (removedMembers && removedMembers.length > 0) {
+        await client.query(
+          `
+          DELETE FROM tbl_group_members
+          WHERE group_id = $1 AND user_id = ANY($2::int[])
+          `,
+          [groupId, removedMembers]
+        );
+
+        // Log each member removal
+        for (const removedMemberId of removedMembers) {
+          await client.query(
+            `
+            INSERT INTO tbl_group_logs (group_id, user_id, action_type, details)
+            VALUES ($1, $2, $3, $4)
+            `,
+            [
+              groupId,
+              userId, // The user who removed the member
+              "REMOVED", // Action type
+              JSON.stringify({
+                removed_user: removedMemberId, // The user who was removed
+              }),
+            ]
+          );
+        }
+      }
+
+      return { success: true, message: "Group details updated and logged successfully." };
+    } catch (error) {
+      console.error("Error in updating group details:", error.message);
       throw error;
     }
   },
