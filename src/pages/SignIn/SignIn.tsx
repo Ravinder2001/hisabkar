@@ -33,9 +33,10 @@ function SignIn() {
   });
 
   const handleLogin = (values: any) => {
-    const decode = decodeJWT(values.data.token);
+    const decode: any = decodeJWT(values.data.token);
     if (typeof decode === "object" && decode !== null) {
       dispatch(setUserLoggedIn({ ...decode, token: values.data.token }));
+      showToast(Messages.LOGS.WELCOME(decode.name), "success");
     }
   };
 
