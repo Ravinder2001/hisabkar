@@ -21,7 +21,7 @@ type PropsType = {
 type LogType = {
   log_id: number;
   name: string;
-  action_type: "EDIT" | "DELETE" | "SETTLED" | "UNSETTLED" | "JOINED" | "LEFT" | "ADDED";
+  action_type: "EDIT" | "DELETE" | "SETTLED" | "UNSETTLED" | "JOINED" | "LEFT" | "ADDED" | "REMOVED" | "EDIT_GROUP";
   old_amount: string | null;
   new_amount: string | null;
   created_at: string;
@@ -35,12 +35,19 @@ type LogType = {
     }[];
     expense_name: string;
     added_by: string;
+    removed_user: string;
+    new_group_name: string;
+    new_group_type: string;
+    old_group_name: string;
+    old_group_type: string;
   } | null;
 };
 
 const getActionDetails = (actionType: LogType["action_type"]) => {
   switch (actionType) {
     case "EDIT":
+      return { icon: Edit, color: "bg-blue-500", textColor: "text-blue-700" };
+    case "EDIT_GROUP":
       return { icon: Edit, color: "bg-blue-500", textColor: "text-blue-700" };
     case "DELETE":
       return { icon: Trash, color: "bg-red-500", textColor: "text-red-700" };
@@ -52,6 +59,8 @@ const getActionDetails = (actionType: LogType["action_type"]) => {
       return { icon: UserPlus, color: "bg-purple-500", textColor: "text-purple-700" };
     case "LEFT":
       return { icon: UserMinus, color: "bg-pink-500", textColor: "text-pink-700" };
+    case "REMOVED":
+      return { icon: UserMinus, color: "bg-red-500", textColor: "text-red-700" };
     case "ADDED":
       return { icon: UserPlus, color: "bg-pink-500", textColor: "text-pink-700" };
     default:
@@ -62,19 +71,23 @@ const getActionDetails = (actionType: LogType["action_type"]) => {
 const getActionMessage = (log: LogType) => {
   switch (log.action_type) {
     case "EDIT":
-      return `edited the expense "${log.expense_name}"`;
+      return `edited the expense "${log.expense_name}".`;
     case "DELETE":
-      return `deleted an expense`;
+      return `deleted an expense.`;
     case "SETTLED":
-      return `settled the expenses`;
+      return `settled the expenses.`;
     case "UNSETTLED":
-      return `unsettled the expenses`;
+      return `unsettled the expenses.`;
     case "JOINED":
-      return `joined the group`;
+      return `joined the group.`;
     case "LEFT":
-      return `left the group`;
+      return `left the group.`;
     case "ADDED":
       return `added to group`;
+    case "REMOVED":
+      return `removed`;
+    case "EDIT_GROUP":
+      return `edited the group settings`;
     default:
       return `performed an action`;
   }
@@ -115,7 +128,12 @@ function GroupLogs(props: PropsType) {
                   <Card className="ml-12 w-full">
                     <CardContent className="p-4">
                       <p className={`font-semibold ${textColor}`}>
-                        {log.name} {getActionMessage(log)} {log.action_type === "ADDED" ? `by ${log.details?.added_by}` : ""}
+                        {log.name} {getActionMessage(log)}{" "}
+                        {log.action_type === "ADDED"
+                          ? `by ${log.details?.added_by}.`
+                          : log.action_type === "REMOVED"
+                            ? `${log.details?.removed_user} from the group.`
+                            : ""}
                       </p>
                       <p className="text-sm text-gray-500 mt-1">{new Date(log.created_at).toLocaleString()}</p>
                       {log.old_amount && log.new_amount && log.action_type !== "DELETE" && (
@@ -143,6 +161,24 @@ function GroupLogs(props: PropsType) {
                               ))}
                             </div>
                           </div>
+                        </div>
+                      )}
+
+                      {log.action_type === "EDIT_GROUP" && log.details && (
+                        <div className="mt-3 p-3 bg-gray-50 rounded-md border border-gray-200">
+                          <h4 className="font-medium text-gray-900">Group Settings Changed</h4>
+                          {log.details.old_group_name !== log.details.new_group_name && (
+                            <p className="text-sm text-gray-700 mt-1">
+                              Group name changed from <span className="font-medium italic">{log.details.old_group_name}</span> to{" "}
+                              <span className="font-medium italic">{log.details.new_group_name}</span>
+                            </p>
+                          )}
+                          {log.details.old_group_type !== log.details.new_group_type && (
+                            <p className="text-sm text-gray-700 mt-1">
+                              Group type changed from <span className="font-medium italic">{log.details.old_group_type}</span> to{" "}
+                              <span className="font-medium italic">{log.details.new_group_type}</span>
+                            </p>
+                          )}
                         </div>
                       )}
 
