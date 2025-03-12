@@ -17,6 +17,7 @@ type PropsType = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   data: GroupDataType;
   groupId: string;
+  callbackFunc: () => void;
 };
 
 type FormData = {
@@ -26,7 +27,7 @@ type FormData = {
   deletedMemberIds: string[]; // This will store the IDs of removed members
 };
 
-function GroupSettingModal({ isOpen, setIsOpen, data, groupId }: PropsType) {
+function GroupSettingModal({ isOpen, setIsOpen, data, groupId, callbackFunc }: PropsType) {
   const groupTypeList = useSelector((state: RootState) => state.data.groupTypeList);
 
   const { fetchData: editGroupSetting, response, isLoading } = useApiFetch("");
@@ -100,6 +101,7 @@ function GroupSettingModal({ isOpen, setIsOpen, data, groupId }: PropsType) {
     if (response?.success == 1) {
       setIsOpen(false);
       showToast("Group details updated successfully", "success");
+      callbackFunc();
     }
   }, [response]);
 

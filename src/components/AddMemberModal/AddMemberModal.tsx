@@ -11,6 +11,7 @@ type PropsType = {
   isOpen: boolean;
   onClose: () => void;
   groupId: string;
+  callBackFunc: () => void;
 };
 
 type UserType = {
@@ -80,7 +81,7 @@ function AddMemberModal(props: PropsType) {
   useEffect(() => {
     if (addMemberRes?.success == 1) {
       showToast("Members added successfully", "success");
-      props.onClose();
+      props.callBackFunc();
     }
   }, [addMemberRes]);
 
