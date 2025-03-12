@@ -17,13 +17,13 @@ import CONSTANTS from "../../utils/constant/Constant";
 import showToast from "../../utils/helpers/toastHelper";
 import axiosInstance from "../../utils/helpers/axiosInstance";
 import { AxiosError } from "axios";
-import GroupSettingModal from "../GroupSettingModal/GroupSettingModal";
 
 function GroupDetailsContent(
   data: GroupDataType & {
     GroupId: string;
     setGroupData: Dispatch<SetStateAction<GroupDataType | null>>;
     handleAddMemModal: () => void;
+    handleGroupSettingModal: () => void;
   }
 ) {
   const GroupTypeList = useSelector((state: RootState) => state.data.groupTypeList);
@@ -32,7 +32,6 @@ function GroupDetailsContent(
   const { fetchData: toggleSettlement, response: settlementRes, isLoading: settlementLoading } = useApiFetch("");
 
   const [confirmationModal, setConfirmationModal] = useState<boolean>(false);
-  const [groupSettingModal, setGroupSettingModal] = useState<boolean>(false);
 
   const handleSettlement = () => {
     toggleSettlement(CONSTANTS.API_ROUTES.GROUP_SETTLEMENT + "/" + data.GroupId);
@@ -91,9 +90,6 @@ function GroupDetailsContent(
   const handleConfirmModal = () => {
     setConfirmationModal(!confirmationModal);
   };
-  const handleGroupSettingModal = () => {
-    setGroupSettingModal(!confirmationModal);
-  };
 
   useEffect(() => {
     if (settlementRes?.success == 1) {
@@ -123,7 +119,7 @@ function GroupDetailsContent(
                 </DropdownMenuItem>
               ) : null}
               {data.is_you_admin && !data.is_settled ? (
-                <DropdownMenuItem onClick={handleGroupSettingModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+                <DropdownMenuItem onClick={data.handleGroupSettingModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" color="black" />
                   <span className="text-black-800">Group Settings</span>
                 </DropdownMenuItem>
@@ -213,7 +209,6 @@ function GroupDetailsContent(
         description={Messages.EXPENSE.SETTLEMENT_ALERT(data.is_settled)}
         isLoading={settlementLoading}
       />
-      <GroupSettingModal isOpen={groupSettingModal} setIsOpen={setGroupSettingModal} data={data} groupId={data.GroupId} />
     </div>
   );
 }

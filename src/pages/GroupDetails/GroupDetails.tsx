@@ -22,6 +22,7 @@ import GroupSpendAnalysis from "../../components/GroupSpendAnalysis/GroupSpendAn
 import SuccessModal from "../../components/SuccessModal/SuccessModal";
 import AddMemberModal from "../../components/AddMemberModal/AddMemberModal";
 import CustomAccordion from "../../components/CustomAccordian/CustomAccordian";
+import GroupSettingModal from "../../components/GroupSettingModal/GroupSettingModal";
 
 export default function GroupDetails() {
   const location = useLocation();
@@ -56,6 +57,7 @@ export default function GroupDetails() {
   const [successModal, setSuccessModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<string>("-1");
   const [addMemberModal, setAddMemberModal] = useState<boolean>(false);
+  const [groupSettingModal, setGroupSettingModal] = useState<boolean>(false);
 
   const groupMemberOptionsList = [
     { value: "-1", label: "All" },
@@ -79,6 +81,10 @@ export default function GroupDetails() {
       setSelectedRow(null);
     }
     setDeleteModal(!isDeleteModal);
+  };
+
+  const handleGroupSettingModal = () => {
+    setGroupSettingModal(!groupSettingModal);
   };
 
   const handleDelete = async () => {
@@ -155,7 +161,13 @@ export default function GroupDetails() {
               {groupDetailsLoading ? (
                 <CircularLoader />
               ) : groupData ? (
-                <GroupDetailsContent {...groupData} GroupId={GroupId} setGroupData={setGroupData} handleAddMemModal={handleAddMemModal} />
+                <GroupDetailsContent
+                  {...groupData}
+                  GroupId={GroupId}
+                  setGroupData={setGroupData}
+                  handleAddMemModal={handleAddMemModal}
+                  handleGroupSettingModal={handleGroupSettingModal}
+                />
               ) : null}
             </CustomAccordion>
           </CardHeader>
@@ -263,7 +275,26 @@ export default function GroupDetails() {
         />
       ) : null}
       {successModal ? <SuccessModal open={successModal} setOpen={setSuccessModal} /> : null}
-      {addMemberModal ? <AddMemberModal isOpen={addMemberModal} onClose={handleAddMemModal} groupId={GroupId} /> : null}
+      {addMemberModal ? (
+        <AddMemberModal
+          isOpen={addMemberModal}
+          onClose={handleAddMemModal}
+          callBackFunc={() => {
+            handleAddMemModal();
+            fetchGroupDetails();
+          }}
+          groupId={GroupId}
+        />
+      ) : null}
+      {groupSettingModal && groupData ? (
+        <GroupSettingModal
+          isOpen={groupSettingModal}
+          setIsOpen={setGroupSettingModal}
+          data={groupData}
+          groupId={GroupId}
+          callbackFunc={() => fetchGroupDetails()}
+        />
+      ) : null}
     </div>
   );
 }
