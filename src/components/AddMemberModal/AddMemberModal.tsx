@@ -46,7 +46,7 @@ function useDebounce<T>(value: T, delay: number): T {
 function AddMemberModal(props: PropsType) {
   const { fetchData: fetchFriendsList, response: friendsRes } = useApiFetch(CONSTANTS.API_ROUTES.FRIENDS_LIT + "/" + props.groupId);
   const { fetchData: searchFriends, response: searchRes } = useApiFetch(""); // Empty initial URL for search requests
-  const { fetchData: addMember, response: addMemberRes } = useApiFetch("");
+  const { fetchData: addMember, response: addMemberRes, isLoading: addMemberLoading } = useApiFetch("");
 
   const [users, setUsers] = useState<UserType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -187,7 +187,7 @@ function AddMemberModal(props: PropsType) {
         </div>
 
         <div className={styles.modalFooter}>
-          <ButtonComponent text="Add Members" onClick={handleSubmit} />
+          <ButtonComponent text="Add Members" onClick={handleSubmit} isLoading={addMemberLoading} />
         </div>
       </div>
     </ModalComponent>
