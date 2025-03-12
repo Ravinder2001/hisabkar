@@ -303,6 +303,7 @@ module.exports = {
       await groupModel.editGroupDetails({
         groupId: req.params.group_id,
         ...req.body,
+        userId: req.user.user_id,
       });
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);

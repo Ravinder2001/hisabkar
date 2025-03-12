@@ -556,7 +556,12 @@ SELECT DISTINCT
           )
           FROM jsonb_array_elements(gl.details->'members') AS m
         ),
-        'added_by', (SELECT name FROM tbl_users u2 WHERE u2.user_id = (gl.details->>'added_by')::INTEGER)
+        'added_by', (SELECT name FROM tbl_users u2 WHERE u2.user_id = (gl.details->>'added_by')::INTEGER),
+        'removed_user', (SELECT name FROM tbl_users u2 WHERE u2.user_id = (gl.details->>'removed_user')::INTEGER),
+        'old_group_name', gl.details->'old_group_name',
+        'new_group_name', gl.details->'new_group_name',
+        'old_group_type', (SELECT type_name FROM tbl_group_types gt WHERE gt.group_type_id = (gl.details->>'old_group_type')::integer),
+        'new_group_type', (SELECT type_name FROM tbl_group_types gt WHERE gt.group_type_id = (gl.details->>'new_group_type')::integer)
       )
     ELSE NULL
   END AS details
@@ -704,9 +709,6 @@ ORDER BY gl.created_at DESC;
         queryParams = [user_id, group_id];
       }
 
-      console.log("🚀 query:", query);
-      console.log("🚀 queryParams:", queryParams);
-
       const result = await client.query(query, queryParams);
       return result.rows;
     } catch (error) {
@@ -824,9 +826,10 @@ ORDER BY gl.created_at DESC;
     }
   },
   editGroupDetails: async (values) => {
-    const { groupId, groupName, groupTypeId, removedMembers } = values;
+    const { groupId, groupName, groupTypeId, removedMembers, userId } = values;
 
     try {
+      const groupDetails = await client.query(`SELECT group_name, group_type_id FROM tbl_groups WHERE group_id = $1`, [groupId]);
       // Step 1: Update group details in tbl_groups
       await client.query(
         `
@@ -835,6 +838,25 @@ ORDER BY gl.created_at DESC;
         WHERE group_id = $3
         `,
         [groupName, groupTypeId, groupId]
+      );
+
+      // Log the group details update
+      await client.query(
+        `
+        INSERT INTO tbl_group_logs (group_id, user_id, action_type, details)
+        VALUES ($1, $2, $3, $4)
+        `,
+        [
+          groupId,
+          userId, // The user who made the changes
+          "EDIT_GROUP", // Action type
+          JSON.stringify({
+            old_group_name: groupDetails.rows[0].group_name, // Pass the old group name if available
+            new_group_name: groupName,
+            old_group_type: groupDetails.rows[0].group_type_id, // Pass the old group type ID if available
+            new_group_type: groupTypeId,
+          }),
+        ]
       );
 
       // Step 2: Physically remove members if removedMembers array is provided
@@ -846,9 +868,27 @@ ORDER BY gl.created_at DESC;
           `,
           [groupId, removedMembers]
         );
+
+        // Log each member removal
+        for (const removedMemberId of removedMembers) {
+          await client.query(
+            `
+            INSERT INTO tbl_group_logs (group_id, user_id, action_type, details)
+            VALUES ($1, $2, $3, $4)
+            `,
+            [
+              groupId,
+              userId, // The user who removed the member
+              "REMOVED", // Action type
+              JSON.stringify({
+                removed_user: removedMemberId, // The user who was removed
+              }),
+            ]
+          );
+        }
       }
 
-      return;
+      return { success: true, message: "Group details updated and logged successfully." };
     } catch (error) {
       console.error("Error in updating group details:", error.message);
       throw error;
