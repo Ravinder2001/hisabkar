@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 
 import { Button } from "../../components/ui/button";
 import CustomCircularLoading from "../../components/Atoms/CustomCircularLoading/CustomCircularLoading";
+import { Link } from "react-router-dom";
 
 function SignIn() {
   const dispatch = useDispatch();
@@ -45,8 +46,7 @@ function SignIn() {
   }, [googleSignInRes]);
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 p-4">
-      {/* <div className="absolute inset-0 bg-white/30 backdrop-blur-[100px]" /> */}
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 p-4">
       <Card className="w-full max-w-md mx-auto overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl relative bg-white backdrop-blur-sm">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
         <CardHeader className="space-y-1 pb-6">
@@ -66,6 +66,21 @@ function SignIn() {
           </Button>
         </CardContent>
       </Card>
+
+      <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white">
+        <Link to={`${CONSTANTS.PROJECT_ROUTES.LEGAL}/terms`} className="hover:underline transition-all">
+          Terms & Conditions
+        </Link>
+        <Link to={`${CONSTANTS.PROJECT_ROUTES.LEGAL}/privacy`} className="hover:underline transition-all">
+          Privacy Policy
+        </Link>
+        <Link to={`${CONSTANTS.PROJECT_ROUTES.LEGAL}/disclaimer`} className="hover:underline transition-all">
+          Disclaimer
+        </Link>
+        <Link to={`${CONSTANTS.PROJECT_ROUTES.LEGAL}/about`} className="hover:underline transition-all">
+          About Us
+        </Link>
+      </div>
     </div>
   );
 }
