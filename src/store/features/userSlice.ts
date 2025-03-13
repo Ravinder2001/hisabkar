@@ -8,6 +8,7 @@ export interface userState {
   role: string;
   token: string | null;
   isUserLoggedIn: boolean;
+  isNewUser: boolean;
   reDirectURL: string;
 }
 
@@ -18,6 +19,7 @@ const initialState: userState = {
   role: "",
   token: "",
   isUserLoggedIn: false,
+  isNewUser: false,
   reDirectURL: CONSTANTS.PROJECT_ROUTES.HOME,
 };
 
@@ -32,6 +34,7 @@ export const userSlice = createSlice({
       state.token = payload.token;
       state.role = payload.role;
       state.isUserLoggedIn = true;
+      state.isNewUser = payload.isNewUser;
     },
     setUserLoggedOut: (state) => {
       state.id = "";
@@ -49,10 +52,13 @@ export const userSlice = createSlice({
       state.name = payload.name;
       state.avatar = payload.avatar;
     },
+    toggleNewUser: (state) => {
+      state.isNewUser = false;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setUserLoggedIn, setUserLoggedOut, setReDirectURL, setUserProfileData } = userSlice.actions;
+export const { setUserLoggedIn, setUserLoggedOut, setReDirectURL, setUserProfileData, toggleNewUser } = userSlice.actions;
 
 export default userSlice.reducer;

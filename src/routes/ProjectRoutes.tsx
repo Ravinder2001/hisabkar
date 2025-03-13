@@ -10,6 +10,7 @@ import JoinGroup from "../pages/JoinGroup/JoinGroup";
 import Profile from "../pages/Profile/Profile";
 import LegalPage from "../pages/Legals/Legals";
 import SignIn from "../pages/SignIn/SignIn";
+import Support from "../pages/Support/Support";
 
 // import StaffGroups from "../pages/Admin/StaffGroups/StaffGroups";
 
@@ -46,6 +47,14 @@ const ProjectRoutes = () => {
         element={
           <PrivateRoute>
             <Profile />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={CONSTANTS.PROJECT_ROUTES.SUPPORT}
+        element={
+          <PrivateRoute>
+            <Support />
           </PrivateRoute>
         }
       />
