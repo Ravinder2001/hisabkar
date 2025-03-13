@@ -92,7 +92,6 @@ CREATE TABLE IF NOT EXISTS tbl_group_logs (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
 CREATE TABLE IF NOT EXISTS tbl_sw_subscriptions (
   subscription_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   user_id INT NOT NULL UNIQUE REFERENCES tbl_users(user_id),
@@ -102,4 +101,41 @@ CREATE TABLE IF NOT EXISTS tbl_sw_subscriptions (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS tbl_support_categories (
+  category_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  category_name VARCHAR(50) NOT NULL UNIQUE,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
+CREATE TABLE IF NOT EXISTS tbl_bug_priorities (
+  priority_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  priority_name VARCHAR(20) NOT NULL UNIQUE CHECK (priority_name IN ('Low', 'Medium', 'High', 'Critical')),
+  priority_value INT NOT NULL UNIQUE CHECK (priority_value BETWEEN 1 AND 4),
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS tbl_tickets (
+  ticket_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  ticket_type VARCHAR(20) NOT NULL CHECK (ticket_type IN ('SUPPORT', 'FEEDBACK', 'BUG')), -- Matches your SupportType
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(20),  -- Optional phone number
+  description TEXT NOT NULL,
+  category_id INT,  -- For support category
+  priority_id INT,  -- For bug priority
+  status VARCHAR(20) NOT NULL DEFAULT 'open' CHECK (status IN ('OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  resolved_at TIMESTAMP,
+  resolution_notes TEXT,
+  
+  -- Constraints
+  CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES tbl_support_categories(category_id) ON DELETE SET NULL,
+  CONSTRAINT fk_priority FOREIGN KEY (priority_id) REFERENCES tbl_bug_priorities(priority_id) ON DELETE SET NULL,
+  CONSTRAINT valid_fields CHECK (
+      (ticket_type = 'SUPPORT' AND category_id IS NOT NULL) OR
+      (ticket_type = 'BUG' AND priority_id IS NOT NULL) OR
+      (ticket_type = 'FEEDBACK')
+  )
+);

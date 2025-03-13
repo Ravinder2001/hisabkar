@@ -32,6 +32,7 @@ module.exports = {
     DES: 100,
     AMOUNT: 999999,
     EMAIL: 50,
+    PHONE: 20,
   },
   SOCKET_EVENTS: {},
   VARIABLES: {

@@ -34,6 +34,7 @@ module.exports = {
           avatar: avatarImage,
           upiAddress: hashedUPIAddress,
         });
+        user.isNewUser = true;
       }
 
       if (!user.is_active) {
