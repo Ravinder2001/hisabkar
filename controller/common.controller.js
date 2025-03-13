@@ -72,6 +72,7 @@ const generateUserToken = (data) => {
       name: data.name,
       role: data.role,
       avatar: data.avatar,
+      isNewUser: data.isNewUser ?? false,
       iat: Math.round(new Date().getTime() / 1000),
       // exp: Math.round(new Date().getTime() / 1000) + 24 * 60 * 60,
     },

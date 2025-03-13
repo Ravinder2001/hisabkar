@@ -21,7 +21,7 @@ module.exports = {
         return res.status(401).json({ message: "Invalid token", success: 0 });
       }
 
-      const { email, name } = await response.json();
+      const { email, name, picture } = await response.json();
       let user = await userModel.getUserDetailsByEmail(email);
 
       if (!user) {
@@ -31,9 +31,10 @@ module.exports = {
         user = await userModel.register({
           name,
           email,
-          avatar: avatarImage,
+          avatar: !picture ? avatarImage : picture,
           upiAddress: hashedUPIAddress,
         });
+        user.isNewUser = true;
       }
 
       if (!user.is_active) {
