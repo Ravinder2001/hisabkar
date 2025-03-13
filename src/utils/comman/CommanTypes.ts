@@ -71,3 +71,5 @@ export type GroupPairsData = {
     amount: string;
   }>;
 };
+
+export type SupportType = "SUPPORT" | "FEEDBACK" | "BUG" | null;

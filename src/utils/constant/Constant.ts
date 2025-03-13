@@ -8,6 +8,7 @@ const CONSTANTS = {
     JOIN_GROUP: "/join-group",
     PROFILE: "/profile",
     LEGAL: "/legal",
+    SUPPORT: "/support",
   },
   API_ROUTES: {
     GOOGLE_SIGN_IN: "/user/google-signin",
@@ -41,6 +42,9 @@ const CONSTANTS = {
     GET_SIMPLIFIED: "/group/simplified",
     LEAVE_GROUP: "/group/leaveGroup",
     GROUP_SETTINGS: "/group/groupSetting",
+    GET_BUG_PRIOR_LIST: "/support/bug_priorities",
+    GET_SUPPORT_CAT_LIST: "/support/support_cat",
+    CREATE_TICKET: "/support",
   },
   FONT_FAMILY: "Nunito",
 };

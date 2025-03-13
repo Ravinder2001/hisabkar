@@ -8,12 +8,15 @@ import styles from "./style.module.css";
 import FloatingActionButton from "../../components/FloatingActionButton/FloatingActionButton";
 import CreateGroupModal from "../../components/CreateGroup/CreateGroup";
 import GroupSharingModal from "../../components/ShareGroup/ShareGroup";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setReDirectURL } from "../../store/features/userSlice";
 import CircularLoader from "../../components/CircularLoader/CircularLoader";
+import WelcomeModal from "../../components/WelcomeModal/WelcomeModal";
+import { RootState } from "../../store/store";
 
 function Home() {
   const dispatch = useDispatch();
+  const isNewUser = useSelector((state: RootState) => state.user.isNewUser);
   const { fetchData, response, isLoading } = useApiFetch(CONSTANTS.API_ROUTES.ALL_GROUPS);
 
   const [groupList, setGroupList] = useState<GroupType[]>([]);
@@ -22,6 +25,7 @@ function Home() {
     status: false,
     groupCode: "",
   });
+  const [isWelcomeModal, setIsWelcomeModal] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -33,6 +37,10 @@ function Home() {
       setGroupList(response.data);
     }
   }, [response]);
+
+  useEffect(() => {
+    if (isNewUser) setIsWelcomeModal(true);
+  }, [isNewUser]);
   return isLoading ? (
     <CircularLoader />
   ) : (
@@ -69,6 +77,7 @@ function Home() {
         }}
         groupCode={isShareGroupModal.groupCode}
       />
+      {isWelcomeModal ? <WelcomeModal isOpen={isWelcomeModal} setIsOpen={setIsWelcomeModal} /> : null}
     </div>
   );
 }

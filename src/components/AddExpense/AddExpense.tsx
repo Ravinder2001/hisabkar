@@ -40,7 +40,7 @@ const validationSchema = Yup.object().shape({
     .matches(/^[a-zA-Z\s]*$/, "Only letters and spaces are allowed"),
   description: Yup.string()
     .min(5, "Must be at least 5 characters")
-    .max(100, "Must be at most 100 characters")
+    .max(500, "Must be at most 500 characters")
     .matches(/^[a-zA-Z\s]*$/, "Only letters and spaces are allowed"),
   expenseTypeId: Yup.object().shape({
     value: Yup.string().required("Expense type is required"),

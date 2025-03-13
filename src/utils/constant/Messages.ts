@@ -26,6 +26,7 @@ const Messages = {
     ADD_EXPENSE: "Expense added successfully!",
     EDIT_EXPENSE: "Expense edited successfully!",
     GROUP_CREATED: "Group created successfully!",
+    WELCOME: (name: string) => `Welcome to Hisabkar! ${name}`,
   },
 
   // General Messages
