@@ -29,7 +29,7 @@ module.exports = {
   LENGTH_VALIDATIONS: {
     NAME: 20,
     ID: 9999,
-    DES: 100,
+    DES: 500,
     AMOUNT: 999999,
     EMAIL: 50,
     PHONE: 20,

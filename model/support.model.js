@@ -34,4 +34,22 @@ module.exports = {
       throw error;
     }
   },
+  getSupportCatList: async () => {
+    try {
+      const { rows } = await client.query(`SELECT category_id as value, category_name as label FROM tbl_support_categories`);
+      return rows;
+    } catch (error) {
+      console.error("Error in creating ticket:", error.message);
+      throw error;
+    }
+  },
+  getBugPrioritiesList: async () => {
+    try {
+      const { rows } = await client.query(`SELECT priority_id as value, priority_name as label FROM tbl_bug_priorities`);
+      return rows;
+    } catch (error) {
+      console.error("Error in creating ticket:", error.message);
+      throw error;
+    }
+  },
 };

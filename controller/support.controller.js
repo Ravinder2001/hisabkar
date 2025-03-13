@@ -19,4 +19,22 @@ module.exports = {
       common.handleAsyncError(error, res);
     }
   },
+  getSupportCatList: async (req, res) => {
+    try {
+      const ticket = await supportModel.getSupportCatList();
+      // Send success response first
+      return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, ticket, ticket.length);
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
+  getBugPrioritiesList: async (req, res) => {
+    try {
+      const ticket = await supportModel.getBugPrioritiesList();
+      // Send success response first
+      return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, ticket, ticket.length);
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
 };
