@@ -85,10 +85,6 @@ function Support() {
       {modalOpen ? <SupportModal isOpen={modalOpen} setIsOpen={openModal} supportType={supportType} /> : null}
     </div>
   );
-  console.log("🚀 isUserLoggedIn:", isUserLoggedIn);
-  console.log("🚀 isUserLoggedIn:", isUserLoggedIn);
-  console.log("🚀 isUserLoggedIn:", isUserLoggedIn);
-  console.log("🚀 isUserLoggedIn:", isUserLoggedIn);
 }
 
 export default Support;
