@@ -45,6 +45,7 @@ const CONSTANTS = {
     GET_BUG_PRIOR_LIST: "/support/bug_priorities",
     GET_SUPPORT_CAT_LIST: "/support/support_cat",
     CREATE_TICKET: "/support",
+    SERVER_HEALTH: "/health",
   },
   FONT_FAMILY: "Nunito",
 };
