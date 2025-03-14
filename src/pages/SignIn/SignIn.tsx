@@ -81,6 +81,9 @@ function SignIn() {
         <Link to={`${CONSTANTS.PROJECT_ROUTES.LEGAL}/about`} className="hover:underline transition-all">
           About Us
         </Link>
+        <Link to={CONSTANTS.PROJECT_ROUTES.SUPPORT} className="hover:underline transition-all">
+          Support
+        </Link>
       </div>
     </div>
   );

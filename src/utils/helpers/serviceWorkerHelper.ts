@@ -18,6 +18,7 @@ export const registerServiceWorker = () => {
 export const subscribeUser = async () => {
   if ("serviceWorker" in navigator) {
     const registration = await navigator.serviceWorker.ready;
+    console.log("-------------------------->", ENVConfig.vapidKey);
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: ENVConfig.vapidKey,

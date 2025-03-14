@@ -53,9 +53,9 @@ const ProjectRoutes = () => {
       <Route
         path={CONSTANTS.PROJECT_ROUTES.SUPPORT}
         element={
-          <PrivateRoute>
+          <PublicRoute allowedRoutes={[CONSTANTS.PROJECT_ROUTES.SUPPORT]}>
             <Support />
-          </PrivateRoute>
+          </PublicRoute>
         }
       />
 
