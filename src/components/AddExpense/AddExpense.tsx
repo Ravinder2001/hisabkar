@@ -415,7 +415,7 @@ function AddExpenseModal({
                                 disabled={values.splitType === "EQUAL"}
                                 className="w-24 text-right"
                                 placeholder={values.splitType === "PERCENTAGE" ? "%" : "0"}
-                                value={Number(values.userSplits[index].amount).toFixed(2)}
+                                value={Number(values.userSplits[index].amount).toFixed(0)}
                               />
                             )}
                           </Field>
