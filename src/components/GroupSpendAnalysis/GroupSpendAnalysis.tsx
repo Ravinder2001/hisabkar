@@ -21,7 +21,10 @@ type LogType = {
 };
 
 function GroupSpendAnalysis(props: PropsType) {
-  const groupMembersWithAll: MemberType = [{ id: "-1", name: "All", avatar: "", total_spent: 0, is_available: true }, ...props.groupMembers];
+  const groupMembersWithAll: MemberType = [
+    { id: "-1", name: "All", avatar: "", total_spent: 0, is_available: true, is_current_user: true },
+    ...props.groupMembers,
+  ];
 
   const { fetchData, response, isLoading } = useApiFetch("");
 

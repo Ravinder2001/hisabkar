@@ -46,6 +46,7 @@ const CONSTANTS = {
     GET_SUPPORT_CAT_LIST: "/support/support_cat",
     CREATE_TICKET: "/support",
     SERVER_HEALTH: "/health",
+    TOGGLE_MEMBER_STATUS: "/group/toggleMemberStatus",
   },
   FONT_FAMILY: "Nunito",
 };

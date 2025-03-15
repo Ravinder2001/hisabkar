@@ -157,7 +157,7 @@ export default function GroupDetails() {
       <div className={styles.detailsCon}>
         <Card className="bg-white p-0 h-full">
           <CardHeader className={styles.cardHeader}>
-            <CustomAccordion header="Group Details">
+            <CustomAccordion header="Group Details" padding="1rem">
               {groupDetailsLoading ? (
                 <CircularLoader />
               ) : groupData ? (
@@ -176,7 +176,7 @@ export default function GroupDetails() {
       <div className={styles.pairsCon}>
         <Card className="bg-white p-0 h-full">
           <CardHeader className={styles.cardHeader}>
-            <CustomAccordion header="Your Expense Summary">
+            <CustomAccordion header="Your Expense Summary" padding="1rem">
               {pairsLoading ? (
                 <CircularLoader />
               ) : groupData ? (

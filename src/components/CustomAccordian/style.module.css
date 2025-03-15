@@ -24,6 +24,6 @@
 @media only screen and (max-width: 768px) {
   .itemBtn {
     margin: 0;
-    padding: 1rem;
+    /* padding: 1rem; */
   }
 }
