@@ -7,6 +7,7 @@ type AccordionItemProps = {
   header: string;
   children: ReactNode;
   expanded?: boolean;
+  padding?: string;
 };
 
 const AccordionItem: React.FC<AccordionItemProps & { defaultOpen?: boolean }> = ({ header, children, defaultOpen, ...rest }) => (
@@ -40,7 +41,7 @@ const CustomAccordion = (props: AccordionItemProps) => {
   }, []);
 
   return (
-    <Accordion transition transitionTimeout={300}>
+    <Accordion transition transitionTimeout={300} style={{ padding: props.padding }}>
       <AccordionItem header={props.header} defaultOpen={props.expanded ?? isDesktop}>
         {props.children}
       </AccordionItem>

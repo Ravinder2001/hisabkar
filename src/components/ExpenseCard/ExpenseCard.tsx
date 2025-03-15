@@ -128,7 +128,7 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
                 {expense.members.map((exMember) => {
                   const expenseMember = expense.allMembersList.find((member) => member.id === exMember.id);
                   return (
-                    <div key={expenseMember?.id} className="flex flex-wrap items-center justify-between bg-white/50 rounded-md">
+                    <div key={expenseMember?.id} className="flex flex-wrap items-center justify-between bg-white/50 rounded-md my-2">
                       <div className="flex items-center gap-2 min-w-0">
                         <Avatar className="h-6 w-6">
                           <AvatarImage src={expenseMember?.avatar} />

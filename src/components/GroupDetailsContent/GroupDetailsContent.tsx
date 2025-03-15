@@ -180,7 +180,9 @@ function GroupDetailsContent(
               </Avatar>
               <div className="flex justify-between items-center w-full">
                 <div>
-                  <p className="font-medium">{member.name}</p>
+                  <p className="font-medium">
+                    {member.name} <i style={{ fontSize: "10px" }}>{!member.is_current_user && "(User Left)"}</i>
+                  </p>
                   <p className="text-sm text-gray-500">
                     Spent: ₹<CustomCountUp count={member.total_spent} />
                   </p>

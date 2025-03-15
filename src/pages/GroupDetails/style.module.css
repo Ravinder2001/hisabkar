@@ -19,6 +19,7 @@
   height: 85%;
   /* border: 1px solid red; */
   overflow: auto;
+  padding: 12px !important;
 }
 .accordion {
   margin-top: 0px !important;
@@ -78,7 +79,6 @@
 
 @media only screen and (max-width: 768px) {
   .expBox {
-    padding: 12px !important;
   }
   .customSelect {
     height: 20px; /* Even smaller height for mobile */
