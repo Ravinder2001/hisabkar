@@ -6,6 +6,8 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
 import SupportModal from "../../components/SupportModal/SupportModal";
 import { SupportType } from "../../utils/comman/CommanTypes";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 interface SupportCardProps {
   title: string;
@@ -16,7 +18,7 @@ interface SupportCardProps {
 
 function SupportCard({ title, description, icon, onClick }: SupportCardProps) {
   return (
-    <Card className="transition-all hover:shadow-md bg-white">
+    <Card className="transition-all hover:shadow-md bg-gray-50">
       <CardHeader className="pb-2">
         <div className="mb-4">{icon}</div>
         <CardTitle>{title}</CardTitle>
@@ -34,6 +36,8 @@ function SupportCard({ title, description, icon, onClick }: SupportCardProps) {
   );
 }
 function Support() {
+  const { isUserLoggedIn } = useSelector((state: RootState) => state.user);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [supportType, setSupportType] = useState<SupportType>(null);
 
@@ -44,7 +48,7 @@ function Support() {
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-full mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">How can we help you?</h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -52,7 +56,7 @@ function Support() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="flex justify-center flex-wrap gap-6">
           <SupportCard
             title="Customer Support"
             description="Get help with your account, payments, or general questions"
@@ -60,19 +64,22 @@ function Support() {
             onClick={() => openModal("SUPPORT")}
           />
 
-          <SupportCard
-            title="Feedback"
-            description="Share your thoughts and suggestions to help us improve"
-            icon={<MessageSquare className="h-10 w-10 text-primary" />}
-            onClick={() => openModal("FEEDBACK")}
-          />
-
-          <SupportCard
-            title="Report a Bug"
-            description="Let us know if something isn't working correctly"
-            icon={<Bug className="h-10 w-10 text-primary" />}
-            onClick={() => openModal("BUG")}
-          />
+          {isUserLoggedIn ? (
+            <SupportCard
+              title="Feedback"
+              description="Share your thoughts and suggestions to help us improve"
+              icon={<MessageSquare className="h-10 w-10 text-primary" />}
+              onClick={() => openModal("FEEDBACK")}
+            />
+          ) : null}
+          {isUserLoggedIn ? (
+            <SupportCard
+              title="Report a Bug"
+              description="Let us know if something isn't working correctly"
+              icon={<Bug className="h-10 w-10 text-primary" />}
+              onClick={() => openModal("BUG")}
+            />
+          ) : null}
         </div>
       </div>
       {modalOpen ? <SupportModal isOpen={modalOpen} setIsOpen={openModal} supportType={supportType} /> : null}
