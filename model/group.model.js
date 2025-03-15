@@ -85,8 +85,14 @@ module.exports = {
       let GroupID = groupIdQuery.rows[0].group_id;
       await client.query(
         `
-        INSERT INTO tbl_group_members(group_id, user_id) 
-        VALUES($1, $2)
+          INSERT INTO tbl_group_members(group_id, user_id) 
+          VALUES($1, $2)
+          ON CONFLICT ON CONSTRAINT unique_group_user
+          DO UPDATE SET 
+            is_active = TRUE,
+            created_at = CURRENT_TIMESTAMP
+          WHERE tbl_group_members.group_id = $1 
+            AND tbl_group_members.user_id = $2
         `,
         [GroupID, values.userId]
       );
@@ -113,7 +119,9 @@ module.exports = {
 
       await client.query(
         `
-        DELETE FROM tbl_group_members WHERE group_id = $1 AND user_id = $2
+          UPDATE tbl_group_members 
+          SET is_active = FALSE
+          WHERE group_id = $1 AND user_id = $2
         `,
         [values.groupId, values.userId]
       );
@@ -175,10 +183,13 @@ module.exports = {
                 WHERE gm2.group_id = g.group_id
             ) AS members_avatars
         FROM tbl_groups g
-        WHERE g.group_id IN (SELECT gm.group_id FROM tbl_group_members gm WHERE gm.user_id = $1) 
+        WHERE g.group_id IN (
+        SELECT gm.group_id 
+        FROM tbl_group_members gm 
+        WHERE gm.user_id = $1 AND gm.is_active = TRUE
+        ) 
         AND g.is_active = TRUE
         ORDER BY g.created_at DESC;
-  
       `;
 
       // Execute the query with the provided userId
@@ -221,14 +232,15 @@ module.exports = {
       'name', u.name, 
       'avatar', u.avatar, 
       'total_spent', COALESCE(SUM(e.amount), 0),
-      'is_available', COALESCE(uo.availibilty_status, false) -- Include availability status
+      'is_available', COALESCE(uo.availibilty_status, false),
+      'is_current_user', gm2.is_active -- Include is_active status
     )
     FROM tbl_users u
     JOIN tbl_group_members gm2 ON gm2.user_id = u.user_id
     LEFT JOIN tbl_expenses e ON e.paid_by = u.user_id AND e.group_id = g.group_id
     LEFT JOIN tbl_user_options uo ON uo.user_id = u.user_id -- Join user options table
     WHERE gm2.group_id = g.group_id
-    GROUP BY u.user_id, uo.availibilty_status
+    GROUP BY u.user_id, uo.availibilty_status, gm2.is_active
     ORDER BY COALESCE(SUM(e.amount), 0) DESC
   ) AS members
 FROM tbl_groups g
@@ -725,6 +737,10 @@ ORDER BY gl.created_at DESC;
       const insertMembersQuery = `
         INSERT INTO tbl_group_members (group_id, user_id)
         VALUES ${placeholders}
+        ON CONFLICT ON CONSTRAINT unique_group_user
+        DO UPDATE SET 
+          is_active = TRUE,
+          created_at = CURRENT_TIMESTAMP
         RETURNING member_id, group_id, user_id, is_active, created_at
       `;
       const queryParams = [values.groupId, ...values.userIds];
@@ -854,40 +870,43 @@ ORDER BY gl.created_at DESC;
       }
 
       // Step 1: Update group details in tbl_groups
-      await client.query(
-        `
+      if (groupDetails.rows[0].group_name != groupName) {
+        await client.query(
+          `
         UPDATE tbl_groups
         SET group_name = $1, group_type_id = $2
         WHERE group_id = $3
         `,
-        [groupName, groupTypeId, groupId]
-      );
+          [groupName, groupTypeId, groupId]
+        );
 
-      // Log the group details update
-      await client.query(
-        `
+        // Log the group details update
+        await client.query(
+          `
         INSERT INTO tbl_group_logs (group_id, user_id, action_type, details)
         VALUES ($1, $2, $3, $4)
         `,
-        [
-          groupId,
-          userId,
-          "EDIT_GROUP",
-          JSON.stringify({
-            old_group_name: groupDetails.rows[0].group_name,
-            new_group_name: groupName,
-            old_group_type: groupDetails.rows[0].group_type_id,
-            new_group_type: groupTypeId,
-          }),
-        ]
-      );
+          [
+            groupId,
+            userId,
+            "EDIT_GROUP",
+            JSON.stringify({
+              old_group_name: groupDetails.rows[0].group_name,
+              new_group_name: groupName,
+              old_group_type: groupDetails.rows[0].group_type_id,
+              new_group_type: groupTypeId,
+            }),
+          ]
+        );
+      }
 
       // Step 2: Physically remove members if removedMembers array is provided
       if (removedMembers && removedMembers.length > 0) {
         await client.query(
           `
-          DELETE FROM tbl_group_members
-          WHERE group_id = $1 AND user_id = ANY($2::int[])
+            UPDATE tbl_group_members
+            SET is_active = FALSE
+            WHERE group_id = $1 AND user_id = ANY($2::int[])
           `,
           [groupId, removedMembers]
         );
@@ -918,6 +937,21 @@ ORDER BY gl.created_at DESC;
     } catch (error) {
       // Rollback transaction on error
       await client.query("ROLLBACK");
+      console.error("Error in updating group details:", error.message);
+      throw error;
+    }
+  },
+  toggleMemberStatus: async (values) => {
+    try {
+      await client.query(
+        `
+        UPDATE tbl_group_members SET is_active = TRUE 
+        WHERE group_id = $1 AND user_id = $2
+        `,
+        [values.groupId, values.memberId]
+      );
+      return;
+    } catch (error) {
       console.error("Error in updating group details:", error.message);
       throw error;
     }

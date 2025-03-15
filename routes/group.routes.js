@@ -39,5 +39,6 @@ router.get("/friendsList/:group_id", authenticateJWT, validateData.validateGroup
 router.post("/addGroupMember/:group_id", authenticateJWT, validateBody(schemas.addGroupMember), validateData.validateGroupId, validateData.validateGroupOwnerShip, GroupController.addGroupMember);
 router.get("/simplified/:group_id", authenticateJWT, validateData.validateGroupId, GroupController.getSimplifiedPairs);
 router.put("/groupSetting/:group_id", authenticateJWT, validateBody(schemas.editGroupDetails), validateData.validateGroupId, validateData.validateGroupOwnerShip, GroupController.editGroupDetails);
+router.put("/toggleMemberStatus/:group_id/:user_id", authenticateJWT, validateData.validateGroupId, validateData.validateGroupOwnerShip, GroupController.toggleMemberStatus);
 
 module.exports = router;

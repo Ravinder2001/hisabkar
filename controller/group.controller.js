@@ -311,4 +311,17 @@ module.exports = {
       common.handleAsyncError(error, res);
     }
   },
+  toggleMemberStatus: async (req, res) => {
+    try {
+      await groupModel.toggleMemberStatus({
+        groupId: req.params.group_id,
+        userId: req.user.user_id,
+        memberId: req.params.user_id,
+      });
+
+      return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
 };
