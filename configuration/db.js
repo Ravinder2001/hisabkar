@@ -9,6 +9,7 @@ const clientConfig = {
   database: config.DB.DATABASE,
   password: config.DB.PASSWORD,
   port: config.DB.PORT,
+  connectionTimeoutMillis: 5000,
 };
 
 if (isProduction && process.env.PG_CA_CERT) {

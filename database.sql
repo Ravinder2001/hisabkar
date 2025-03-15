@@ -55,7 +55,8 @@ CREATE TABLE IF NOT EXISTS tbl_group_members (
   group_id INT NOT NULL REFERENCES tbl_groups(group_id),
   user_id INT NOT NULL REFERENCES tbl_users(user_id),
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT unique_group_user UNIQUE (group_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_expenses (

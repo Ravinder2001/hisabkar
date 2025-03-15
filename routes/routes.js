@@ -11,5 +11,5 @@ const { authLimiter, commonLimiter } = require("../helpers/rateLimitorHelper");
 router.use("/user", authLimiter, usersRouter);
 router.use("/group", commonLimiter, groupRouter);
 router.use("/expense", commonLimiter, expenseRouter);
-router.use("/support", commonLimiter, supportRouter);
+router.use("/support", authLimiter, supportRouter);
 module.exports = router;

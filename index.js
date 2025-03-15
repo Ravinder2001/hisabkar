@@ -12,6 +12,7 @@ const mainRouter = require("./routes/routes");
 const config = require("./configuration/config");
 const Messages = require("./utils/constant/messages");
 const { encryptData } = require("./utils/encryption");
+const client = require("./configuration/db");
 
 require("./jobs/cronJob");
 require("./configuration/db");
@@ -108,6 +109,23 @@ app.use((err, req, res, next) => {
 app.use(morgan(":method :url :status - userId: :user - :ist-date"));
 
 app.use("/", mainRouter);
+
+app.get("/health", async (req, res) => {
+  try {
+    // Wrap the query in a Promise with a timeout
+    const queryPromise = client.query("SELECT 1");
+    const timeoutPromise = new Promise(
+      (_, reject) => setTimeout(() => reject(new Error("Query timed out")), 1000) // 1-second timeout
+    );
+
+    // Race the query against the timeout
+    await Promise.race([queryPromise, timeoutPromise]);
+    res.status(200).json({ success: 1 });
+  } catch (error) {
+    console.error("Health check failed:", error);
+    res.status(503).json({ success: 0, message: "Service unavailable" });
+  }
+});
 
 app.listen(port, () => {
   process.stdout.write(`Server is running on port ${port}\n`);
