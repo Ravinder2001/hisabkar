@@ -4,6 +4,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { RootState } from "../store/store";
 import Navbar from "../components/Navbar/Navbar";
 import styles from "../App.module.css";
+import CONSTANTS from "../utils/constant/Constant";
 
 type PublicRouteProps = {
   children: React.ReactNode;
@@ -11,14 +12,14 @@ type PublicRouteProps = {
 };
 
 const PublicRoute = ({ children, allowedRoutes = [] }: PublicRouteProps) => {
-  const { isUserLoggedIn, reDirectURL } = useSelector((state: RootState) => state.user);
+  const { isUserLoggedIn } = useSelector((state: RootState) => state.user);
   const location = useLocation();
 
   const isAllowedRoute = allowedRoutes.includes(location.pathname);
 
   // If user is logged in and the route is not in the allowed list, redirect them
-  if (isUserLoggedIn && !isAllowedRoute) {
-    return <Navigate to={reDirectURL} />;
+  if (isUserLoggedIn) {
+    return <Navigate to={CONSTANTS.PROJECT_ROUTES.HOME} />;
   }
 
   return isAllowedRoute && isUserLoggedIn ? (

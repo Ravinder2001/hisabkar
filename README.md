@@ -30,7 +30,7 @@ Hisabkar is a **Progressive Web Application (PWA)** designed for seamless group 
 - **Frontend**: React.js (TypeScript)
 - **Backend**: Node.js + Express
 - **Database**: PostgreSQL
-- **State Management**: Context API
+- **State Management**: Redux Toolkit
 - **API Calls**: Axios
 - **UI Components**: Modular raw CSS with react-modal
 - **PWA Support**: Service Workers for offline functionality
