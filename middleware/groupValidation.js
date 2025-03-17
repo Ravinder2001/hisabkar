@@ -3,6 +3,7 @@ const groupModel = require("../model/group.model");
 const dbValidation = require("../utils/common/validation/dbValidation");
 const { HttpStatus } = require("../utils/constant/constant");
 const Messages = require("../utils/constant/messages");
+const { decryptData } = require("../utils/encryption");
 
 module.exports = {
   validateGroupCode: async (req, res, next) => {
@@ -34,13 +35,14 @@ module.exports = {
   validateGroupId: async (req, res, next) => {
     const { group_id } = req.params;
     try {
-      const status = await dbValidation(group_id, "tbl_groups", "group_id", "is_active = TRUE");
+      const decrypted_group_id = decryptData(group_id);
+      const status = await dbValidation(decrypted_group_id, "tbl_groups", "group_id", "is_active = TRUE");
       if (status === HttpStatus.BAD_REQUEST) {
         return commonController.errorResponse(res, "Not a valid Group id", HttpStatus.BAD_REQUEST);
       } else if (status === HttpStatus.NOT_FOUND) {
-        return commonController.errorResponse(res, `Group not found with the id ${group_id}`, HttpStatus.NOT_FOUND);
+        return commonController.errorResponse(res, `Group not found with the id ${decrypted_group_id}`, HttpStatus.NOT_FOUND);
       }
-
+      req.params.group_id = decrypted_group_id;
       next();
     } catch (error) {
       return commonController.handleAsyncError(error, res);

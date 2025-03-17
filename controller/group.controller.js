@@ -7,6 +7,7 @@ const { getExpenseChangeLog, trackExpenseChange } = require("../helpers/expenseL
 const ExcelJS = require("exceljs");
 const { sendNotificationsToUsers } = require("../helpers/pushService");
 const { maskEmail } = require("../utils/common/common");
+const { encryptData } = require("../utils/encryption");
 
 module.exports = {
   createGroup: async (req, res) => {
@@ -85,11 +86,20 @@ module.exports = {
     try {
       let groupList = await groupModel.getAllGroups(req.user.user_id);
 
+      // Encrypt group_id properly
+      groupList = await Promise.all(
+        groupList.map(async (item) => ({
+          ...item,
+          group_id: await encryptData(item.group_id), // Ensure encryption is awaited
+        }))
+      );
+
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, groupList, groupList.length);
     } catch (error) {
       common.handleAsyncError(error, res);
     }
   },
+
   getGroupDataById: async (req, res) => {
     try {
       let groupList = await groupModel.getGroupDataById({
