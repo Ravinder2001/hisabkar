@@ -43,7 +43,7 @@ const useApiFetch = (initialUrl: string, initialOptions?: AxiosRequestConfig) =>
           localStorage.clear();
           window.location.href = "/";
         }
-        setResponse({ error: errorMessage, success: error?.data?.success || error.response?.data?.success });
+        setResponse({ error: errorMessage, success: 0 });
       } finally {
         setIsLoading(false);
       }
