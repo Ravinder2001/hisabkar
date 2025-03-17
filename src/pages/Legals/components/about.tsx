@@ -6,48 +6,48 @@ export default function AboutUs() {
     <LegalLayout title="About Us">
       <div className="prose max-w-none">
         <p>
-          Welcome to <strong>Hisabkar</strong> – the ultimate solution for managing shared expenses effortlessly. Our goal is to make group expense
-          tracking and settlements seamless via UPI integration.
+          Welcome to <b>Hisabkar</b> – the ultimate solution for managing shared expenses effortlessly. Our goal is to make group expense tracking and
+          settlements seamless.
         </p>
 
         <h2 className="text-xl font-semibold mt-6 mb-4">Why Choose Hisabkar?</h2>
         <ul className="list-disc pl-5">
-          <li>Track group expenses easily</li>
-          <li>Automated settlement suggestions</li>
-          <li>Secure payment redirection via UPI apps</li>
+          <li>Track group expenses with ease</li>
+          <li>Get automated settlement suggestions</li>
           <li>Privacy-focused data storage with encryption</li>
+          <li>Simple and intuitive user interface</li>
         </ul>
 
         <h2 className="text-xl font-semibold mt-6 mb-4">About the Developer</h2>
         <p>
-          Hi, I&apos;m <strong>Ravinder Singh Negi</strong>, a passionate full-stack web developer with expertise in
-          <strong> React.js, Node.js, and PostgreSQL</strong>. I built <strong>Hisabkar</strong> to help users simplify their expense management with
-          modern web technologies.
+          Hi, I&apos;m <b>Ravinder Singh Negi</b>, a passionate full-stack web developer with expertise in
+          <b> React.js, Node.js, and PostgreSQL</b>. I built <b>Hisabkar</b> to help users simplify their expense management using modern web
+          technologies.
         </p>
 
         <h2 className="text-xl font-semibold mt-6 mb-4">Connect with Me</h2>
         <ul className="list-disc pl-5">
           <li>
-            <strong>GitHub:</strong>{" "}
+            <b>GitHub:</b>{" "}
             <a href="https://github.com/Ravinder2001" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-              https://github.com/Ravinder2001
+              github.com/Ravinder2001
             </a>
           </li>
           <li>
-            <strong>LinkedIn:</strong>{" "}
+            <b>LinkedIn:</b>{" "}
             <a
               href="https://www.linkedin.com/in/ravinder-singh-negi-3444bb1a6/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
             >
-              https://www.linkedin.com/in/ravinder-singh-negi-3444bb1a6/
+              linkedin.com/in/ravinder-singh-negi-3444bb1a6/
             </a>
           </li>
           <li>
-            <strong>Portfolio:</strong>{" "}
+            <b>Portfolio:</b>{" "}
             <a href="https://www.ravinder.dev/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-              https://www.ravinder.dev/
+              ravinder.dev
             </a>
           </li>
         </ul>
