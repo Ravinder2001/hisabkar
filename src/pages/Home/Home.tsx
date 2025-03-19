@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import CircularLoader from "../../components/CircularLoader/CircularLoader";
 import WelcomeModal from "../../components/WelcomeModal/WelcomeModal";
 import { RootState } from "../../store/store";
+import { Users } from "lucide-react";
 
 function Home() {
   const isNewUser = useSelector((state: RootState) => state.user.isNewUser);
@@ -43,16 +44,26 @@ function Home() {
   ) : (
     <div className={styles.container}>
       <div className={styles.cardCon}>
-        {groupList.map((group) => (
-          <GroupCard
-            key={group.group_id}
-            {...group}
-            setGroupList={setGroupList}
-            handleLinkShare={() => {
-              setIsShareGroupModal({ status: true, groupCode: group.code });
-            }}
-          />
-        ))}
+        {groupList.length ? (
+          groupList.map((group) => (
+            <GroupCard
+              key={group.group_id}
+              {...group}
+              setGroupList={setGroupList}
+              handleLinkShare={() => {
+                setIsShareGroupModal({ status: true, groupCode: group.code });
+              }}
+            />
+          ))
+        ) : (
+          <div className="text-center text-gray-500 py-8 bg-gray-50 rounded-lg">
+            <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-full flex items-center justify-center mb-3">
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" /> {/* Replace IndianRupee with Users */}
+            </div>
+            <p className="text-sm sm:text-base font-medium">No groups yet!</p>
+            <p className="text-xs sm:text-sm text-gray-400 mt-1">Get started by creating your first group.</p>
+          </div>
+        )}
       </div>
       <FloatingActionButton
         onCreateGroup={() => {
