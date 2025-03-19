@@ -3,6 +3,7 @@ import ModalComponent from "../ModalComponent/ModalComponent";
 import confetti from "canvas-confetti";
 import { useDispatch } from "react-redux";
 import { toggleNewUser } from "../../store/features/userSlice";
+import CONSTANTS from "../../utils/constant/Constant";
 
 type PropTypes = {
   isOpen: boolean;
@@ -16,6 +17,7 @@ function WelcomeModal(props: PropTypes) {
     props.setIsOpen(false);
     dispatch(toggleNewUser());
   };
+
   useEffect(() => {
     // Trigger confetti when modal opens
     confetti({
@@ -70,18 +72,25 @@ function WelcomeModal(props: PropTypes) {
           <div className="grid grid-cols-1 gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md border-l-4 border-blue-500">
               <h3 className="font-semibold text-gray-800 mb-1 sm:mb-2">Track Expenses</h3>
-              <p className="text-gray-600 text-xs sm:text-sm">Monitor your spending habits with our intuitive tracking system</p>
+              <p className="text-gray-600 text-xs sm:text-sm">Easily log and monitor all your group expenses in one place</p>
             </div>
 
             <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md border-l-4 border-purple-500">
-              <h3 className="font-semibold text-gray-800 mb-1 sm:mb-2">Create Budgets</h3>
-              <p className="text-gray-600 text-xs sm:text-sm">Set financial goals and stay on track with customizable budgets</p>
+              <h3 className="font-semibold text-gray-800 mb-1 sm:mb-2">Create Multiple Groups</h3>
+              <p className="text-gray-600 text-xs sm:text-sm">Set up different groups for friends, family, or trips with ease</p>
             </div>
 
             <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md border-l-4 border-green-500">
-              <h3 className="font-semibold text-gray-800 mb-1 sm:mb-2">Generate Reports</h3>
-              <p className="text-gray-600 text-xs sm:text-sm">Get detailed insights with powerful visualization tools</p>
+              <h3 className="font-semibold text-gray-800 mb-1 sm:mb-2">See Simplified Expense Summary</h3>
+              <p className="text-gray-600 text-xs sm:text-sm">View optimized transactions to settle debts quickly and clearly</p>
             </div>
+          </div>
+
+          <div className="mb-4 sm:mb-6">
+            <p className="text-sm sm:text-base text-gray-700">
+              By default, you&apos;ll see a demo group where you can add expenses and try out features. Feel free to explore it, leave it as is, or
+              create your own new group!
+            </p>
           </div>
 
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-center sm:gap-4 mt-3 sm:mt-4">
@@ -91,17 +100,11 @@ function WelcomeModal(props: PropTypes) {
             >
               Get Started
             </button>
-            <button
-              onClick={handleClick}
-              className="px-4 sm:px-6 py-2 bg-gray-200 text-gray-700 font-medium text-sm sm:text-base rounded-lg hover:bg-gray-300 transition-colors w-full sm:w-auto"
-            >
-              Take a Tour
-            </button>
           </div>
 
           <div className="mt-4 sm:mt-6 text-xs sm:text-sm text-gray-500">
             Questions?{" "}
-            <a href="#" className="text-blue-600 hover:underline">
+            <a href={CONSTANTS.PROJECT_ROUTES.SUPPORT} className="text-blue-600 hover:underline">
               Contact Support
             </a>
           </div>
