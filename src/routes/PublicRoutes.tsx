@@ -18,7 +18,7 @@ const PublicRoute = ({ children, allowedRoutes = [] }: PublicRouteProps) => {
   const isAllowedRoute = allowedRoutes.includes(location.pathname);
 
   // If user is logged in and the route is not in the allowed list, redirect them
-  if (isUserLoggedIn) {
+  if (isUserLoggedIn && !isAllowedRoute) {
     return <Navigate to={CONSTANTS.PROJECT_ROUTES.HOME} />;
   }
 
