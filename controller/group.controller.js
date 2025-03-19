@@ -111,7 +111,7 @@ module.exports = {
       groupList.members = await Promise.all(
         groupList.members.map(async (item, index) => ({
           ...item,
-          name: req.params.group_id == DEMO_GROUP_ID ? `Demo User ${index + 1}` : item.name,
+          name: req.params.group_id == DEMO_GROUP_ID ? `DemoUser${index + 1}` : item.name,
         }))
       );
 
