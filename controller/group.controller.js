@@ -8,6 +8,7 @@ const ExcelJS = require("exceljs");
 const { sendNotificationsToUsers } = require("../helpers/pushService");
 const { maskEmail } = require("../utils/common/common");
 const { encryptData } = require("../utils/encryption");
+const { DEMO_GROUP_ID } = require("../configuration/config");
 
 module.exports = {
   createGroup: async (req, res) => {
@@ -99,13 +100,20 @@ module.exports = {
       common.handleAsyncError(error, res);
     }
   },
-
   getGroupDataById: async (req, res) => {
     try {
       let groupList = await groupModel.getGroupDataById({
         groupId: req.params.group_id,
         userId: req.user.user_id,
       });
+      // If groupId matches DEMO_GROUP_ID, mask member names
+
+      groupList.members = await Promise.all(
+        groupList.members.map(async (item, index) => ({
+          ...item,
+          name: req.params.group_id == DEMO_GROUP_ID ? `Test ${index + 1}` : item.name,
+        }))
+      );
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, groupList);
     } catch (error) {

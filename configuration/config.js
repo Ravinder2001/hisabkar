@@ -1,6 +1,7 @@
 const config = {
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
+  DEMO_GROUP_ID: process.env.DEMO_GROUP_ID,
   DB: {
     USER: process.env.DB_USER,
     HOST: process.env.DB_HOST,
