@@ -1,3 +1,4 @@
+const { DEMO_GROUP_ID } = require("../configuration/config");
 const client = require("../configuration/db");
 const generateTimestamp = require("../utils/common/generateTimestamp");
 
@@ -24,6 +25,13 @@ module.exports = {
         INSERT INTO tbl_user_options(user_id,availibilty_status,created_at) VALUES($1,$2,$3)
       `,
         [UserID, true, generateTimestamp()]
+      );
+
+      await client.query(
+        `
+        INSERT INTO tbl_group_members(group_id,user_id,created_at) VALUES($1,$2,$3)
+      `,
+        [DEMO_GROUP_ID, UserID, generateTimestamp()]
       );
       await client.query("COMMIT");
       return updateUserRes.rows[0];
