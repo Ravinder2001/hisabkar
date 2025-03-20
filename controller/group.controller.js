@@ -112,6 +112,7 @@ module.exports = {
         groupList.members.map(async (item, index) => ({
           ...item,
           name: req.params.group_id == DEMO_GROUP_ID ? `DemoUser${index + 1}` : item.name,
+          avatar: req.params.group_id == DEMO_GROUP_ID ? "https://api.dicebear.com/7.x/adventurer/svg?seed=345&gender=male" : item.avatar,
         }))
       );
 
