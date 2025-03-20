@@ -17,7 +17,7 @@ module.exports = {
         ...req.body,
         userId: req.user.user_id,
       });
-
+      createRes.group_data.group_id = await encryptData(createRes.group_data.group_id);
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, createRes);
     } catch (error) {
       common.handleAsyncError(error, res);
