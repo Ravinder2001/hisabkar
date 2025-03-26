@@ -23,10 +23,11 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo su -
+            sudo su - <<EOF
             cd ${{ secrets.TARGET_DIR }}
             git pull
             npm install --legacy-peer-deps
+            EOF
 
       # Step 3: Reload the PM2 process on the EC2 instance
       - name: Reload PM2 Process
@@ -36,4 +37,6 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            pm2 reload hisabkar-prod-server
+            sudo su - <<EOF
+            pm2 reload 0
+            EOF
