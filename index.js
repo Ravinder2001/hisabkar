@@ -5,8 +5,8 @@ const cors = require("cors");
 const morgan = require("morgan");
 const moment = require("moment");
 const helmet = require("helmet");
-
-// const { Server } = require("socket.io");
+const https = require("https");
+require("dotenv").config(); // Load environment variables
 
 const mainRouter = require("./routes/routes");
 const config = require("./configuration/config");
@@ -21,7 +21,11 @@ const port = config.PORT;
 
 const app = express();
 
-// const allowedOrigins = ["https://www.hisabkar.com", "http://localhost:8877", "https://hisabkar-server.vercel.app"];
+// Load SSL certificate and key from environment variables
+const sslOptions = {
+  key: process.env.SSL_KEY,
+  cert: process.env.SSL_CERT,
+};
 
 const corsOptions = {
   origin: true,
@@ -35,18 +39,15 @@ morgan.token("ist-date", () => {
   return moment().utcOffset("+05:30").format("DD/MMM/YYYY:HH:mm:ss Z");
 });
 
-// Define user ID custom token
 morgan.token("user", (req) => {
   return req.userId || "Guest";
 });
 
-app.disable("x-powered-by"); // Disable the X-Powered-By header
+app.disable("x-powered-by");
 app.use(helmet());
 app.use(cors(corsOptions));
-// app.set("trust proxy", true);
-// app.use(encryptResponseMiddleware);
 app.use((req, res, next) => {
-  const originalSend = res.json; // Store original res.json
+  const originalSend = res.json;
 
   res.json = function (data) {
     if (process.env.NODE_ENV === "prod" && data.data) {
@@ -65,25 +66,21 @@ app.use((req, res, next) => {
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: ["'self'"], // Allow only the same origin (your server)
-      scriptSrc: ["'self'"], // Only allow scripts from your domain
-      styleSrc: ["'self'"], // Only allow styles from your domain
-      imgSrc: ["'self'"], // Only allow images from your domain
-      connectSrc: ["'self'"], // Allow only API requests to your domain
-      frameAncestors: ["'none'"], // Block Clickjacking (no iframes)
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'"],
+      imgSrc: ["'self'"],
+      connectSrc: ["'self'"],
+      frameAncestors: ["'none'"],
     },
   })
 );
 
-// ? Passport initialization
 app.use(passport.initialize());
-
-// Middleware
 app.use(express.json());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
-// Middleware to set Cache-Control header for all routes
 app.use((req, res, next) => {
   res.setHeader("Cache-Control", "no-cache, no-store");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -91,14 +88,13 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  const userId = req.headers["x-user-id"]; // Extract custom header
+  const userId = req.headers["x-user-id"];
   if (userId) {
-    req.userId = userId; // Attach it to the request object
+    req.userId = userId;
   }
   next();
 });
 
-// Handle JSON syntax errors
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
     return res.status(400).json({ error: Messages.INVALID_JSON, message: err.message });
@@ -112,13 +108,8 @@ app.use("/", mainRouter);
 
 app.get("/health", async (req, res) => {
   try {
-    // Wrap the query in a Promise with a timeout
     const queryPromise = client.query("SELECT 1");
-    const timeoutPromise = new Promise(
-      (_, reject) => setTimeout(() => reject(new Error("Query timed out")), 1000) // 1-second timeout
-    );
-
-    // Race the query against the timeout
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Query timed out")), 1000));
     await Promise.race([queryPromise, timeoutPromise]);
     res.status(200).json({ success: 1 });
   } catch (error) {
@@ -127,6 +118,7 @@ app.get("/health", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  process.stdout.write(`Server is running on port ${port}\n`);
+// HTTPS Server
+https.createServer(sslOptions, app).listen(port, () => {
+  console.log(`Express HTTPS Server running on port ${port}`);
 });
