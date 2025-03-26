@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const moment = require("moment");
 const helmet = require("helmet");
 const https = require("https");
+const http = require("http");
 
 const mainRouter = require("./routes/routes");
 const config = require("./configuration/config");
@@ -27,7 +28,7 @@ const sslOptions = {
 };
 
 const corsOptions = {
-  origin: config.ALLOWED_ORIGIN,
+  origin: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "x-user-id"],
   optionsSuccessStatus: 200,
@@ -117,7 +118,25 @@ app.get("/health", async (req, res) => {
   }
 });
 
-// HTTPS Server
-https.createServer(sslOptions, app).listen(port, () => {
-  console.log(`Express HTTPS Server running on port ${port}`);
-});
+// Conditional server startup based on NODE_ENV
+if (config.NODE_ENV === "local") {
+  // HTTP Server for local environment
+  app.listen(port, () => {
+    console.log(`Express HTTP Server running on port ${port}`);
+  });
+} else if (config.NODE_ENV === "prod") {
+  // HTTPS Server for production environment
+  https.createServer(sslOptions, app).listen(port, () => {
+    console.log(`Express HTTPS Server running on port ${port}`);
+  });
+
+  // Optional: HTTP Server to redirect to HTTPS in production
+  http
+    .createServer((req, res) => {
+      res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
+      res.end();
+    })
+    .listen(7777, () => {
+      process.stdout.write("HTTP Server redirecting to HTTPS on port 7777\n");
+    });
+}
