@@ -6,7 +6,6 @@ const morgan = require("morgan");
 const moment = require("moment");
 const helmet = require("helmet");
 const https = require("https");
-require("dotenv").config(); // Load environment variables
 
 const mainRouter = require("./routes/routes");
 const config = require("./configuration/config");
@@ -23,12 +22,12 @@ const app = express();
 
 // Load SSL certificate and key from environment variables
 const sslOptions = {
-  key: process.env.SSL_KEY,
-  cert: process.env.SSL_CERT,
+  key: config.SSL.KEY,
+  cert: config.SSL.CERT,
 };
 
 const corsOptions = {
-  origin: true,
+  origin: config.ALLOWED_ORIGIN,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "x-user-id"],
   optionsSuccessStatus: 200,
@@ -50,7 +49,7 @@ app.use((req, res, next) => {
   const originalSend = res.json;
 
   res.json = function (data) {
-    if (process.env.NODE_ENV === "prod" && data.data) {
+    if (config.NODE_ENV === "prod" && data.data) {
       const encryptedData = encryptData(data.data);
       originalSend.call(this, {
         ...data,

@@ -2,6 +2,7 @@ const config = {
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
   DEMO_GROUP_ID: process.env.DEMO_GROUP_ID,
+  ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
   DB: {
     USER: process.env.DB_USER,
     HOST: process.env.DB_HOST,
@@ -28,6 +29,10 @@ const config = {
   },
   GOOGLE: {
     GOOGLE_INFO_ENDPOINT: process.env.GOOGLE_USER_INFO_ENDPOINT,
+  },
+  SSL: {
+    KEY: process.env.SSL_KEY,
+    CERT: process.env.SSL_CERT,
   },
 };
 
