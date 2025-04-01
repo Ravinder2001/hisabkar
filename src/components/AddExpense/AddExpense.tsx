@@ -397,7 +397,15 @@ function AddExpenseModal({
               </div>
               {values.selectedUsers.length > 0 && (
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Split Details</label>
+                  <div className="flex justify-between items-center">
+                    <label className="text-sm font-medium">Split Details</label>
+                    <span className="text-sm text-gray-600">
+                      Remaining:{" "}
+                      {values.splitType === "PERCENTAGE"
+                        ? (100 - values.userSplits.reduce((sum, split) => sum + Number(split.amount || 0), 0)).toFixed(2) + "%"
+                        : (Number(values.amount || 0) - values.userSplits.reduce((sum, split) => sum + Number(split.amount || 0), 0)).toFixed(2)}
+                    </span>
+                  </div>
                   <div className="space-y-3">
                     {values.userSplits.map(({ userId }, index) => {
                       const user = memberList.find((u) => u.id === userId);
