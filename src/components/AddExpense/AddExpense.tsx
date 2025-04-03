@@ -62,12 +62,14 @@ function AddExpenseModal({
   setExpenseList,
   selectedRow,
   callback,
+  isClone,
 }: ModalType & {
   groupId: string;
   memberList: MemberType;
   setExpenseList: Dispatch<SetStateAction<any>>;
   selectedRow: ExpenseType | null;
   callback: () => void;
+  isClone: boolean;
 }) {
   const { expenseTypeList } = useSelector((state: RootState) => state.data);
   const { fetchData: addExpense, response: addRes, isLoading } = useApiFetch("");
@@ -218,12 +220,12 @@ function AddExpenseModal({
   return (
     <ModalComponent isOpen={isOpen} setIsOpen={setIsOpen}>
       <div className={styles.container}>
-        <div className="text-md font-bold mb-6">Add Expense</div>
+        <div className="text-md font-bold mb-6">{selectedRow && !isClone ? "Edit" : isClone ? "Cloning" : "Add"} Expense</div>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
           validateOnBlur={false}
-          onSubmit={selectedRow ? handleEditSubmit : handleSubmit}
+          onSubmit={selectedRow && !isClone ? handleEditSubmit : handleSubmit}
         >
           {({ values, errors, touched, setFieldValue, handleBlur }) => (
             <Form className="space-y-6" noValidate>

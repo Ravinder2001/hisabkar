@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react";
 import styles from "./style.module.css";
-import { Edit, MoreVertical, Receipt, Trash2 } from "lucide-react";
+import { CopyPlus, Edit, MoreVertical, Receipt, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ExpenseType, MemberType } from "../../utils/comman/CommanTypes";
 import { useSelector } from "react-redux";
@@ -17,6 +17,7 @@ type PropsType = ExpenseType & {
   totalItemsCount: number;
   setAddExpModal: () => void;
   setDeleteModal: () => void;
+  onCloneClick: () => void;
   isSettled: boolean;
 };
 
@@ -81,6 +82,10 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
                       <DropdownMenuItem onClick={expense.setAddExpModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
                         <Edit className="mr-2 h-4 w-4" />
                         <span>Edit this Expense</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={expense.onCloneClick} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+                        <CopyPlus className="mr-2 h-4 w-4" />
+                        <span>Clone this Expense</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={expense.setDeleteModal} className="text-red-600 dark:text-red-400 bg-white  cursor-pointer">
                         <Trash2 className="mr-2 h-4 w-4" />
