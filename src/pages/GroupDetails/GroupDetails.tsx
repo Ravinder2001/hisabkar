@@ -58,6 +58,7 @@ export default function GroupDetails() {
   const [selectedUser, setSelectedUser] = useState<string>("-1");
   const [addMemberModal, setAddMemberModal] = useState<boolean>(false);
   const [groupSettingModal, setGroupSettingModal] = useState<boolean>(false);
+  const [isClone, setIsClone] = useState(false);
 
   const groupMemberOptionsList = [
     { value: "-1", label: "All" },
@@ -220,6 +221,7 @@ export default function GroupDetails() {
                   setAddExpModal={() => {
                     handleExpModal();
                     setSelectedRow(expense);
+                    setIsClone(false);
                   }}
                   setDeleteModal={() => {
                     handleDeleteModal();
@@ -227,6 +229,11 @@ export default function GroupDetails() {
                   }}
                   ref={(el) => (expenseRefs.current[expense.expense_id] = el)}
                   isSettled={groupData?.is_settled ?? false}
+                  onCloneClick={() => {
+                    handleExpModal();
+                    setSelectedRow(expense);
+                    setIsClone(true);
+                  }}
                 />
               ))}
               {/* </ScrollArea> */}
@@ -254,6 +261,7 @@ export default function GroupDetails() {
             fetchGroupDetails();
             setSuccessModal(true);
           }}
+          isClone={isClone}
         />
       ) : null}
       <CustomAlert
