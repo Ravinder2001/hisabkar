@@ -437,7 +437,11 @@ function AddExpenseModal({
                   {typeof errors.userSplits === "string" && <div className="text-red-500 text-xs mt-1">{errors.userSplits}</div>}
                 </div>
               )}
-              <ButtonComponent type="submit" text={selectedRow ? "Edit Expense" : "Add Expense"} isLoading={isLoading || editLoading} />
+              <ButtonComponent
+                type="submit"
+                text={selectedRow && !isClone ? "Edit Expense" : isClone ? "Clone Expense" : "Add Expense"}
+                isLoading={isLoading || editLoading}
+              />
             </Form>
           )}
         </Formik>
