@@ -11,17 +11,35 @@ module.exports = {
     try {
       const response = await expenseModel.addExpense({ ...req.body, groupId: req.params.group_id, paidBy: req.user.user_id });
 
-      // Extract all user IDs from req.body.members except the current user
+      // Check if the current user is included in the members
+      const isYouIncluded = req.body.members.some((member) => member.userId === req.user.user_id);
+
+      // Get all user IDs from group data except the current user
       const userIds = response.groupData.user_ids.map((id) => id.user_id).filter((id) => id !== req.user.user_id);
+
+      // Count of other members (excluding current user)
+      const otherMembersCount = req.body.members.filter((member) => member.userId !== req.user.user_id).length;
+
+      let bodyText = `${req.user.name} has added ₹${response.expenseData[0].amount}`;
+      if (isYouIncluded) {
+        if (otherMembersCount > 0) {
+          bodyText += ` with you and ${otherMembersCount} other${otherMembersCount > 1 ? "s" : ""}`;
+        } else {
+          bodyText += ` with you`;
+        }
+      } else {
+        if (req.body.members.length > 0) {
+          bodyText += ` with ${req.body.members.length} member${req.body.members.length > 1 ? "s" : ""}`;
+        }
+      }
 
       if (userIds.length) {
         let subscriptions = await usersModel.getUsersSWData(userIds);
 
         if (subscriptions.length) {
-          // Send notifications to each subscription
           const payload = {
-            title: response.groupData.group_name,
-            body: `${req.user.name} has added ₹${response.expenseData[0].amount}.`,
+            title: `${req.body.expenseName} | ${response.groupData.group_name}`,
+            body: bodyText,
             group_id: req.params.group_id,
           };
           subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
