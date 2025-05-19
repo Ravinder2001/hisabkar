@@ -3,7 +3,7 @@ import React from "react";
 import Select from "react-select";
 
 interface Option {
-  value: string;
+  value: string | number;
   label: string;
 }
 

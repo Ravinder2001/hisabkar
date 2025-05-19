@@ -18,7 +18,7 @@ export type ModalType = {
 };
 
 export type OptionType = {
-  value: string;
+  value: string | number;
   label: string;
 };
 
