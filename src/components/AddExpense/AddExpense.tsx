@@ -232,7 +232,9 @@ function AddExpenseModal({
           {({ values, errors, touched, setFieldValue, handleBlur }) => (
             <Form className="space-y-6" noValidate>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Expense Name</label>
+                <label className="text-sm font-medium">
+                  Expense Name <span className="text-red-500">*</span>
+                </label>
                 <Field name="expenseName">
                   {({ field }: any) => (
                     <Input
@@ -315,7 +317,9 @@ function AddExpenseModal({
                 )}
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Amount</label>
+                <label className="text-sm font-medium">
+                  Amount <span className="text-red-500">*</span>
+                </label>
                 <Field name="amount">
                   {({ field }: any) => (
                     <Input
@@ -358,7 +362,9 @@ function AddExpenseModal({
               </div>
               <div className="space-y-2">
                 <div className="flex gap-1">
-                  <div className="text-sm font-medium">Select Users</div>
+                  <div className="text-sm font-medium">
+                    Select Users <span className="text-red-500">*</span>
+                  </div>
                   <div>
                     <input
                       type="checkbox"
