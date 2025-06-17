@@ -102,6 +102,13 @@ const Navbar = () => {
             <Link to={CONSTANTS.PROJECT_ROUTES.PROFILE} onClick={toggleMenu} className={getMobileLinkClass(CONSTANTS.PROJECT_ROUTES.PROFILE)}>
               Profile
             </Link>
+            <Link
+              to={CONSTANTS.PROJECT_ROUTES.OPEN_EXPENSES}
+              onClick={toggleMenu}
+              className={getMobileLinkClass(CONSTANTS.PROJECT_ROUTES.OPEN_EXPENSES)}
+            >
+              Open Expenses
+            </Link>
             <Link to="/support" className={getMobileLinkClass("/support")}>
               Support
             </Link>
