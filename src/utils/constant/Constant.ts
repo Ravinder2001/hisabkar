@@ -9,6 +9,7 @@ const CONSTANTS = {
     PROFILE: "/profile",
     LEGAL: "/legal",
     SUPPORT: "/support",
+    OPEN_EXPENSES: "/openExpenses",
   },
   API_ROUTES: {
     GOOGLE_SIGN_IN: "/user/google-signin",

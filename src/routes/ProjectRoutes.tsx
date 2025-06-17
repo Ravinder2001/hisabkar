@@ -11,6 +11,7 @@ import Profile from "../pages/Profile/Profile";
 import LegalPage from "../pages/Legals/Legals";
 import SignIn from "../pages/SignIn/SignIn";
 import Support from "../pages/Support/Support";
+import ExpenseTracker from "../pages/OpenExpenses/OpenExpenses";
 
 // import StaffGroups from "../pages/Admin/StaffGroups/StaffGroups";
 
@@ -74,6 +75,14 @@ const ProjectRoutes = () => {
           <PublicRoute>
             <LegalPage />
           </PublicRoute>
+        }
+      />
+      <Route
+        path={CONSTANTS.PROJECT_ROUTES.OPEN_EXPENSES}
+        element={
+          <PrivateRoute>
+            <ExpenseTracker />
+          </PrivateRoute>
         }
       />
 

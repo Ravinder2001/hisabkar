@@ -70,6 +70,9 @@ const Navbar = () => {
               <Link to={CONSTANTS.PROJECT_ROUTES.PROFILE} className={getLinkClass(CONSTANTS.PROJECT_ROUTES.PROFILE)}>
                 Profile
               </Link>
+              <Link to={CONSTANTS.PROJECT_ROUTES.OPEN_EXPENSES} className={getLinkClass(CONSTANTS.PROJECT_ROUTES.OPEN_EXPENSES)}>
+                Open Expenses
+              </Link>
               <Link to="/support" className={getLinkClass("/support")}>
                 Support
               </Link>
