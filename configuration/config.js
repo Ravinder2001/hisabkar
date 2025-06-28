@@ -1,3 +1,4 @@
+const fs = require("fs");
 const config = {
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
@@ -31,8 +32,8 @@ const config = {
     GOOGLE_INFO_ENDPOINT: process.env.GOOGLE_USER_INFO_ENDPOINT,
   },
   SSL: {
-    KEY: process.env.SSL_KEY,
-    CERT: process.env.SSL_CERT,
+    KEY: fs.readFileSync(process.env.SSL_KEY),
+    CERT: fs.readFileSync(process.env.SSL_CERT),
   },
 };
 
