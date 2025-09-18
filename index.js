@@ -22,10 +22,10 @@ const port = config.PORT;
 const app = express();
 
 // Load SSL certificate and key from environment variables
-const sslOptions = {
-  key: config.SSL.KEY,
-  cert: config.SSL.CERT,
-};
+// const sslOptions = {
+//   key: config.SSL.KEY,
+//   cert: config.SSL.CERT,
+// };
 
 const corsOptions = {
   origin: true,
@@ -118,25 +118,32 @@ app.get("/health", async (req, res) => {
   }
 });
 
-// Conditional server startup based on NODE_ENV
+// Conditional server startup
 if (config.NODE_ENV === "local") {
-  // HTTP Server for local environment
+  // Local HTTP server
   app.listen(port, () => {
     console.log(`Express HTTP Server running on port ${port}`);
   });
 } else if (config.NODE_ENV === "prod") {
-  // HTTPS Server for production environment
-  https.createServer(sslOptions, app).listen(port, () => {
-    console.log(`Express HTTPS Server running on port ${port}`);
-  });
-
-  // Optional: HTTP Server to redirect to HTTPS in production
-  http
-    .createServer((req, res) => {
-      res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
-      res.end();
-    })
-    .listen(7777, () => {
-      process.stdout.write("HTTP Server redirecting to HTTPS on port 7777\n");
+  if (config.SSL) {
+    // HTTPS with SSL certs
+    https.createServer(config.SSL, app).listen(port, () => {
+      console.log(`Express HTTPS Server running on port ${port}`);
     });
+
+    // HTTP -> HTTPS redirect
+    http
+      .createServer((req, res) => {
+        res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
+        res.end();
+      })
+      .listen(7777, () => {
+        process.stdout.write("HTTP Server redirecting to HTTPS on port 7777\n");
+      });
+  } else {
+    // No SSL (Render/other hosts manage HTTPS)
+    app.listen(port, () => {
+      console.log(`Express HTTP Server running on port ${port}`);
+    });
+  }
 }
