@@ -1,14 +1,65 @@
-import React from "react";
-import { Check } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Check, Share2 } from "lucide-react";
 import type { Group } from "../../pages/OpenExpenses/OpenExpenses";
 import { calculateSettlements } from "../../pages/OpenExpenses/OpenExpenses";
+import Modal from "react-modal";
 
 export default function SettlementsView({ group, getMemberName }: { group: Group; getMemberName: (memberId: string) => string }) {
   const settlements = calculateSettlements(group);
 
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 640);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => setModalIsOpen(false);
+
+  // Helper to generate WhatsApp message for each member
+  const getWhatsAppMessage = (memberId: string) => {
+    const member = group.members.find((m) => m.id === memberId);
+    if (!member) return "";
+
+    const owes = settlements.filter((s) => s.from === memberId);
+    const receives = settlements.filter((s) => s.to === memberId);
+
+    const messageLines: string[] = [];
+    messageLines.push(`Hi ${member.name},`);
+
+    if (owes.length > 0) {
+      messageLines.push(`You need to pay:`);
+      owes.forEach((s) => {
+        messageLines.push(`• ₹${s.amount.toFixed(2)} to ${getMemberName(s.to)}`);
+      });
+    }
+
+    if (receives.length > 0) {
+      messageLines.push(`You will receive:`);
+      receives.forEach((s) => {
+        messageLines.push(`• ₹${s.amount.toFixed(2)} from ${getMemberName(s.from)}`);
+      });
+    }
+
+    return messageLines.join("\n");
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg">
+    <div className="space-y-6 relative">
+      {settlements.length > 0 && (
+        <button
+          onClick={openModal}
+          className="absolute top-4 right-2 flex items-center space-x-1 bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600 transition-colors text-sm"
+        >
+          <Share2 className="w-3 h-3" />
+          <span>Share</span>
+        </button>
+      )}
+      <div className="bg-white rounded-lg p-4">
         <h3 className="text-lg font-semibold mb-4">Settlement Summary</h3>
 
         {settlements.length === 0 ? (
@@ -60,6 +111,40 @@ export default function SettlementsView({ group, getMemberName }: { group: Group
           </div>
         )}
       </div>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Share via WhatsApp"
+        className={`bg-white rounded-lg shadow-lg p-6 outline-none ${isMobile ? "mx-4 w-full mt-20" : "w-[500px] mx-auto mt-20"}`}
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50"
+        ariaHideApp={false}
+      >
+        <h3 className="text-lg font-semibold mb-4">Share via WhatsApp</h3>
+
+        {group.members.map((member) => {
+          const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(getWhatsAppMessage(member.id))}`;
+          return (
+            <div key={member.id} className="flex items-center justify-between bg-gray-50 rounded-lg p-3 mb-3 border">
+              <p className="font-medium text-gray-900">{member.name}</p>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-1 text-xs"
+              >
+                <Share2 className="w-3 h-3" />
+                {/* <span>WhatsApp</span> */}
+              </a>
+            </div>
+          );
+        })}
+
+        <div className="mt-4 text-right">
+          <button onClick={closeModal} className="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg transition-colors">
+            Close
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

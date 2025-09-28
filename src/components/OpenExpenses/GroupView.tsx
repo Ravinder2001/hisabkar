@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Users, Receipt, Calculator, Plus, Edit2, Trash2 } from "lucide-react";
+import Modal from "react-modal";
 import type { Group, Expense } from "../../pages/OpenExpenses/OpenExpenses";
 
 interface GroupViewProps {
@@ -13,6 +14,44 @@ interface GroupViewProps {
 
 export default function GroupView({ group, onAddExpense, onEditExpense, onDeleteExpense, onSettleUp, getMemberName }: GroupViewProps) {
   const totalExpenses = group.expenses.reduce((sum, exp) => sum + exp.amount, 0);
+
+  // Modal state
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 640);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const openDeleteModal = (expense: Expense) => {
+    setExpenseToDelete(expense);
+    setModalIsOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setModalIsOpen(false);
+    setExpenseToDelete(null);
+  };
+
+  const confirmDelete = () => {
+    if (expenseToDelete) {
+      onDeleteExpense(expenseToDelete.id);
+      closeDeleteModal();
+    }
+  };
+
+  // Function to calculate total spent by a member
+  const getTotalSpent = (memberId: string) => {
+    return group.expenses
+      .filter((exp) => exp.paidBy === memberId)
+      .reduce((sum, exp) => sum + exp.amount, 0)
+      .toFixed(2);
+  };
 
   return (
     <div className="space-y-6">
@@ -69,24 +108,15 @@ export default function GroupView({ group, onAddExpense, onEditExpense, onDelete
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <h3 className="text-lg font-semibold mb-4">Members</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {group.members.map((member) => {
-            // const bgColors = [
-            //   "bg-gradient-to-br from-pink-100 to-rose-100",
-            //   "bg-gradient-to-br from-yellow-100 to-orange-100",
-            //   "bg-gradient-to-br from-green-100 to-teal-100",
-            //   "bg-gradient-to-br from-purple-100 to-violet-100",
-            // ];
-            // const bgColor = bgColors[index % bgColors.length];
-
-            return (
-              <div key={member.id} className={`bg-gray-50 rounded-lg p-3 text-center`}>
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <span className="text-blue-600 font-semibold">{member.name.charAt(0).toUpperCase()}</span>
-                </div>
-                <p className="text-sm font-medium text-gray-900">{member.name}</p>
+          {group.members.map((member) => (
+            <div key={member.id} className={`bg-gray-50 rounded-lg p-3 text-center`}>
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <span className="text-blue-600 font-semibold">{member.name.charAt(0).toUpperCase()}</span>
               </div>
-            );
-          })}
+              <p className="text-sm font-medium text-gray-900">{member.name}</p>
+              <p className="text-xs text-gray-500 mt-1">Spent: ₹{getTotalSpent(member.id)}</p>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -119,7 +149,7 @@ export default function GroupView({ group, onAddExpense, onEditExpense, onDelete
                       <button onClick={() => onEditExpense(expense)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button onClick={() => onDeleteExpense(expense.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                      <button onClick={() => openDeleteModal(expense)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -129,6 +159,29 @@ export default function GroupView({ group, onAddExpense, onEditExpense, onDelete
           </div>
         )}
       </div>
+
+      {/* React Modal for Delete Confirmation */}
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeDeleteModal}
+        contentLabel="Confirm Delete"
+        className={`bg-white rounded-lg shadow-lg p-6 outline-none ${isMobile ? "mx-4 w-[90%] mt-40" : "max-w-md mx-auto mt-40"}`}
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50"
+        ariaHideApp={false}
+      >
+        <h3 className="text-lg font-semibold mb-4">Confirm Delete</h3>
+        <p className="mb-6">
+          Are you sure you want to delete <strong>{expenseToDelete?.description}</strong> expense? This action cannot be undone.
+        </p>
+        <div className="flex justify-end space-x-3">
+          <button onClick={closeDeleteModal} className="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg transition-colors">
+            Cancel
+          </button>
+          <button onClick={confirmDelete} className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition-colors">
+            Delete
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

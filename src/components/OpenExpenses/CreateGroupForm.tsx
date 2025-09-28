@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Plus, X } from "lucide-react";
 
 interface CreateGroupFormProps {
@@ -9,10 +9,17 @@ interface CreateGroupFormProps {
 export default function CreateGroupForm({ onSubmit, onCancel }: CreateGroupFormProps) {
   const [groupName, setGroupName] = useState("");
   const [members, setMembers] = useState([""]);
+  const memberRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   const addMember = () => {
-    setMembers([...members, ""]);
+    setMembers((prev) => [...prev, ""]);
   };
+
+  // Focus the last input whenever a new member is added
+  useEffect(() => {
+    const lastIndex = members.length - 1;
+    memberRefs.current[lastIndex]?.focus();
+  }, [members.length]);
 
   const updateMember = (index: number, value: string) => {
     const updated = [...members];
@@ -22,6 +29,16 @@ export default function CreateGroupForm({ onSubmit, onCancel }: CreateGroupFormP
 
   const removeMember = (index: number) => {
     setMembers(members.filter((_, i) => i !== index));
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // prevent form submit
+      const value = members[index].trim();
+      if (value) {
+        if (index === members.length - 1) addMember();
+      }
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -59,6 +76,8 @@ export default function CreateGroupForm({ onSubmit, onCancel }: CreateGroupFormP
                   type="text"
                   value={member}
                   onChange={(e) => updateMember(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  ref={(el) => (memberRefs.current[index] = el)}
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Member name"
                 />
