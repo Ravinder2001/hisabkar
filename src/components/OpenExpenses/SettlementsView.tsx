@@ -8,6 +8,7 @@ export default function SettlementsView({ group, getMemberName }: { group: Group
   const settlements = calculateSettlements(group);
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  // Keep isMobile logic for styling and now for URL construction
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -45,7 +46,39 @@ export default function SettlementsView({ group, getMemberName }: { group: Group
       });
     }
 
+    // Add group context
+    messageLines.push(`\n(Settlements for group: ${group.name})`);
+
     return messageLines.join("\n");
+  };
+
+  // NEW: Helper to generate WhatsApp URL based on device type
+  const getWhatsAppUrl = (memberId: string) => {
+    const message = encodeURIComponent(getWhatsAppMessage(memberId));
+
+    if (isMobile) {
+      // Standard wa.me link for mobile devices
+      // This often prompts the native app to open
+      return `whatsapp://send?text=${message}`;
+    } else {
+      // For desktop, use the web client URL structure
+      // Modern desktop apps often intercept this or the browser will open web.whatsapp.com
+      // Note: A phone number is technically required for web.whatsapp.com,
+      // but to share a message directly without a specific recipient,
+      // the `wa.me` structure is still the standard, which opens a new chat
+      // or the web app. The best chance for opening the *native desktop app* // without a phone number is often the `whatsapp://send` scheme,
+      // which many desktop apps are configured to handle.
+
+      // Let's use the most aggressive scheme for the desktop app first:
+      const desktopAppScheme = `whatsapp://send?text=${message}`;
+
+      // The standard wa.me link as a fallback if the custom scheme doesn't work
+      // or to open the web client:
+      // return `https://wa.me/?text=${message}`;
+
+      // We will rely on the browser to handle the custom scheme for a better desktop experience.
+      return desktopAppScheme;
+    }
   };
 
   return (
@@ -62,6 +95,7 @@ export default function SettlementsView({ group, getMemberName }: { group: Group
       <div className="bg-white rounded-lg p-4">
         <h3 className="text-lg font-semibold mb-4">Settlement Summary</h3>
 
+        {/* ... (Settlement display logic remains the same) ... */}
         {settlements.length === 0 ? (
           <div className="text-center py-8">
             <Check className="w-16 h-16 text-green-500 mx-auto mb-4" />
@@ -76,11 +110,6 @@ export default function SettlementsView({ group, getMemberName }: { group: Group
                 <div className="flex items-center justify-between space-x-2 sm:space-x-4">
                   {/* From person */}
                   <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-                    {/* <div className="w-8 h-8 sm:w-12 sm:h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-red-600 font-semibold text-xs sm:text-base">
-                        {getMemberName(settlement.from).charAt(0).toUpperCase()}
-                      </span>
-                    </div> */}
                     <div className="min-w-0">
                       <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{getMemberName(settlement.from)}</p>
                       <p className="text-xs sm:text-sm text-gray-600">owes</p>
@@ -99,11 +128,6 @@ export default function SettlementsView({ group, getMemberName }: { group: Group
                       <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{getMemberName(settlement.to)}</p>
                       <p className="text-xs sm:text-sm text-gray-600">receives</p>
                     </div>
-                    {/* <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-green-600 font-semibold text-xs sm:text-base">
-                        {getMemberName(settlement.to).charAt(0).toUpperCase()}
-                      </span>
-                    </div> */}
                   </div>
                 </div>
               </div>
@@ -122,11 +146,13 @@ export default function SettlementsView({ group, getMemberName }: { group: Group
         <h3 className="text-lg font-semibold mb-4">Share via WhatsApp</h3>
 
         {group.members.map((member) => {
-          const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(getWhatsAppMessage(member.id))}`;
+          // Use the new helper function
+          const whatsappUrl = getWhatsAppUrl(member.id);
           return (
             <div key={member.id} className="flex items-center justify-between bg-gray-50 rounded-lg p-3 mb-3 border">
               <p className="font-medium text-gray-900">{member.name}</p>
               <a
+                // The key change is the whatsappUrl
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
