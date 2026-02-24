@@ -5,8 +5,8 @@ const cors = require("cors");
 const morgan = require("morgan");
 const moment = require("moment");
 const helmet = require("helmet");
-// const https = require("https");
-// const http = require("http");
+const https = require("https");
+const http = require("http");
 
 const mainRouter = require("./routes/routes");
 const config = require("./configuration/config");
@@ -109,8 +109,7 @@ app.use("/", mainRouter);
 app.get("/health", async (req, res) => {
   try {
     const queryPromise = client.query("SELECT 1");
-    // Increased timeout to 5s for Vercel cold starts/latency
-    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Query timed out")), 5000));
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Query timed out")), 1000));
     await Promise.race([queryPromise, timeoutPromise]);
     res.status(200).json({ success: 1 });
   } catch (error) {
@@ -119,12 +118,32 @@ app.get("/health", async (req, res) => {
   }
 });
 
-// Local development server
+// Conditional server startup
 if (config.NODE_ENV === "local") {
+  // Local HTTP server
   app.listen(port, () => {
     console.log(`Express HTTP Server running on port ${port}`);
   });
-}
+} else if (config.NODE_ENV === "prod") {
+  if (config.SSL) {
+    // HTTPS with SSL certs
+    https.createServer(config.SSL, app).listen(port, () => {
+      console.log(`Express HTTPS Server running on port ${port}`);
+    });
 
-// Export for Vercel (serverless) — Vercel manages the HTTP server itself
-module.exports = app;
+    // HTTP -> HTTPS redirect
+    http
+      .createServer((req, res) => {
+        res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
+        res.end();
+      })
+      .listen(7777, () => {
+        process.stdout.write("HTTP Server redirecting to HTTPS on port 7777\n");
+      });
+  } else {
+    // No SSL (Render/other hosts manage HTTPS)
+    app.listen(port, () => {
+      console.log(`Express HTTP Server running on port ${port}`);
+    });
+  }
+}
