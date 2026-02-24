@@ -109,7 +109,7 @@ app.use("/", mainRouter);
 app.get("/health", async (req, res) => {
   try {
     const queryPromise = client.query("SELECT 1");
-    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Query timed out")), 1000));
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Query timed out")), 5000));
     await Promise.race([queryPromise, timeoutPromise]);
     res.status(200).json({ success: 1 });
   } catch (error) {
