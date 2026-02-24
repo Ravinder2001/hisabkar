@@ -1,7 +1,7 @@
 const { Client } = require("pg");
 const config = require("../configuration/config");
 
-const isProduction = process.env.NODE_ENV === "prod";
+const isProduction = process.env.NODE_ENV === "prod" || process.env.NODE_ENV === "production";
 
 const clientConfig = {
   user: config.DB.USER,
