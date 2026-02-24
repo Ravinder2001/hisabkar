@@ -1,42 +1,35 @@
-const { Client } = require("pg");
+const { Pool } = require("pg");
 const config = require("../configuration/config");
 
 const isProduction = process.env.NODE_ENV === "prod" || process.env.NODE_ENV === "production";
 
-const clientConfig = {
+const poolConfig = {
   user: config.DB.USER,
   host: config.DB.HOST,
   database: config.DB.DATABASE,
   password: config.DB.PASSWORD,
   port: config.DB.PORT,
+  // Crucial for Serverless:
   connectionTimeoutMillis: 5000,
+  idleTimeoutMillis: 30000,
+  max: 10, // Keep pool small for free tier
 };
 
 if (isProduction && process.env.PG_CA_CERT) {
   const pem = Buffer.from(process.env.PG_CA_CERT, "base64").toString("utf-8");
-  clientConfig.ssl = {
+  poolConfig.ssl = {
     rejectUnauthorized: true,
     ca: pem,
   };
 }
 
-const client = new Client(clientConfig);
+const pool = new Pool(poolConfig);
 
-client.on("error", (err) => {
-  console.error("PostgreSQL client error:", err);
+pool.on("error", (err) => {
+  console.error("Unexpected error on idle client", err);
 });
 
-async function initializeDatabase() {
-  try {
-    await client.connect();
-    console.log("Connected to database");
-  } catch (err) {
-    console.error("PostgreSQL DB connection error:", err);
-  }
-}
-
-initializeDatabase();
-
 module.exports = {
-  query: (text, params) => client.query(text, params),
+  query: (text, params) => pool.query(text, params),
+  pool: pool,
 };
