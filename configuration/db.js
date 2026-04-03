@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const fs = require("fs");
 const config = require("../configuration/config");
 
 const isProduction = process.env.NODE_ENV === "prod" || process.env.NODE_ENV === "production";
@@ -16,7 +17,7 @@ const poolConfig = {
 };
 
 if (isProduction && process.env.PG_CA_CERT) {
-  const pem = Buffer.from(process.env.PG_CA_CERT, "base64").toString("utf-8");
+  const pem = Buffer.from(fs.readFileSync(process.env.PG_CA_CERT), "base64").toString("utf-8");
   poolConfig.ssl = {
     rejectUnauthorized: true,
     ca: pem,
@@ -27,6 +28,15 @@ const pool = new Pool(poolConfig);
 
 pool.on("error", (err) => {
   console.error("Unexpected error on idle client", err);
+});
+
+pool.connect((err, client, release) => {
+  if (err) {
+    console.error("Error connecting to the database:", err.stack);
+  } else {
+    console.log("🚀 Database connected successfully!");
+    release();
+  }
 });
 
 module.exports = {
