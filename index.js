@@ -7,6 +7,8 @@ const moment = require("moment");
 const helmet = require("helmet");
 const https = require("https");
 const http = require("http");
+// const { Server } = require("socket.io");
+const initSockets = require("./sockets/index");
 
 const mainRouter = require("./routes/routes");
 const config = require("./configuration/config");
@@ -121,8 +123,10 @@ app.get("/health", async (req, res) => {
 // Conditional server startup
 if (config.NODE_ENV === "local") {
   // Local HTTP server
-  app.listen(port, () => {
-    console.log(`Express HTTP Server running on port ${port}`);
+  const server = http.createServer(app);
+  initSockets(server);
+  server.listen(port, () => {
+    console.log(`Express HTTP Server with Sockets running on port ${port}`);
   });
 } else if (config.NODE_ENV === "prod") {
   if (config.SSL) {
@@ -142,8 +146,10 @@ if (config.NODE_ENV === "local") {
       });
   } else {
     // No SSL (Render/other hosts manage HTTPS)
-    app.listen(port, () => {
-      console.log(`Express HTTP Server running on port ${port}`);
+    const server = http.createServer(app);
+    initSockets(server);
+    server.listen(port, () => {
+      console.log(`Express HTTP Server with Sockets running on port ${port}`);
     });
   }
 }
