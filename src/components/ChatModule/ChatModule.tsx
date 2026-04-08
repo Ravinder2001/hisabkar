@@ -267,6 +267,7 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, onClose }) => {
                             icon={msg.expense_icon || ""}
                             category={msg.expense_type || ""}
                             members={msg.expense_members || []}
+                            isMe={isMe}
                           />
                         )}
                         <span className={styles.timestamp}>

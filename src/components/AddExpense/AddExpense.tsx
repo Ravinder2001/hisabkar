@@ -214,9 +214,20 @@ function AddExpenseModal({
           {({ values, errors, touched, setFieldValue, handleBlur }) => (
             <Form className="space-y-6" noValidate>
               <div className="space-y-2">
-                <label className="text-sm font-medium">
-                  Expense Name <span className="text-red-500">*</span>
-                </label>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium">
+                    Expense Name <span className="text-red-500">*</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowDescription(!showDescription)}
+                    className={`text-sm font-semibold px-2 py-0.5 rounded-full transition-colors ${
+                      showDescription ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                    }`}
+                  >
+                    {showDescription ? "− Note" : "+ Note"}
+                  </button>
+                </div>
                 <Field name="expenseName">
                   {({ field }: any) => (
                     <Input
@@ -227,36 +238,22 @@ function AddExpenseModal({
                   )}
                 </Field>
                 {touched.expenseName && errors.expenseName && <div className="text-red-500 text-xs">{errors.expenseName}</div>}
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Description</label>
-                  <div
-                    onClick={() => setShowDescription(!showDescription)}
-                    className={`w-10 h-5 flex items-center rounded-full cursor-pointer transition-colors ${
-                      showDescription ? "bg-blue-500" : "bg-gray-300"
-                    }`}
-                  >
-                    <div
-                      className={`w-4 h-4 bg-white rounded-full transform transition-transform ${
-                        showDescription ? "translate-x-5" : "translate-x-1"
-                      }`}
-                    />
-                  </div>
-                </div>
+
                 {showDescription && (
-                  <>
+                  <div className="mt-1">
                     <Field name="description">
                       {({ field }: any) => (
                         <Textarea
                           {...field}
                           onBlur={handleBlur}
-                          className={`border-[#e5e7eb] rounded-lg ${touched.description && errors.description ? "border-red-500" : ""}`}
+                          placeholder="Add a note..."
+                          rows={2}
+                          className={`border-[#e5e7eb] rounded-lg text-sm ${touched.description && errors.description ? "border-red-500" : ""}`}
                         />
                       )}
                     </Field>
                     {touched.description && errors.description && <div className="text-red-500 text-xs">{errors.description}</div>}
-                  </>
+                  </div>
                 )}
               </div>
 

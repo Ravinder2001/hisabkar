@@ -36,9 +36,8 @@
   font-size: 14px;
   font-weight: 600;
   color: #1e293b;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .expenseDate {
@@ -120,26 +119,30 @@
   color: #1e293b;
 }
 
-/* Override bubble colors when card is inside my-message */
-:global(.myMessage) .cardContainer {
+/* Override colors when card is in my message (blue bubble) */
+.myCardContainer {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-:global(.myMessage) .expenseName,
-:global(.myMessage) .amountBox,
-:global(.myMessage) .currency,
-:global(.myMessage) .amount,
-:global(.myMessage) .memberName,
-:global(.myMessage) .memberAmount {
-  color: #fff;
+.myCardContainer .expenseName,
+.myCardContainer .amountBox,
+.myCardContainer .currency,
+.myCardContainer .amount,
+.myCardContainer .memberName,
+.myCardContainer .memberAmount {
+  color: #fff !important;
 }
 
-:global(.myMessage) .expandButton,
-:global(.myMessage) .expenseDate {
-  color: rgba(255, 255, 255, 0.8);
+.myCardContainer .expandButton,
+.myCardContainer .expenseDate {
+  color: rgba(255, 255, 255, 0.8) !important;
 }
 
-:global(.myMessage) .membersList {
-  background: rgba(0, 0, 0, 0.1);
+.myCardContainer .membersList {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.myCardContainer .detailsSection {
+  border-top-color: rgba(255, 255, 255, 0.2);
 }

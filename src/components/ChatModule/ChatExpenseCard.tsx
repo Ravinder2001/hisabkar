@@ -17,13 +17,14 @@ interface ChatExpenseCardProps {
   icon: string;
   category: string;
   members: ExpenseMember[];
+  isMe?: boolean;
 }
 
-const ChatExpenseCard: React.FC<ChatExpenseCardProps> = ({ name, amount, date, icon, category, members }) => {
+const ChatExpenseCard: React.FC<ChatExpenseCardProps> = ({ name, amount, date, icon, category, members, isMe }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className={styles.cardContainer}>
+    <div className={`${styles.cardContainer} ${isMe ? styles.myCardContainer : ""}`}>
       <div className={styles.cardHeader}>
         <div className={styles.iconBox}>
           {icon ? <img src={icon} alt={category} className="w-4 h-4" /> : <Receipt size={16} className="text-green-600" />}

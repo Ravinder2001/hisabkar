@@ -340,7 +340,7 @@ export default function GroupDetails() {
       </div>
 
       {!groupData?.is_settled ? (
-        <Button className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg bg-black text-white" onClick={handleExpModal}>
+        <Button className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg bg-black text-white z-50" onClick={handleExpModal}>
           <Plus className="w-6 h-6" />
         </Button>
       ) : null}
