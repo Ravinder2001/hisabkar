@@ -3,8 +3,6 @@ import styles from "./style.module.css";
 import { CopyPlus, Edit, MessageSquare, MoreVertical, Receipt, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ExpenseType, MemberType } from "../../utils/comman/CommanTypes";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import { formatDateTime } from "../../utils/helpers/commanHelper";
 import { Button } from "../../components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
@@ -23,9 +21,6 @@ type PropsType = ExpenseType & {
 };
 
 const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
-  const expenseTypeList = useSelector((state: RootState) => state.data.expenseTypeList);
-
-  const expenseType = expenseTypeList.find((type) => type.id === expense.expense_type_id);
   const paidByUser = expense.allMembersList.find((member) => member.id === expense.paid_by);
 
   // Format description into bullet points
@@ -62,10 +57,6 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
             <div className="p-3 sm:p-4 rounded-lg space-y-3 sm:space-y-4" id={expense.is_own_expense ? styles.expOwnCard : styles.expCard}>
               <div className="flex flex-row items-start justify-between space-y-0 p-0">
                 <div className="space-y-1 flex-1">
-                  <div className="flex items-center gap-2">
-                    <img src={expenseType?.icon ?? ""} alt={expenseType?.name} className="w-4 h-4" />
-                    <div className="text-sm">{expenseType?.name}</div>
-                  </div>
                   <h2 className="text-2xl font-semibold tracking-tight">{expense.expense_name}</h2>
                 </div>
                 {/* <div className="text-right">

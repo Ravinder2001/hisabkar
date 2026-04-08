@@ -5,12 +5,9 @@ import * as Yup from "yup";
 import { Input } from "../ui/input";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import { Check, CircleAlert } from "lucide-react";
-import { ExpenseType, MemberType, ModalType, OptionType, SplitType } from "../../utils/comman/CommanTypes";
-import CustomSelect from "../CustomSelect/CustomSelect";
+import { ExpenseType, MemberType, ModalType, SplitType } from "../../utils/comman/CommanTypes";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
 import { Textarea } from "../ui/textarea";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
 import ButtonComponent from "../Atoms/ButtonComponent/ButtonComponent";
@@ -25,7 +22,6 @@ interface UserSplit {
 interface FormValues {
   expenseName: string;
   description: string;
-  expenseTypeId: OptionType;
   amount: string;
   selectedUsers: string[];
   splitType: SplitType;
@@ -42,10 +38,6 @@ const validationSchema = Yup.object().shape({
     .min(5, "Must be at least 5 characters")
     .max(500, "Must be at most 500 characters")
     .matches(/^[a-zA-Z\s]*$/, "Only letters and spaces are allowed"),
-  expenseTypeId: Yup.object().shape({
-    value: Yup.string().required("Expense type is required"),
-    label: Yup.string().required("Please select an expense type"),
-  }),
   amount: Yup.number()
     .required("Amount is required")
     .positive("Amount must be positive")
@@ -71,16 +63,13 @@ function AddExpenseModal({
   callback: () => void;
   isClone: boolean;
 }) {
-  const { expenseTypeList } = useSelector((state: RootState) => state.data);
   const { fetchData: addExpense, response: addRes, isLoading } = useApiFetch("");
   const { fetchData: editExpense, response: editRes, isLoading: editLoading } = useApiFetch("");
   const [showDescription, setShowDescription] = useState(false);
-  const [showExpenseType, setShowExpenseType] = useState(false);
 
   const [initialValues, setInitialValues] = useState<FormValues>({
     expenseName: "",
     description: "",
-    expenseTypeId: { value: "", label: "" },
     amount: "",
     selectedUsers: [],
     splitType: "EQUAL",
@@ -122,7 +111,6 @@ function AddExpenseModal({
           expenseName: values.expenseName,
           description: values.description,
           splitType: values.splitType,
-          expenseTypeId: values.expenseTypeId.value,
           amount: parseFloat(values.amount),
           members,
         },
@@ -149,7 +137,6 @@ function AddExpenseModal({
           expenseName: values.expenseName,
           description: values.description,
           splitType: values.splitType,
-          expenseTypeId: values.expenseTypeId.value,
           amount: parseFloat(values.amount),
           members,
         },
@@ -183,10 +170,6 @@ function AddExpenseModal({
         setInitialValues({
           expenseName: selectedRow.expense_name,
           description: selectedRow.description,
-          expenseTypeId: {
-            value: selectedRow.expense_type_id,
-            label: expenseTypeList.find((et) => et.id === selectedRow.expense_type_id)?.name || "",
-          },
           amount: selectedRow.amount.toString(),
           selectedUsers: selectedRow.members.map((member) => member.id),
           splitType: selectedRow.split_type,
@@ -209,7 +192,6 @@ function AddExpenseModal({
         setInitialValues({
           expenseName: "",
           description: "",
-          expenseTypeId: { value: 4, label: "Utilities" },
           amount: "",
           selectedUsers: [],
           splitType: "EQUAL",
@@ -217,7 +199,7 @@ function AddExpenseModal({
         });
       }
     }
-  }, [isOpen, selectedRow, expenseTypeList]);
+  }, [isOpen, selectedRow]);
 
   return (
     <ModalComponent isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -277,45 +259,7 @@ function AddExpenseModal({
                   </>
                 )}
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Expense Type</label>
-                  <div
-                    onClick={() => setShowExpenseType(!showExpenseType)}
-                    className={`w-10 h-5 flex items-center rounded-full cursor-pointer transition-colors ${
-                      showExpenseType ? "bg-blue-500" : "bg-gray-300"
-                    }`}
-                  >
-                    <div
-                      className={`w-4 h-4 bg-white rounded-full transform transition-transform ${
-                        showExpenseType ? "translate-x-5" : "translate-x-1"
-                      }`}
-                    />
-                  </div>
-                </div>
-                {showExpenseType && (
-                  <>
-                    <Field name="expenseTypeId">
-                      {({ field, form }: any) => (
-                        <CustomSelect
-                          {...field}
-                          options={expenseTypeList.map((type) => ({
-                            value: type.id,
-                            label: type.name,
-                          }))}
-                          onChange={(option: OptionType) => {
-                            form.setFieldValue("expenseTypeId", option);
-                            form.setFieldTouched("expenseTypeId", true, false);
-                          }}
-                          placeholder="Select expense type"
-                          className={touched.expenseTypeId && errors.expenseTypeId?.value ? "border-red-500" : ""}
-                        />
-                      )}
-                    </Field>
-                    {touched.expenseTypeId && errors.expenseTypeId?.value && <div className="text-red-500 text-xs">{errors.expenseTypeId.value}</div>}
-                  </>
-                )}
-              </div>
+
               <div className="space-y-2">
                 <label className="text-sm font-medium">
                   Amount <span className="text-red-500">*</span>

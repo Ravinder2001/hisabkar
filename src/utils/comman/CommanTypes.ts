@@ -48,7 +48,6 @@ export type SplitType = "EQUAL" | "PERCENTAGE" | "CUSTOM";
 export type ExpenseType = {
   expense_id: number;
   expense_name: string;
-  expense_type_id: string;
   description: string;
   amount: number;
   paid_by: string;

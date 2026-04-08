@@ -18,7 +18,6 @@ const CONSTANTS = {
     LOGIN: "/user/login",
     REGISTER: "/user/register",
     ALL_GROUPS: "/group",
-    EXPENSE_TYPE_LIST: "/expense/expenseTypeList",
     GROUP_TYPE_LIST: "/group/groupTypeList",
     GROUP_DETAILS: "/group/single",
     ALL_EXPENSES: "/expense/getAllExpenses",

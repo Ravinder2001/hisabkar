@@ -12,6 +12,8 @@ import GroupDetailsContent from "../../components/GroupDetailsContent/GroupDetai
 import { Plus, MessageSquare } from "lucide-react";
 import { ExpenseType, GroupDataType, GroupPairsData } from "../../utils/comman/CommanTypes";
 import ExpenseCard from "../../components/ExpenseCard/ExpenseCard";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -267,22 +269,34 @@ export default function GroupDetails() {
             <CardTitle>Expenses Timeline</CardTitle>
             <div className="flex items-center gap-2">
               <div className={styles.selectWrapper}>
-                <select value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)} className={styles.customSelect}>
-                  {groupMemberOptionsList.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-8 gap-1 text-xs font-medium pr-2">
+                      {groupMemberOptionsList.find((opt) => opt.value === selectedUser)?.label || "All"}
+                      <ChevronDown className="h-3 w-3 text-gray-500" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-[150px] bg-white">
+                    {groupMemberOptionsList.map((option) => (
+                      <DropdownMenuItem
+                        key={option.value}
+                        onClick={() => setSelectedUser(option.value)}
+                        className={`text-xs cursor-pointer ${selectedUser === option.value ? "bg-gray-100 font-semibold" : ""}`}
+                      >
+                        {option.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-              <div className="flex items-center gap-2 relative">
+              <div className="flex items-center gap-2 relative ml-2">
                 {hasUnreadMessages && (
                   <div className={styles.unreadIndicator}>
                     <span className={styles.unreadText}>New messages</span>
                     <div className={styles.unreadBlinkBorder}></div>
                   </div>
                 )}
-                <MessageSquare onClick={handleChatModal} size={28} className="cursor-pointer text-blue-600" />
+                <MessageSquare onClick={handleChatModal} size={20} className="cursor-pointer text-blue-600 hover:text-blue-700 transition-colors" />
               </div>
             </div>
           </CardHeader>

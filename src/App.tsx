@@ -9,7 +9,7 @@ import { setUserLoggedOut } from "./store/features/userSlice";
 import { isTokenExpired } from "./utils/helpers/authHelper";
 import useApiFetch from "./hooks/useAPIFetch";
 import CONSTANTS from "./utils/constant/Constant";
-import { setExpenseTypeList, setGroupTypeList } from "./store/features/dataSlice";
+import { setGroupTypeList } from "./store/features/dataSlice";
 import Loader from "./components/Loader/Loader";
 import { subscribeUser } from "./utils/helpers/serviceWorkerHelper";
 import SiteUnavailable from "./pages/SiteUnavailable/SiteUnavailable";
@@ -25,7 +25,6 @@ const App: React.FC = () => {
   const { token, id } = useSelector((state: RootState) => state.user);
 
   const { fetchData: fetchServerHealth, response: serverHealthRes, isLoading } = useApiFetch(CONSTANTS.API_ROUTES.SERVER_HEALTH);
-  const { fetchData: fetchExpenseTypeList, response: expenseTypeRes } = useApiFetch(CONSTANTS.API_ROUTES.EXPENSE_TYPE_LIST);
   const { fetchData: fetchGroupTypeList, response: groupTypeRes } = useApiFetch(CONSTANTS.API_ROUTES.GROUP_TYPE_LIST);
 
   // Fetch server health only once on mount
@@ -33,10 +32,9 @@ const App: React.FC = () => {
     fetchServerHealth();
   }, [fetchServerHealth]);
 
-  // Fetch expense and group types only when server is healthy and token is valid
+  // Fetch group types only when server is healthy and token is valid
   useEffect(() => {
     if (serverHealthRes?.success === 1 && token && !isTokenExpired(token)) {
-      fetchExpenseTypeList();
       fetchGroupTypeList();
       subscribeUser();
       if (window.NREUM) {
@@ -44,16 +42,8 @@ const App: React.FC = () => {
       }
     } else if (token && isTokenExpired(token)) {
       dispatch(setUserLoggedOut());
-      dispatch(setExpenseTypeList([]));
     }
-  }, [serverHealthRes, token, id, fetchExpenseTypeList, fetchGroupTypeList, dispatch]);
-
-  // Update Redux store with expense type list
-  useEffect(() => {
-    if (expenseTypeRes?.success === 1) {
-      dispatch(setExpenseTypeList(expenseTypeRes.data));
-    }
-  }, [expenseTypeRes, dispatch]);
+  }, [serverHealthRes, token, id, fetchGroupTypeList, dispatch]);
 
   // Update Redux store with group type list
   useEffect(() => {
