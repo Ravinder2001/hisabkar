@@ -20,8 +20,8 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.125",
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
     "axios": "^1.7.9",
     "canvas-confetti": "^1.9.3",
     "chart.js": "^4.4.7",
@@ -97,5 +97,9 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,md,html,css}": "prettier --write"
+  },
+  "overrides": {
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3"
   }
 }

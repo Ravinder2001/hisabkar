@@ -227,7 +227,9 @@ export default function GroupDetails() {
                     handleDeleteModal();
                     setSelectedRow(expense);
                   }}
-                  ref={(el) => (expenseRefs.current[expense.expense_id] = el)}
+                  ref={(el) => {
+                    expenseRefs.current[expense.expense_id] = el;
+                  }}
                   isSettled={groupData?.is_settled ?? false}
                   onCloneClick={() => {
                     handleExpModal();
