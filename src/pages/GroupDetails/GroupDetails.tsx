@@ -9,7 +9,7 @@ import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
 import { useLocation } from "react-router-dom";
 import GroupDetailsContent from "../../components/GroupDetailsContent/GroupDetailsContent";
-import { ChartColumnDecreasing, Logs, Plus } from "lucide-react";
+import { ChartColumnDecreasing, Logs, Plus, MessageSquare } from "lucide-react";
 import { ExpenseType, GroupDataType, GroupPairsData } from "../../utils/comman/CommanTypes";
 import ExpenseCard from "../../components/ExpenseCard/ExpenseCard";
 import CircularLoader from "../../components/CircularLoader/CircularLoader";
@@ -23,6 +23,8 @@ import SuccessModal from "../../components/SuccessModal/SuccessModal";
 import AddMemberModal from "../../components/AddMemberModal/AddMemberModal";
 import CustomAccordion from "../../components/CustomAccordian/CustomAccordian";
 import GroupSettingModal from "../../components/GroupSettingModal/GroupSettingModal";
+import ModalComponent from "../../components/ModalComponent/ModalComponent";
+import ChatModule from "../../components/ChatModule/ChatModule";
 
 export default function GroupDetails() {
   const location = useLocation();
@@ -58,6 +60,7 @@ export default function GroupDetails() {
   const [selectedUser, setSelectedUser] = useState<string>("-1");
   const [addMemberModal, setAddMemberModal] = useState<boolean>(false);
   const [groupSettingModal, setGroupSettingModal] = useState<boolean>(false);
+  const [chatModal, setChatModal] = useState<boolean>(false);
   const [isClone, setIsClone] = useState(false);
 
   const groupMemberOptionsList = [
@@ -99,6 +102,10 @@ export default function GroupDetails() {
   };
   const handleSpendAnalysisModal = () => {
     setSpendAnalysisModal(!spendAnalysisModal);
+  };
+
+  const handleChatModal = () => {
+    setChatModal(!chatModal);
   };
 
   const handleScrollToExpense = (id: any) => {
@@ -204,6 +211,7 @@ export default function GroupDetails() {
               </div>
               <ChartColumnDecreasing onClick={handleSpendAnalysisModal} size={28} className="cursor-pointer" />
               <Logs onClick={handleLogModal} size={28} className="cursor-pointer" />
+              <MessageSquare onClick={handleChatModal} size={28} className="cursor-pointer text-blue-600" />
             </div>
           </CardHeader>
           {expenseListLoading ? (
@@ -304,6 +312,12 @@ export default function GroupDetails() {
           groupId={GroupId}
           callbackFunc={() => fetchGroupDetails()}
         />
+      ) : null}
+
+      {chatModal ? (
+        <ModalComponent isOpen={chatModal} setIsOpen={handleChatModal}>
+          <ChatModule groupId={GroupId} />
+        </ModalComponent>
       ) : null}
     </div>
   );
