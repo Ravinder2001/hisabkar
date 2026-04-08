@@ -9,7 +9,7 @@ import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
 import { useLocation } from "react-router-dom";
 import GroupDetailsContent from "../../components/GroupDetailsContent/GroupDetailsContent";
-import { ChartColumnDecreasing, Logs, Plus, MessageSquare } from "lucide-react";
+import { Plus, MessageSquare } from "lucide-react";
 import { ExpenseType, GroupDataType, GroupPairsData } from "../../utils/comman/CommanTypes";
 import ExpenseCard from "../../components/ExpenseCard/ExpenseCard";
 import { io, Socket } from "socket.io-client";
@@ -50,6 +50,7 @@ export default function GroupDetails() {
   } = useApiFetch(CONSTANTS.API_ROUTES.ALL_EXPENSES + "/" + GroupId);
   const { fetchData: fetchMyPairs, response: pairsRes, isLoading: pairsLoading } = useApiFetch(CONSTANTS.API_ROUTES.MY_PAIRS + GroupId);
   const { fetchData: deleteExpense, response: deleteExpRes, isLoading: deleteExpLoading } = useApiFetch("");
+  const { fetchData: fetchUnreadStatus, response: unreadRes } = useApiFetch(CONSTANTS.API_ROUTES.UNREAD_STATUS + "/" + GroupId);
 
   const [groupData, setGroupData] = useState<GroupDataType | null>(null);
   const [expenseList, setExpenseList] = useState<ExpenseType[]>([]);
@@ -71,6 +72,8 @@ export default function GroupDetails() {
   const [isClone, setIsClone] = useState(false);
   const [isShareModal, setShareModal] = useState<boolean>(false);
   const [sharingExpense, setSharingExpense] = useState<ExpenseType | null>(null);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState<boolean>(false);
+  const isChatOpenRef = useRef<boolean>(false);
 
   const groupMemberOptionsList = [
     { value: "-1", label: "All" },
@@ -114,7 +117,12 @@ export default function GroupDetails() {
   };
 
   const handleChatModal = () => {
-    setChatModal(!chatModal);
+    const nextState = !chatModal;
+    setChatModal(nextState);
+    isChatOpenRef.current = nextState;
+    if (nextState) {
+      setHasUnreadMessages(false);
+    }
   };
 
   const handleShareInChat = (expense: ExpenseType) => {
@@ -141,6 +149,12 @@ export default function GroupDetails() {
     setSharingExpense(null);
   };
 
+  useEffect(() => {
+    if (unreadRes?.success === 1) {
+      setHasUnreadMessages(unreadRes.hasUnread);
+    }
+  }, [unreadRes]);
+
   const handleScrollToExpense = (id: any) => {
     const element = expenseRefs.current[id];
     if (element) {
@@ -153,10 +167,21 @@ export default function GroupDetails() {
     fetchAllExpenses();
     fetchMyPairs();
 
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
+    fetchUnreadStatus();
+
+    const socket = io(ENVConfig.baseURL, { withCredentials: true });
+    socketRef.current = socket;
+    socket.emit("join_group", GroupId);
+
+    socket.on("receive_message", (message) => {
+      // If modal is closed AND not me, show unread indicator
+      if (!isChatOpenRef.current && String(message.user_id) !== String(user.id)) {
+        setHasUnreadMessages(true);
       }
+    });
+
+    return () => {
+      socket.disconnect();
     };
   }, [GroupId]);
 
@@ -214,6 +239,8 @@ export default function GroupDetails() {
                   setGroupData={setGroupData}
                   handleAddMemModal={handleAddMemModal}
                   handleGroupSettingModal={handleGroupSettingModal}
+                  handleLogs={handleLogModal}
+                  handleAnalysis={handleSpendAnalysisModal}
                 />
               ) : null}
             </CustomAccordion>
@@ -248,9 +275,15 @@ export default function GroupDetails() {
                   ))}
                 </select>
               </div>
-              <ChartColumnDecreasing onClick={handleSpendAnalysisModal} size={28} className="cursor-pointer" />
-              <Logs onClick={handleLogModal} size={28} className="cursor-pointer" />
-              <MessageSquare onClick={handleChatModal} size={28} className="cursor-pointer text-blue-600" />
+              <div className="flex items-center gap-2 relative">
+                {hasUnreadMessages && (
+                  <div className={styles.unreadIndicator}>
+                    <span className={styles.unreadText}>New messages</span>
+                    <div className={styles.unreadBlinkBorder}></div>
+                  </div>
+                )}
+                <MessageSquare onClick={handleChatModal} size={28} className="cursor-pointer text-blue-600" />
+              </div>
             </div>
           </CardHeader>
           {expenseListLoading ? (
@@ -355,8 +388,8 @@ export default function GroupDetails() {
       ) : null}
 
       {chatModal ? (
-        <ModalComponent isOpen={chatModal} setIsOpen={handleChatModal} customStyle={{ padding: 0, width: "auto" }}>
-          <ChatModule groupId={GroupId} />
+        <ModalComponent isOpen={chatModal} setIsOpen={handleChatModal} customStyle={{ padding: 0, width: "auto" }} hideCloseBtn={true}>
+          <ChatModule groupId={GroupId} onClose={() => setChatModal(false)} />
         </ModalComponent>
       ) : null}
 

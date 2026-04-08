@@ -48,6 +48,7 @@ const CONSTANTS = {
     CREATE_TICKET: "/support",
     SERVER_HEALTH: "/health",
     TOGGLE_MEMBER_STATUS: "/group/toggleMemberStatus",
+    UNREAD_STATUS: "/chat/unread-status",
   },
   FONT_FAMILY: "Nunito",
 };

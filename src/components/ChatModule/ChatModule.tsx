@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Send, User, MessageSquare } from "lucide-react";
+import { Send, User, MessageSquare, X } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -31,9 +31,10 @@ interface Message {
 
 interface ChatModuleProps {
   groupId: string;
+  onClose?: () => void;
 }
 
-const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
+const ChatModule: React.FC<ChatModuleProps> = ({ groupId, onClose }) => {
   const user = useSelector((state: RootState) => state.user);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -41,6 +42,10 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [lastReadId, setLastReadId] = useState<number>(0);
+  const lastReadIdOnOpen = useRef<number | null>(null);
+  const unreadDividerRef = useRef<HTMLDivElement>(null);
+  const hasScrolledToUnread = useRef<boolean>(false);
   const socketRef = useRef<Socket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -104,6 +109,10 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
 
     socketRef.current.on("receive_message", (message: Message) => {
       setMessages((prev) => [message, ...prev]);
+      // If tab is active, mark this new message as read immediately
+      if (document.visibilityState === "visible") {
+        markAsRead(message.chat_id);
+      }
     });
 
     socketRef.current.on("user_typing", ({ userName }: { userName: string }) => {
@@ -122,10 +131,61 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
 
   useEffect(() => {
     if (historyRes?.success === 1) {
-      setMessages(historyRes.data);
-      if (historyRes.data.length < limit) setHasMore(false);
+      const fetchedMessages = historyRes.data;
+      setMessages(fetchedMessages);
+      if (fetchedMessages.length < limit) setHasMore(false);
+
+      // Set lastReadId from response
+      const serverLastReadId = historyRes.lastReadId || 0;
+      setLastReadId(serverLastReadId);
+
+      // Only set the 'onOpen' anchor once for the session
+      if (lastReadIdOnOpen.current === null && fetchedMessages.length > 0) {
+        lastReadIdOnOpen.current = serverLastReadId;
+      }
+
+      // If messages arrived and we are looking at it, mark latest as read
+      if (fetchedMessages.length > 0 && document.visibilityState === "visible") {
+        markAsRead(fetchedMessages[0].chat_id);
+      }
     }
   }, [historyRes]);
+
+  const markAsRead = useCallback(
+    (chatId: number) => {
+      if (!socketRef.current || !chatId || chatId <= lastReadId) return;
+
+      socketRef.current.emit("mark_read", {
+        userId: user.id,
+        groupId: groupId,
+        lastChatId: chatId,
+      });
+      setLastReadId(chatId);
+    },
+    [user.id, groupId, lastReadId]
+  );
+
+  // Visibility API to mark as read when user returns to tab
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && messages.length > 0) {
+        markAsRead(messages[0].chat_id);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [messages, markAsRead]);
+
+  // Auto-scroll to unread divider on first load
+  useEffect(() => {
+    if (!isLoading && messages.length > 0 && unreadDividerRef.current && !hasScrolledToUnread.current) {
+      setTimeout(() => {
+        unreadDividerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        hasScrolledToUnread.current = true;
+      }, 300);
+    }
+  }, [isLoading, messages.length]);
   const formatDateLabel = (dateString: string) => {
     const date = new Date(dateString);
     const today = new Date();
@@ -177,8 +237,15 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
   return (
     <div className={styles.chatContainer}>
       <div className={styles.chatHeader}>
-        <MessageSquare size={20} className="text-blue-600" />
-        <h3 className="text-lg font-semibold ml-2">Group Chat</h3>
+        <div className="flex items-center">
+          <MessageSquare size={20} className="text-blue-600" />
+          <h3 className="text-lg font-semibold ml-2">Group Chat</h3>
+        </div>
+        {onClose && (
+          <button onClick={onClose} className={styles.closeBtn}>
+            <X size={20} />
+          </button>
+        )}
       </div>
 
       <div className={styles.messagesList}>
@@ -225,6 +292,16 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
                       </div>
                     </div>
                   </div>
+                  {/* Unread Messages Divider */}
+                  {lastReadIdOnOpen.current !== null &&
+                    !isMe &&
+                    Number(msg.chat_id) > Number(lastReadIdOnOpen.current) &&
+                    ((array[index + 1] && Number(array[index + 1].chat_id) <= Number(lastReadIdOnOpen.current)) ||
+                      (!array[index + 1] && !hasMore)) && (
+                      <div ref={unreadDividerRef} className={styles.unreadDivider}>
+                        <span className={styles.unreadText}>Unread Messages</span>
+                      </div>
+                    )}
                   {isLastMessageOfDate && (
                     <div className={styles.dateDivider}>
                       <span className={styles.dateText}>{formatDateLabel(msg.created_at)}</span>

@@ -13,6 +13,7 @@ const useApiFetch = (initialUrl: string, initialOptions?: AxiosRequestConfig) =>
     count?: number;
     success?: number;
     message?: string;
+    [key: string]: any;
   } | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -32,9 +33,8 @@ const useApiFetch = (initialUrl: string, initialOptions?: AxiosRequestConfig) =>
           decryptedData = useDecryption(data.data); // Ensure useDecryption is stable
         }
         setResponse({
+          ...data,
           data: decryptedData,
-          message: data.message,
-          success: data.success,
         });
       } catch (error: any) {
         const errorMessage = error?.data?.message || error.response?.data?.message || "Something went wrong";
