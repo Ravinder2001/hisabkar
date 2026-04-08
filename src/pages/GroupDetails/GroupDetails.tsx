@@ -355,7 +355,7 @@ export default function GroupDetails() {
       ) : null}
 
       {chatModal ? (
-        <ModalComponent isOpen={chatModal} setIsOpen={handleChatModal}>
+        <ModalComponent isOpen={chatModal} setIsOpen={handleChatModal} customStyle={{ padding: 0, width: "auto" }}>
           <ChatModule groupId={GroupId} />
         </ModalComponent>
       ) : null}

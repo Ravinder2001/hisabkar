@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Send, User, MessageSquare } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
@@ -38,10 +38,58 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const topSentinelRef = useRef<HTMLDivElement>(null);
+  const limit = 20;
 
-  const { fetchData: fetchHistory, response: historyRes, isLoading } = useApiFetch(`/chat/history/${groupId}`);
+  const { fetchData: fetchHistory, response: historyRes, isLoading } = useApiFetch(`/chat/history/${groupId}?limit=${limit}&offset=0`);
+
+  const loadMoreMessages = useCallback(async () => {
+    if (isFetchingMore || !hasMore) return;
+    setIsFetchingMore(true);
+    const newOffset = offset + limit;
+
+    try {
+      const response = await fetch(`${ENVConfig.baseURL}/chat/history/${groupId}?limit=${limit}&offset=${newOffset}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming token is here
+        },
+      });
+      const result = await response.json();
+      if (result.success === 1) {
+        if (result.data.length < limit) setHasMore(false);
+        setMessages((prev) => [...prev, ...result.data]);
+        setOffset(newOffset);
+      }
+    } catch (error) {
+      console.error("Error loading more messages:", error);
+    } finally {
+      setIsFetchingMore(false);
+    }
+  }, [offset, hasMore, isFetchingMore, groupId]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoading && !isFetchingMore) {
+          loadMoreMessages();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (topSentinelRef.current) {
+      observer.observe(topSentinelRef.current);
+    }
+    observerRef.current = observer;
+
+    return () => observer.disconnect();
+  }, [loadMoreMessages, hasMore, isLoading, isFetchingMore]);
 
   useEffect(() => {
     // Fetch chat history
@@ -55,7 +103,7 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
     socketRef.current.emit("join_group", groupId);
 
     socketRef.current.on("receive_message", (message: Message) => {
-      setMessages((prev) => [...prev, message]);
+      setMessages((prev) => [message, ...prev]);
     });
 
     socketRef.current.on("user_typing", ({ userName }: { userName: string }) => {
@@ -75,8 +123,19 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
   useEffect(() => {
     if (historyRes?.success === 1) {
       setMessages(historyRes.data);
+      if (historyRes.data.length < limit) setHasMore(false);
     }
   }, [historyRes]);
+  const formatDateLabel = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) return "Today";
+    if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
+    return date.toLocaleDateString([], { day: "numeric", month: "long", year: "numeric" });
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
@@ -131,40 +190,50 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
             <p className="mt-2 text-sm">No messages yet. Start the conversation!</p>
           </div>
         ) : (
-          messages
-            .slice()
-            .reverse()
-            .map((msg, index) => {
+          <>
+            <div ref={topSentinelRef} style={{ height: "1px" }} />
+            {messages.map((msg, index, array) => {
               const isMe = String(msg.user_id) === String(user.id);
+              const isLastMessageOfDate =
+                index === array.length - 1 || new Date(array[index + 1].created_at).toDateString() !== new Date(msg.created_at).toDateString();
+
               return (
-                <div key={msg.chat_id || index} className={`${styles.messageWrapper} ${isMe ? styles.myMessage : ""}`}>
-                  {!isMe && (
-                    <div className={styles.avatar}>
-                      <User size={14} />
-                    </div>
-                  )}
-                  <div className={styles.messageContent}>
-                    {!isMe && <span className={styles.userName}>{msg.user_name}</span>}
-                    <div className={styles.bubble}>
-                      <p>{msg.message}</p>
-                      {msg.expense_id && (
-                        <ChatExpenseCard
-                          name={msg.expense_name || "Expense"}
-                          amount={Number(msg.expense_amount) || 0}
-                          date={msg.expense_date || msg.created_at}
-                          icon={msg.expense_icon || ""}
-                          category={msg.expense_type || ""}
-                          members={msg.expense_members || []}
-                        />
-                      )}
-                      <span className={styles.timestamp}>
-                        {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                      </span>
+                <React.Fragment key={msg.chat_id || index}>
+                  <div className={`${styles.messageWrapper} ${isMe ? styles.myMessage : ""}`}>
+                    {!isMe && (
+                      <div className={styles.avatar}>
+                        <User size={14} />
+                      </div>
+                    )}
+                    <div className={styles.messageContent}>
+                      {!isMe && <span className={styles.userName}>{msg.user_name}</span>}
+                      <div className={styles.bubble}>
+                        <p>{msg.message}</p>
+                        {msg.expense_id && (
+                          <ChatExpenseCard
+                            name={msg.expense_name || "Expense"}
+                            amount={Number(msg.expense_amount) || 0}
+                            date={msg.expense_date || msg.created_at}
+                            icon={msg.expense_icon || ""}
+                            category={msg.expense_type || ""}
+                            members={msg.expense_members || []}
+                          />
+                        )}
+                        <span className={styles.timestamp}>
+                          {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                  {isLastMessageOfDate && (
+                    <div className={styles.dateDivider}>
+                      <span className={styles.dateText}>{formatDateLabel(msg.created_at)}</span>
+                    </div>
+                  )}
+                </React.Fragment>
               );
-            })
+            })}
+          </>
         )}
       </div>
 
