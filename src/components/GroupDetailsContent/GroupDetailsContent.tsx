@@ -131,10 +131,10 @@ function GroupDetailsContent(
               <span className="text-black-800">Group Logs</span>
             </DropdownMenuItem>
 
-            <DropdownMenuItem onClick={data.handleAnalysis} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+            {/* <DropdownMenuItem onClick={data.handleAnalysis} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
               <Wallet className="mr-2 h-4 w-4" color="black" />
               <span className="text-black-800">Spend Analysis</span>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
 
             <DropdownMenuItem onClick={handleConfirmModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
               <CircleCheckBig className="mr-2 h-4 w-4" color="green" />
