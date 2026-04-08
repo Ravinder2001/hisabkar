@@ -7,7 +7,6 @@ const getExpenseById = async (values) => {
       SELECT 
         e.expense_id,
         e.expense_name,
-        e.expense_type_id,
         e.description,
         e.split_type,
         e.amount,
@@ -72,7 +71,7 @@ const getGroupDataById = async (groupId) => {
 
 module.exports = {
   addExpense: async (values) => {
-    const { expenseName, expenseTypeId, description, amount, groupId, paidBy, members, splitType } = values;
+    const { expenseName, description, amount, groupId, paidBy, members, splitType } = values;
     try {
       await client.query("BEGIN");
 
@@ -81,17 +80,16 @@ module.exports = {
         `
           INSERT INTO tbl_expenses (
               group_id,
-              expense_type_id, 
               expense_name, 
               amount, 
               paid_by,
               description,
               split_type
           ) 
-          VALUES ($1, $2, $3, $4, $5, $6, $7)
+          VALUES ($1, $2, $3, $4, $5, $6)
           RETURNING expense_id, paid_by
       `,
-        [groupId, expenseTypeId, expenseName, amount, paidBy, description, splitType]
+        [groupId, expenseName, amount, paidBy, description, splitType]
       );
       const expense_data = expenseResult.rows[0];
       const expense_id = expenseResult.rows[0].expense_id;
@@ -122,7 +120,7 @@ module.exports = {
     }
   },
   editExpense: async (values) => {
-    const { expenseId, expenseName, expenseTypeId, amount, paidBy, members, description, splitType } = values;
+    const { expenseId, expenseName, amount, paidBy, members, description, splitType } = values;
     try {
       await client.query("BEGIN");
 
@@ -142,9 +140,9 @@ module.exports = {
       // Step 3: Update Expense Details
       const expenseResult = await client.query(
         `UPDATE tbl_expenses
-         SET expense_name = $1, expense_type_id = $2, amount = $3, paid_by = $4, description = $5, split_type = $6
-         WHERE expense_id = $7 RETURNING group_id`,
-        [expenseName, expenseTypeId, amount, paidBy, description, splitType, expenseId]
+         SET expense_name = $1, amount = $2, paid_by = $3, description = $4, split_type = $5
+         WHERE expense_id = $6 RETURNING group_id`,
+        [expenseName, amount, paidBy, description, splitType, expenseId]
       );
 
       const groupId = expenseResult.rows[0].group_id;
@@ -180,7 +178,6 @@ module.exports = {
         SELECT 
           e.expense_id,
           e.expense_name,
-          e.expense_type_id,
           e.description,
           e.split_type,
           e.amount,
@@ -226,7 +223,7 @@ module.exports = {
 
       // Step 1: Fetch the Expense Details
       const expenseResult = await client.query(
-        `SELECT group_id, paid_by, amount, expense_name, description, expense_type_id, split_type 
+        `SELECT group_id, paid_by, amount, expense_name, description, split_type 
          FROM tbl_expenses 
          WHERE expense_id = $1`,
         [expenseId]
@@ -253,7 +250,6 @@ module.exports = {
         expense: {
           expense_id: expenseId,
           group_id: expense.group_id,
-          expense_type_id: expense.expense_type_id,
           expense_name: expense.expense_name,
           description: expense.description,
           amount: parseFloat(expense.amount), // Ensure numeric values are properly formatted
@@ -337,22 +333,6 @@ module.exports = {
          WHERE el.group_id = $1 
          ORDER BY el.created_at DESC`,
         [groupId]
-      );
-      return logs.rows;
-    } catch (error) {
-      console.error("Error in fetching expenses:", error.message);
-      throw error;
-    }
-  },
-  getExpenseTypeList: async () => {
-    try {
-      const logs = await client.query(
-        `SELECT
-         expense_type_id as id,
-         type_name as name,
-         icon
-         FROM tbl_expense_types
-        `
       );
       return logs.rows;
     } catch (error) {

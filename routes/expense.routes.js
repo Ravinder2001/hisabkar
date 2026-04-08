@@ -8,7 +8,6 @@ const validateExpenseData = require("../middleware/expenseValidation");
 
 const router = express.Router();
 
-router.get("/expenseTypeList", authenticateJWT, ExpenseController.getExpenseTypeList);
 router.post(
   "/addExpense/:group_id",
   authenticateJWT,
