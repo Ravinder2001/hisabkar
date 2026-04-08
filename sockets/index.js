@@ -1,11 +1,11 @@
 const { Server } = require("socket.io");
-const client = require("../configuration/db");
+const chatModel = require("../model/chat.model");
 const { decryptData } = require("../utils/encryption");
 
 const initSockets = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:8877",
+      origin: true,
       methods: ["GET", "POST"],
       credentials: true,
     },
@@ -16,16 +16,24 @@ const initSockets = (server) => {
 
     // Join a group room
     socket.on("join_group", async (encryptedGroupId) => {
-      const groupId = await decryptData(encryptedGroupId);
-      socket.join(`group_${groupId}`);
-      console.log(`Socket ${socket.id} joined group_${groupId}`);
+      try {
+        const groupId = await decryptData(encryptedGroupId);
+        socket.join(`group_${groupId}`);
+        console.log(`Socket ${socket.id} joined group_${groupId}`);
+      } catch (error) {
+        console.error("Socket join_group error:", error.message);
+      }
     });
 
     // Leave a group room
     socket.on("leave_group", async (encryptedGroupId) => {
-      const groupId = await decryptData(encryptedGroupId);
-      socket.leave(`group_${groupId}`);
-      console.log(`Socket ${socket.id} left group_${groupId}`);
+      try {
+        const groupId = await decryptData(encryptedGroupId);
+        socket.leave(`group_${groupId}`);
+        console.log(`Socket ${socket.id} left group_${groupId}`);
+      } catch (error) {
+        console.error("Socket leave_group error:", error.message);
+      }
     });
 
     // Handle sending a message
@@ -33,27 +41,42 @@ const initSockets = (server) => {
       const { groupId: encryptedGroupId, userId, message, expenseId } = data;
       try {
         const groupId = await decryptData(encryptedGroupId);
-        // Save message to database
-        const query = `
-          INSERT INTO tbl_chats (group_id, user_id, message, expense_id)
-          VALUES ($1, $2, $3, $4)
-          RETURNING *;
-        `;
-        const values = [groupId, userId, message, expenseId || null];
-        const res = await client.query(query, values);
+        // Save message using model
+        const newMessage = await chatModel.saveMessage({
+          groupId,
+          userId,
+          message,
+          expenseId,
+        });
 
-        if (res.rows.length > 0) {
-          const newMessage = res.rows[0];
-          // Fetch user details for the message
-          const userRes = await client.query("SELECT name FROM tbl_users WHERE user_id = $1", [userId]);
-          newMessage.user_name = userRes.rows[0]?.name || "Unknown";
-
+        if (newMessage) {
           // Broadcast to the room
           io.to(`group_${groupId}`).emit("receive_message", newMessage);
         }
       } catch (error) {
         console.error("Error saving message:", error);
         socket.emit("error", { message: "Failed to send message" });
+      }
+    });
+
+    // Handle typing events
+    socket.on("typing", async (data) => {
+      const { groupId: encryptedGroupId, userName } = data;
+      try {
+        const groupId = await decryptData(encryptedGroupId);
+        socket.to(`group_${groupId}`).emit("user_typing", { userName });
+      } catch (error) {
+        console.error("Socket typing error:", error.message);
+      }
+    });
+
+    socket.on("stop_typing", async (data) => {
+      const { groupId: encryptedGroupId, userName } = data;
+      try {
+        const groupId = await decryptData(encryptedGroupId);
+        socket.to(`group_${groupId}`).emit("user_stop_typing", { userName });
+      } catch (error) {
+        console.error("Socket stop_typing error:", error.message);
       }
     });
 
