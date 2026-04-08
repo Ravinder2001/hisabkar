@@ -85,4 +85,55 @@ module.exports = {
       throw error;
     }
   },
+  getLastReadId: async (userId, groupId) => {
+    try {
+      const query = `
+        SELECT last_read_chat_id 
+        FROM tbl_chat_read_status 
+        WHERE user_id = $1 AND group_id = $2;
+      `;
+      const result = await client.query(query, [userId, groupId]);
+      return result.rows.length > 0 ? result.rows[0].last_read_chat_id : 0;
+    } catch (error) {
+      console.error("Error in getLastReadId model:", error.message);
+      return 0;
+    }
+  },
+
+  updateReadStatus: async (userId, groupId, lastChatId) => {
+    try {
+      const query = `
+        INSERT INTO tbl_chat_read_status (user_id, group_id, last_read_chat_id)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (user_id, group_id) 
+        DO UPDATE SET last_read_chat_id = EXCLUDED.last_read_chat_id
+        WHERE tbl_chat_read_status.last_read_chat_id < EXCLUDED.last_read_chat_id;
+      `;
+      await client.query(query, [userId, groupId, lastChatId]);
+      return true;
+    } catch (error) {
+      console.error("Error in updateReadStatus model:", error.message);
+      throw error;
+    }
+  },
+  checkUnreadStatus: async (userId, groupId) => {
+    try {
+      const query = `
+        SELECT EXISTS (
+          SELECT 1 FROM tbl_chats 
+          WHERE group_id = $1 
+          AND chat_id > (
+            SELECT COALESCE(last_read_chat_id, 0) 
+            FROM tbl_chat_read_status 
+            WHERE user_id = $2 AND group_id = $1
+          )
+        ) as has_unread;
+      `;
+      const result = await client.query(query, [groupId, userId]);
+      return result.rows[0].has_unread;
+    } catch (error) {
+      console.error("Error in checkUnreadStatus model:", error.message);
+      return false;
+    }
+  },
 };

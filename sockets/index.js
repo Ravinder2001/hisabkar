@@ -50,12 +50,27 @@ const initSockets = (server) => {
         });
 
         if (newMessage) {
+          // Auto-mark as read for the sender
+          await chatModel.updateReadStatus(userId, groupId, newMessage.chat_id);
           // Broadcast to the room
           io.to(`group_${groupId}`).emit("receive_message", newMessage);
         }
       } catch (error) {
         console.error("Error saving message:", error);
         socket.emit("error", { message: "Failed to send message" });
+      }
+    });
+
+    // Handle marking messages as read
+    socket.on("mark_read", async (data) => {
+      try {
+        const { userId, groupId: encryptedGroupId, lastChatId } = data;
+        const groupId = await decryptData(encryptedGroupId);
+        if (userId && groupId && lastChatId) {
+          await chatModel.updateReadStatus(userId, groupId, lastChatId);
+        }
+      } catch (error) {
+        console.error("Socket mark_read error:", error);
       }
     });
 
