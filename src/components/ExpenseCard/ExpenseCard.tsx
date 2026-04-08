@@ -68,9 +68,9 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
                   </div>
                   <h2 className="text-2xl font-semibold tracking-tight">{expense.expense_name}</h2>
                 </div>
-                <div className="text-right">
+                {/* <div className="text-right">
                   <h2 className="text-2xl font-semibold tracking-tight">{expense.expense_name}</h2>
-                </div>
+                </div> */}
                 {!expense.isSettled ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -81,20 +81,22 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent align="end" className="bg-white">
+                      <DropdownMenuItem onClick={expense.onShareClick} className="text-black-600 bg-white cursor-pointer">
+                        <MessageSquare className="mr-2 h-4 w-4" />
+                        <span>Share in Chat</span>
+                      </DropdownMenuItem>
                       {expense.is_own_expense && (
                         <DropdownMenuItem onClick={expense.setAddExpModal} className="text-black-600 bg-white cursor-pointer">
                           <Edit className="mr-2 h-4 w-4" />
                           <span>Edit this Expense</span>
                         </DropdownMenuItem>
                       )}
-                      <DropdownMenuItem onClick={expense.onCloneClick} className="text-black-600 bg-white cursor-pointer">
-                        <CopyPlus className="mr-2 h-4 w-4" />
-                        <span>Clone this Expense</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={expense.onShareClick} className="text-black-600 bg-white cursor-pointer">
-                        <MessageSquare className="mr-2 h-4 w-4" />
-                        <span>Share in Chat</span>
-                      </DropdownMenuItem>
+                      {expense.is_own_expense && (
+                        <DropdownMenuItem onClick={expense.onCloneClick} className="text-black-600 bg-white cursor-pointer">
+                          <CopyPlus className="mr-2 h-4 w-4" />
+                          <span>Clone this Expense</span>
+                        </DropdownMenuItem>
+                      )}
                       {expense.is_own_expense && (
                         <DropdownMenuItem onClick={expense.setDeleteModal} className="text-red-600 bg-white cursor-pointer">
                           <Trash2 className="mr-2 h-4 w-4" />

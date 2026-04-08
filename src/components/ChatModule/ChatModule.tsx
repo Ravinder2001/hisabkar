@@ -40,13 +40,8 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const socketRef = useRef<Socket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { fetchData: fetchHistory, response: historyRes, isLoading } = useApiFetch(`/chat/history/${groupId}`);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
 
   useEffect(() => {
     // Fetch chat history
@@ -82,10 +77,6 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
       setMessages(historyRes.data);
     }
   }, [historyRes]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, typingUsers]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
@@ -140,39 +131,41 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
             <p className="mt-2 text-sm">No messages yet. Start the conversation!</p>
           </div>
         ) : (
-          messages.map((msg, index) => {
-            const isMe = String(msg.user_id) === String(user.id);
-            return (
-              <div key={msg.chat_id || index} className={`${styles.messageWrapper} ${isMe ? styles.myMessage : ""}`}>
-                {!isMe && (
-                  <div className={styles.avatar}>
-                    <User size={14} />
-                  </div>
-                )}
-                <div className={styles.messageContent}>
-                  {!isMe && <span className={styles.userName}>{msg.user_name}</span>}
-                  <div className={styles.bubble}>
-                    <p>{msg.message}</p>
-                    {msg.expense_id && (
-                      <ChatExpenseCard
-                        name={msg.expense_name || "Expense"}
-                        amount={Number(msg.expense_amount) || 0}
-                        date={msg.expense_date || msg.created_at}
-                        icon={msg.expense_icon || ""}
-                        category={msg.expense_type || ""}
-                        members={msg.expense_members || []}
-                      />
-                    )}
-                    <span className={styles.timestamp}>
-                      {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                    </span>
+          messages
+            .slice()
+            .reverse()
+            .map((msg, index) => {
+              const isMe = String(msg.user_id) === String(user.id);
+              return (
+                <div key={msg.chat_id || index} className={`${styles.messageWrapper} ${isMe ? styles.myMessage : ""}`}>
+                  {!isMe && (
+                    <div className={styles.avatar}>
+                      <User size={14} />
+                    </div>
+                  )}
+                  <div className={styles.messageContent}>
+                    {!isMe && <span className={styles.userName}>{msg.user_name}</span>}
+                    <div className={styles.bubble}>
+                      <p>{msg.message}</p>
+                      {msg.expense_id && (
+                        <ChatExpenseCard
+                          name={msg.expense_name || "Expense"}
+                          amount={Number(msg.expense_amount) || 0}
+                          date={msg.expense_date || msg.created_at}
+                          icon={msg.expense_icon || ""}
+                          category={msg.expense_type || ""}
+                          members={msg.expense_members || []}
+                        />
+                      )}
+                      <span className={styles.timestamp}>
+                        {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })
+              );
+            })
         )}
-        <div ref={messagesEndRef} />
       </div>
 
       {typingUsers.length > 0 && (
