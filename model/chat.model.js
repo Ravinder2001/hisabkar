@@ -12,11 +12,35 @@ module.exports = {
       const res = await client.query(query, queryParams);
 
       if (res.rows.length > 0) {
-        const newMessage = res.rows[0];
-        // Fetch user details for the message
-        const userRes = await client.query("SELECT name FROM tbl_users WHERE user_id = $1", [values.userId]);
-        newMessage.user_name = userRes.rows[0]?.name || "Unknown";
-        return newMessage;
+        const chat_id = res.rows[0].chat_id;
+        // Fetch full message details including user name and rich expense info
+        const detailQuery = `
+          SELECT 
+            c.*, 
+            u.name as user_name,
+            e.expense_name,
+            e.amount as expense_amount,
+            e.created_at as expense_date,
+            et.icon as expense_icon,
+            et.type_name as expense_type,
+            (
+              SELECT JSON_AGG(JSON_BUILD_OBJECT(
+                'name', u2.name,
+                'amount', em.amount,
+                'avatar', u2.avatar
+              ))
+              FROM tbl_expense_members em
+              JOIN tbl_users u2 ON em.user_id = u2.user_id
+              WHERE em.expense_id = e.expense_id
+            ) as expense_members
+          FROM tbl_chats c
+          JOIN tbl_users u ON c.user_id = u.user_id
+          LEFT JOIN tbl_expenses e ON c.expense_id = e.expense_id
+          LEFT JOIN tbl_expense_types et ON e.expense_type_id = et.expense_type_id
+          WHERE c.chat_id = $1;
+        `;
+        const detailRes = await client.query(detailQuery, [chat_id]);
+        return detailRes.rows[0];
       }
       return null;
     } catch (error) {
@@ -28,9 +52,28 @@ module.exports = {
   getChatHistory: async (groupId) => {
     try {
       const query = `
-        SELECT c.*, u.name as user_name 
+        SELECT 
+          c.*, 
+          u.name as user_name,
+          e.expense_name,
+          e.amount as expense_amount,
+          e.created_at as expense_date,
+          et.icon as expense_icon,
+          et.type_name as expense_type,
+          (
+            SELECT JSON_AGG(JSON_BUILD_OBJECT(
+              'name', u2.name,
+              'amount', em.amount,
+              'avatar', u2.avatar
+            ) ORDER BY u2.name)
+            FROM tbl_expense_members em
+            JOIN tbl_users u2 ON em.user_id = u2.user_id
+            WHERE em.expense_id = e.expense_id
+          ) as expense_members
         FROM tbl_chats c
         JOIN tbl_users u ON c.user_id = u.user_id
+        LEFT JOIN tbl_expenses e ON c.expense_id = e.expense_id
+        LEFT JOIN tbl_expense_types et ON e.expense_type_id = et.expense_type_id
         WHERE c.group_id = $1
         ORDER BY c.created_at ASC;
       `;
