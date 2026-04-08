@@ -12,6 +12,10 @@ import GroupDetailsContent from "../../components/GroupDetailsContent/GroupDetai
 import { ChartColumnDecreasing, Logs, Plus, MessageSquare } from "lucide-react";
 import { ExpenseType, GroupDataType, GroupPairsData } from "../../utils/comman/CommanTypes";
 import ExpenseCard from "../../components/ExpenseCard/ExpenseCard";
+import { io, Socket } from "socket.io-client";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import ENVConfig from "../../config/config";
 import CircularLoader from "../../components/CircularLoader/CircularLoader";
 import GroupPairs from "../../components/GroupPairs/GroupPairs";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
@@ -25,11 +29,14 @@ import CustomAccordion from "../../components/CustomAccordian/CustomAccordian";
 import GroupSettingModal from "../../components/GroupSettingModal/GroupSettingModal";
 import ModalComponent from "../../components/ModalComponent/ModalComponent";
 import ChatModule from "../../components/ChatModule/ChatModule";
+import ShareExpenseModal from "../../components/ChatModule/ShareExpenseModal";
 
 export default function GroupDetails() {
   const location = useLocation();
   const GroupId = location.pathname.split("/")[2];
+  const user = useSelector((state: RootState) => state.user);
   const expenseRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const socketRef = useRef<Socket | null>(null);
 
   const {
     fetchData: fetchGroupDetails,
@@ -62,6 +69,8 @@ export default function GroupDetails() {
   const [groupSettingModal, setGroupSettingModal] = useState<boolean>(false);
   const [chatModal, setChatModal] = useState<boolean>(false);
   const [isClone, setIsClone] = useState(false);
+  const [isShareModal, setShareModal] = useState<boolean>(false);
+  const [sharingExpense, setSharingExpense] = useState<ExpenseType | null>(null);
 
   const groupMemberOptionsList = [
     { value: "-1", label: "All" },
@@ -108,6 +117,30 @@ export default function GroupDetails() {
     setChatModal(!chatModal);
   };
 
+  const handleShareInChat = (expense: ExpenseType) => {
+    setSharingExpense(expense);
+    setShareModal(true);
+  };
+
+  const onConfirmShare = (message: string) => {
+    if (!sharingExpense) return;
+
+    if (!socketRef.current) {
+      socketRef.current = io(ENVConfig.baseURL, { withCredentials: true });
+    }
+
+    const payload = {
+      groupId: GroupId,
+      userId: user.id,
+      message: message.trim() || `Check out this expense: ${sharingExpense.expense_name}`,
+      expenseId: sharingExpense.expense_id,
+    };
+
+    socketRef.current.emit("send_message", payload);
+    showToast("Expense shared in chat!", "success");
+    setSharingExpense(null);
+  };
+
   const handleScrollToExpense = (id: any) => {
     const element = expenseRefs.current[id];
     if (element) {
@@ -119,6 +152,12 @@ export default function GroupDetails() {
     fetchGroupDetails();
     fetchAllExpenses();
     fetchMyPairs();
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+    };
   }, [GroupId]);
 
   useEffect(() => {
@@ -244,6 +283,7 @@ export default function GroupDetails() {
                     setSelectedRow(expense);
                     setIsClone(true);
                   }}
+                  onShareClick={() => handleShareInChat(expense)}
                 />
               ))}
               {/* </ScrollArea> */}
@@ -319,6 +359,8 @@ export default function GroupDetails() {
           <ChatModule groupId={GroupId} />
         </ModalComponent>
       ) : null}
+
+      <ShareExpenseModal isOpen={isShareModal} setIsOpen={setShareModal} expense={sharingExpense} onShare={onConfirmShare} />
     </div>
   );
 }

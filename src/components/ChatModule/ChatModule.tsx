@@ -7,6 +7,7 @@ import useApiFetch from "../../hooks/useAPIFetch";
 import ENVConfig from "../../config/config";
 import styles from "./ChatModule.module.css";
 import CircularLoader from "../CircularLoader/CircularLoader";
+import ChatExpenseCard from "./ChatExpenseCard";
 
 interface Message {
   chat_id: number;
@@ -15,6 +16,17 @@ interface Message {
   message: string;
   user_name: string;
   created_at: string;
+  expense_id?: number;
+  expense_name?: string;
+  expense_amount?: string;
+  expense_date?: string;
+  expense_icon?: string;
+  expense_type?: string;
+  expense_members?: Array<{
+    name: string;
+    amount: number;
+    avatar: string;
+  }>;
 }
 
 interface ChatModuleProps {
@@ -79,26 +91,28 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
     setNewMessage(e.target.value);
 
     if (!socketRef.current) return;
+    const firstName = user.name.split(" ")[0];
 
     // Emit typing event
-    socketRef.current.emit("typing", { groupId, userName: user.name });
+    socketRef.current.emit("typing", { groupId, userName: firstName });
 
     // Clear existing timeout
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
     // Set timeout to stop typing
     typingTimeoutRef.current = setTimeout(() => {
-      socketRef.current?.emit("stop_typing", { groupId, userName: user.name });
+      socketRef.current?.emit("stop_typing", { groupId, userName: firstName });
     }, 2000);
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !socketRef.current) return;
+    const firstName = user.name.split(" ")[0];
 
     // Stop typing immediately when sending
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-    socketRef.current.emit("stop_typing", { groupId, userName: user.name });
+    socketRef.current.emit("stop_typing", { groupId, userName: firstName });
 
     const messageData = {
       groupId,
@@ -139,6 +153,16 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
                   {!isMe && <span className={styles.userName}>{msg.user_name}</span>}
                   <div className={styles.bubble}>
                     <p>{msg.message}</p>
+                    {msg.expense_id && (
+                      <ChatExpenseCard
+                        name={msg.expense_name || "Expense"}
+                        amount={Number(msg.expense_amount) || 0}
+                        date={msg.expense_date || msg.created_at}
+                        icon={msg.expense_icon || ""}
+                        category={msg.expense_type || ""}
+                        members={msg.expense_members || []}
+                      />
+                    )}
                     <span className={styles.timestamp}>
                       {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </span>
