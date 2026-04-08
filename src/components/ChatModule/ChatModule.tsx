@@ -8,6 +8,7 @@ import ENVConfig from "../../config/config";
 import styles from "./ChatModule.module.css";
 import CircularLoader from "../CircularLoader/CircularLoader";
 import ChatExpenseCard from "./ChatExpenseCard";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 interface Message {
   chat_id: number;
@@ -41,60 +42,31 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, onClose }) => {
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [lastReadId, setLastReadId] = useState<number>(0);
   const lastReadIdOnOpen = useRef<number | null>(null);
   const unreadDividerRef = useRef<HTMLDivElement>(null);
   const hasScrolledToUnread = useRef<boolean>(false);
   const socketRef = useRef<Socket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const topSentinelRef = useRef<HTMLDivElement>(null);
   const limit = 20;
 
   const { fetchData: fetchHistory, response: historyRes, isLoading } = useApiFetch(`/chat/history/${groupId}?limit=${limit}&offset=0`);
+  const { fetchData: fetchMore, response: moreRes, isLoading: isFetchingMore } = useApiFetch("");
 
   const loadMoreMessages = useCallback(async () => {
     if (isFetchingMore || !hasMore) return;
-    setIsFetchingMore(true);
     const newOffset = offset + limit;
-
-    try {
-      const response = await fetch(`${ENVConfig.baseURL}/chat/history/${groupId}?limit=${limit}&offset=${newOffset}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming token is here
-        },
-      });
-      const result = await response.json();
-      if (result.success === 1) {
-        if (result.data.length < limit) setHasMore(false);
-        setMessages((prev) => [...prev, ...result.data]);
-        setOffset(newOffset);
-      }
-    } catch (error) {
-      console.error("Error loading more messages:", error);
-    } finally {
-      setIsFetchingMore(false);
-    }
-  }, [offset, hasMore, isFetchingMore, groupId]);
+    fetchMore(`/chat/history/${groupId}?limit=${limit}&offset=${newOffset}`);
+    setOffset(newOffset);
+  }, [offset, hasMore, isFetchingMore, groupId, fetchMore]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading && !isFetchingMore) {
-          loadMoreMessages();
-        }
-      },
-      { threshold: 1.0 }
-    );
-
-    if (topSentinelRef.current) {
-      observer.observe(topSentinelRef.current);
+    if (moreRes?.success === 1) {
+      const moreMessages = moreRes.data;
+      if (moreMessages.length < limit) setHasMore(false);
+      setMessages((prev) => [...prev, ...moreMessages]);
     }
-    observerRef.current = observer;
-
-    return () => observer.disconnect();
-  }, [loadMoreMessages, hasMore, isLoading, isFetchingMore]);
+  }, [moreRes]);
 
   useEffect(() => {
     // Fetch chat history
@@ -248,7 +220,7 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, onClose }) => {
         )}
       </div>
 
-      <div className={styles.messagesList}>
+      <div id="scrollableDiv" className={styles.messagesList}>
         {isLoading ? (
           <CircularLoader />
         ) : messages.length === 0 ? (
@@ -257,8 +229,19 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, onClose }) => {
             <p className="mt-2 text-sm">No messages yet. Start the conversation!</p>
           </div>
         ) : (
-          <>
-            <div ref={topSentinelRef} style={{ height: "1px" }} />
+          <InfiniteScroll
+            dataLength={messages.length}
+            next={loadMoreMessages}
+            hasMore={hasMore}
+            loader={
+              <div className="flex justify-center py-4">
+                <CircularLoader />
+              </div>
+            }
+            scrollableTarget="scrollableDiv"
+            inverse={true}
+            style={{ display: "flex", flexDirection: "column-reverse", gap: "8px", overflow: "visible" }}
+          >
             {messages.map((msg, index, array) => {
               const isMe = String(msg.user_id) === String(user.id);
               const isLastMessageOfDate =
@@ -310,7 +293,7 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, onClose }) => {
                 </React.Fragment>
               );
             })}
-          </>
+          </InfiniteScroll>
         )}
       </div>
 
