@@ -158,3 +158,27 @@
   background: #e5e7eb;
   border-radius: 10px;
 }
+
+.typingIndicator {
+  padding: 0 16px 8px 16px;
+  background: #f9fafb;
+}
+
+.typingText {
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}

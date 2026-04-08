@@ -25,7 +25,9 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
   const user = useSelector((state: RootState) => state.user);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const socketRef = useRef<Socket | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { fetchData: fetchHistory, response: historyRes, isLoading } = useApiFetch(`/chat/history/${groupId}`);
@@ -49,6 +51,14 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
       setMessages((prev) => [...prev, message]);
     });
 
+    socketRef.current.on("user_typing", ({ userName }: { userName: string }) => {
+      setTypingUsers((prev) => (prev.includes(userName) ? prev : [...prev, userName]));
+    });
+
+    socketRef.current.on("user_stop_typing", ({ userName }: { userName: string }) => {
+      setTypingUsers((prev) => prev.filter((u) => u !== userName));
+    });
+
     return () => {
       socketRef.current?.emit("leave_group", groupId);
       socketRef.current?.disconnect();
@@ -63,11 +73,32 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, typingUsers]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(e.target.value);
+
+    if (!socketRef.current) return;
+
+    // Emit typing event
+    socketRef.current.emit("typing", { groupId, userName: user.name });
+
+    // Clear existing timeout
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+    // Set timeout to stop typing
+    typingTimeoutRef.current = setTimeout(() => {
+      socketRef.current?.emit("stop_typing", { groupId, userName: user.name });
+    }, 2000);
+  };
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !socketRef.current) return;
+
+    // Stop typing immediately when sending
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    socketRef.current.emit("stop_typing", { groupId, userName: user.name });
 
     const messageData = {
       groupId,
@@ -120,14 +151,20 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
         <div ref={messagesEndRef} />
       </div>
 
+      {typingUsers.length > 0 && (
+        <div className={styles.typingIndicator}>
+          <span className={styles.typingText}>
+            {typingUsers.length === 1
+              ? `${typingUsers[0]} is typing...`
+              : typingUsers.length === 2
+                ? `${typingUsers[0]} and ${typingUsers[1]} are typing...`
+                : "Several people are typing..."}
+          </span>
+        </div>
+      )}
+
       <form onSubmit={handleSendMessage} className={styles.inputArea}>
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type a message..."
-          className={styles.input}
-        />
+        <input type="text" value={newMessage} onChange={handleInputChange} placeholder="Type a message..." className={styles.input} />
         <button type="submit" disabled={!newMessage.trim()} className={styles.sendButton}>
           <Send size={18} />
         </button>
