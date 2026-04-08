@@ -49,7 +49,7 @@ module.exports = {
     }
   },
 
-  getChatHistory: async (groupId) => {
+  getChatHistory: async (groupId, limit = 20, offset = 0) => {
     try {
       const query = `
         SELECT 
@@ -75,9 +75,10 @@ module.exports = {
         LEFT JOIN tbl_expenses e ON c.expense_id = e.expense_id
         LEFT JOIN tbl_expense_types et ON e.expense_type_id = et.expense_type_id
         WHERE c.group_id = $1
-        ORDER BY c.created_at ASC;
+        ORDER BY c.created_at DESC
+        LIMIT $2 OFFSET $3;
       `;
-      const result = await client.query(query, [groupId]);
+      const result = await client.query(query, [groupId, limit, offset]);
       return result.rows;
     } catch (error) {
       console.error("Error in getChatHistory model:", error.message);

@@ -4,7 +4,9 @@ const { decryptData } = require("../utils/encryption");
 const getChatHistory = async (req, res) => {
   try {
     const groupId = await decryptData(req.params.groupId);
-    const result = await chatModel.getChatHistory(groupId);
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = parseInt(req.query.offset) || 0;
+    const result = await chatModel.getChatHistory(groupId, limit, offset);
     res.status(200).json({
       success: 1,
       data: result,
