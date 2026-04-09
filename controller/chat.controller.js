@@ -5,8 +5,8 @@ const getChatHistory = async (req, res) => {
   try {
     const groupId = await decryptData(req.params.groupId);
     const limit = parseInt(req.query.limit) || 20;
-    const offset = parseInt(req.query.offset) || 0;
-    const result = await chatModel.getChatHistory(groupId, limit, offset);
+    const lastId = req.query.lastId ? parseInt(req.query.lastId) : null;
+    const result = await chatModel.getChatHistory(groupId, limit, lastId);
     const lastReadId = await chatModel.getLastReadId(req.user.user_id, groupId);
     res.status(200).json({
       success: 1,

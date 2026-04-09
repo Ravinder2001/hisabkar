@@ -46,9 +46,9 @@ module.exports = {
     }
   },
 
-  getChatHistory: async (groupId, limit = 20, offset = 0) => {
+  getChatHistory: async (groupId, limit = 20, lastId = null) => {
     try {
-      const query = `
+      let query = `
         SELECT 
           c.*, 
           u.name as user_name,
@@ -69,10 +69,20 @@ module.exports = {
         JOIN tbl_users u ON c.user_id = u.user_id
         LEFT JOIN tbl_expenses e ON c.expense_id = e.expense_id
         WHERE c.group_id = $1
-        ORDER BY c.created_at DESC
-        LIMIT $2 OFFSET $3;
       `;
-      const result = await client.query(query, [groupId, limit, offset]);
+      const queryParams = [groupId, limit];
+
+      if (lastId) {
+        query += ` AND c.chat_id < $3`;
+        queryParams.push(lastId);
+      }
+
+      query += `
+        ORDER BY c.created_at DESC
+        LIMIT $2;
+      `;
+
+      const result = await client.query(query, queryParams);
       return result.rows;
     } catch (error) {
       console.error("Error in getChatHistory model:", error.message);

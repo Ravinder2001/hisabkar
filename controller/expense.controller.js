@@ -87,9 +87,12 @@ module.exports = {
   },
   getAllExpenses: async (req, res) => {
     try {
+      const { lastId, limit } = req.query;
       let data = await expenseModel.getAllExpenses({
         groupId: req.params.group_id,
         userId: req.user.user_id,
+        lastId: lastId ? parseInt(lastId) : null,
+        limit: limit ? parseInt(limit) : 10,
       });
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, data, data.length);

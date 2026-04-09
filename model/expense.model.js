@@ -172,9 +172,9 @@ module.exports = {
     }
   },
   getAllExpenses: async (values) => {
+    const { groupId, userId, lastId, limit = 10 } = values;
     try {
-      const expenseQuery = await client.query(
-        `
+      let query = `
         SELECT 
           e.expense_id,
           e.expense_name,
@@ -201,14 +201,24 @@ module.exports = {
           tbl_expense_members em ON e.expense_id = em.expense_id
         WHERE 
           e.group_id = $1 AND e.is_active = TRUE
+      `;
+
+      const queryValues = [groupId, userId, limit];
+
+      if (lastId) {
+        query += ` AND e.expense_id < $4 `;
+        queryValues.push(lastId);
+      }
+
+      query += `
         GROUP BY 
           e.expense_id, e.paid_by
         ORDER BY 
-          e.created_at DESC
-        `,
-        [values.groupId, values.userId]
-      );
+          e.expense_id DESC
+        LIMIT $3
+      `;
 
+      const expenseQuery = await client.query(query, queryValues);
       const expenseList = expenseQuery.rows;
 
       return expenseList;
