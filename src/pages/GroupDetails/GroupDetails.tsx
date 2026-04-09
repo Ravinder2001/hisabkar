@@ -33,6 +33,7 @@ import ModalComponent from "../../components/ModalComponent/ModalComponent";
 import ChatModule from "../../components/ChatModule/ChatModule";
 import ShareExpenseModal from "../../components/ChatModule/ShareExpenseModal";
 import BudgetSetter from "../../components/BudgetSetter/BudgetSetter";
+import ChatAssistant from "../../components/ChatBotAssistant/ChatAssistant";
 
 export default function GroupDetails() {
   const location = useLocation();
@@ -403,6 +404,7 @@ export default function GroupDetails() {
             <Plus className="w-6 h-6" />
           </Button>
           <BudgetSetter groupId={GroupId} onBudgetSet={() => fetchGroupDetails()} />
+          <ChatAssistant groupId={GroupId} />
         </>
       ) : null}
 
