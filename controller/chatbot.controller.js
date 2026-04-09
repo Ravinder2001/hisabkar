@@ -47,13 +47,72 @@ const chatbotController = {
                 required: ["groupId", "userId"],
               },
             },
+            {
+              name: "findExpensesByName",
+              description: "Searches for specific expenses in the group by name (e.g., 'Pizza', 'Rent').",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  groupId: { type: "STRING" },
+                  name: { type: "STRING", description: "The name or keyword to search for" },
+                },
+                required: ["groupId", "name"],
+              },
+            },
+            {
+              name: "getExpensesByAmountRange",
+              description: "Finds expenses within a specific price range (e.g., between 500 and 2000).",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  groupId: { type: "STRING" },
+                  minAmount: { type: "NUMBER" },
+                  maxAmount: { type: "NUMBER" },
+                },
+                required: ["groupId", "minAmount", "maxAmount"],
+              },
+            },
+            {
+              name: "predictMonthlySpending",
+              description: "Fetches historical data to predict what the total spending will be by the end of the month.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  groupId: { type: "STRING" },
+                },
+                required: ["groupId"],
+              },
+            },
+            {
+              name: "getExpensesByCategory",
+              description: "Provides a list of expenses for a specific category (e.g., 'Food', 'Grocery', 'Bills').",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  groupId: { type: "STRING" },
+                  category: { type: "STRING", description: "The category to filter by (e.g., Food, Grocery, Bills, Shopping, Cab, Entertainment, Health, Others)" },
+                },
+                required: ["groupId", "category"],
+              },
+            },
+            {
+              name: "getSpendingByCategory",
+              description: "Provides a summary of total spending broken down by category (e.g., Food: 500, Bills: 1200).",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  groupId: { type: "STRING" },
+                },
+                required: ["groupId"],
+              },
+            },
           ],
         },
       ];
 
       // 3. Initialize Model with Tools
       const model = genAI.getGenerativeModel({
-        model: "gemini-flash-latest",
+        model: "gemini-1.5-flash",
         tools: tools,
       });
 
@@ -65,11 +124,19 @@ const chatbotController = {
       // 5. Build system prompt context
       const systemContext = `You are a helpful financial assistant for the 'Hisabkar' app. 
       You are currently chatting with a user in the group context of Group ID: ${groupId}.
-      User ID is: ${userId}.
+      User ID is: ${userId}. Current Date: ${new Date().toISOString()}.
+      
       Always be polite, concise, and professional. 
       Use the provided tools to answer specific financial questions. 
-      If a user asks about group info, use getGroupFinancialSummary. 
-      If they ask about their own expenses/added items, use getMyPersonalSpending.`;
+      
+      PREDICTION LOGIC:
+      When predictMonthlySpending is called, you will receive total_spent and group_created_at.
+      Calculate: (Total Spent / Days since first expense or group creation) * Days in current month.
+      Then compare it with the current budget if available.
+      
+      CATEGORY LOGIC:
+      Expenses now have categories: Food, Grocery, Shopping, Bills, Cab, Entertainment, Health, Others.
+      Be sure to use 'getExpensesByCategory' when users ask about category-specific spending.`;
 
       // 6. Send message and handle tool calls
       let result = await chat.sendMessage(`${systemContext}\n\nUser Question: ${message}`);
@@ -85,6 +152,16 @@ const chatbotController = {
             callResult = await chatBotModel.getGroupSummaryForAi(call.args.groupId);
           } else if (call.name === "getMyPersonalSpending") {
             callResult = await chatBotModel.getUserExpensesForAi(call.args.groupId, call.args.userId);
+          } else if (call.name === "findExpensesByName") {
+            callResult = await chatBotModel.findExpensesByName(call.args.groupId, call.args.name);
+          } else if (call.name === "getExpensesByAmountRange") {
+            callResult = await chatBotModel.getExpensesByAmountRange(call.args.groupId, call.args.minAmount, call.args.maxAmount);
+          } else if (call.name === "predictMonthlySpending") {
+            callResult = await chatBotModel.getPredictionDataForAi(call.args.groupId);
+          } else if (call.name === "getExpensesByCategory") {
+            callResult = await chatBotModel.getExpensesByCategory(call.args.groupId, call.args.category);
+          } else if (call.name === "getSpendingByCategory") {
+            callResult = await chatBotModel.getSpendingByCategory(call.args.groupId);
           }
 
           functionResponses.push({

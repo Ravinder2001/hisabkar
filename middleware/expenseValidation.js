@@ -17,7 +17,7 @@ module.exports = {
       // Fix floating-point precision issue using Lodash round
       const roundedTotal = _.round(totalAmount, 2);
 
-      if (roundedTotal !== amount) {
+      if (Math.abs(roundedTotal - amount) > 1) {
         return commonController.errorResponse(res, Messages.INVALID_AMOUNT(roundedTotal, amount), HttpStatus.BAD_REQUEST);
       }
 

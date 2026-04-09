@@ -9,14 +9,15 @@ const getExpenseById = async (values) => {
         e.expense_name,
         e.description,
         e.split_type,
-        e.amount,
+        e.amount::FLOAT,
         e.paid_by,
+        e.expense_type,
         e.created_at,
         COUNT(em.user_id) AS members_count,
         JSON_AGG(
           JSON_BUILD_OBJECT(
             'id', em.user_id,  
-            'amount', em.amount
+            'amount', em.amount::FLOAT
           )
         ) AS members,
         CASE 
@@ -71,7 +72,7 @@ const getGroupDataById = async (groupId) => {
 
 module.exports = {
   addExpense: async (values) => {
-    const { expenseName, description, amount, groupId, paidBy, members, splitType } = values;
+    const { expenseName, description, amount, groupId, paidBy, members, splitType, expenseType } = values;
     try {
       await client.query("BEGIN");
 
@@ -84,12 +85,13 @@ module.exports = {
               amount, 
               paid_by,
               description,
-              split_type
+              split_type,
+              expense_type
           ) 
-          VALUES ($1, $2, $3, $4, $5, $6)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
           RETURNING expense_id, paid_by
       `,
-        [groupId, expenseName, amount, paidBy, description, splitType]
+        [groupId, expenseName, amount, paidBy, description, splitType, expenseType]
       );
       const expense_data = expenseResult.rows[0];
       const expense_id = expenseResult.rows[0].expense_id;
@@ -120,7 +122,7 @@ module.exports = {
     }
   },
   editExpense: async (values) => {
-    const { expenseId, expenseName, amount, paidBy, members, description, splitType } = values;
+    const { expenseId, expenseName, amount, paidBy, members, description, splitType, expenseType } = values;
     try {
       await client.query("BEGIN");
 
@@ -140,9 +142,9 @@ module.exports = {
       // Step 3: Update Expense Details
       const expenseResult = await client.query(
         `UPDATE tbl_expenses
-         SET expense_name = $1, amount = $2, paid_by = $3, description = $4, split_type = $5
-         WHERE expense_id = $6 RETURNING group_id`,
-        [expenseName, amount, paidBy, description, splitType, expenseId]
+         SET expense_name = $1, amount = $2, paid_by = $3, description = $4, split_type = $5, expense_type = $6
+         WHERE expense_id = $7 RETURNING group_id`,
+        [expenseName, amount, paidBy, description, splitType, expenseType, expenseId]
       );
 
       const groupId = expenseResult.rows[0].group_id;
@@ -180,14 +182,15 @@ module.exports = {
           e.expense_name,
           e.description,
           e.split_type,
-          e.amount,
+          e.amount::FLOAT,
           e.paid_by,
+          e.expense_type,
           e.created_at,
           COUNT(em.user_id) AS members_count,
           JSON_AGG(
             JSON_BUILD_OBJECT(
               'id', em.user_id,  
-              'amount', em.amount
+              'amount', em.amount::FLOAT
             )
           ) AS members,
           CASE 
