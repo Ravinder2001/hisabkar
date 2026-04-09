@@ -956,4 +956,42 @@ ORDER BY gl.created_at DESC;
       throw error;
     }
   },
+  setGroupBudget: async (values) => {
+    try {
+      await client.query(
+        `
+        UPDATE tbl_group_members SET budget = $1 
+        WHERE group_id = $2 AND user_id = $3
+        `,
+        [values.budget, values.groupId, values.userId]
+      );
+      return;
+    } catch (error) {
+      console.error("Error in setting group budget:", error.message);
+      throw error;
+    }
+  },
+  getBudgetDetails: async (values) => {
+    try {
+      const query = `
+        SELECT 
+          COALESCE(gm.budget, 0) as budget,
+          (
+            SELECT COALESCE(SUM(em.amount), 0)
+            FROM tbl_expense_members em
+            JOIN tbl_expenses e ON em.expense_id = e.expense_id
+            WHERE em.user_id = $1 
+              AND e.group_id = $2 
+              AND e.is_active = TRUE
+          ) as total_spent
+        FROM tbl_group_members gm
+        WHERE gm.user_id = $1 AND gm.group_id = $2 AND gm.is_active = TRUE;
+      `;
+      const result = await client.query(query, [values.userId, values.groupId]);
+      return result.rows[0] || { budget: 0, total_spent: 0 };
+    } catch (error) {
+      console.error("Error in getBudgetDetails model:", error.message);
+      throw error;
+    }
+  },
 };

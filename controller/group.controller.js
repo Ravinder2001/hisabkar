@@ -343,4 +343,32 @@ module.exports = {
       common.handleAsyncError(error, res);
     }
   },
+  setGroupBudget: async (req, res) => {
+    try {
+      if (req.body.budget === undefined || req.body.budget < 0) {
+        return common.errorResponse(res, "Invalid budget amount", HttpStatus.BAD_REQUEST);
+      }
+      await groupModel.setGroupBudget({
+        groupId: req.params.group_id,
+        userId: req.user.user_id,
+        budget: req.body.budget,
+      });
+
+      return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
+  getBudgetDetails: async (req, res) => {
+    try {
+      const response = await groupModel.getBudgetDetails({
+        groupId: req.params.group_id,
+        userId: req.user.user_id,
+      });
+
+      return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response);
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
 };

@@ -41,4 +41,7 @@ router.get("/simplified/:group_id", authenticateJWT, validateData.validateGroupI
 router.put("/groupSetting/:group_id", authenticateJWT, validateBody(schemas.editGroupDetails), validateData.validateGroupId, validateData.validateGroupOwnerShip, GroupController.editGroupDetails);
 router.put("/toggleMemberStatus/:group_id/:user_id", authenticateJWT, validateData.validateGroupId, validateData.validateGroupOwnerShip, GroupController.toggleMemberStatus);
 
+router.post("/setBudget/:group_id", authenticateJWT, validateData.validateGroupId, GroupController.setGroupBudget);
+router.get("/budgetDetails/:group_id", authenticateJWT, validateData.validateGroupId, GroupController.getBudgetDetails);
+
 module.exports = router;
