@@ -3,8 +3,6 @@ const client = require("../configuration/db");
 const chatBotModel = {
   checkAndIncrementAiUsage: async (userId, limit) => {
     try {
-      const today = new Date().toISOString().split("T")[0];
-
       // Get current usage
       const checkQuery = `
         SELECT ai_message_count, last_ai_usage_date 
@@ -14,7 +12,15 @@ const chatBotModel = {
       const user = checkResult.rows[0];
 
       let currentCount = 0;
-      const lastDate = user.last_ai_usage_date ? new Date(user.last_ai_usage_date).toISOString().split("T")[0] : null;
+      let lastDate = null;
+      if (user.last_ai_usage_date) {
+        const d = new Date(user.last_ai_usage_date);
+        // Extract local year, month, day to avoid UTC timezone shifts when formatting Date objects
+        lastDate = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+      }
+
+      const now = new Date();
+      const today = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
 
       if (lastDate === today) {
         currentCount = user.ai_message_count || 0;

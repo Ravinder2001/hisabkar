@@ -17,7 +17,10 @@ const chatbotController = {
       // 1. Check Rate Limit
       const usage = await chatBotModel.checkAndIncrementAiUsage(userId, config.CHATBOT_DAILY_LIMIT);
       if (!usage.allowed) {
-        return common.errorResponse(res, `Daily AI limit reached (${config.CHATBOT_DAILY_LIMIT} messages). Please try again tomorrow.`, HttpStatus.TOO_MANY_REQUESTS);
+        return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, {
+          text: `Daily AI limit reached (${config.CHATBOT_DAILY_LIMIT} messages). Please try again tomorrow.`,
+          remainingMessages: 0,
+        });
       }
 
       // 2. Define Tools
@@ -112,7 +115,7 @@ const chatbotController = {
 
       // 3. Initialize Model with Tools
       const model = genAI.getGenerativeModel({
-        model: "gemini-1.5-flash",
+        model: "gemini-2.5-flash",
         tools: tools,
       });
 
@@ -164,10 +167,14 @@ const chatbotController = {
             callResult = await chatBotModel.getSpendingByCategory(call.args.groupId);
           }
 
+          // The Gemini API requires 'response' to be an Object (Struct), not an Array.
+          // Wrapping the result in { data: result } prevents "Proto field is not repeating" errors.
+          const formattedResponse = typeof callResult === "object" && callResult !== null && !Array.isArray(callResult) ? callResult : { data: callResult };
+
           functionResponses.push({
             functionResponse: {
               name: call.name,
-              response: callResult,
+              response: formattedResponse,
             },
           });
         }
@@ -185,7 +192,13 @@ const chatbotController = {
       });
     } catch (error) {
       console.error("Chatbot Controller Error:", error);
-      common.handleAsyncError(error, res);
+
+      // Catch ANY model error (Quota limits, 404s, Network issues, etc.)
+      // Return a successful HTTP 200 with the error text so it natively renders inside the UI chatbox instead of firing a toast.
+      return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, {
+        text: "The AI model is currently out of limits or temporarily unavailable. Please try again later.",
+        remainingMessages: 0,
+      });
     }
   },
 };
