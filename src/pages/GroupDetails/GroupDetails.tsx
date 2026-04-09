@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 
 import styles from "./style.module.css";
@@ -74,6 +74,30 @@ export default function GroupDetails() {
   const [isClone, setIsClone] = useState(false);
   const [isShareModal, setShareModal] = useState<boolean>(false);
   const [sharingExpense, setSharingExpense] = useState<ExpenseType | null>(null);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [isFetchingMore, setIsFetchingMore] = useState<boolean>(false);
+  const loadMoreExpenses = useCallback(() => {
+    if (expenseListLoading || isFetchingMore || !hasMore || expenseList.length === 0) return;
+    const lastId = expenseList[expenseList.length - 1].expense_id;
+    setIsFetchingMore(true);
+    fetchAllExpenses(CONSTANTS.API_ROUTES.ALL_EXPENSES + "/" + GroupId + `?lastId=${lastId}`);
+  }, [expenseListLoading, isFetchingMore, hasMore, expenseList, GroupId, fetchAllExpenses]);
+
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastExpenseElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (expenseListLoading || isFetchingMore) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadMoreExpenses();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [expenseListLoading, isFetchingMore, hasMore, loadMoreExpenses]
+  );
+
   const [hasUnreadMessages, setHasUnreadMessages] = useState<boolean>(false);
   const isChatOpenRef = useRef<boolean>(false);
 
@@ -194,9 +218,31 @@ export default function GroupDetails() {
   }, [groupRes]);
 
   useEffect(() => {
-    if (expenseRes?.success == 1) {
-      setExpenseList(expenseRes.data);
-      setTempExpenseList(expenseRes.data);
+    if (expenseRes?.success === 1) {
+      if (isFetchingMore) {
+        setExpenseList((prev) => [...prev, ...expenseRes.data]);
+        setTempExpenseList((prev) => {
+          const newList = [...prev, ...expenseRes.data];
+          if (selectedUser === "-1") return newList;
+          return newList.filter((expense) => expense.paid_by == selectedUser);
+        });
+        if (expenseRes.data.length < 10) {
+          setHasMore(false);
+        }
+        setIsFetchingMore(false);
+      } else {
+        setExpenseList(expenseRes.data);
+        setTempExpenseList(
+          selectedUser === "-1" ? expenseRes.data : expenseRes.data.filter((expense: ExpenseType) => expense.paid_by == selectedUser)
+        );
+        if (expenseRes.data.length < 10) {
+          setHasMore(false);
+        } else {
+          setHasMore(true);
+        }
+      }
+    } else if (expenseRes?.success === 0) {
+      setIsFetchingMore(false);
     }
   }, [expenseRes]);
 
@@ -211,7 +257,9 @@ export default function GroupDetails() {
       if (deleteExpRes.success == 1) {
         fetchGroupDetails();
         fetchMyPairs();
-        setTempExpenseList((prevExpenses) => prevExpenses.filter((expense) => expense.expense_id !== selectedRow?.expense_id));
+        const updatedList = (prev: ExpenseType[]) => prev.filter((expense) => expense.expense_id !== selectedRow?.expense_id);
+        setExpenseList(updatedList);
+        setTempExpenseList(updatedList);
         showToast("Expense deleted Succesfully", "success");
       }
       handleDeleteModal();
@@ -300,7 +348,7 @@ export default function GroupDetails() {
               </div>
             </div>
           </CardHeader>
-          {expenseListLoading ? (
+          {expenseListLoading && !isFetchingMore ? (
             <CircularLoader />
           ) : (
             <CardContent className={styles.expBox}>
@@ -333,6 +381,12 @@ export default function GroupDetails() {
                   onShareClick={() => handleShareInChat(expense)}
                 />
               ))}
+              <div ref={lastExpenseElementRef} style={{ height: "10px" }} />
+              {isFetchingMore && (
+                <div className="py-4">
+                  <CircularLoader />
+                </div>
+              )}
               {/* </ScrollArea> */}
             </CardContent>
           )}

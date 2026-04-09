@@ -40,7 +40,7 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, onClose }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
-  const [offset, setOffset] = useState(0);
+
   const [hasMore, setHasMore] = useState(true);
   const [lastReadId, setLastReadId] = useState<number>(0);
   const lastReadIdOnOpen = useRef<number | null>(null);
@@ -50,15 +50,14 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, onClose }) => {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const limit = 20;
 
-  const { fetchData: fetchHistory, response: historyRes, isLoading } = useApiFetch(`/chat/history/${groupId}?limit=${limit}&offset=0`);
+  const { fetchData: fetchHistory, response: historyRes, isLoading } = useApiFetch(`/chat/history/${groupId}?limit=${limit}`);
   const { fetchData: fetchMore, response: moreRes, isLoading: isFetchingMore } = useApiFetch("");
 
   const loadMoreMessages = useCallback(async () => {
-    if (isFetchingMore || !hasMore) return;
-    const newOffset = offset + limit;
-    fetchMore(`/chat/history/${groupId}?limit=${limit}&offset=${newOffset}`);
-    setOffset(newOffset);
-  }, [offset, hasMore, isFetchingMore, groupId, fetchMore]);
+    if (isFetchingMore || !hasMore || messages.length === 0) return;
+    const lastId = messages[messages.length - 1].chat_id;
+    fetchMore(`/chat/history/${groupId}?limit=${limit}&lastId=${lastId}`);
+  }, [messages, hasMore, isFetchingMore, groupId, fetchMore]);
 
   useEffect(() => {
     if (moreRes?.success === 1) {
