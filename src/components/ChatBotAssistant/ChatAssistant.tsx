@@ -75,6 +75,9 @@ export default function ChatAssistant({ groupId }: ChatAssistantProps) {
     if (response?.success === 1 && response?.data) {
       const modelMsg: Message = { role: "model", parts: [{ text: response.data.text }], isNew: true };
       setMessages((prev) => [...prev, modelMsg]);
+    } else if (response?.success === 0 && response?.message) {
+      const modelErrorMsg: Message = { role: "model", parts: [{ text: `**Error:** ${response.message}` }], isNew: true };
+      setMessages((prev) => [...prev, modelErrorMsg]);
     }
   }, [response]);
 
