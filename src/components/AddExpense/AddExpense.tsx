@@ -26,7 +26,17 @@ interface FormValues {
   selectedUsers: string[];
   splitType: SplitType;
   userSplits: UserSplit[];
+  expenseType: string;
 }
+
+const EXPENSE_CATEGORIES = [
+  { label: "Food", icon: "🍴", color: "bg-orange-50 text-orange-600 border-orange-200" },
+  { label: "Grocery", icon: "🛒", color: "bg-green-50 text-green-600 border-green-200" },
+  { label: "Bills", icon: "📄", color: "bg-blue-50 text-blue-600 border-blue-200" },
+  { label: "Ent", icon: "🎬", color: "bg-purple-50 text-purple-600 border-purple-200" },
+  { label: "Cab", icon: "🚕", color: "bg-yellow-50 text-yellow-600 border-yellow-200" },
+  { label: "Others", icon: "✨", color: "bg-slate-50 text-slate-600 border-slate-200" },
+];
 
 const validationSchema = Yup.object().shape({
   expenseName: Yup.string()
@@ -37,11 +47,13 @@ const validationSchema = Yup.object().shape({
   description: Yup.string()
     .min(5, "Must be at least 5 characters")
     .max(500, "Must be at most 500 characters")
-    .matches(/^[a-zA-Z\s]*$/, "Only letters and spaces are allowed"),
+    .matches(/^[a-zA-Z0-9\s]*$/, "Only alphanumeric and spaces are allowed"),
+  expenseType: Yup.string().required("Category is required"),
   amount: Yup.number()
     .required("Amount is required")
     .positive("Amount must be positive")
-    .min(0.01, "Amount must be greater than 0")
+    .integer("Amount must be a whole number (no decimals)")
+    .min(1, "Amount must be at least 1")
     .max(999999, "Amount must be lesser than 999999"),
   selectedUsers: Yup.array().min(1, "Select at least one user").required("Select users to split with"),
 });
@@ -74,6 +86,7 @@ function AddExpenseModal({
     selectedUsers: [],
     splitType: "EQUAL",
     userSplits: [],
+    expenseType: "",
   });
 
   const validateSplits = (values: FormValues): boolean => {
@@ -82,12 +95,12 @@ function AddExpenseModal({
 
     if (values.splitType === "PERCENTAGE") {
       const totalPercentage = values.userSplits.reduce((sum, split) => sum + (parseFloat(split.amount) || 0), 0);
-      return Math.abs(totalPercentage - 100) < 0.01;
+      return Math.abs(totalPercentage - 100) < 1.0;
     }
 
     if (values.splitType === "CUSTOM") {
       const totalSplit = values.userSplits.reduce((sum, split) => sum + (parseFloat(split.amount) || 0), 0);
-      return Math.abs(totalSplit - totalAmount) < 0.01;
+      return Math.abs(totalSplit - totalAmount) < 1.0;
     }
 
     return true;
@@ -113,6 +126,7 @@ function AddExpenseModal({
           splitType: values.splitType,
           amount: parseFloat(values.amount),
           members,
+          expenseType: values.expenseType,
         },
       });
     } finally {
@@ -139,6 +153,7 @@ function AddExpenseModal({
           splitType: values.splitType,
           amount: parseFloat(values.amount),
           members,
+          expenseType: values.expenseType,
         },
       });
     } finally {
@@ -187,6 +202,7 @@ function AddExpenseModal({
                   userId: member.id,
                   amount: member.amount.toString(),
                 })),
+          expenseType: selectedRow.expense_type || "Others",
         });
       } else {
         setInitialValues({
@@ -196,6 +212,7 @@ function AddExpenseModal({
           selectedUsers: [],
           splitType: "EQUAL",
           userSplits: [],
+          expenseType: "",
         });
       }
     }
@@ -204,7 +221,7 @@ function AddExpenseModal({
   return (
     <ModalComponent isOpen={isOpen} setIsOpen={setIsOpen}>
       <div className={styles.container}>
-        <div className="text-md font-bold mb-6">{selectedRow && !isClone ? "Edit" : isClone ? "Cloning" : "Add"} Expense</div>
+        <div className="text-sm font-bold mb-4">{selectedRow && !isClone ? "Edit" : isClone ? "Cloning" : "Add"} Expense</div>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -212,18 +229,19 @@ function AddExpenseModal({
           onSubmit={selectedRow && !isClone ? handleEditSubmit : handleSubmit}
         >
           {({ values, errors, touched, setFieldValue, handleBlur }) => (
-            <Form className="space-y-6" noValidate>
-              <div className="space-y-2">
+            <Form className="space-y-4" noValidate>
+              <div className="space-y-1.5">
                 <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium">
+                  <label className="text-xs font-medium text-slate-600">
                     Expense Name <span className="text-red-500">*</span>
                   </label>
                   <button
                     type="button"
                     onClick={() => setShowDescription(!showDescription)}
-                    className={`text-sm font-semibold px-2 py-0.5 rounded-full transition-colors ${
+                    className={`text-[8px] font-semibold px-2 py-0.5 rounded-full transition-colors ${
                       showDescription ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                     }`}
+                    style={{ fontSize: "12px" }}
                   >
                     {showDescription ? "− Note" : "+ Note"}
                   </button>
@@ -233,7 +251,13 @@ function AddExpenseModal({
                     <Input
                       {...field}
                       onBlur={handleBlur}
-                      className={`border-[#e5e7eb] rounded-lg ${touched.expenseName && errors.expenseName ? "border-red-500" : ""}`}
+                      onKeyDown={(e) => {
+                        if (/[0-9]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                      placeholder="e.g. Dinner"
+                      className={`border-[#e5e7eb] h-9 text-sm rounded-lg ${touched.expenseName && errors.expenseName ? "border-red-500" : ""}`}
                     />
                   )}
                 </Field>
@@ -257,8 +281,31 @@ function AddExpenseModal({
                 )}
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-600">Category</label>
+                <div className="flex flex-wrap overflow-x-auto gap-1.5 p-2 no-scrollbar" style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}>
+                  {EXPENSE_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.label}
+                      type="button"
+                      onClick={() => setFieldValue("expenseType", cat.label)}
+                      className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] border transition-all ${
+                        values.expenseType === cat.label
+                          ? `${cat.color} border-current ring-1 ring-current`
+                          : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
+                      }`}
+                    >
+                      <span>{cat.icon}</span>
+                      <span style={{ fontSize: "12px" }}>{cat.label}</span>
+                    </button>
+                  ))}
+                  <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
+                </div>
+                {touched.expenseType && errors.expenseType && <div className="text-red-500 text-[10px]">{errors.expenseType}</div>}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-600">
                   Amount <span className="text-red-500">*</span>
                 </label>
                 <Field name="amount">
@@ -268,6 +315,11 @@ function AddExpenseModal({
                       onWheel={(event) => event.currentTarget.blur()}
                       {...field}
                       onBlur={handleBlur}
+                      onKeyDown={(e) => {
+                        if (e.key === "." || e.key === "e" || e.key === "E") {
+                          e.preventDefault();
+                        }
+                      }}
                       onChange={(e) => {
                         setFieldValue("amount", e.target.value);
                         setFieldValue("selectedUsers", []);
@@ -278,8 +330,8 @@ function AddExpenseModal({
                 </Field>
                 {touched.amount && errors.amount && <div className="text-red-500 text-xs">{errors.amount}</div>}
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Split Type</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-600">Split Type</label>
                 <div className="flex gap-4">
                   {["EQUAL", "PERCENTAGE", "CUSTOM"].map((type) => (
                     <div key={type} className="flex items-center">
@@ -294,16 +346,16 @@ function AddExpenseModal({
                         id={type}
                         className="border-2 border-gray-200"
                       />
-                      <label htmlFor={type} className="ml-2 text-sm capitalize">
+                      <label htmlFor={type} className="ml-2 text-xs capitalize">
                         {type}
                       </label>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <div className="flex gap-1">
-                  <div className="text-sm font-medium">
+                  <div className="text-xs font-medium text-slate-600">
                     Select Users <span className="text-red-500">*</span>
                   </div>
                   <div>
@@ -382,18 +434,19 @@ function AddExpenseModal({
                 </div>
                 {touched.selectedUsers && errors.selectedUsers && <div className="text-red-500 text-xs mt-1">{errors.selectedUsers}</div>}
               </div>
+
               {values.selectedUsers.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <div className="flex justify-between items-center">
-                    <label className="text-sm font-medium">Split Details</label>
-                    <span className="text-sm text-gray-600">
+                    <label className="text-xs font-medium text-slate-600">Split Details</label>
+                    <span className="text-[10px] text-gray-500">
                       Remaining:{" "}
                       {values.splitType === "PERCENTAGE"
                         ? (100 - values.userSplits.reduce((sum, split) => sum + Number(split.amount || 0), 0)).toFixed(2) + "%"
                         : (Number(values.amount || 0) - values.userSplits.reduce((sum, split) => sum + Number(split.amount || 0), 0)).toFixed(2)}
                     </span>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {values.userSplits.map(({ userId }, index) => {
                       const user = memberList.find((u) => u.id === userId);
                       if (!user) return null;
@@ -401,16 +454,20 @@ function AddExpenseModal({
                       return (
                         <div key={userId} className="flex items-center gap-3">
                           <UserAvatar userImage={user.avatar} userName={user.name} />
-                          <span className="flex-1">{user.name.split(" ")[0]}</span>
+                          <span className="flex-1 text-xs">{user.name.split(" ")[0]}</span>
                           <Field name={`userSplits.${index}.amount`}>
                             {({ field }: any) => (
                               <Input
                                 {...field}
                                 type="text"
                                 disabled={values.splitType === "EQUAL"}
-                                className="w-24 text-right"
+                                className="w-20 h-8 text-right text-xs"
                                 placeholder={values.splitType === "PERCENTAGE" ? "%" : "0"}
-                                value={Number(values.userSplits[index].amount).toFixed(0)}
+                                value={
+                                  values.splitType === "EQUAL"
+                                    ? Number(values.userSplits[index].amount || 0).toFixed(2)
+                                    : values.userSplits[index].amount || ""
+                                }
                               />
                             )}
                           </Field>
@@ -418,7 +475,6 @@ function AddExpenseModal({
                       );
                     })}
                   </div>
-
                   {typeof errors.userSplits === "string" && <div className="text-red-500 text-xs mt-1">{errors.userSplits}</div>}
                 </div>
               )}

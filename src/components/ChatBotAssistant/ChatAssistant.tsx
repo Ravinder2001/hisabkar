@@ -3,15 +3,38 @@ import { Button } from "../ui/button";
 import { X, Send, Bot, Sparkles } from "lucide-react";
 import useApiFetch from "../../hooks/useAPIFetch";
 import { Input } from "../ui/input";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   role: "user" | "model";
   parts: { text: string }[];
+  isNew?: boolean;
 }
 
 interface ChatAssistantProps {
   groupId: string;
 }
+
+const TypewriterMessage = ({ text, isNew }: { text: string; isNew?: boolean }) => {
+  const [displayedText, setDisplayedText] = useState(isNew ? "" : text);
+
+  useEffect(() => {
+    if (!isNew) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplayedText(text.slice(0, i));
+      i++;
+      if (i > text.length) clearInterval(interval);
+    }, 15);
+    return () => clearInterval(interval);
+  }, [text, isNew]);
+
+  return (
+    <div className="markdown-content">
+      <ReactMarkdown>{displayedText}</ReactMarkdown>
+    </div>
+  );
+};
 
 export default function ChatAssistant({ groupId }: ChatAssistantProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,30 +47,33 @@ export default function ChatAssistant({ groupId }: ChatAssistantProps) {
   // Auto scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
     }
   }, [messages, isLoading]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+  const handleSend = async (overrideInput?: string) => {
+    const messageToSend = (overrideInput || input).trim();
+    if (!messageToSend || isLoading) return;
 
-    const userMsg: Message = { role: "user", parts: [{ text: input }] };
-    setMessages((prev) => [...prev, userMsg]);
-    const currentInput = input;
+    const userMsg: Message = { role: "user", parts: [{ text: messageToSend }] };
+    setMessages((prev) => [...prev.map((m) => ({ ...m, isNew: false })), userMsg]);
     setInput("");
 
     await fetchData(undefined, {
       method: "POST",
       data: {
-        message: currentInput,
-        history: messages,
+        message: messageToSend,
+        history: messages.map(({ role, parts }) => ({ role, parts })),
       },
     });
   };
 
   useEffect(() => {
     if (response?.success === 1 && response?.data) {
-      const modelMsg: Message = { role: "model", parts: [{ text: response.data.text }] };
+      const modelMsg: Message = { role: "model", parts: [{ text: response.data.text }], isNew: true };
       setMessages((prev) => [...prev, modelMsg]);
     }
   }, [response]);
@@ -58,7 +84,7 @@ export default function ChatAssistant({ groupId }: ChatAssistantProps) {
       <Button
         className="fixed bottom-24 right-6 rounded-full w-14 h-14 shadow-lg bg-gradient-to-tr from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white p-0 flex items-center justify-center transform transition-transform hover:scale-110 active:scale-95 shadow-purple-500/20"
         onClick={() => setIsOpen(!isOpen)}
-        style={{ zIndex: 99997 }}
+        style={{ zIndex: 40 }}
       >
         <Sparkles className="w-6 h-6 animate-pulse" />
       </Button>
@@ -66,8 +92,16 @@ export default function ChatAssistant({ groupId }: ChatAssistantProps) {
       {/* Chat Popup */}
       {isOpen && (
         <div
-          className="fixed bottom-40 right-6 w-[350px] h-[500px] shadow-[0_20px_60px_rgba(0,0,0,0.3)] rounded-3xl bg-white border border-slate-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom-10"
-          style={{ zIndex: 99999 }}
+          className="fixed shadow-[0_20px_60px_rgba(0,0,0,0.4)] rounded-t-3xl md:rounded-3xl bg-white border border-slate-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom-10"
+          style={{
+            zIndex: 99999,
+            bottom: window.innerWidth < 768 ? "0" : "150px",
+            right: window.innerWidth < 768 ? "0" : "24px",
+            width: window.innerWidth < 768 ? "100%" : "350px",
+            height: window.innerWidth < 768 ? "96vh" : "550px",
+            maxHeight: "70vh",
+            maxWidth: "100vw",
+          }}
         >
           {/* Header */}
           <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 flex justify-between items-center text-white shadow-md">
@@ -89,15 +123,46 @@ export default function ChatAssistant({ groupId }: ChatAssistantProps) {
           </div>
 
           {/* Messages Area */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
+          <div
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 scroll-smooth"
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+          >
+            {/* Custom scrollbar class simulation for Webkit */}
+            <style>
+              {`
+                .scroll-smooth::-webkit-scrollbar { display: none; }
+              `}
+            </style>
             {messages.length === 0 && (
-              <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3">
+              <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
                 <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center">
                   <Sparkles className="w-8 h-8 text-purple-600" />
                 </div>
                 <div>
                   <h5 className="font-bold text-slate-800 text-sm">How can I help you?</h5>
                   <p className="text-xs text-slate-500 mt-1 leading-relaxed">Ask me about group spending, your expenses, or just say hello!</p>
+                </div>
+
+                {/* Suggestions Chips */}
+                <div className="flex flex-wrap justify-center gap-2 mt-2">
+                  {[
+                    { label: "📊 Group Summary", prompt: "Give me a summary of this group's spending." },
+                    { label: "📍 Category Analysis", prompt: "Where did I spend my money? Give me a breakdown by category." },
+                    { label: "🔮 Prediction", prompt: "Predict our total spending for this month." },
+                    { label: "💰 My Spendings", prompt: "How much have I added in this group?" },
+                  ].map((chip, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleSend(chip.prompt)}
+                      className="text-[11px] bg-white border border-purple-100 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-50 hover:border-purple-200 transition-all font-medium shadow-sm"
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
@@ -111,7 +176,7 @@ export default function ChatAssistant({ groupId }: ChatAssistantProps) {
                       : "bg-white text-slate-700 border border-slate-100 rounded-tl-none"
                   }`}
                 >
-                  {msg.parts[0].text}
+                  {msg.role === "model" ? <TypewriterMessage text={msg.parts[0].text} isNew={msg.isNew} /> : msg.parts[0].text}
                 </div>
               </div>
             ))}
@@ -139,7 +204,7 @@ export default function ChatAssistant({ groupId }: ChatAssistantProps) {
               />
               <Button
                 size="icon"
-                onClick={handleSend}
+                onClick={() => handleSend()}
                 disabled={isLoading || !input.trim()}
                 className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white w-9 h-9 flex-shrink-0"
               >

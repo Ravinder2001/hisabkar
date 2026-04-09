@@ -96,6 +96,33 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
 
         {/* ── White body with mountain SVG bg ── */}
         <div className={styles.cardBody}>
+          <div className="flex items-center gap-2 mb-2">
+            <span
+              style={{ fontSize: "10px" }}
+              className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[8px] font-bold uppercase tracking-wider border border-slate-200"
+            >
+              {(() => {
+                switch (expense.expense_type) {
+                  case "Food":
+                    return "🍴 Food";
+                  case "Grocery":
+                    return "🛒 Grocery";
+                  case "Shopping":
+                    return "🛍️ Shopping";
+                  case "Bills":
+                    return "📄 Bills";
+                  case "Cab":
+                    return "🚕 Cab";
+                  case "Entertainment":
+                    return "🎬 Entertainment";
+                  case "Health":
+                    return "🏥 Health";
+                  default:
+                    return "✨ Others";
+                }
+              })()}
+            </span>
+          </div>
           <h2 className={styles.expenseName}>{expense.expense_name}</h2>
           <p className={styles.dateText}>{formatDateTime(expense.created_at, true)}</p>
 

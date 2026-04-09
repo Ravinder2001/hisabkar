@@ -54,6 +54,7 @@ export type ExpenseType = {
   members_count: string;
   split_type: SplitType;
   created_at: string;
+  expense_type: string;
   members: {
     id: string;
     amount: number;

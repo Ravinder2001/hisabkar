@@ -53,7 +53,7 @@ export default function BudgetSetter({ groupId, onBudgetSet }: BudgetSetterProps
   return (
     <div className="relative">
       <Button
-        className="fixed bottom-6 right-24 rounded-full w-14 h-14 shadow-lg bg-indigo-600 hover:bg-indigo-700 text-white p-0 flex items-center justify-center transform transition-transform hover:scale-105"
+        className="fixed bottom-6 right-24 rounded-full w-14 h-14 shadow-lg bg-purple-500 hover:bg-indigo-700 text-white p-0 flex items-center justify-center transform transition-transform hover:scale-105"
         onClick={() => setIsOpen(!isOpen)}
         style={{ zIndex: 99998 }}
       >
