@@ -48,6 +48,7 @@ const CONSTANTS = {
     SERVER_HEALTH: "/health",
     TOGGLE_MEMBER_STATUS: "/group/toggleMemberStatus",
     UNREAD_STATUS: "/chat/unread-status",
+    BUDGET_DETAILS: "/group/budgetDetails",
   },
   FONT_FAMILY: "Nunito",
 };

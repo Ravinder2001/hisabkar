@@ -6,7 +6,6 @@ import { ExpenseType, MemberType } from "../../utils/comman/CommanTypes";
 import { formatDateTime } from "../../utils/helpers/commanHelper";
 import { Button } from "../../components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
-import CustomCountUp from "../CustomCountUp/CustomCountUp";
 import CustomAccordion from "../CustomAccordian/CustomAccordian";
 
 type PropsType = ExpenseType & {
@@ -43,7 +42,8 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
           <div className={styles.headerAmount}>
             <span className={styles.currencySymbol}>₹</span>
             <span className={styles.amountValue}>
-              <CustomCountUp count={Number(expense.amount)} />
+              {/* <CustomCountUp count={Number(expense.amount)} /> */}
+              {expense.amount}
             </span>
           </div>
 

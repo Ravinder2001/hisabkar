@@ -32,6 +32,7 @@ import GroupSettingModal from "../../components/GroupSettingModal/GroupSettingMo
 import ModalComponent from "../../components/ModalComponent/ModalComponent";
 import ChatModule from "../../components/ChatModule/ChatModule";
 import ShareExpenseModal from "../../components/ChatModule/ShareExpenseModal";
+import BudgetSetter from "../../components/BudgetSetter/BudgetSetter";
 
 export default function GroupDetails() {
   const location = useLocation();
@@ -394,9 +395,15 @@ export default function GroupDetails() {
       </div>
 
       {!groupData?.is_settled ? (
-        <Button className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg bg-black text-white z-50" onClick={handleExpModal}>
-          <Plus className="w-6 h-6" />
-        </Button>
+        <>
+          <Button
+            className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg bg-black text-white z-50 hover:scale-105 transition-transform"
+            onClick={handleExpModal}
+          >
+            <Plus className="w-6 h-6" />
+          </Button>
+          <BudgetSetter groupId={GroupId} onBudgetSet={() => fetchGroupDetails()} />
+        </>
       ) : null}
 
       {isAddExpModal ? (
