@@ -21,6 +21,7 @@ module.exports = {
     NOT_FOUND: 404,
     NOT_ALLOWED: 405,
     CONFLICT: 409,
+    TOO_MANY_REQUESTS: 429,
     INTERNAL_SERVER_ERROR: 500,
   },
   TIME: {

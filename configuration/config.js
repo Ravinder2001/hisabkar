@@ -39,6 +39,10 @@ const config = {
           CERT: fs.readFileSync(process.env.SSL_CERT),
         }
       : null,
+  GEMINI: {
+    API_KEY: process.env.GEMINI_API_KEY,
+  },
+  CHATBOT_DAILY_LIMIT: process.env.CHATBOT_DAILY_LIMIT || 5,
 };
 
 module.exports = config;
