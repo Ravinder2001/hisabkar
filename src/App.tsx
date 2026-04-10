@@ -11,7 +11,7 @@ import useApiFetch from "./hooks/useAPIFetch";
 import CONSTANTS from "./utils/constant/Constant";
 import { setGroupTypeList } from "./store/features/dataSlice";
 import Loader from "./components/Loader/Loader";
-import { subscribeUser } from "./utils/helpers/serviceWorkerHelper";
+// import { subscribeUser } from "./utils/helpers/serviceWorkerHelper";
 import SiteUnavailable from "./pages/SiteUnavailable/SiteUnavailable";
 
 // Lazy load the component
@@ -44,7 +44,6 @@ const App: React.FC = () => {
   useEffect(() => {
     if (!showStartup && serverHealthRes?.success === 1 && token && !isTokenExpired(token)) {
       fetchGroupTypeList();
-      subscribeUser();
       if (window.NREUM) {
         window.NREUM.setCustomAttribute("userId", id);
       }

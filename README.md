@@ -6,6 +6,9 @@ Hisabkar is a **Progressive Web Application (PWA)** designed for seamless group 
 
 - **Google Authentication**: One-click Google Sign-In for quick access.
 - **Group Expense Management**: Create and manage expense groups effortlessly.
+- **Real-time Group Chat**: Discuss expenses and coordinate with your group members using the built-in real-time chat system.
+- **AI Chat Assistant (Gemini)**: Get smart financial insights and help with your expenses via the integrated AI chatbot.
+- **Budget Tracking**: Set and monitor group-specific budgets to keep your expenditures under control.
 - **Flexible Expense Splitting**: Choose from **equal, percentage-based, or custom splits**.
 - **Smart Settlement System**: Optimized calculations reduce unnecessary transactions.
 - **Real-time Expense Overview**: View **send & receive** amounts for quick settlements.
@@ -77,10 +80,16 @@ Hisabkar is a **Progressive Web Application (PWA)** designed for seamless group 
 - **Group Overview**:
   - Displays **total members, expenditures, and settlements**.
   - Admins get extra options like **adding/removing members, settling/unsettling the group, and downloading reports**.
+- **Group Chat**:
+  - A dedicated tab for real-time conversation between group members.
+  - Includes message history and unread message indicators.
+- **Budget & AI Tools**:
+  - **Budget Tracker**: Set group spending limits and track progress visually.
+  - **AI Assistant**: A floating Gemini-powered assistant for financial analysis and group queries.
 - **Expense Summary**:
-  - Shows simplified transactions to minimize steps.
+  - Shows simplified transactions to minimize settlement steps.
 - **Expense List**:
-  - Users can add/edit expenses with **expense type, amount, and split type (equal/percentage/custom)**.
+  - Detailed timeline of all group expenses with editable entries.
 
 ### 3. Profile Page
 
