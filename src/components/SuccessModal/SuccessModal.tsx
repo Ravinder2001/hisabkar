@@ -59,7 +59,7 @@ export default function SuccessModal(props: PropsTyps) {
 
         <div className="relative z-10 flex flex-col items-center justify-center py-8" ref={confettiRef}>
           <div
-            className={`relative flex items-center justify-center mb-6 transition-all duration-700 ${
+            className={`relative flex items-center justify-center mb-6 transition-all duration-300 ${
               animate ? "scale-100 opacity-100" : "scale-50 opacity-0"
             }`}
           >
@@ -69,7 +69,7 @@ export default function SuccessModal(props: PropsTyps) {
             <div className="relative h-24 w-24 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400 via-emerald-500 to-teal-400 shadow-lg shadow-green-500/30"></div>
               <CheckCircle2
-                className={`h-24 w-24 text-white z-10 transition-all duration-1000 ${animate ? "stroke-[2.5] scale-100" : "stroke-[0] scale-90"}`}
+                className={`h-24 w-24 text-white z-10 transition-all duration-700 ${animate ? "stroke-[2.5] scale-100" : "stroke-[0] scale-90"}`}
                 strokeWidth={3}
               />
               {animate &&
@@ -90,14 +90,14 @@ export default function SuccessModal(props: PropsTyps) {
 
           <div className="space-y-2 mt-2">
             <div
-              className={`text-center text-2xl font-bold bg-clip-text text-transparent text-green-500 transition-all duration-500 delay-300 ${
+              className={`text-center text-2xl font-bold bg-clip-text text-transparent text-green-500 transition-all duration-300 delay-100 ${
                 animate ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
               }`}
             >
               Success!
             </div>
             <div
-              className={`text-center text-base transition-all duration-500 delay-500 ${
+              className={`text-center text-base transition-all duration-300 delay-200 ${
                 animate ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
               }`}
             >
@@ -106,7 +106,7 @@ export default function SuccessModal(props: PropsTyps) {
           </div>
         </div>
 
-        <div className={`flex justify-center relative z-10 transition-all duration-500 delay-700 ${animate ? "opacity-100" : "opacity-0"}`}>
+        <div className={`flex justify-center relative z-10 transition-all duration-300 delay-300 ${animate ? "opacity-100" : "opacity-0"}`}>
           <Button onClick={() => props.setOpen(false)} className="w-full sm:w-auto bg-green-500 text-white">
             Continue
           </Button>

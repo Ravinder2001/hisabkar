@@ -111,35 +111,49 @@ export default function GroupDetails() {
   );
 
   // ── Tab switching with lazy loading ──────────────────────────────────────
-  const handleTabChange = (tab: TabId) => {
-    setActiveTab(tab);
+  const handleTabChange = useCallback(
+    (tab: TabId) => {
+      setActiveTab(tab);
 
-    // When chat tab opened, clear unread indicator
-    if (tab === "chat") {
-      isChatTabActiveRef.current = true;
-      setHasUnreadMessages(false);
-    } else {
-      isChatTabActiveRef.current = false;
-    }
-
-    if (tab !== "addExpense" && activeTab === "addExpense") {
-      setSelectedRow(null);
-      setIsClone(false);
-    }
-
-    if (!visitedTabs.has(tab)) {
-      setVisitedTabs((prev) => new Set<TabId>(Array.from(prev).concat(tab)));
-      // Trigger API fetch on first visit
-      if (tab === "details") {
-        fetchGroupDetails();
-      } else if (tab === "summary") {
-        fetchMyPairs();
-        if (!groupData) fetchGroupDetails();
-      } else if (tab === "addExpense") {
-        if (!groupData) fetchGroupDetails();
+      // When chat tab opened, clear unread indicator
+      if (tab === "chat") {
+        isChatTabActiveRef.current = true;
+        setHasUnreadMessages(false);
+      } else {
+        isChatTabActiveRef.current = false;
       }
-    }
-  };
+
+      if (tab !== "addExpense" && activeTab === "addExpense") {
+        setSelectedRow(null);
+        setIsClone(false);
+      }
+
+      if (!visitedTabs.has(tab)) {
+        setVisitedTabs((prev) => new Set<TabId>(Array.from(prev).concat(tab)));
+        // Trigger API fetch on first visit
+        if (tab === "details") {
+          fetchGroupDetails();
+        } else if (tab === "summary") {
+          fetchMyPairs();
+          if (!groupData) fetchGroupDetails();
+        } else if (tab === "addExpense") {
+          if (!groupData) fetchGroupDetails();
+        }
+      }
+    },
+    [activeTab, visitedTabs, groupData, fetchGroupDetails, fetchMyPairs]
+  );
+
+  const handleAddExpenseClose = useCallback(() => {
+    handleTabChange("timeline");
+  }, [handleTabChange]);
+
+  const handleAddExpenseSuccess = useCallback(() => {
+    fetchMyPairs();
+    fetchGroupDetails();
+    setSuccessModal(true);
+    handleTabChange("timeline");
+  }, [fetchMyPairs, fetchGroupDetails, handleTabChange]);
 
   // const handleExpModal = () => {
   //   if (isAddExpModal && selectedRow) {
@@ -458,17 +472,12 @@ export default function GroupDetails() {
           ) : !groupData?.is_settled ? (
             <AddExpenseModal
               isOpen={true}
-              setIsOpen={() => handleTabChange("timeline")}
+              setIsOpen={handleAddExpenseClose}
               groupId={GroupId}
               memberList={groupMembers}
               setExpenseList={setTempExpenseList}
               selectedRow={selectedRow}
-              callback={() => {
-                fetchMyPairs();
-                fetchGroupDetails();
-                setSuccessModal(true);
-                handleTabChange("timeline");
-              }}
+              callback={handleAddExpenseSuccess}
               isClone={isClone}
               inPage
             />
