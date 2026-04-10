@@ -168,9 +168,6 @@ function AddExpenseModal({
   useEffect(() => {
     if (addRes?.success === 1 && successHandledRef.current !== addRes.data[0].expense_id) {
       successHandledRef.current = addRes.data[0].expense_id;
-      if ("vibrate" in navigator) {
-        window.navigator.vibrate(150);
-      }
       if (!inPage) setIsOpen();
       setExpenseList((prev: any) => {
         const isDuplicate = prev.some((exp: any) => exp.expense_id === addRes.data[0].expense_id);
@@ -185,9 +182,6 @@ function AddExpenseModal({
 
   useEffect(() => {
     if (editRes?.success === 1 && editHandledRef.current !== editRes.data[0].expense_id) {
-      if ("vibrate" in navigator) {
-        window.navigator.vibrate(150);
-      }
       editHandledRef.current = editRes.data[0].expense_id;
       setIsOpen();
       setExpenseList((prev: any) =>
