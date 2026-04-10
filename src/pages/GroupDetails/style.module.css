@@ -15,9 +15,11 @@
 .pageWrapper {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
+  height: 100dvh; /* Use dynamic viewport height for mobile */
   position: relative;
   background: #f4f3ff;
+  overflow: hidden;
 }
 
 /* ── Content area ──────────────────────────────────────────────────────── */
@@ -33,8 +35,8 @@
   top: 0;
   left: 0;
   right: 0;
-  /* Stop exactly where the bottom nav starts */
-  bottom: calc(var(--nav-h-mobile) + env(safe-area-inset-bottom));
+  /* Stop exactly where the bottom nav starts, with a tiny buffer for safety */
+  bottom: calc(var(--nav-h-mobile) + env(safe-area-inset-bottom) + 2px);
   opacity: 0;
   pointer-events: none;
   transform: translateY(12px);
@@ -64,6 +66,8 @@
   background: transparent;
   /* No overflow:auto here — ChatModule manages its own internal scroll */
   overflow: hidden;
+  /* Ensure the input box at the bottom of ChatModule is fully clear of the bar */
+  padding-bottom: 4px;
 }
 
 .chatTabPane > * {

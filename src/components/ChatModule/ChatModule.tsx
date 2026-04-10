@@ -77,7 +77,7 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, groupName }) => {
       withCredentials: true,
     });
 
-    socketRef.current.emit("join_group", groupId);
+    socketRef.current.emit("join_group", { groupId, userId: user.id });
 
     socketRef.current.on("receive_message", (message: Message) => {
       setMessages((prev) => [message, ...prev]);
@@ -321,8 +321,22 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, groupName }) => {
       )}
 
       <form onSubmit={handleSendMessage} className={styles.inputArea}>
-        <input type="text" value={newMessage} onChange={handleInputChange} placeholder="Type a message..." className={styles.input} />
-        <button type="submit" disabled={!newMessage.trim()} className={styles.sendButton}>
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            value={newMessage}
+            onChange={handleInputChange}
+            placeholder="Type a message..."
+            className={styles.input}
+            maxLength={500}
+          />
+          {newMessage.length >= 400 && (
+            <span className={`absolute right-4 bottom-[-18px] text-[10px] ${newMessage.length >= 500 ? "text-red-500 font-bold" : "text-gray-400"}`}>
+              {newMessage.length}/500
+            </span>
+          )}
+        </div>
+        <button type="submit" disabled={!newMessage.trim() || newMessage.length > 500} className={styles.sendButton}>
           <Send size={18} />
         </button>
       </form>
