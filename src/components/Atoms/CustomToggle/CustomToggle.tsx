@@ -5,12 +5,13 @@ type PropTypes = {
   checked: boolean;
   name?: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
 };
 
 function CustomToggle(props: PropTypes) {
   return (
-    <label className={styles.switch}>
-      <input checked={props.checked} onChange={props.onChange} name={props.name} type="checkbox" />
+    <label className={`${styles.switch} ${props.disabled ? styles.disabled : ""}`}>
+      <input checked={props.checked} onChange={props.onChange} name={props.name} type="checkbox" disabled={props.disabled} />
       <div className={styles.slider}>
         <div className={styles.circle}>
           <svg

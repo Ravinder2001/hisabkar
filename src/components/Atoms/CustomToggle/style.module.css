@@ -140,3 +140,12 @@
   -webkit-box-shadow: var(--circle-checked-shadow);
   box-shadow: var(--circle-checked-shadow);
 }
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.disabled .slider {
+  cursor: not-allowed;
+}
