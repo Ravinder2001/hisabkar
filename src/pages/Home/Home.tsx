@@ -9,7 +9,7 @@ import FloatingActionButton from "../../components/FloatingActionButton/Floating
 import CreateGroupModal from "../../components/CreateGroup/CreateGroup";
 import GroupSharingModal from "../../components/ShareGroup/ShareGroup";
 import { useSelector } from "react-redux";
-import CircularLoader from "../../components/CircularLoader/CircularLoader";
+import GroupCardSkeleton from "../../components/GroupCard/GroupCardSkeleton";
 import WelcomeModal from "../../components/WelcomeModal/WelcomeModal";
 import { RootState } from "../../store/store";
 import { Users } from "lucide-react";
@@ -40,12 +40,17 @@ function Home() {
   useEffect(() => {
     if (isNewUser) setIsWelcomeModal(true);
   }, [isNewUser]);
-  return isLoading ? (
-    <CircularLoader />
-  ) : (
+
+  return (
     <div className={styles.container}>
       <div className={styles.cardCon}>
-        {groupList.length > 0 ? (
+        {isLoading ? (
+          <>
+            {[1, 2, 3].map((i) => (
+              <GroupCardSkeleton key={i} />
+            ))}
+          </>
+        ) : groupList.length > 0 ? (
           groupList.map((group) => (
             <GroupCard
               key={group.group_id}
