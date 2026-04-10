@@ -5,6 +5,7 @@ const { HttpStatus } = require("../utils/constant/constant");
 const Messages = require("../utils/constant/messages");
 const { trackExpenseChange } = require("../helpers/expenseLog");
 const { sendNotificationsToUsers } = require("../helpers/pushService");
+const { encryptData } = require("../utils/encryption");
 
 module.exports = {
   addExpense: async (req, res) => {
@@ -40,7 +41,7 @@ module.exports = {
           const payload = {
             title: `${req.body.expenseName} | ${response.groupData.group_name}`,
             body: bodyText,
-            group_id: req.params.group_id,
+            group_id: encryptData(req.params.group_id),
           };
           subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
         }
@@ -66,6 +67,7 @@ module.exports = {
           const payload = {
             title: response.groupData.group_name,
             body: `${req.user.name} has edited an expense.`,
+            group_id: encryptData(req.params.group_id),
           };
           subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
         }
@@ -115,6 +117,7 @@ module.exports = {
           const payload = {
             title: response.groupData.group_name,
             body: `${req.user.name} has deleted an expense.`,
+            group_id: encryptData(req.params.group_id),
           };
           subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
         }

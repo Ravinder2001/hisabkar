@@ -41,9 +41,8 @@ module.exports = {
           const payload = {
             title: response.group_name,
             body: `${req.user.name} has joined the group.`,
-            group_id: response.group_id,
+            group_id: encryptData(response.group_id),
           };
-          delete subscriptions.name;
           subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
         }
       }
