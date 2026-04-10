@@ -140,4 +140,22 @@ module.exports = {
       return false;
     }
   },
+  getNotificationData: async (groupId, senderId) => {
+    try {
+      const query = `
+        SELECT 
+          s.endpoint, s.p256dh, s.auth, 
+          g.group_name
+        FROM tbl_sw_subscriptions s
+        JOIN tbl_group_members gm ON s.user_id = gm.user_id
+        JOIN tbl_groups g ON gm.group_id = g.group_id
+        WHERE gm.group_id = $1 AND gm.user_id != $2 AND gm.is_active = TRUE;
+      `;
+      const result = await client.query(query, [groupId, senderId]);
+      return result.rows;
+    } catch (error) {
+      console.error("Error in getNotificationData model:", error.message);
+      return [];
+    }
+  },
 };

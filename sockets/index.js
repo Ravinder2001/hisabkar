@@ -1,6 +1,7 @@
 const { Server } = require("socket.io");
 const chatModel = require("../model/chat.model");
-const { decryptData } = require("../utils/encryption");
+const { decryptData, encryptData } = require("../utils/encryption");
+const { sendNotificationsToUsers } = require("../helpers/pushService");
 
 const initSockets = (server) => {
   const io = new Server(server, {
@@ -54,6 +55,31 @@ const initSockets = (server) => {
           await chatModel.updateReadStatus(userId, groupId, newMessage.chat_id);
           // Broadcast to the room
           io.to(`group_${groupId}`).emit("receive_message", newMessage);
+
+          // ── Push Notifications ──
+          try {
+            const subscribers = await chatModel.getNotificationData(groupId, userId);
+            const encryptedId = await encryptData(groupId.toString());
+
+            const notificationPayload = {
+              title: `${subscribers[0]?.group_name || "New Message"}`,
+              body: `${newMessage.user_name}: ${newMessage.message}`,
+              url: `/group/${encryptedId}`,
+            };
+
+            subscribers.forEach((sub) => {
+              const subscription = {
+                endpoint: sub.endpoint,
+                keys: {
+                  p256dh: sub.p256dh,
+                  auth: sub.auth,
+                },
+              };
+              sendNotificationsToUsers(subscription, notificationPayload);
+            });
+          } catch (pushError) {
+            console.error("Error triggering push notifications:", pushError);
+          }
         }
       } catch (error) {
         console.error("Error saving message:", error);
