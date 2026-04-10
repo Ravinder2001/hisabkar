@@ -13,7 +13,7 @@ self.addEventListener("push", function (event) {
     badge: "/logo192.png",
     vibrate: [200, 100, 200],
     actions: [{ action: "open_url", title: "Open App" }],
-    data: { group_id: data.group_id },
+    data: { ...data, group_id: data.group_id },
   };
 
   event.waitUntil(self.registration.showNotification(data.title || "Hisabkar", options));
@@ -25,7 +25,8 @@ self.addEventListener("notificationclick", function (event) {
   // Construct the dynamic URL
   const baseUrl = self.location.origin;
   const groupId = event.notification.data ? event.notification.data.group_id : null;
-  const dynamicUrl = groupId ? `${baseUrl}/group/${groupId}` : baseUrl;
+  const targetUrl = event.notification.data?.url || (groupId ? `/group/${groupId}` : "");
+  const dynamicUrl = targetUrl.startsWith("http") ? targetUrl : `${baseUrl}${targetUrl}`;
 
   // Handle the click event (both action and general click)
   event.waitUntil(

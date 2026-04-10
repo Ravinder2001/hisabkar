@@ -233,6 +233,7 @@ export default function GroupDetails() {
   useEffect(() => {
     fetchGroupMembers();
     fetchGroupDetails();
+    fetchAllExpenses();
     fetchUnreadStatus();
 
     const socket = io(ENVConfig.baseURL, { withCredentials: true });
@@ -266,9 +267,6 @@ export default function GroupDetails() {
   useEffect(() => {
     if (membersRes?.success === 1) {
       setGroupMembers(membersRes.data);
-      if (expenseList.length === 0 && !isFetchingMore) {
-        fetchAllExpenses();
-      }
     }
   }, [membersRes]);
 
