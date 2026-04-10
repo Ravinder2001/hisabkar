@@ -1,10 +1,10 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { CircleCheckBig, Download, MoreVertical, Settings, UserPlus, Users2, Wallet } from "lucide-react";
+import { CircleCheckBig, Download, Logs, MoreVertical, Settings, UserPlus, Users2, Wallet } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Badge } from "../../components/ui/badge";
 import styles from "./style.module.css";
-import { GroupDataType } from "../../utils/comman/CommanTypes";
+import { GroupDataType, MemberType } from "../../utils/comman/CommanTypes";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import CustomCountUp from "../CustomCountUp/CustomCountUp";
@@ -24,6 +24,9 @@ function GroupDetailsContent(
     setGroupData: Dispatch<SetStateAction<GroupDataType | null>>;
     handleAddMemModal: () => void;
     handleGroupSettingModal: () => void;
+    handleLogs: () => void;
+    handleAnalysis: () => void;
+    membersList: MemberType;
   }
 ) {
   const GroupTypeList = useSelector((state: RootState) => state.data.groupTypeList);
@@ -103,41 +106,49 @@ function GroupDetailsContent(
     <div className={`space-y-6 ${styles.container}`}>
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-purple-600">{data.group_name}</h2>
-        {data.is_you_admin ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white">
-              {data.is_you_admin && !data.is_settled ? (
-                <DropdownMenuItem onClick={data.handleAddMemModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
-                  <UserPlus className="mr-2 h-4 w-4" color="black" />
-                  <span className="text-black-800">Add Members</span>
-                </DropdownMenuItem>
-              ) : null}
-              {data.is_you_admin && !data.is_settled ? (
-                <DropdownMenuItem onClick={data.handleGroupSettingModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" color="black" />
-                  <span className="text-black-800">Group Settings</span>
-                </DropdownMenuItem>
-              ) : null}
-
-              <DropdownMenuItem onClick={handleConfirmModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
-                <CircleCheckBig className="mr-2 h-4 w-4" color="green" />
-                <span className="text-green-800">{data.is_settled ? "Un-settle this group" : "Make Settlement"}</span>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-white">
+            {data.is_you_admin && !data.is_settled ? (
+              <DropdownMenuItem onClick={data.handleAddMemModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+                <UserPlus className="mr-2 h-4 w-4" color="black" />
+                <span className="text-black-800">Add Members</span>
               </DropdownMenuItem>
-              {data.is_settled ? (
-                <DropdownMenuItem onClick={handleDownloadGroupData} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
-                  <Download className="mr-2 h-4 w-4" color="black" />
-                  <span className="text-black-800">Download Group Data</span>
-                </DropdownMenuItem>
-              ) : null}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : null}
+            ) : null}
+            {data.is_you_admin && !data.is_settled ? (
+              <DropdownMenuItem onClick={data.handleGroupSettingModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+                <Settings className="mr-2 h-4 w-4" color="black" />
+                <span className="text-black-800">Group Settings</span>
+              </DropdownMenuItem>
+            ) : null}
+
+            <DropdownMenuItem onClick={data.handleLogs} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+              <Logs className="mr-2 h-4 w-4" color="black" />
+              <span className="text-black-800">Group Logs</span>
+            </DropdownMenuItem>
+
+            {/* <DropdownMenuItem onClick={data.handleAnalysis} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+              <Wallet className="mr-2 h-4 w-4" color="black" />
+              <span className="text-black-800">Spend Analysis</span>
+            </DropdownMenuItem> */}
+
+            <DropdownMenuItem onClick={handleConfirmModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+              <CircleCheckBig className="mr-2 h-4 w-4" color="green" />
+              <span className="text-green-800">{data.is_settled ? "Un-settle this group" : "Make Settlement"}</span>
+            </DropdownMenuItem>
+            {data.is_settled ? (
+              <DropdownMenuItem onClick={handleDownloadGroupData} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+                <Download className="mr-2 h-4 w-4" color="black" />
+                <span className="text-black-800">Download Group Data</span>
+              </DropdownMenuItem>
+            ) : null}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="flex items-center gap-2 text-gray-600">
@@ -153,7 +164,7 @@ function GroupDetailsContent(
       {data.is_you_admin ? (
         <div className="flex items-center gap-2">
           <Users2 className="h-5 w-5 text-blue-500" />
-          <span>{data.members.length} members</span>
+          <span>{data.membersList.length} members</span>
           <Badge variant="secondary" className="ml-auto bg-yellow-100 text-yellow-800 border-yellow-200">
             You&apos;re admin
           </Badge>
@@ -172,7 +183,7 @@ function GroupDetailsContent(
       <div className="space-y-4">
         <h3 className="font-semibold">Members</h3>
         <div className={`${styles.membersCon} space-y-3`}>
-          {data.members.map((member, index) => (
+          {data.membersList.map((member, index) => (
             <div key={member.name} className="flex items-center gap-3">
               <Avatar>
                 <AvatarImage src={member.avatar} />

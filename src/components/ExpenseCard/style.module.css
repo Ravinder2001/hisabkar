@@ -1,84 +1,286 @@
+/* ─── Container ─────────────────────────────────────── */
 .expenseCon {
-  /* overflow: auto; */
-}
-/* D9FBEA */
-/* F2F5FE */
-#expOwnCard {
-  background-image:
-    linear-gradient(
-      229deg,
-      rgba(248, 248, 248, 0.04) 0%,
-      rgba(248, 248, 248, 0.04) 54%,
-      rgba(112, 112, 112, 0.04) 54%,
-      rgba(112, 112, 112, 0.04) 100%
-    ),
-    linear-gradient(
-      239deg,
-      rgba(252, 252, 252, 0.04) 0%,
-      rgba(252, 252, 252, 0.04) 66%,
-      rgba(111, 111, 111, 0.04) 66%,
-      rgba(111, 111, 111, 0.04) 100%
-    ),
-    linear-gradient(141deg, rgba(40, 40, 40, 0.04) 0%, rgba(40, 40, 40, 0.04) 44%, rgba(168, 168, 168, 0.04) 44%, rgba(168, 168, 168, 0.04) 100%),
-    linear-gradient(287deg, rgba(40, 40, 40, 0.04) 0%, rgba(40, 40, 40, 0.04) 78%, rgba(141, 141, 141, 0.04) 78%, rgba(141, 141, 141, 0.04) 100%),
-    linear-gradient(90deg, rgb(227, 254, 236), rgb(210, 252, 230));
-}
-
-#expCard {
-  background-image:
-    linear-gradient(
-      229deg,
-      rgba(248, 248, 248, 0.04) 0%,
-      rgba(248, 248, 248, 0.04) 54%,
-      rgba(112, 112, 112, 0.04) 54%,
-      rgba(112, 112, 112, 0.04) 100%
-    ),
-    linear-gradient(
-      239deg,
-      rgba(252, 252, 252, 0.04) 0%,
-      rgba(252, 252, 252, 0.04) 66%,
-      rgba(111, 111, 111, 0.04) 66%,
-      rgba(111, 111, 111, 0.04) 100%
-    ),
-    linear-gradient(141deg, rgba(40, 40, 40, 0.04) 0%, rgba(40, 40, 40, 0.04) 44%, rgba(168, 168, 168, 0.04) 44%, rgba(168, 168, 168, 0.04) 100%),
-    linear-gradient(287deg, rgba(40, 40, 40, 0.04) 0%, rgba(40, 40, 40, 0.04) 78%, rgba(141, 141, 141, 0.04) 78%, rgba(141, 141, 141, 0.04) 100%),
-    linear-gradient(90deg, rgb(180, 229, 242), rgb(174, 230, 238));
-}
-
-#amount {
-  font-size: 20px;
-  font-weight: bold !important;
-}
-
-.line {
   width: 100%;
-  height: 1px;
-  background-color: #e5e5e9;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-.middleCon {
-  margin-top: 0px !important;
 }
 
-.paidByBox {
+/* ─── Card shell ─────────────────────────────────────── */
+.card {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+}
+
+/* ─── Coloured header ────────────────────────────────── */
+.cardHeader {
+  position: relative;
+  padding: 12px 14px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+/* SVG dot-grid overlay */
+.cardHeader::before {
+  content: "";
   position: absolute;
-  top: -15px;
-  left: 40%;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='white' fill-opacity='0.18'/%3E%3C/svg%3E");
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+/* Glowing blob top-right */
+.cardHeader::after {
+  content: "";
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.13);
+  pointer-events: none;
+}
+
+/* Own expense — emerald green */
+.headerOwn {
+  background: linear-gradient(130deg, #059669 0%, #10b981 60%, #34d399 100%);
+}
+
+/* Other's expense — indigo/violet */
+.headerOther {
+  background: linear-gradient(130deg, #4338ca 0%, #6366f1 60%, #818cf8 100%);
+}
+
+/* ─── Amount (hero text) ─────────────────────────────── */
+.headerAmount {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  position: relative;
+  z-index: 1;
+}
+
+.currencySymbol {
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1;
+}
+
+.amountValue {
+  font-size: 30px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -1px;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* ─── Header right: payer chip + menu ───────────────── */
+.headerRight {
   display: flex;
   align-items: center;
-  background-color: white;
-  border-radius: 20px;
-  padding: 4px 10px;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.payerChip {
+  display: flex;
+  align-items: center;
   gap: 5px;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 99px;
+  padding: 3px 9px 3px 3px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
-@media only screen and (max-width: 768px) {
-  .paidByBox {
-    padding: 4px 6px;
-  }
+
+.payerAvatar {
+  height: 22px !important;
+  width: 22px !important;
 }
-@media only screen and (max-width: 1024px) {
+
+.payerName {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menuBtn {
+  height: 28px !important;
+  width: 28px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.menuBtn:hover {
+  background: rgba(255, 255, 255, 0.28) !important;
+}
+
+/* ─── White card body with mountain bg ───────────────── */
+.cardBody {
+  background: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='xMidYMax slice'%3E%3Cpath d='M0 90 L20 55 L45 78 L70 40 L95 68 L125 28 L155 60 L180 42 L205 65 L230 30 L260 58 L285 38 L315 62 L345 20 L375 52 L400 35 L400 120 L0 120 Z' fill='%2394a3b8' opacity='0.07'/%3E%3Cpath d='M0 105 L30 72 L60 88 L95 58 L125 80 L158 55 L185 75 L215 62 L245 82 L275 60 L305 78 L340 52 L370 72 L400 60 L400 120 L0 120 Z' fill='%2364748b' opacity='0.06'/%3E%3Cpath d='M0 120 Q40 100 80 108 Q120 116 170 102 Q215 90 260 106 Q305 118 360 98 Q380 92 400 100 L400 120 Z' fill='%23475569' opacity='0.05'/%3E%3C/svg%3E");
+  background-position: bottom center;
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  padding: 14px 14px 10px;
+}
+
+/* ─── Expense name ───────────────────────────────────── */
+.expenseName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  margin-bottom: 4px;
+}
+
+/* ─── Date ───────────────────────────────────────────── */
+.dateText {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Description ────────────────────────────────────── */
+.descSection {
+  margin-top: 6px;
+}
+
+.divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 8px 0;
+}
+
+.descList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.descItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.descDot {
+  margin-top: 6px;
+  flex-shrink: 0;
+  height: 4px;
+  width: 4px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+
+/* ─── Split accordion ────────────────────────────────── */
+.accordionWrap {
+  margin-top: 8px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 2px;
+}
+
+.splitRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.splitRow:hover {
+  background: #f8fafc;
+}
+
+.splitMember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.splitName {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.splitAmount {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  flex-shrink: 0;
+}
+
+/* ─── Branch connector between cards ───────────────── */
+.branchConnector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 28px;
+}
+
+/* Vertical line */
+.branchLine {
+  width: 2px;
+  height: 100%;
+  border-radius: 2px;
+}
+
+/* Branch color — own */
+.branchOwn {
+  color: #10b981;
+}
+
+.branchOwn .branchLine {
+  background: linear-gradient(to bottom, #10b981, #d1fae5);
+}
+
+/* Branch color — other */
+.branchOther {
+  color: #6366f1;
+}
+
+.branchOther .branchLine {
+  background: linear-gradient(to bottom, #6366f1, #e0e7ff);
+}
+
+/* ─── Responsive ─────────────────────────────────────── */
+@media (max-width: 1024px) {
   .expenseCon {
     height: auto;
   }

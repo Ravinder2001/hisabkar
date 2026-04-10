@@ -1,0 +1,328 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Chat container: fills 100% of the tab pane.
+   The tab pane already accounts for the bottom nav height via padding-bottom,
+   so the flex column naturally fits: messages (flex:1) + input at the bottom.
+───────────────────────────────────────────────────────────────────────── */
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background: #fff;
+  overflow: hidden;
+}
+
+.chatHeader {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  background: white;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.03);
+  z-index: 10;
+}
+
+.headerInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.groupAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6c63ff, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.2);
+}
+
+.groupTitle {
+  display: flex;
+  flex-direction: column;
+}
+
+.groupTitle h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.groupStatus {
+  font-size: 11px;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.headerActions {
+  display: flex;
+  gap: 8px;
+}
+
+.iconBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.iconBtn:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* ── Message list ─────────────────────────────────────────────────────── */
+.messagesList {
+  flex: 1;
+  padding: 12px 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  background: #f9fafb;
+  /* Ensure it never swallows the input box */
+  min-height: 0;
+}
+
+/* ── Messages ─────────────────────────────────────────────────────────── */
+.messageWrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 80%;
+  align-self: flex-start;
+}
+
+.myMessage {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+
+.messageContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.userName {
+  font-size: 11px;
+  color: #6b7280;
+  margin-left: 4px;
+  margin-bottom: 2px;
+}
+
+.bubble {
+  padding: 8px 12px;
+  border-radius: 16px 16px 16px 4px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.myMessage .bubble {
+  border-radius: 16px 16px 4px 16px;
+  background: #3b82f6;
+  color: #fff;
+}
+
+.bubble p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.timestamp {
+  font-size: 10px;
+  opacity: 0.7;
+  display: block;
+  text-align: right;
+  margin-top: 4px;
+}
+
+/* ── Input area — always anchored at bottom, never behind the navbar ─── */
+.inputArea {
+  /* flex-shrink: 0 ensures it doesn't collapse when messages fill up */
+  flex-shrink: 0;
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  gap: 8px;
+  background: #fff;
+  /* Extra bottom safe-area padding ensures visibility on devices with
+     home indicators. The bottom nav height is handled by the parent
+     contentArea padding-bottom, so this just needs normal spacing. */
+}
+
+.input {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  outline: none;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  border-color: #3b82f6;
+}
+
+.sendButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.1s;
+  flex-shrink: 0;
+}
+
+.sendButton:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.sendButton:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.sendButton:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────── */
+.messagesList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.messagesList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messagesList::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+
+/* ── Typing indicator ─────────────────────────────────────────────────── */
+.typingIndicator {
+  flex-shrink: 0;
+  padding: 0 16px 8px 16px;
+  background: #f9fafb;
+}
+
+.typingText {
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+/* ── Date divider ─────────────────────────────────────────────────────── */
+.dateDivider {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+  top: 0;
+  z-index: 5;
+}
+
+.dateText {
+  background: #e1f5fe;
+  color: #0288d1;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  text-transform: uppercase;
+}
+
+/* ── Unread divider ───────────────────────────────────────────────────── */
+.unreadDivider {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  position: relative;
+}
+
+.unreadDivider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #f87171;
+  z-index: 1;
+}
+
+.unreadText {
+  background: #fef2f2;
+  color: #ef4444;
+  padding: 4px 16px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.1);
+  border: 1px solid #fee2e2;
+}

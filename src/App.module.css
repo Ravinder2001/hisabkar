@@ -3,7 +3,7 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 25px;
   background: linear-gradient(to right, #faf5ff, #ebf8ff, #f0fff4);
   /* background: linear-gradient(to right, #4A148C, #1E3A8A, #1B5E20); */
   padding: 10px;

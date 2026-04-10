@@ -53,12 +53,12 @@ const Navbar = () => {
 
   return (
     <nav className={`${styles.container} border shadow`}>
-      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-6">
+      <div className="max-w-[860px] mx-auto px-4 sm:px-6 lg:px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0">
               <div className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-                Hisabkar<span className="text-black">.</span>
+                {/* Hisabkar<span className="text-black">.</span> */}
               </div>
             </Link>
           </div>

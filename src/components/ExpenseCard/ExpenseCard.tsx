@@ -1,14 +1,11 @@
 import React, { forwardRef } from "react";
 import styles from "./style.module.css";
-import { CopyPlus, Edit, MoreVertical, Receipt, Trash2 } from "lucide-react";
+import { CopyPlus, Edit, MessageSquare, MoreVertical, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ExpenseType, MemberType } from "../../utils/comman/CommanTypes";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import { formatDateTime } from "../../utils/helpers/commanHelper";
 import { Button } from "../../components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
-import CustomCountUp from "../CustomCountUp/CustomCountUp";
 import CustomAccordion from "../CustomAccordian/CustomAccordian";
 
 type PropsType = ExpenseType & {
@@ -18,16 +15,13 @@ type PropsType = ExpenseType & {
   setAddExpModal: () => void;
   setDeleteModal: () => void;
   onCloneClick: () => void;
+  onShareClick: () => void;
   isSettled: boolean;
 };
 
 const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
-  const expenseTypeList = useSelector((state: RootState) => state.data.expenseTypeList);
-
-  const expenseType = expenseTypeList.find((type) => type.id === expense.expense_type_id);
   const paidByUser = expense.allMembersList.find((member) => member.id === expense.paid_by);
 
-  // Format description into bullet points
   const descriptionPoints = expense.description
     ? expense.description
         .split(".")
@@ -35,125 +29,151 @@ const ExpenseCard = forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
         .filter((point) => point.length > 0)
     : [];
 
+  const isOwn = expense.is_own_expense;
+  const isLast = expense.index === expense.totalItemsCount - 1;
+
   return (
     <div className={`${styles.expenseCon} w-full`} ref={ref}>
-      <div className="relative w-full">
-        <div className="flex flex-wrap items-start gap-x-2 sm:gap-x-4">
-          {/* Left Icon */}
-          <div className="relative h-full">
-            <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-              <Receipt className="h-4 w-4 text-green-600" />
-            </div>
-            {expense.index !== expense.totalItemsCount - 1 && (
-              <div className="absolute top-8 left-1/2 w-0.5 -translate-x-1/2 bg-gray-200" style={{ height: "calc(100% + 1rem)" }} />
-            )}
+      {/* Full-width card */}
+      <div className={styles.card}>
+        {/* ── Coloured header with SVG dot-grid pattern ── */}
+        <div className={`${styles.cardHeader} ${isOwn ? styles.headerOwn : styles.headerOther}`}>
+          {/* Amount hero */}
+          <div className={styles.headerAmount}>
+            <span className={styles.currencySymbol}>₹</span>
+            <span className={styles.amountValue}>
+              {/* <CustomCountUp count={Number(expense.amount)} /> */}
+              {expense.amount}
+            </span>
           </div>
 
-          {/* Expense Card */}
-          <div className="flex-1 mb-8 w-full relative">
-            <div className={styles.paidByBox}>
-              <Avatar className="h-6 w-6">
+          {/* Payer chip + menu */}
+          <div className={styles.headerRight}>
+            <div className={styles.payerChip}>
+              <Avatar className={styles.payerAvatar}>
                 <AvatarImage src={paidByUser?.avatar} />
-                <AvatarFallback>{paidByUser?.name[0].toUpperCase()}</AvatarFallback>
+                <AvatarFallback>{paidByUser?.name?.[0]?.toUpperCase()}</AvatarFallback>
               </Avatar>
-              <p className="text-sm">Paid By {paidByUser?.name.split(" ")[0]}</p>
+              <span className={styles.payerName}>{paidByUser?.name?.split(" ")[0]}</span>
             </div>
-            <div className="p-3 sm:p-4 rounded-lg space-y-3 sm:space-y-4" id={expense.is_own_expense ? styles.expOwnCard : styles.expCard}>
-              <div className="flex flex-row items-start justify-between space-y-0 p-0">
-                <div className="space-y-1 flex-1">
-                  <div className="flex items-center gap-2">
-                    <img src={expenseType?.icon ?? ""} alt={expenseType?.name} className="w-4 h-4" />
-                    <div className="text-sm">{expenseType?.name}</div>
-                  </div>
-                  <h2 className="text-2xl font-semibold tracking-tight">{expense.expense_name}</h2>
-                </div>
-                {expense.is_own_expense ? (
-                  <DropdownMenu>
-                    {expense.isSettled ? null : (
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                    )}
 
-                    <DropdownMenuContent align="end" className="bg-white">
-                      <DropdownMenuItem onClick={expense.setAddExpModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
-                        <Edit className="mr-2 h-4 w-4" />
-                        <span>Edit this Expense</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={expense.onCloneClick} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
-                        <CopyPlus className="mr-2 h-4 w-4" />
-                        <span>Clone this Expense</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={expense.setDeleteModal} className="text-red-600 dark:text-red-400 bg-white  cursor-pointer">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        <span>Delete this Expense</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : null}
-              </div>
+            {!expense.isSettled && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className={styles.menuBtn}>
+                    <span className="sr-only">Open menu</span>
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white">
+                  <DropdownMenuItem onClick={expense.onShareClick} className="cursor-pointer">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Share in Chat
+                  </DropdownMenuItem>
+                  {expense.is_own_expense && (
+                    <DropdownMenuItem onClick={expense.setAddExpModal} className="cursor-pointer">
+                      <Edit className="mr-2 h-4 w-4" />
+                      Edit
+                    </DropdownMenuItem>
+                  )}
+                  {expense.is_own_expense && (
+                    <DropdownMenuItem onClick={expense.onCloneClick} className="cursor-pointer">
+                      <CopyPlus className="mr-2 h-4 w-4" />
+                      Clone
+                    </DropdownMenuItem>
+                  )}
+                  {expense.is_own_expense && (
+                    <DropdownMenuItem onClick={expense.setDeleteModal} className="text-red-600 cursor-pointer">
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
+        </div>
 
-              <div className={styles.middleCon}>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-1">
-                      <p className="text-sm text-gray-500 text-muted-foreground">{formatDateTime(expense.created_at, true)}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold" id={styles.amount}>
-                        ₹<CustomCountUp count={Number(expense.amount)} />
-                      </p>
-                    </div>
-                  </div>
-                </div>
+        {/* ── White body with mountain SVG bg ── */}
+        <div className={styles.cardBody}>
+          <div className="flex items-center gap-2 mb-2">
+            <span
+              style={{ fontSize: "10px" }}
+              className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[8px] font-bold uppercase tracking-wider border border-slate-200"
+            >
+              {(() => {
+                switch (expense.expense_type) {
+                  case "Food":
+                    return "🍴 Food";
+                  case "Grocery":
+                    return "🛒 Grocery";
+                  case "Shopping":
+                    return "🛍️ Shopping";
+                  case "Bills":
+                    return "📄 Bills";
+                  case "Cab":
+                    return "🚕 Cab";
+                  case "Entertainment":
+                    return "🎬 Entertainment";
+                  case "Health":
+                    return "🏥 Health";
+                  default:
+                    return "✨ Others";
+                }
+              })()}
+            </span>
+          </div>
+          <h2 className={styles.expenseName}>{expense.expense_name}</h2>
+          <p className={styles.dateText}>{formatDateTime(expense.created_at, true)}</p>
 
-                {descriptionPoints.length ? (
-                  <>
-                    <div className={styles.line}></div>
-
-                    <div className="space-y-2">
-                      <h3 className="font-medium">Description</h3>
-                      <ul className="list-disc pl-4 space-y-1">
-                        {descriptionPoints.map((point, index) => (
-                          <li key={index} className="text-sm text-muted-foreground">
-                            {point}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </>
-                ) : null}
-              </div>
-
-              {/* Split Between */}
-              <CustomAccordion header={`Split between (${expense.members_count} People)`} expanded={false}>
-                {expense.members.map((exMember) => {
-                  const expenseMember = expense.allMembersList.find((member) => member.id === exMember.id);
-                  return (
-                    <div key={expenseMember?.id} className="flex flex-wrap items-center justify-between bg-white/50 rounded-md my-2">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage src={expenseMember?.avatar} />
-                          <AvatarFallback>{expenseMember?.name[0].toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                        <span className="text-xs sm:text-sm font-medium truncate">{expenseMember?.name}</span>
-                      </div>
-                      <span className="text-md sm:text-sm text-black-600 font-medium">₹{exMember.amount}</span>
-                    </div>
-                  );
-                })}
-              </CustomAccordion>
+          {descriptionPoints.length > 0 && (
+            <div className={styles.descSection}>
+              <div className={styles.divider} />
+              <ul className={styles.descList}>
+                {descriptionPoints.map((point, i) => (
+                  <li key={i} className={styles.descItem}>
+                    <span className={styles.descDot} />
+                    {point}
+                  </li>
+                ))}
+              </ul>
             </div>
+          )}
+
+          <div className={styles.accordionWrap}>
+            <CustomAccordion
+              header={`Split between ${expense.members_count} ${Number(expense.members_count) > 1 ? "people" : "person"}`}
+              expanded={false}
+            >
+              {expense.members.map((exMember) => {
+                const expenseMember = expense.allMembersList.find((m) => m.id === exMember.id);
+                return (
+                  <div key={expenseMember?.id} className={styles.splitRow}>
+                    <div className={styles.splitMember}>
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={expenseMember?.avatar} />
+                        <AvatarFallback>{expenseMember?.name?.[0]?.toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                      <span className={styles.splitName}>{expenseMember?.name}</span>
+                    </div>
+                    <span className={styles.splitAmount}>₹{exMember.amount}</span>
+                  </div>
+                );
+              })}
+            </CustomAccordion>
           </div>
         </div>
       </div>
+
+      {/* ── Branch connector line between cards ── */}
+      {!isLast && (
+        <div className={`${styles.branchConnector} ${isOwn ? styles.branchOwn : styles.branchOther}`}>
+          <div className={styles.branchLine} />
+        </div>
+      )}
     </div>
   );
 });
 
-// ✅ Set display name for debugging
 ExpenseCard.displayName = "ExpenseCard";
 export default ExpenseCard;

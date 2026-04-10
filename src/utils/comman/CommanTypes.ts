@@ -40,7 +40,6 @@ export type GroupDataType = {
   total_members_count: number;
   total_expenses_count: number;
   is_you_admin: boolean;
-  members: MemberType;
 };
 
 export type SplitType = "EQUAL" | "PERCENTAGE" | "CUSTOM";
@@ -48,13 +47,13 @@ export type SplitType = "EQUAL" | "PERCENTAGE" | "CUSTOM";
 export type ExpenseType = {
   expense_id: number;
   expense_name: string;
-  expense_type_id: string;
   description: string;
   amount: number;
   paid_by: string;
   members_count: string;
   split_type: SplitType;
   created_at: string;
+  expense_type: string;
   members: {
     id: string;
     amount: number;

@@ -16,6 +16,7 @@ type PropsType = {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   data: GroupDataType;
+  membersList: MemberType;
   groupId: string;
   callbackFunc: () => void;
 };
@@ -27,7 +28,7 @@ type FormData = {
   deletedMemberIds: string[];
 };
 
-function GroupSettingModal({ isOpen, setIsOpen, data, groupId, callbackFunc }: PropsType) {
+function GroupSettingModal({ isOpen, setIsOpen, data, membersList, groupId, callbackFunc }: PropsType) {
   const groupTypeList = useSelector((state: RootState) => state.data.groupTypeList);
 
   const { fetchData: editGroupSetting, response, isLoading } = useApiFetch("");
@@ -36,7 +37,7 @@ function GroupSettingModal({ isOpen, setIsOpen, data, groupId, callbackFunc }: P
   const [formData, setFormData] = useState<FormData>({
     group_name: data.group_name,
     group_type_id: data.group_type_id,
-    members: [...data.members],
+    members: [...membersList],
     deletedMemberIds: [],
   });
 

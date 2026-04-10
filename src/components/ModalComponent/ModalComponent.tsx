@@ -32,6 +32,7 @@ type PropsType = ModalType & {
   children: ReactNode;
   className?: string;
   hideCloseBtn?: boolean;
+  customStyle?: any;
 };
 
 function ModalComponent(props: PropsType) {
@@ -60,7 +61,10 @@ function ModalComponent(props: PropsType) {
     <Modal
       isOpen={props.isOpen}
       // onRequestClose={() => props.setIsOpen(false)}
-      style={modalStyles}
+      style={{
+        ...modalStyles,
+        content: { ...modalStyles.content, ...props.customStyle },
+      }}
       contentLabel="Example Modal"
       ariaHideApp={false} // Prevents accessibility warning
       className={props.className}

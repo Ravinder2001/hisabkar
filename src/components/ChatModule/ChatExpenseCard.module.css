@@ -1,0 +1,148 @@
+.cardContainer {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 6px;
+  min-width: 220px;
+  max-width: 100%;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconBox {
+  width: 32px;
+  height: 32px;
+  background: #fff;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.titleBox {
+  flex: 1;
+  min-width: 0;
+}
+
+.expenseName {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.expenseDate {
+  font-size: 10px;
+  color: #64748b;
+  display: block;
+}
+
+.amountBox {
+  display: flex;
+  align-items: baseline;
+  color: #059669;
+}
+
+.currency {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.amount {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.detailsSection {
+  margin-top: 8px;
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 6px;
+}
+
+.expandButton {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #3b82f6;
+  cursor: pointer;
+  outline: none;
+}
+
+.expandButton:hover {
+  text-decoration: underline;
+}
+
+.membersList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 4px;
+  background: #fff;
+  border-radius: 4px;
+}
+
+.memberRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.memberInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.memberName {
+  font-size: 11px;
+  color: #475569;
+}
+
+.memberAmount {
+  font-size: 11px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Override colors when card is in my message (blue bubble) */
+.myCardContainer {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.myCardContainer .expenseName,
+.myCardContainer .amountBox,
+.myCardContainer .currency,
+.myCardContainer .amount,
+.myCardContainer .memberName,
+.myCardContainer .memberAmount {
+  color: #fff !important;
+}
+
+.myCardContainer .expandButton,
+.myCardContainer .expenseDate {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.myCardContainer .membersList {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.myCardContainer .detailsSection {
+  border-top-color: rgba(255, 255, 255, 0.2);
+}
