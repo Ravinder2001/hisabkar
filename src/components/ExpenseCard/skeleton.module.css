@@ -1,0 +1,59 @@
+.skeletonBase {
+  background: linear-gradient(90deg, rgba(203, 213, 225, 0.5) 25%, rgba(226, 232, 240, 0.9) 50%, rgba(203, 213, 225, 0.5) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.headerSkeleton {
+  background: #f1f5f9 !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.amountSkeleton {
+  composes: skeletonBase;
+  width: 80px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.chipSkeleton {
+  composes: skeletonBase;
+  width: 100px;
+  height: 36px;
+  border-radius: 20px;
+}
+
+.tagSkeleton {
+  composes: skeletonBase;
+  width: 60px;
+  height: 16px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+}
+
+.nameSkeleton {
+  composes: skeletonBase;
+  width: 70%;
+  height: 24px;
+  margin-bottom: 8px;
+}
+
+.dateSkeleton {
+  composes: skeletonBase;
+  width: 40%;
+  height: 14px;
+  margin-bottom: 24px;
+}

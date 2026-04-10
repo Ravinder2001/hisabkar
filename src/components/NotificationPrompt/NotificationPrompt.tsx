@@ -7,8 +7,10 @@ const NotificationPrompt: React.FC = () => {
   const [showPrompt, setShowPrompt] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
 
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !("MSStream" in window);
+  const isStandalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    ("standalone" in navigator && (navigator as Navigator & { standalone?: boolean }).standalone);
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -43,6 +45,7 @@ const NotificationPrompt: React.FC = () => {
         showToast("Notifications enabled!", "success");
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Subscription failed", error);
       showToast("Could not enable notifications. Please check browser permissions.", "error");
     }
