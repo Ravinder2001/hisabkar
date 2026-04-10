@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "../ui/button";
 import { X, Send, Bot, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import useApiFetch from "../../hooks/useAPIFetch";
 import { Input } from "../ui/input";
 import ReactMarkdown from "react-markdown";
@@ -96,135 +97,133 @@ export default function ChatAssistant({ groupId, inStack = false }: ChatAssistan
       </Button>
 
       {/* Chat Popup */}
-      {isOpen && (
-        <div
-          className="fixed shadow-[0_20px_60px_rgba(0,0,0,0.4)] rounded-t-3xl md:rounded-3xl bg-white border border-slate-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom-10"
-          style={{
-            zIndex: 99999,
-            bottom: window.innerWidth < 768 ? "0" : "150px",
-            right: window.innerWidth < 768 ? "0" : "24px",
-            width: window.innerWidth < 768 ? "100%" : "350px",
-            height: window.innerWidth < 768 ? "96vh" : "550px",
-            maxHeight: "70vh",
-            maxWidth: "100vw",
-          }}
-        >
-          {/* Header */}
-          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 flex justify-between items-center text-white shadow-md">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                <Bot className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h4 className="font-bold text-sm tracking-tight">Gemini Assistant</h4>
-                <p className="text-[10px] text-purple-100 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Online & Ready
-                </p>
-              </div>
-            </div>
-            <button onClick={() => setIsOpen(false)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Messages Area */}
-          <div
-            ref={scrollRef}
-            className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 scroll-smooth"
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed z-[99999] shadow-[0_20px_60px_rgba(0,0,0,0.4)] rounded-t-3xl md:rounded-3xl bg-white border border-slate-100 flex flex-col overflow-hidden bottom-[75px] md:bottom-[100px] right-0 md:right-6 w-full md:w-[350px] h-[calc(100vh-80px)] md:h-[550px] max-h-[calc(100vh-90px)] md:max-h-[70vh] max-w-[100vw]"
+            style={{ bottom: "6px" }}
           >
-            {/* Custom scrollbar class simulation for Webkit */}
-            <style>
-              {`
-                .scroll-smooth::-webkit-scrollbar { display: none; }
-              `}
-            </style>
-            {messages.length === 0 && (
-              <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
-                <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center">
-                  <Sparkles className="w-8 h-8 text-purple-600" />
+            {/* Header */}
+            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 flex justify-between items-center text-white shadow-md">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                  <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h5 className="font-bold text-slate-800 text-sm">How can I help you?</h5>
-                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">Ask me about group spending, your expenses, or just say hello!</p>
-                </div>
-
-                {/* Suggestions Chips */}
-                <div className="flex flex-wrap justify-center gap-2 mt-2">
-                  {[
-                    { label: "📊 Group Summary", prompt: "Give me a summary of this group's spending." },
-                    { label: "📍 Category Analysis", prompt: "Where did I spend my money? Give me a breakdown by category." },
-                    { label: "🔮 Prediction", prompt: "Predict our total spending for this month." },
-                    { label: "💰 My Spendings", prompt: "How much have I added in this group?" },
-                  ].map((chip, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleSend(chip.prompt)}
-                      className="text-[11px] bg-white border border-purple-100 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-50 hover:border-purple-200 transition-all font-medium shadow-sm"
-                    >
-                      {chip.label}
-                    </button>
-                  ))}
+                  <h4 className="font-bold text-sm tracking-tight">Gemini Assistant</h4>
+                  <p className="text-[10px] text-purple-100 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Online & Ready
+                  </p>
                 </div>
               </div>
-            )}
-
-            {messages.map((msg, idx) => (
-              <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div
-                  className={`max-w-[85%] p-3 rounded-2xl text-sm shadow-sm ${
-                    msg.role === "user"
-                      ? "bg-purple-600 text-white rounded-tr-none"
-                      : "bg-white text-slate-700 border border-slate-100 rounded-tl-none"
-                  }`}
-                >
-                  {msg.role === "model" ? <TypewriterMessage text={msg.parts[0].text} isNew={msg.isNew} /> : msg.parts[0].text}
-                </div>
-              </div>
-            ))}
-
-            {isLoading && (
-              <div className="flex justify-start">
-                <div className="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-100 shadow-sm flex gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "200ms" }} />
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "400ms" }} />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Input Area */}
-          <div className="p-4 bg-white border-t border-slate-100">
-            <div className="flex gap-2 items-center bg-slate-50 p-1.5 rounded-2xl border border-slate-200 shadow-inner focus-within:border-purple-300 transition-all">
-              <Input
-                placeholder="Ask something..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                className="border-none bg-transparent shadow-none focus-visible:ring-0 h-9 placeholder:text-slate-400"
-              />
-              <Button
-                size="icon"
-                onClick={() => handleSend()}
-                disabled={isLoading || !input.trim()}
-                className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white w-9 h-9 flex-shrink-0"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
+              <button onClick={() => setIsOpen(false)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            {response?.data?.remainingMessages !== undefined && (
-              <p className="text-[10px] text-slate-400 text-center mt-2 font-medium italic">
-                {response.data.remainingMessages > 0 ? `${response.data.remainingMessages} messages left today` : "Daily limit reached"}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
+
+            {/* Messages Area */}
+            <div
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 scroll-smooth"
+              style={{
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+            >
+              {/* Custom scrollbar class simulation for Webkit */}
+              <style>
+                {`
+                .scroll-smooth::-webkit-scrollbar { display: none; }
+              `}
+              </style>
+              {messages.length === 0 && (
+                <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
+                  <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center">
+                    <Sparkles className="w-8 h-8 text-purple-600" />
+                  </div>
+                  <div>
+                    <h5 className="font-bold text-slate-800 text-sm">How can I help you?</h5>
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">Ask me about group spending, your expenses, or just say hello!</p>
+                  </div>
+
+                  {/* Suggestions Chips */}
+                  <div className="flex flex-wrap justify-center gap-2 mt-2">
+                    {[
+                      { label: "📊 Group Summary", prompt: "Give me a summary of this group's spending." },
+                      { label: "📍 Category Analysis", prompt: "Where did I spend my money? Give me a breakdown by category." },
+                      { label: "🔮 Prediction", prompt: "Predict our total spending for this month." },
+                      { label: "💰 My Spendings", prompt: "How much have I added in this group?" },
+                    ].map((chip, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handleSend(chip.prompt)}
+                        className="text-[11px] bg-white border border-purple-100 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-50 hover:border-purple-200 transition-all font-medium shadow-sm"
+                      >
+                        {chip.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {messages.map((msg, idx) => (
+                <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`max-w-[85%] p-3 rounded-2xl text-sm shadow-sm ${
+                      msg.role === "user"
+                        ? "bg-purple-600 text-white rounded-tr-none"
+                        : "bg-white text-slate-700 border border-slate-100 rounded-tl-none"
+                    }`}
+                  >
+                    {msg.role === "model" ? <TypewriterMessage text={msg.parts[0].text} isNew={msg.isNew} /> : msg.parts[0].text}
+                  </div>
+                </div>
+              ))}
+
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-100 shadow-sm flex gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "200ms" }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "400ms" }} />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Input Area */}
+            <div className="p-4 bg-white border-t border-slate-100">
+              <div className="flex gap-2 items-center bg-slate-50 p-1.5 rounded-2xl border border-slate-200 shadow-inner focus-within:border-purple-300 transition-all">
+                <Input
+                  placeholder="Ask something..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                  className="border-none bg-transparent shadow-none focus-visible:ring-0 h-9 placeholder:text-slate-400"
+                />
+                <Button
+                  size="icon"
+                  onClick={() => handleSend()}
+                  disabled={isLoading || !input.trim()}
+                  className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white w-9 h-9 flex-shrink-0"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
+              {response?.data?.remainingMessages !== undefined && (
+                <p className="text-[10px] text-slate-400 text-center mt-2 font-medium italic">
+                  {response.data.remainingMessages > 0 ? `${response.data.remainingMessages} messages left today` : "Daily limit reached"}
+                </p>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader } from "../../components/ui/card";
-
 import styles from "./style.module.css";
-
-import { Button } from "../../components/ui/button";
 import AddExpenseModal from "../../components/AddExpense/AddExpense";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
@@ -128,6 +125,9 @@ export default function GroupDetails() {
         fetchGroupDetails();
       } else if (tab === "summary") {
         fetchMyPairs();
+        if (!groupData) fetchGroupDetails();
+      } else if (tab === "addExpense") {
+        if (!groupData) fetchGroupDetails();
       }
     }
   };
@@ -376,7 +376,11 @@ export default function GroupDetails() {
 
         {/* ADD EXPENSE TAB — inline form */}
         <div className={`${styles.tabPane} ${activeTab === "addExpense" ? styles.tabPaneActive : ""}`}>
-          {!groupData?.is_settled ? (
+          {groupDetailsLoading ? (
+            <div className="flex w-full h-full justify-center items-center">
+              <CircularLoader />
+            </div>
+          ) : !groupData?.is_settled ? (
             <AddExpenseModal
               isOpen={true}
               setIsOpen={() => handleTabChange("timeline")}
@@ -405,25 +409,10 @@ export default function GroupDetails() {
           <Card className="bg-white h-full overflow-auto">
             <CardHeader className={styles.cardHeader}>
               {visitedTabs.has("summary") ? (
-                pairsLoading ? (
+                pairsLoading || groupDetailsLoading ? (
                   <CircularLoader />
-                ) : groupData ? (
-                  <GroupPairs
-                    isSettled={groupData.is_settled}
-                    pairsData={pairsData}
-                    GroupId={GroupId}
-                    groupData={groupData}
-                    groupMembers={groupMembers}
-                  />
                 ) : (
-                  <div className={styles.summaryNoGroup}>
-                    <p>
-                      Please visit <strong>Group Details</strong> first to load group data.
-                    </p>
-                    <Button size="sm" onClick={() => handleTabChange("details")} className={styles.visitBtn}>
-                      Go to Group Details
-                    </Button>
-                  </div>
+                  <GroupPairs isSettled={groupData?.is_settled ?? false} pairsData={pairsData} GroupId={GroupId} groupMembers={groupMembers} />
                 )
               ) : null}
             </CardHeader>

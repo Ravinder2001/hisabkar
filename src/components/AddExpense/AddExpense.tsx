@@ -233,16 +233,16 @@ function AddExpenseModal({
         <Form className="space-y-4" noValidate>
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <label className="text-xs font-medium text-slate-600">
+              <label className="text-sm font-medium text-slate-600">
                 Expense Name <span className="text-red-500">*</span>
               </label>
               <button
                 type="button"
                 onClick={() => setShowDescription(!showDescription)}
-                className={`text-[8px] font-semibold px-2 py-0.5 rounded-full transition-colors ${
+                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full transition-colors ${
                   showDescription ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                 }`}
-                style={{ fontSize: "12px" }}
+                style={{ fontSize: "13px" }}
               >
                 {showDescription ? "− Note" : "+ Note"}
               </button>
@@ -258,11 +258,11 @@ function AddExpenseModal({
                     }
                   }}
                   placeholder="e.g. Dinner"
-                  className={`border-[#e5e7eb] h-9 text-sm rounded-lg ${touched.expenseName && errors.expenseName ? "border-red-500" : ""}`}
+                  className={`border-[#e5e7eb] h-10 text-base rounded-lg ${touched.expenseName && errors.expenseName ? "border-red-500" : ""}`}
                 />
               )}
             </Field>
-            {touched.expenseName && errors.expenseName && <div className="text-red-500 text-xs">{errors.expenseName}</div>}
+            {touched.expenseName && errors.expenseName && <div className="text-red-500 text-sm">{errors.expenseName}</div>}
 
             {showDescription && (
               <div className="mt-1">
@@ -273,17 +273,17 @@ function AddExpenseModal({
                       onBlur={handleBlur}
                       placeholder="Add a note..."
                       rows={2}
-                      className={`border-[#e5e7eb] rounded-lg text-sm ${touched.description && errors.description ? "border-red-500" : ""}`}
+                      className={`border-[#e5e7eb] rounded-lg text-base ${touched.description && errors.description ? "border-red-500" : ""}`}
                     />
                   )}
                 </Field>
-                {touched.description && errors.description && <div className="text-red-500 text-xs">{errors.description}</div>}
+                {touched.description && errors.description && <div className="text-red-500 text-sm">{errors.description}</div>}
               </div>
             )}
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-600">Category</label>
+            <label className="text-sm font-medium text-slate-600">Category</label>
             <div className="flex flex-wrap overflow-x-auto gap-1.5 p-2 no-scrollbar" style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}>
               {EXPENSE_CATEGORIES.map((cat) => (
                 <button
@@ -297,16 +297,16 @@ function AddExpenseModal({
                   }`}
                 >
                   <span>{cat.icon}</span>
-                  <span style={{ fontSize: "12px" }}>{cat.label}</span>
+                  <span style={{ fontSize: "13px" }}>{cat.label}</span>
                 </button>
               ))}
               <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
             </div>
-            {touched.expenseType && errors.expenseType && <div className="text-red-500 text-[10px]">{errors.expenseType}</div>}
+            {touched.expenseType && errors.expenseType && <div className="text-red-500 text-xs">{errors.expenseType}</div>}
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-600">
+            <label className="text-sm font-medium text-slate-600">
               Amount <span className="text-red-500">*</span>
             </label>
             <Field name="amount">
@@ -325,14 +325,14 @@ function AddExpenseModal({
                     setFieldValue("amount", e.target.value);
                     setFieldValue("selectedUsers", []);
                   }}
-                  className={`border-[#e5e7eb] rounded-lg ${touched.amount && errors.amount ? "border-red-500" : ""}`}
+                  className={`border-[#e5e7eb] rounded-lg h-10 text-base ${touched.amount && errors.amount ? "border-red-500" : ""}`}
                 />
               )}
             </Field>
-            {touched.amount && errors.amount && <div className="text-red-500 text-xs">{errors.amount}</div>}
+            {touched.amount && errors.amount && <div className="text-red-500 text-sm">{errors.amount}</div>}
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-600">Split Type</label>
+            <label className="text-sm font-medium text-slate-600">Split Type</label>
             <div className="flex gap-4">
               {["EQUAL", "PERCENTAGE", "CUSTOM"].map((type) => (
                 <div key={type} className="flex items-center">
@@ -347,7 +347,7 @@ function AddExpenseModal({
                     id={type}
                     className="border-2 border-gray-200"
                   />
-                  <label htmlFor={type} className="ml-2 text-xs capitalize">
+                  <label htmlFor={type} className="ml-2 text-sm capitalize">
                     {type}
                   </label>
                 </div>
@@ -356,7 +356,7 @@ function AddExpenseModal({
           </div>
           <div className="space-y-1.5">
             <div className="flex gap-1">
-              <div className="text-xs font-medium text-slate-600">
+              <div className="text-sm font-medium text-slate-600">
                 Select Users <span className="text-red-500">*</span>
               </div>
               <div>
@@ -416,14 +416,14 @@ function AddExpenseModal({
                         </div>
                       )}
                     </button>
-                    <div className="text-xs mt-1 flex items-center gap-1">
+                    <div className="text-sm mt-1 flex items-center gap-1">
                       <div>{UserName}</div>
                       {!user.is_available ? (
                         <div
                           data-tooltip-id="user-not-available-tooltip"
                           data-tooltip-content={`${UserName} is currently unavailable. Click on the avatar to add them manually.`}
                         >
-                          <CircleAlert color="red" size={12} />
+                          <CircleAlert color="red" size={14} />
                         </div>
                       ) : null}
                     </div>
@@ -431,14 +431,14 @@ function AddExpenseModal({
                 );
               })}
             </div>
-            {touched.selectedUsers && errors.selectedUsers && <div className="text-red-500 text-xs mt-1">{errors.selectedUsers}</div>}
+            {touched.selectedUsers && errors.selectedUsers && <div className="text-red-500 text-sm mt-1">{errors.selectedUsers}</div>}
           </div>
 
           {values.selectedUsers.length > 0 && (
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-medium text-slate-600">Split Details</label>
-                <span className="text-[10px] text-gray-500">
+                <label className="text-sm font-medium text-slate-600">Split Details</label>
+                <span className="text-xs text-gray-500">
                   Remaining:{" "}
                   {values.splitType === "PERCENTAGE"
                     ? (100 - values.userSplits.reduce((sum, split) => sum + Number(split.amount || 0), 0)).toFixed(2) + "%"
