@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { setUserProfileData } from "../../store/features/userSlice";
 import { formatDateTime } from "../../utils/helpers/commanHelper";
 import CustomCircularLoading from "../../components/Atoms/CustomCircularLoading/CustomCircularLoading";
+import { getSubscription, subscribeUser, unsubscribeUser } from "../../utils/helpers/serviceWorkerHelper";
 
 const initialData = {
   email: "",
@@ -33,6 +34,11 @@ export default function Profile() {
 
   const [formData, setFormData] = useState(initialData);
   const [avatarList, setAvatarList] = useState<string[]>([]);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [notificationLoading, setNotificationLoading] = useState(false);
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone;
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -66,7 +72,41 @@ export default function Profile() {
 
   useEffect(() => {
     fetchProfileDetails();
+    checkSubscriptionStatus();
   }, []);
+
+  const checkSubscriptionStatus = async () => {
+    const sub = await getSubscription();
+    setIsSubscribed(!!sub);
+  };
+
+  const handleNotificationToggle = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNotificationLoading(true);
+    try {
+      if (e.target.checked) {
+        if (isIOS && !isStandalone) {
+          showToast("To enable notifications on iOS, please add this app to your Home Screen first.", "info");
+          return;
+        }
+        const sub = await subscribeUser();
+        if (sub) {
+          setIsSubscribed(true);
+          showToast("Notifications enabled successfully!", "success");
+        }
+      } else {
+        const result = await unsubscribeUser();
+        if (result) {
+          setIsSubscribed(false);
+          showToast("Notifications disabled.", "info");
+        }
+      }
+    } catch (error) {
+      console.error("Notification permission error:", error);
+      showToast("Could not change notification settings. Please check your browser permissions.", "error");
+    } finally {
+      setNotificationLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (profileRes?.success == 1) {
@@ -131,6 +171,25 @@ export default function Profile() {
           <div className="flex items-center space-x-2">
             <CustomToggle checked={formData.is_available} onChange={handleToggle} />
             <Label htmlFor="is_available">Available</Label>
+          </div>
+          <hr className="my-4 border-gray-100" />
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label className="text-base">Push Notifications</Label>
+                <p className="text-sm text-gray-500">Receive alerts for new expenses and updates.</p>
+              </div>
+              <div className="flex items-center">
+                {notificationLoading && <CustomCircularLoading />}
+                <CustomToggle checked={isSubscribed} onChange={handleNotificationToggle} disabled={notificationLoading} />
+              </div>
+            </div>
+            {isIOS && !isStandalone && (
+              <div className="rounded-lg bg-blue-50 p-3 text-xs text-blue-700">
+                <strong>Note:</strong> On iOS, you must add "Hisabkar" to your <strong>Home Screen</strong> to receive notifications. Tap the{" "}
+                <strong>Share</strong> icon and select <strong>"Add to Home Screen"</strong>.
+              </div>
+            )}
           </div>
         </CardContent>
         <CardFooter>{profileLoading ? null : <ButtonComponent text="Submit" isLoading={isLoading} />}</CardFooter>

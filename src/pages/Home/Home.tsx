@@ -13,6 +13,7 @@ import CircularLoader from "../../components/CircularLoader/CircularLoader";
 import WelcomeModal from "../../components/WelcomeModal/WelcomeModal";
 import { RootState } from "../../store/store";
 import { Users } from "lucide-react";
+import NotificationPrompt from "../../components/NotificationPrompt/NotificationPrompt";
 
 function Home() {
   const isNewUser = useSelector((state: RootState) => state.user.isNewUser);
@@ -86,6 +87,7 @@ function Home() {
         groupCode={isShareGroupModal.groupCode}
       />
       {isWelcomeModal ? <WelcomeModal isOpen={isWelcomeModal} setIsOpen={setIsWelcomeModal} /> : null}
+      <NotificationPrompt />
     </div>
   );
 }

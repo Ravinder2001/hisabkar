@@ -18,7 +18,13 @@ export const registerServiceWorker = () => {
 export const subscribeUser = async () => {
   if ("serviceWorker" in navigator) {
     const registration = await navigator.serviceWorker.ready;
-    console.log("-------------------------->", ENVConfig.vapidKey);
+
+    // Check if subscription already exists
+    const existingSubscription = await registration.pushManager.getSubscription();
+    if (existingSubscription) {
+      return existingSubscription;
+    }
+
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: ENVConfig.vapidKey,
@@ -28,5 +34,27 @@ export const subscribeUser = async () => {
         "Content-Type": "application/json",
       },
     });
+    return subscription;
   }
+};
+
+export const unsubscribeUser = async () => {
+  if ("serviceWorker" in navigator) {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    if (subscription) {
+      await subscription.unsubscribe();
+      // Optionally notify backend to remove subscription
+      return true;
+    }
+  }
+  return false;
+};
+
+export const getSubscription = async () => {
+  if ("serviceWorker" in navigator) {
+    const registration = await navigator.serviceWorker.ready;
+    return await registration.pushManager.getSubscription();
+  }
+  return null;
 };
