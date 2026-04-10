@@ -1,4 +1,4 @@
-import React, { lazy, useEffect } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import { withSuspense } from "./hoc/withSuspense";
 import { ErrorBoundary } from "react-error-boundary";
 import { useSelector } from "react-redux";
@@ -27,14 +27,22 @@ const App: React.FC = () => {
   const { fetchData: fetchServerHealth, response: serverHealthRes, isLoading } = useApiFetch(CONSTANTS.API_ROUTES.SERVER_HEALTH);
   const { fetchData: fetchGroupTypeList, response: groupTypeRes } = useApiFetch(CONSTANTS.API_ROUTES.GROUP_TYPE_LIST);
 
+  const [showStartup, setShowStartup] = useState(true);
+
   // Fetch server health only once on mount
   useEffect(() => {
     fetchServerHealth();
+
+    // Ensure startup screen shows for at least 3.5 seconds
+    const timer = setTimeout(() => {
+      setShowStartup(false);
+    }, 3500);
+    return () => clearTimeout(timer);
   }, [fetchServerHealth]);
 
   // Fetch group types only when server is healthy and token is valid
   useEffect(() => {
-    if (serverHealthRes?.success === 1 && token && !isTokenExpired(token)) {
+    if (!showStartup && serverHealthRes?.success === 1 && token && !isTokenExpired(token)) {
       fetchGroupTypeList();
       subscribeUser();
       if (window.NREUM) {
@@ -43,7 +51,7 @@ const App: React.FC = () => {
     } else if (token && isTokenExpired(token)) {
       dispatch(setUserLoggedOut());
     }
-  }, [serverHealthRes, token, id, fetchGroupTypeList, dispatch]);
+  }, [serverHealthRes, token, id, fetchGroupTypeList, dispatch, showStartup]);
 
   // Update Redux store with group type list
   useEffect(() => {
@@ -53,7 +61,7 @@ const App: React.FC = () => {
   }, [groupTypeRes, dispatch]);
 
   // Render logic
-  if (isLoading || !serverHealthRes) {
+  if (isLoading || !serverHealthRes || showStartup) {
     return <Loader />;
   }
 

@@ -1,9 +1,14 @@
 self.addEventListener("push", function (event) {
-  const data = event.data.json();
+  let data = {};
+  try {
+    data = event.data.json();
+  } catch (e) {
+    console.error("Invalid JSON in push event", e);
+  }
   console.log("Push Event Received:", data);
 
   const options = {
-    body: data.body,
+    body: data.body || "New notification from Hisabkar",
     icon: "/logo192.png",
     badge: "/logo192.png",
     vibrate: [200, 100, 200],
@@ -11,7 +16,7 @@ self.addEventListener("push", function (event) {
     data: { group_id: data.group_id },
   };
 
-  event.waitUntil(self.registration.showNotification(data.title, options));
+  event.waitUntil(self.registration.showNotification(data.title || "Hisabkar", options));
 });
 
 self.addEventListener("notificationclick", function (event) {
@@ -19,7 +24,8 @@ self.addEventListener("notificationclick", function (event) {
 
   // Construct the dynamic URL
   const baseUrl = self.location.origin;
-  const dynamicUrl = `${baseUrl}/${event.notification.data.group_id}`;
+  const groupId = event.notification.data ? event.notification.data.group_id : null;
+  const dynamicUrl = groupId ? `${baseUrl}/group/${groupId}` : baseUrl;
 
   // Handle the click event (both action and general click)
   event.waitUntil(
