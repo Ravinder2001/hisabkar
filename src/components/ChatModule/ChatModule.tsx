@@ -32,10 +32,11 @@ interface Message {
 
 interface ChatModuleProps {
   groupId: string;
+  groupName: string;
   onClose?: () => void;
 }
 
-const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
+const ChatModule: React.FC<ChatModuleProps> = ({ groupId, groupName }) => {
   const user = useSelector((state: RootState) => state.user);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -207,6 +208,28 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
 
   return (
     <div className={styles.chatContainer}>
+      {/* Header section */}
+      <div className={styles.chatHeader}>
+        <div className={styles.headerInfo}>
+          <div className={styles.groupAvatar}>{groupName?.charAt(0).toUpperCase() || "G"}</div>
+          <div className={styles.groupTitle}>
+            <h3>{groupName}</h3>
+            <div className={styles.groupStatus}>
+              <span className={styles.statusDot}></span>
+              Online
+            </div>
+          </div>
+        </div>
+        <div className={styles.headerActions}>
+          {/* <button className={styles.iconBtn}>
+            <Users size={18} />
+          </button>
+          <button className={styles.iconBtn}>
+            <Info size={18} />
+          </button> */}
+        </div>
+      </div>
+
       <div id="scrollableDiv" className={styles.messagesList}>
         {isLoading ? (
           <CircularLoader />

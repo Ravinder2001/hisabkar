@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
 import styles from "./style.module.css";
-import { GroupDataType, GroupPairsData, MemberType } from "../../utils/comman/CommanTypes";
+import { GroupPairsData, MemberType } from "../../utils/comman/CommanTypes";
 import CustomCountUp from "../CustomCountUp/CustomCountUp";
 import SimplifiedComponent from "../SimplifiedModal/SimplifiedModal";
 
@@ -10,7 +10,6 @@ type PropType = {
   pairsData: GroupPairsData;
   isSettled: boolean;
   GroupId: string;
-  groupData: GroupDataType;
   groupMembers: MemberType;
 };
 

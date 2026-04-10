@@ -66,7 +66,7 @@ export default function GroupDetails() {
     send: [],
     receive: [],
   });
-  const [isAddExpModal, setAddExpModal] = useState<boolean>(false);
+  // const [isAddExpModal, setAddExpModal] = useState<boolean>(false);
   const [isDeleteModal, setDeleteModal] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<ExpenseType | null>(null);
   const [logModal, setLogModal] = useState<boolean>(false);
@@ -118,6 +118,11 @@ export default function GroupDetails() {
       isChatTabActiveRef.current = false;
     }
 
+    if (tab !== "addExpense" && activeTab === "addExpense") {
+      setSelectedRow(null);
+      setIsClone(false);
+    }
+
     if (!visitedTabs.has(tab)) {
       setVisitedTabs((prev) => new Set<TabId>(Array.from(prev).concat(tab)));
       // Trigger API fetch on first visit
@@ -132,12 +137,12 @@ export default function GroupDetails() {
     }
   };
 
-  const handleExpModal = () => {
-    if (isAddExpModal && selectedRow) {
-      setSelectedRow(null);
-    }
-    setAddExpModal(!isAddExpModal);
-  };
+  // const handleExpModal = () => {
+  //   if (isAddExpModal && selectedRow) {
+  //     setSelectedRow(null);
+  //   }
+  //   setAddExpModal(!isAddExpModal);
+  // };
   const handleAddMemModal = () => {
     setAddMemberModal(!addMemberModal);
   };
@@ -319,9 +324,9 @@ export default function GroupDetails() {
                     index={index}
                     totalItemsCount={expenseList.length}
                     setAddExpModal={() => {
-                      handleExpModal();
                       setSelectedRow(expense);
                       setIsClone(false);
+                      handleTabChange("addExpense");
                     }}
                     setDeleteModal={() => {
                       handleDeleteModal();
@@ -332,9 +337,9 @@ export default function GroupDetails() {
                     }}
                     isSettled={groupData?.is_settled ?? false}
                     onCloneClick={() => {
-                      handleExpModal();
                       setSelectedRow(expense);
                       setIsClone(true);
+                      handleTabChange("addExpense");
                     }}
                     onShareClick={() => handleShareInChat(expense)}
                   />
@@ -387,14 +392,14 @@ export default function GroupDetails() {
               groupId={GroupId}
               memberList={groupMembers}
               setExpenseList={setTempExpenseList}
-              selectedRow={null}
+              selectedRow={selectedRow}
               callback={() => {
                 fetchMyPairs();
                 fetchGroupDetails();
                 setSuccessModal(true);
                 handleTabChange("timeline");
               }}
-              isClone={false}
+              isClone={isClone}
               inPage
             />
           ) : (
@@ -422,7 +427,7 @@ export default function GroupDetails() {
         {/* CHAT TAB — inline page, not a modal */}
         <div className={`${styles.tabPane} ${styles.chatTabPane} ${activeTab === "chat" ? styles.tabPaneActive : ""}`}>
           {/* Always mount ChatModule once chat tab is first visited so socket stays alive */}
-          {visitedTabs.has("chat") && <ChatModule groupId={GroupId} />}
+          {visitedTabs.has("chat") && <ChatModule groupId={GroupId} groupName={groupData?.group_name || "Group Chat"} />}
         </div>
       </div>
 
@@ -457,22 +462,8 @@ export default function GroupDetails() {
       )}
 
       {/* ── Modals ──────────────────────────────────────────────────────── */}
-      {isAddExpModal ? (
-        <AddExpenseModal
-          isOpen={isAddExpModal}
-          setIsOpen={handleExpModal}
-          groupId={GroupId}
-          memberList={groupMembers}
-          setExpenseList={setTempExpenseList}
-          selectedRow={selectedRow}
-          callback={() => {
-            fetchMyPairs();
-            fetchGroupDetails();
-            setSuccessModal(true);
-          }}
-          isClone={isClone}
-        />
-      ) : null}
+      {/* Edit/Clone is now handled inline via the 'Add' tab */}
+
       <CustomAlert
         isOpen={isDeleteModal}
         onClose={handleDeleteModal}

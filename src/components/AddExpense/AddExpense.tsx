@@ -365,7 +365,7 @@ function AddExpenseModal({
                   checked={values.selectedUsers.length === memberList.length}
                   onChange={(e) => {
                     if (e.target.checked) {
-                      const allUserIds = memberList.filter((user) => user.is_available).map((user) => user.id);
+                      const allUserIds = memberList.filter((user) => user.is_current_user).map((user) => user.id);
 
                       setFieldValue("selectedUsers", allUserIds);
 
@@ -386,50 +386,52 @@ function AddExpenseModal({
               </div>
             </div>
             <div className="flex flex-wrap gap-4">
-              {memberList.map((user) => {
-                const UserName = user.name.split(" ")[0];
-                return (
-                  <div key={user.id} className="text-center">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const newSelected = values.selectedUsers.includes(user.id)
-                          ? values.selectedUsers.filter((id) => id !== user.id)
-                          : [...values.selectedUsers, user.id];
-                        setFieldValue("selectedUsers", newSelected);
-                        const amount = parseFloat(values.amount) || 0;
-                        const splits = newSelected.map((userId) => ({
-                          userId,
-                          amount: values.splitType === "EQUAL" && amount ? ((amount / newSelected.length) * 100) / 100 : "",
-                        }));
-                        setFieldValue("userSplits", splits);
-                      }}
-                      className={`flex items-center justify-center relative w-12 h-12 rounded-full ${
-                        values.selectedUsers.includes(user.id) ? "bg-blue-100 border-2 border-blue-200" : "bg-gray-100"
-                      }`}
-                    >
-                      <UserAvatar userImage={user.avatar} userName={user.name} />
+              {memberList
+                .filter((user) => user.is_current_user)
+                .map((user) => {
+                  const UserName = user.name.split(" ")[0];
+                  return (
+                    <div key={user.id} className="text-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newSelected = values.selectedUsers.includes(user.id)
+                            ? values.selectedUsers.filter((id) => id !== user.id)
+                            : [...values.selectedUsers, user.id];
+                          setFieldValue("selectedUsers", newSelected);
+                          const amount = parseFloat(values.amount) || 0;
+                          const splits = newSelected.map((userId) => ({
+                            userId,
+                            amount: values.splitType === "EQUAL" && amount ? ((amount / newSelected.length) * 100) / 100 : "",
+                          }));
+                          setFieldValue("userSplits", splits);
+                        }}
+                        className={`flex items-center justify-center relative w-12 h-12 rounded-full ${
+                          values.selectedUsers.includes(user.id) ? "bg-blue-100 border-2 border-blue-200" : "bg-gray-100"
+                        }`}
+                      >
+                        <UserAvatar userImage={user.avatar} userName={user.name} />
 
-                      {values.selectedUsers.includes(user.id) && (
-                        <div className="absolute -top-1 -right-1 bg-blue-500 rounded-full p-0.5">
-                          <Check className="w-3 h-3 text-white" />
-                        </div>
-                      )}
-                    </button>
-                    <div className="text-sm mt-1 flex items-center gap-1">
-                      <div>{UserName}</div>
-                      {!user.is_available ? (
-                        <div
-                          data-tooltip-id="user-not-available-tooltip"
-                          data-tooltip-content={`${UserName} is currently unavailable. Click on the avatar to add them manually.`}
-                        >
-                          <CircleAlert color="red" size={14} />
-                        </div>
-                      ) : null}
+                        {values.selectedUsers.includes(user.id) && (
+                          <div className="absolute -top-1 -right-1 bg-blue-500 rounded-full p-0.5">
+                            <Check className="w-3 h-3 text-white" />
+                          </div>
+                        )}
+                      </button>
+                      <div className="text-sm mt-1 flex items-center gap-1">
+                        <div>{UserName}</div>
+                        {!user.is_available ? (
+                          <div
+                            data-tooltip-id="user-not-available-tooltip"
+                            data-tooltip-content={`${UserName} is currently unavailable. Click on the avatar to add them manually.`}
+                          >
+                            <CircleAlert color="red" size={14} />
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
             {touched.selectedUsers && errors.selectedUsers && <div className="text-red-500 text-sm mt-1">{errors.selectedUsers}</div>}
           </div>

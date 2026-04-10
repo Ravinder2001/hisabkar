@@ -70,7 +70,7 @@ export default function BudgetSetter({ groupId, onBudgetSet, inStack = false }: 
       {isOpen && (
         <div
           className="fixed w-64 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-2xl bg-white border border-slate-100 flex flex-col animate-in slide-in-from-bottom-5"
-          style={{ zIndex: 99999, bottom: inStack ? "300px" : "96px", right: "24px" }}
+          style={{ zIndex: 99999, bottom: inStack ? "220px" : "110px", right: "24px" }}
         >
           <div className="flex justify-between items-center mb-4">
             <h4 className="font-bold text-sm text-slate-800">Your Group Budget</h4>

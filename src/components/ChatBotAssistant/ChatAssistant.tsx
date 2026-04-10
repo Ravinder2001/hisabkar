@@ -105,7 +105,7 @@ export default function ChatAssistant({ groupId, inStack = false }: ChatAssistan
             exit={{ y: "100%", opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed z-[99999] shadow-[0_20px_60px_rgba(0,0,0,0.4)] rounded-t-3xl md:rounded-3xl bg-white border border-slate-100 flex flex-col overflow-hidden bottom-[75px] md:bottom-[100px] right-0 md:right-6 w-full md:w-[350px] h-[calc(100vh-80px)] md:h-[550px] max-h-[calc(100vh-90px)] md:max-h-[70vh] max-w-[100vw]"
-            style={{ bottom: "6px" }}
+            style={{ bottom: "6px", left: "0px", height: "80%" }}
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 flex justify-between items-center text-white shadow-md">
@@ -114,11 +114,7 @@ export default function ChatAssistant({ groupId, inStack = false }: ChatAssistan
                   <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm tracking-tight">Gemini Assistant</h4>
-                  <p className="text-[10px] text-purple-100 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Online & Ready
-                  </p>
+                  <h4 className="font-bold text-xl tracking-tight">Gemini Assistant</h4>
                 </div>
               </div>
               <button onClick={() => setIsOpen(false)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">

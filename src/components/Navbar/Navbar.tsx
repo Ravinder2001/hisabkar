@@ -53,7 +53,7 @@ const Navbar = () => {
 
   return (
     <nav className={`${styles.container} border shadow`}>
-      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-6">
+      <div className="max-w-[860px] mx-auto px-4 sm:px-6 lg:px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0">

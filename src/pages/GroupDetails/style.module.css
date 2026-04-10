@@ -42,6 +42,8 @@
     opacity 0.28s ease,
     transform 0.28s ease;
   overflow: auto;
+  max-width: 860px;
+  margin: 0 auto;
 }
 
 .tabPaneActive {
@@ -71,6 +73,7 @@
 
 .cardHeader {
   padding: 1rem;
+  height: 100%;
 }
 
 .selectWrapper {
@@ -270,8 +273,8 @@
   cursor: pointer;
   position: relative;
   padding: 0;
-  /* lift it up so the circle protrudes above the navbar */
-  transform: translateY(-10px);
+  /* lift it up slightly so the circle sits parallel with other regular icons */
+  transform: translateY(-4px);
   transition: transform 0.22s ease;
 }
 
@@ -442,6 +445,21 @@
     -webkit-mask-composite: destination-out;
     mask-composite: exclude;
     opacity: 0.7;
+  }
+
+  /* Reset translation on desktop so it sits parallel with row-aligned icons */
+  .navItemAdd {
+    transform: translateY(0) !important;
+  }
+
+  .navItemAdd:hover {
+    transform: scale(1.05) !important;
+  }
+
+  /* Dock FABs to the content column instead of screen edge */
+  .fabStack {
+    right: calc((100% - 860px) / 2 + 10px);
+    bottom: calc(var(--nav-h-desktop) + 32px);
   }
 }
 
