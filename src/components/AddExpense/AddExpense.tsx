@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { Input } from "../ui/input";
@@ -163,31 +163,39 @@ function AddExpenseModal({
     }
   };
 
+  const successHandledRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (addRes?.success === 1) {
-      // Haptic feedback for mobile devices (Android)
+    if (addRes?.success === 1 && successHandledRef.current !== addRes.data[0].expense_id) {
+      successHandledRef.current = addRes.data[0].expense_id;
       if ("vibrate" in navigator) {
         window.navigator.vibrate(150);
       }
       if (!inPage) setIsOpen();
-      setExpenseList((prev: any) => [addRes.data[0], ...prev]);
+      setExpenseList((prev: any) => {
+        const isDuplicate = prev.some((exp: any) => exp.expense_id === addRes.data[0].expense_id);
+        if (isDuplicate) return prev;
+        return [addRes.data[0], ...prev];
+      });
       callback();
     }
-  }, [addRes, setIsOpen]);
+  }, [addRes, setIsOpen, callback, inPage]);
+
+  const editHandledRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (editRes?.success === 1) {
-      // Haptic feedback for mobile devices (Android)
+    if (editRes?.success === 1 && editHandledRef.current !== editRes.data[0].expense_id) {
       if ("vibrate" in navigator) {
         window.navigator.vibrate(150);
       }
+      editHandledRef.current = editRes.data[0].expense_id;
       setIsOpen();
       setExpenseList((prev: any) =>
         prev.map((expense: any) => (expense.expense_id === editRes.data[0].expense_id ? { ...editRes.data[0] } : expense))
       );
       callback();
     }
-  }, [editRes, setIsOpen]);
+  }, [editRes, setIsOpen, callback]);
 
   useEffect(() => {
     if (isOpen) {
@@ -373,7 +381,9 @@ function AddExpenseModal({
                   checked={values.selectedUsers.length === memberList.length}
                   onChange={(e) => {
                     if (e.target.checked) {
-                      const allUserIds = memberList.filter((user) => user.is_current_user).map((user) => user.id);
+                      const allUserIds = Array.from(new Map(memberList.map((m) => [m.id, m])).values())
+                        .filter((user) => user.is_current_user)
+                        .map((user) => user.id);
 
                       setFieldValue("selectedUsers", allUserIds);
 
@@ -394,7 +404,7 @@ function AddExpenseModal({
               </div>
             </div>
             <div className="flex flex-wrap gap-4">
-              {memberList
+              {Array.from(new Map(memberList.map((m) => [m.id, m])).values())
                 .filter((user) => user.is_current_user)
                 .map((user) => {
                   const UserName = user.name.split(" ")[0];
