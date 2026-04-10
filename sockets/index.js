@@ -73,12 +73,12 @@ const initSockets = (server) => {
             const activeUserIdsInRoom = new Set(socketsInRoom.filter((s) => s.userId).map((s) => s.userId.toString()));
 
             const subscribers = await chatModel.getNotificationData(groupId, userId);
-            const encryptedId = await encryptData(groupId.toString());
+            const encryptedId = encryptData(groupId.toString());
 
             const notificationPayload = {
               title: `${subscribers[0]?.group_name || "New Message"}`,
               body: `${newMessage.user_name}: ${newMessage.message}`,
-              url: `/group/${encryptedId}`,
+              group_id: encryptedId,
             };
 
             subscribers.forEach((sub) => {
