@@ -504,7 +504,7 @@ export default function GroupDetails() {
       {/* ── Floating / Mobile Bottom Nav ────────────────────────────────── */}
       <nav className={styles.bottomNav}>
         <div className={styles.navInner}>
-          {NAV_TABS.map((tab) => (
+          {NAV_TABS.filter((tab) => !tab.isAdd || !groupData?.is_settled).map((tab) => (
             <button
               key={tab.id}
               className={`${tab.isAdd ? styles.navItemAdd : styles.navItem} ${

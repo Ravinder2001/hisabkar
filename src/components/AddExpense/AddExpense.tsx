@@ -165,6 +165,10 @@ function AddExpenseModal({
 
   useEffect(() => {
     if (addRes?.success === 1) {
+      // Haptic feedback for mobile devices (Android)
+      if ("vibrate" in navigator) {
+        window.navigator.vibrate(150);
+      }
       if (!inPage) setIsOpen();
       setExpenseList((prev: any) => [addRes.data[0], ...prev]);
       callback();
@@ -173,6 +177,10 @@ function AddExpenseModal({
 
   useEffect(() => {
     if (editRes?.success === 1) {
+      // Haptic feedback for mobile devices (Android)
+      if ("vibrate" in navigator) {
+        window.navigator.vibrate(150);
+      }
       setIsOpen();
       setExpenseList((prev: any) =>
         prev.map((expense: any) => (expense.expense_id === editRes.data[0].expense_id ? { ...editRes.data[0] } : expense))
