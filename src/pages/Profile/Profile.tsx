@@ -37,8 +37,10 @@ export default function Profile() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
 
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !("MSStream" in window);
+  const isStandalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    ("standalone" in navigator && (navigator as Navigator & { standalone?: boolean }).standalone);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -101,6 +103,7 @@ export default function Profile() {
         }
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Notification permission error:", error);
       showToast("Could not change notification settings. Please check your browser permissions.", "error");
     } finally {
@@ -186,8 +189,8 @@ export default function Profile() {
             </div>
             {isIOS && !isStandalone && (
               <div className="rounded-lg bg-blue-50 p-3 text-xs text-blue-700">
-                <strong>Note:</strong> On iOS, you must add "Hisabkar" to your <strong>Home Screen</strong> to receive notifications. Tap the{" "}
-                <strong>Share</strong> icon and select <strong>"Add to Home Screen"</strong>.
+                <strong>Note:</strong> On iOS, you must add &quot;Hisabkar&quot; to your <strong>Home Screen</strong> to receive notifications. Tap
+                the <strong>Share</strong> icon and select <strong>&quot;Add to Home Screen&quot;</strong>.
               </div>
             )}
           </div>

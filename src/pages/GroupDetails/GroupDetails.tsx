@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import styles from "./style.module.css";
 import AddExpenseModal from "../../components/AddExpense/AddExpense";
@@ -28,6 +29,8 @@ import ChatModule from "../../components/ChatModule/ChatModule";
 import ShareExpenseModal from "../../components/ChatModule/ShareExpenseModal";
 import BudgetSetter from "../../components/BudgetSetter/BudgetSetter";
 import ChatAssistant from "../../components/ChatBotAssistant/ChatAssistant";
+import ExpenseSkeleton from "../../components/ExpenseCard/ExpenseSkeleton";
+import GroupDetailsSkeleton from "../../components/GroupDetailsContent/GroupDetailsSkeleton";
 
 type TabId = "timeline" | "details" | "addExpense" | "summary" | "chat";
 
@@ -80,6 +83,7 @@ export default function GroupDetails() {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [isFetchingMore, setIsFetchingMore] = useState<boolean>(false);
   const [hasUnreadMessages, setHasUnreadMessages] = useState<boolean>(false);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(true);
 
   // Chat is now a tab — track if it's active to clear unread
   const isChatTabActiveRef = useRef<boolean>(false);
@@ -202,9 +206,19 @@ export default function GroupDetails() {
     }
   };
 
-  // Fetch members first, which then triggers expenses in a separate useEffect
+  // Reset expense list when moving to a different group to avoid showing stale data
+  useEffect(() => {
+    setIsTransitioning(true);
+    setExpenseList([]);
+    setTempExpenseList([]);
+    setHasMore(true);
+    setIsFetchingMore(false);
+  }, [GroupId]);
+
+  // Fetch members and group details first, which then triggers expenses in a separate useEffect
   useEffect(() => {
     fetchGroupMembers();
+    fetchGroupDetails();
     fetchUnreadStatus();
 
     const socket = io(ENVConfig.baseURL, { withCredentials: true });
@@ -246,6 +260,7 @@ export default function GroupDetails() {
 
   useEffect(() => {
     if (expenseRes?.success === 1) {
+      setIsTransitioning(false);
       if (isFetchingMore) {
         setExpenseList((prev) => [...prev, ...expenseRes.data]);
         setTempExpenseList((prev) => [...prev, ...expenseRes.data]);
@@ -263,6 +278,7 @@ export default function GroupDetails() {
         }
       }
     } else if (expenseRes?.success === 0) {
+      setIsTransitioning(false);
       setIsFetchingMore(false);
     }
   }, [expenseRes]);
@@ -312,38 +328,92 @@ export default function GroupDetails() {
         {/* TIMELINE TAB — no header, no filter */}
         <div className={`${styles.tabPane} ${activeTab === "timeline" ? styles.tabPaneActive : ""}`}>
           <Card className="bg-white h-full">
-            {expenseListLoading && !isFetchingMore ? (
-              <CircularLoader />
+            {(expenseListLoading && !isFetchingMore) || !expenseRes || isTransitioning ? (
+              <CardContent className={styles.expBox}>
+                {[1, 2, 3].map((i) => (
+                  <ExpenseSkeleton key={i} />
+                ))}
+              </CardContent>
             ) : (
               <CardContent className={styles.expBox}>
-                {tempExpenseList.map((expense, index) => (
-                  <ExpenseCard
-                    key={expense.expense_id}
-                    {...expense}
-                    allMembersList={groupMembers}
-                    index={index}
-                    totalItemsCount={expenseList.length}
-                    setAddExpModal={() => {
-                      setSelectedRow(expense);
-                      setIsClone(false);
-                      handleTabChange("addExpense");
-                    }}
-                    setDeleteModal={() => {
-                      handleDeleteModal();
-                      setSelectedRow(expense);
-                    }}
-                    ref={(el) => {
-                      expenseRefs.current[expense.expense_id] = el;
-                    }}
-                    isSettled={groupData?.is_settled ?? false}
-                    onCloneClick={() => {
-                      setSelectedRow(expense);
-                      setIsClone(true);
-                      handleTabChange("addExpense");
-                    }}
-                    onShareClick={() => handleShareInChat(expense)}
-                  />
-                ))}
+                {tempExpenseList.length > 0 ? (
+                  tempExpenseList.map((expense, index) => (
+                    <ExpenseCard
+                      key={expense.expense_id}
+                      {...expense}
+                      allMembersList={groupMembers}
+                      index={index}
+                      totalItemsCount={expenseList.length}
+                      setAddExpModal={() => {
+                        setSelectedRow(expense);
+                        setIsClone(false);
+                        handleTabChange("addExpense");
+                      }}
+                      setDeleteModal={() => {
+                        handleDeleteModal();
+                        setSelectedRow(expense);
+                      }}
+                      ref={(el) => {
+                        expenseRefs.current[expense.expense_id] = el;
+                      }}
+                      isSettled={groupData?.is_settled ?? false}
+                      onCloneClick={() => {
+                        setSelectedRow(expense);
+                        setIsClone(true);
+                        handleTabChange("addExpense");
+                      }}
+                      onShareClick={() => handleShareInChat(expense)}
+                    />
+                  ))
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="flex flex-col items-center justify-center py-24 text-center"
+                  >
+                    <div className="relative mb-8">
+                      <motion.div
+                        animate={{
+                          scale: [1, 1.1, 1],
+                          rotate: [0, 5, -5, 0],
+                        }}
+                        transition={{
+                          duration: 4,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                        className="bg-gradient-to-br from-purple-50 to-blue-50 p-8 rounded-full shadow-inner"
+                      >
+                        <TrendingUp className="w-16 h-16 text-purple-400 opacity-80" />
+                      </motion.div>
+                      <motion.div
+                        animate={{ y: [0, -10, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="absolute -top-2 -right-2 bg-white p-2 rounded-lg shadow-md"
+                      >
+                        <PlusCircle className="w-6 h-6 text-green-500" />
+                      </motion.div>
+                    </div>
+
+                    <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
+                      Ready to start tracking?
+                    </h3>
+                    <p className="text-gray-500 text-sm mb-8 max-w-[280px] mx-auto leading-relaxed">
+                      This timeline is waiting for your first group expense. Add one now to see the magic happen!
+                    </p>
+
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleTabChange("addExpense")}
+                      className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-purple-200 flex items-center gap-2 hover:shadow-xl transition-all"
+                    >
+                      <PlusCircle size={18} />
+                      Add First Expense
+                    </motion.button>
+                  </motion.div>
+                )}
                 <div ref={lastExpenseElementRef} style={{ height: "10px" }} />
                 {isFetchingMore && (
                   <div className="py-4">
@@ -361,7 +431,7 @@ export default function GroupDetails() {
             <CardHeader className={styles.cardHeader}>
               {visitedTabs.has("details") ? (
                 groupDetailsLoading ? (
-                  <CircularLoader />
+                  <GroupDetailsSkeleton />
                 ) : groupData ? (
                   <GroupDetailsContent
                     {...groupData}
@@ -381,9 +451,9 @@ export default function GroupDetails() {
 
         {/* ADD EXPENSE TAB — inline form */}
         <div className={`${styles.tabPane} ${activeTab === "addExpense" ? styles.tabPaneActive : ""}`}>
-          {groupDetailsLoading ? (
-            <div className="flex w-full h-full justify-center items-center">
-              <CircularLoader />
+          {(groupDetailsLoading && !groupData) || isTransitioning ? (
+            <div className="flex w-full h-full pt-4">
+              <GroupDetailsSkeleton />
             </div>
           ) : !groupData?.is_settled ? (
             <AddExpenseModal
@@ -415,7 +485,7 @@ export default function GroupDetails() {
             <CardHeader className={styles.cardHeader}>
               {visitedTabs.has("summary") ? (
                 pairsLoading || groupDetailsLoading ? (
-                  <CircularLoader />
+                  <GroupDetailsSkeleton />
                 ) : (
                   <GroupPairs isSettled={groupData?.is_settled ?? false} pairsData={pairsData} GroupId={GroupId} groupMembers={groupMembers} />
                 )

@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import GroupCard from "../../components/GroupCard/GroupCard";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
@@ -45,7 +45,7 @@ function Home() {
   ) : (
     <div className={styles.container}>
       <div className={styles.cardCon}>
-        {groupList.length ? (
+        {groupList.length > 0 ? (
           groupList.map((group) => (
             <GroupCard
               key={group.group_id}
@@ -57,13 +57,39 @@ function Home() {
             />
           ))
         ) : (
-          <div className="text-center text-gray-500 py-8 bg-gray-50 rounded-lg">
-            <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-full flex items-center justify-center mb-3">
-              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" /> {/* Replace IndianRupee with Users */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center justify-center py-16 px-4 text-center bg-white border border-gray-100 rounded-3xl shadow-sm w-full"
+          >
+            <div className="relative mb-6">
+              <motion.div
+                animate={{
+                  y: [0, -8, 0],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-full shadow-inner"
+              >
+                <Users className="h-10 w-10 text-blue-500 opacity-80" />
+              </motion.div>
             </div>
-            <p className="text-sm sm:text-base font-medium">No groups yet!</p>
-            <p className="text-xs sm:text-sm text-gray-400 mt-1">Get started by creating your first group.</p>
-          </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No active groups</h3>
+            <p className="text-gray-500 text-sm mb-8 max-w-[240px] leading-relaxed">
+              Managing expenses is better together. Create your first group and start splitting!
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsCreateModal(true)}
+              className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold shadow-md hover:bg-blue-700 transition-all flex items-center gap-2"
+            >
+              Get Started
+            </motion.button>
+          </motion.div>
         )}
       </div>
       <FloatingActionButton
@@ -75,7 +101,7 @@ function Home() {
         isOpen={isCreateModal}
         setIsOpen={setIsCreateModal}
         setIsShareGroupModal={setIsShareGroupModal}
-        callbackFunc={(data: any) => {
+        callbackFunc={(data: GroupType) => {
           setGroupList((prev) => [data, ...prev]);
         }}
       />

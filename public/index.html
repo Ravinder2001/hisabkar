@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#007bff" />
     <meta
       name="description"
@@ -360,8 +360,8 @@
               }
               function f(e, t) {
                 if (!e) throw new Error("All runtime objects require an agent identifier!");
-                (d[e] = { ...(0, n.a)(t, u), ...c }),
-                  Object.hasOwnProperty.call(d[e], "harvestCount") || Object.defineProperty(d[e], "harvestCount", { get: () => ++s });
+                ((d[e] = { ...(0, n.a)(t, u), ...c }),
+                  Object.hasOwnProperty.call(d[e], "harvestCount") || Object.defineProperty(d[e], "harvestCount", { get: () => ++s }));
                 const r = (0, i.nY)(e);
                 r && (r.runtime = d[e]);
               }
@@ -444,7 +444,7 @@
                 return !(e.length > t.length) && t.indexOf(e) === t.length - e.length;
               }
               function c(e, t) {
-                return 0 === e.indexOf("/") && (e = e.substring(1)), 0 === t.indexOf("/") && (t = t.substring(1)), "" === e || e === t;
+                return (0 === e.indexOf("/") && (e = e.substring(1)), 0 === t.indexOf("/") && (t = t.substring(1)), "" === e || e === t);
               }
             },
             1687: (e, t, r) => {
@@ -457,7 +457,7 @@
               const s = {};
               function c(e, t) {
                 const r = { staged: !1, priority: o.P3[t] || 0 };
-                d(e), s[e].get(t) || s[e].set(t, r);
+                (d(e), s[e].get(t) || s[e].set(t, r));
               }
               function u(e, t) {
                 e && s[e] && (s[e].get(t) && s[e].delete(t), h(e, t, !1), s[e].size && f(e));
@@ -468,14 +468,14 @@
               }
               function l(e = "", t = "feature", r = !1) {
                 if ((d(e), !e || !s[e].get(t) || r)) return h(e, t);
-                (s[e].get(t).staged = !0), f(e);
+                ((s[e].get(t).staged = !0), f(e));
               }
               function f(e) {
                 const t = Array.from(s[e]);
                 t.every(([e, t]) => t.staged) &&
                   (t.sort((e, t) => e[1].priority - t[1].priority),
                   t.forEach(([t]) => {
-                    s[e].delete(t), h(e, t);
+                    (s[e].delete(t), h(e, t));
                   }));
               }
               function h(e, t, r = !0) {
@@ -494,7 +494,7 @@
                       });
                     }
                   }
-                  o.isolatedBacklog || delete s[t], (o.backlog[t] = null), o.emit("drain-" + t, []);
+                  (o.isolatedBacklog || delete s[t], (o.backlog[t] = null), o.emit("drain-" + t, []));
                 }
               }
               function p(e, t) {
@@ -551,14 +551,14 @@
                       const r = v();
                       if (((t = t || "feature"), f.aborted)) return;
                       Object.entries(e || {}).forEach(([e, n]) => {
-                        (s[n] = t), t in r || (r[t] = []);
+                        ((s[n] = t), t in r || (r[t] = []));
                       });
                     },
                     abort: function () {
-                      (f._aborted = !0),
+                      ((f._aborted = !0),
                         Object.keys(f.backlog).forEach((e) => {
                           delete f.backlog[e];
-                        });
+                        }));
                     },
                     isBuffering: function (e) {
                       return !!v()[s[e]];
@@ -622,7 +622,7 @@
                 a(o || n.d, i, e, t, r);
               }
               function a(e, t, r, i, o) {
-                o || (o = "feature"), e || (e = n.d);
+                (o || (o = "feature"), e || (e = n.d));
                 var a = (t[o] = t[o] || {});
                 (a[r] = a[r] || []).push([e, i]);
               }
@@ -752,7 +752,7 @@
                 s = {};
               function c(e, t) {
                 const r = n.ee.get(t);
-                (s[t] ??= {}),
+                ((s[t] ??= {}),
                   e &&
                     "object" == typeof e &&
                     (a.has(t) ||
@@ -763,7 +763,7 @@
                         try {
                           i.gm.dispatchEvent(new CustomEvent(o, { detail: e }));
                         } catch (e) {}
-                      })({ loaded: !0 })));
+                      })({ loaded: !0 }))));
               }
             },
             8990: (e, t, r) => {
@@ -775,9 +775,9 @@
                 var i = r();
                 if (Object.defineProperty && Object.keys)
                   try {
-                    return Object.defineProperty(e, t, { value: i, writable: !0, enumerable: !1 }), i;
+                    return (Object.defineProperty(e, t, { value: i, writable: !0, enumerable: !1 }), i);
                   } catch (e) {}
-                return (e[t] = i), i;
+                return ((e[t] = i), i);
               }
             },
             6389: (e, t, r) => {
@@ -786,7 +786,7 @@
                 const n = r?.leading || !1;
                 let i;
                 return (...r) => {
-                  n &&
+                  (n &&
                     void 0 === i &&
                     (e.apply(this, r),
                     (i = setTimeout(() => {
@@ -796,7 +796,7 @@
                       (clearTimeout(i),
                       (i = setTimeout(() => {
                         e.apply(this, r);
-                      }, t)));
+                      }, t))));
                 };
               }
               function i(e) {
@@ -855,7 +855,7 @@
                 i = r(1863);
               const o = { beacon: "bam.nr-data.net", errorBeacon: "bam.nr-data.net" };
               function a() {
-                return n.gm.NREUM || (n.gm.NREUM = {}), void 0 === n.gm.newrelic && (n.gm.newrelic = n.gm.NREUM), n.gm.NREUM;
+                return (n.gm.NREUM || (n.gm.NREUM = {}), void 0 === n.gm.newrelic && (n.gm.newrelic = n.gm.NREUM), n.gm.NREUM);
               }
               function s() {
                 let e = a();
@@ -878,7 +878,7 @@
               }
               function c(e, t) {
                 let r = a();
-                (r.initializedAgents ??= {}), (t.initializedAt = { ms: (0, i.t)(), date: new Date() }), (r.initializedAgents[e] = t);
+                ((r.initializedAgents ??= {}), (t.initializedAt = { ms: (0, i.t)(), date: new Date() }), (r.initializedAgents[e] = t));
               }
               function u(e) {
                 let t = a();
@@ -1018,7 +1018,7 @@
                                     return e[r];
                                   },
                                   set: function (t) {
-                                    return (e[r] = t), t;
+                                    return ((e[r] = t), t);
                                   },
                                 });
                               }),
@@ -1033,7 +1033,7 @@
                   function nrWrapper() {
                     var o, a, d, l;
                     try {
-                      (a = this), (o = [...arguments]), (d = "function" == typeof n ? n(o, a) : n || {});
+                      ((a = this), (o = [...arguments]), (d = "function" == typeof n ? n(o, a) : n || {}));
                     } catch (t) {
                       u([t, "", [o, a, s], d], e);
                     }
@@ -1108,8 +1108,8 @@
                 a = r(3969),
                 s = r(993);
               function c(e, t, r = {}, c = s.p_.INFO) {
-                (0, n.p)(a.xV, ["API/logging/".concat(c.toLowerCase(), "/called")], void 0, o.K7.metrics, e),
-                  (0, n.p)(s.ET, [(0, i.t)(), t, r, c], void 0, o.K7.logging, e);
+                ((0, n.p)(a.xV, ["API/logging/".concat(c.toLowerCase(), "/called")], void 0, o.K7.metrics, e),
+                  (0, n.p)(s.ET, [(0, i.t)(), t, r, c], void 0, o.K7.logging, e));
               }
               function u(e) {
                 return "string" == typeof e && Object.values(s.p_).some((t) => t === e.toUpperCase().trim());
@@ -1261,7 +1261,7 @@
                 i = r(1687);
               class o {
                 constructor(e, t) {
-                  (this.agentIdentifier = e), (this.ee = n.ee.get(e)), (this.featureName = t), (this.blocked = !1);
+                  ((this.agentIdentifier = e), (this.ee = n.ee.get(e)), (this.featureName = t), (this.blocked = !1));
                 }
                 deregisterDrain() {
                   (0, i.x3)(this.agentIdentifier, this.featureName);
@@ -1325,9 +1325,9 @@
                   })(e),
                   o = (0, x.YM)(i),
                   a = new R.y(s.P);
-                (a.level = n.level), (a.customAttributes = n.customAttributes);
+                ((a.level = n.level), (a.customAttributes = n.customAttributes));
                 const c = t[r]?.[x.Jt] || t[r];
-                return E.set(c, a), o.inPlace(t, [r], "wrap-logger-", () => E.get(c)), i;
+                return (E.set(c, a), o.inPlace(t, [r], "wrap-logger-", () => E.get(c)), i);
               }
               function A() {
                 const e = (0, h.pV)();
@@ -1350,22 +1350,22 @@
                 O = r(5284);
               const I = (e) => {
                 const t = e.startsWith("http");
-                (e += "/"), (r.p = t ? e : "https://" + e);
+                ((e += "/"), (r.p = t ? e : "https://" + e));
               };
               let P = !1;
               function j(e, t = {}, g, R) {
                 let { init: x, info: E, loader_config: j, runtime: C = {}, exposed: k = !0 } = t;
                 C.loaderType = g;
                 const L = (0, h.pV)();
-                E || ((x = L.init), (E = L.info), (j = L.loader_config)),
+                (E || ((x = L.init), (E = L.info), (j = L.loader_config)),
                   (0, N.xN)(e.agentIdentifier, x || {}),
                   (0, _.a)(e.agentIdentifier, j || {}),
                   (E.jsAttributes ??= {}),
                   d.bv && (E.jsAttributes.isWorker = !0),
-                  (0, i.x1)(e.agentIdentifier, E);
+                  (0, i.x1)(e.agentIdentifier, E));
                 const H = (0, N.D0)(e.agentIdentifier),
                   M = [E.beacon, E.errorBeacon];
-                P ||
+                (P ||
                   (H.proxy.assets && (I(H.proxy.assets), M.push(H.proxy.assets)),
                   H.proxy.beacon && M.push(H.proxy.beacon),
                   A(),
@@ -1381,10 +1381,10 @@
                       const g = {};
                       var R = s.ee.get(e),
                         x = R.get("tracer");
-                      (S[e] = b.g.OFF),
+                      ((S[e] = b.g.OFF),
                         R.on(p.G4.REPLAY_RUNNING, (t) => {
                           S[e] = t;
-                        });
+                        }));
                       var E = "api-",
                         A = E + "ixn-";
                       function N(t, r, n, o) {
@@ -1395,11 +1395,11 @@
                         );
                       }
                       function _() {}
-                      (g.log = function (e, { customAttributes: t = {}, level: r = y.p_.INFO } = {}) {
-                        (0, a.p)(f.xV, ["API/log/called"], void 0, n.K7.metrics, R), (0, w.R)(R, e, t, r);
+                      ((g.log = function (e, { customAttributes: t = {}, level: r = y.p_.INFO } = {}) {
+                        ((0, a.p)(f.xV, ["API/log/called"], void 0, n.K7.metrics, R), (0, w.R)(R, e, t, r));
                       }),
                         (g.wrapLogger = (e, t, { customAttributes: r = {}, level: i = y.p_.INFO } = {}) => {
-                          (0, a.p)(f.xV, ["API/wrapLogger/called"], void 0, n.K7.metrics, R), T(R, e, t, { customAttributes: r, level: i });
+                          ((0, a.p)(f.xV, ["API/wrapLogger/called"], void 0, n.K7.metrics, R), T(R, e, t, { customAttributes: r, level: i }));
                         }),
                         m.forEach((e) => {
                           g[e] = I(E, e, !0, "api");
@@ -1430,22 +1430,22 @@
                         }),
                         (g.start = () => {
                           try {
-                            (0, a.p)(f.xV, ["API/start/called"], void 0, n.K7.metrics, R), R.emit("manual-start-all");
+                            ((0, a.p)(f.xV, ["API/start/called"], void 0, n.K7.metrics, R), R.emit("manual-start-all"));
                           } catch (e) {
                             (0, l.R)(23, e);
                           }
                         }),
                         (g[p.G4.RECORD] = function () {
-                          (0, a.p)(f.xV, ["API/recordReplay/called"], void 0, n.K7.metrics, R),
-                            (0, a.p)(p.G4.RECORD, [], void 0, n.K7.sessionReplay, R);
+                          ((0, a.p)(f.xV, ["API/recordReplay/called"], void 0, n.K7.metrics, R),
+                            (0, a.p)(p.G4.RECORD, [], void 0, n.K7.sessionReplay, R));
                         }),
                         (g[p.G4.PAUSE] = function () {
-                          (0, a.p)(f.xV, ["API/pauseReplay/called"], void 0, n.K7.metrics, R),
-                            (0, a.p)(p.G4.PAUSE, [], void 0, n.K7.sessionReplay, R);
+                          ((0, a.p)(f.xV, ["API/pauseReplay/called"], void 0, n.K7.metrics, R),
+                            (0, a.p)(p.G4.PAUSE, [], void 0, n.K7.sessionReplay, R));
                         }),
                         (g.interaction = function (e) {
                           return new _().get("object" == typeof e ? e : {});
-                        });
+                        }));
                       const O = (_.prototype = {
                         createTracer: function (e, t) {
                           var r = {},
@@ -1481,10 +1481,10 @@
                         r.e(478)
                           .then(r.bind(r, 8778))
                           .then(({ setAPI: t }) => {
-                            t(e), (0, c.Ze)(e, "api");
+                            (t(e), (0, c.Ze)(e, "api"));
                           })
                           .catch((e) => {
-                            (0, l.R)(27, e), R.abort();
+                            ((0, l.R)(27, e), R.abort());
                           });
                       }
                       return (
@@ -1493,16 +1493,16 @@
                         }),
                         (g.setCurrentRouteName = h ? I(A, "routeName", void 0, n.K7.softNav) : I(E, "routeName", !0, n.K7.spa)),
                         (g.noticeError = function (t, r) {
-                          "string" == typeof t && (t = new Error(t)),
+                          ("string" == typeof t && (t = new Error(t)),
                             (0, a.p)(f.xV, ["API/noticeError/called"], void 0, n.K7.metrics, R),
-                            (0, a.p)("err", [t, (0, v.t)(), !1, r, !!S[e]], void 0, n.K7.jserrors, R);
+                            (0, a.p)("err", [t, (0, v.t)(), !1, r, !!S[e]], void 0, n.K7.jserrors, R));
                         }),
                         d.RI ? (0, u.GG)(() => P(), !0) : P(),
                         g
                       );
                     })(e.agentIdentifier, R, e.runSoftNavOverSpa)),
                   void 0 === e.exposed && (e.exposed = k),
-                  (P = !0);
+                  (P = !0));
               }
             },
             8374: (e, t, r) => {
@@ -1567,9 +1567,9 @@
           var t = n[e];
           if (void 0 !== t) return t.exports;
           var o = (n[e] = { exports: {} });
-          return r[e](o, o.exports, i), o.exports;
+          return (r[e](o, o.exports, i), o.exports);
         }
-        (i.m = r),
+        ((i.m = r),
           (i.d = (e, t) => {
             for (var r in t) i.o(t, r) && !i.o(e, r) && Object.defineProperty(e, r, { enumerable: !0, get: t[r] });
           }),
@@ -1598,27 +1598,27 @@
                   249: "sha512-ICY/ZrcytM/86t5KFy+9OAWVYmNNJy10EBtxoSUGjQWuZx53p/eLo+L8HfrGjvHuRHRnutqLTGSnvNttffJkaA==",
                   212: "sha512-pQSn+X/RfBOvx/49HvlghaiXMLhhDQXTi13n1N2XMpDquWJgs9U0pbqE3RbAnYC9nsdaTu/RVGvneEPv1fpCxA==",
                 };
-                ((s = document.createElement("script")).charset = "utf-8"),
+                (((s = document.createElement("script")).charset = "utf-8"),
                   (s.timeout = 120),
                   i.nc && s.setAttribute("nonce", i.nc),
                   s.setAttribute("data-webpack", t + o),
                   (s.src = r),
                   0 !== s.src.indexOf(window.location.origin + "/") && (s.crossOrigin = "anonymous"),
-                  f[a] && (s.integrity = f[a]);
+                  f[a] && (s.integrity = f[a]));
               }
               e[r] = [n];
               var h = (t, n) => {
-                  (s.onerror = s.onload = null), clearTimeout(p);
+                  ((s.onerror = s.onload = null), clearTimeout(p));
                   var i = e[r];
                   if ((delete e[r], s.parentNode && s.parentNode.removeChild(s), i && i.forEach((e) => e(n)), t)) return t(n);
                 },
                 p = setTimeout(h.bind(null, void 0, { type: "timeout", target: s }), 12e4);
-              (s.onerror = h.bind(null, s.onerror)), (s.onload = h.bind(null, s.onload)), c && document.head.appendChild(s);
+              ((s.onerror = h.bind(null, s.onerror)), (s.onload = h.bind(null, s.onload)), c && document.head.appendChild(s));
             }
           }),
           (i.r = (e) => {
-            "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, { value: "Module" }),
-              Object.defineProperty(e, "__esModule", { value: !0 });
+            ("undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, { value: "Module" }),
+              Object.defineProperty(e, "__esModule", { value: !0 }));
           }),
           (i.p = "https://js-agent.newrelic.com/"),
           (() => {
@@ -1638,11 +1638,11 @@
                       if (i.o(e, t) && (0 !== (n = e[t]) && (e[t] = void 0), n)) {
                         var o = r && ("load" === r.type ? "missing" : r.type),
                           a = r && r.target && r.target.src;
-                        (s.message = "Loading chunk " + t + " failed.\n(" + o + ": " + a + ")"),
+                        ((s.message = "Loading chunk " + t + " failed.\n(" + o + ": " + a + ")"),
                           (s.name = "ChunkLoadError"),
                           (s.type = o),
                           (s.request = a),
-                          n[1](s);
+                          n[1](s));
                       }
                     },
                     "chunk-" + t,
@@ -1659,10 +1659,10 @@
                   for (n in s) i.o(s, n) && (i.m[n] = s[n]);
                   if (c) c(i);
                 }
-                for (t && t(r); u < a.length; u++) (o = a[u]), i.o(e, o) && e[o] && e[o][0](), (e[o] = 0);
+                for (t && t(r); u < a.length; u++) ((o = a[u]), i.o(e, o) && e[o] && e[o][0](), (e[o] = 0));
               },
               r = (self["webpackChunk:NRBA-1.281.0.PROD"] = self["webpackChunk:NRBA-1.281.0.PROD"] || []);
-            r.forEach(t.bind(null, 0)), (r.push = t.bind(null, r.push.bind(r)));
+            (r.forEach(t.bind(null, 0)), (r.push = t.bind(null, r.push.bind(r))));
           })(),
           (() => {
             "use strict";
@@ -1764,7 +1764,7 @@
               v = i(6389);
             class b extends f.W {
               constructor(e, t, r = !0) {
-                super(e.agentIdentifier, t),
+                (super(e.agentIdentifier, t),
                   (this.auto = r),
                   (this.abortHandler = void 0),
                   (this.featAggregate = void 0),
@@ -1775,9 +1775,9 @@
                     : this.ee.on(
                         "manual-start-all",
                         (0, v.J)(() => {
-                          (0, l.Ak)(e.agentIdentifier, this.featureName), (this.auto = !0), this.importAggregator(e);
+                          ((0, l.Ak)(e.agentIdentifier, this.featureName), (this.auto = !0), this.importAggregator(e));
                         })
-                      );
+                      ));
               }
               importAggregator(t, r = {}) {
                 if (this.featAggregate || !this.auto) return;
@@ -1793,15 +1793,19 @@
                       o = e(t);
                     }
                   } catch (t) {
-                    (0, e.R)(20, t), this.ee.emit("internal-error", [t]), this.featureName === a.K7.sessionReplay && this.abortHandler?.();
+                    ((0, e.R)(20, t), this.ee.emit("internal-error", [t]), this.featureName === a.K7.sessionReplay && this.abortHandler?.());
                   }
                   try {
-                    if (!this.#t(this.featureName, o)) return (0, l.Ze)(this.agentIdentifier, this.featureName), void n(!1);
+                    if (!this.#t(this.featureName, o)) return ((0, l.Ze)(this.agentIdentifier, this.featureName), void n(!1));
                     const { lazyFeatureLoader: e } = await i.e(478).then(i.bind(i, 6103)),
                       { Aggregate: a } = await e(this.featureName, "aggregate");
-                    (this.featAggregate = new a(t, r)), t.runtime.harvester.initializedAggregates.push(this.featAggregate), n(!0);
+                    ((this.featAggregate = new a(t, r)), t.runtime.harvester.initializedAggregates.push(this.featAggregate), n(!0));
                   } catch (t) {
-                    (0, e.R)(34, t), this.abortHandler?.(), (0, l.Ze)(this.agentIdentifier, this.featureName, !0), n(!1), this.ee && this.ee.abort();
+                    ((0, e.R)(34, t),
+                      this.abortHandler?.(),
+                      (0, l.Ze)(this.agentIdentifier, this.featureName, !0),
+                      n(!1),
+                      this.ee && this.ee.abort());
                   }
                 };
                 p.RI ? (0, h.GG)(() => o(), !0) : o();
@@ -1821,7 +1825,7 @@
             class w extends b {
               static featureName = y.T;
               constructor(e, t = !0) {
-                super(e, y.T, t), this.importAggregator(e);
+                (super(e, y.T, t), this.importAggregator(e));
               }
             }
             var R = i(384);
@@ -1833,30 +1837,30 @@
             class N extends b {
               static featureName = A.T;
               constructor(e, t = !0) {
-                super(e, A.T, t),
+                (super(e, A.T, t),
                   p.RI &&
                     ((0, E.u)(() => (0, x.p)("docHidden", [(0, S.t)()], void 0, A.T, this.ee), !0),
                     (0, T.sp)("pagehide", () => (0, x.p)("winPagehide", [(0, S.t)()], void 0, A.T, this.ee)),
-                    this.importAggregator(e));
+                    this.importAggregator(e)));
               }
             }
             var _ = i(3969);
             class O extends b {
               static featureName = _.TZ;
               constructor(e, t = !0) {
-                super(e, _.TZ, t), this.importAggregator(e);
+                (super(e, _.TZ, t), this.importAggregator(e));
               }
             }
             var I = i(6774),
               P = i(3304);
             class j {
               constructor(e, t, r, n, i) {
-                (this.name = "UncaughtError"),
+                ((this.name = "UncaughtError"),
                   (this.message = "string" == typeof e ? e : (0, P.A)(e)),
                   (this.sourceURL = t),
                   (this.line = r),
                   (this.column = n),
-                  (this.__newrelic = i);
+                  (this.__newrelic = i));
               }
             }
             function C(e) {
@@ -1869,17 +1873,17 @@
               if (!e?.reason) return;
               if (H(e.reason))
                 try {
-                  return (e.reason.message = t + ": " + e.reason.message), C(e.reason);
+                  return ((e.reason.message = t + ": " + e.reason.message), C(e.reason));
                 } catch (t) {
                   return C(e.reason);
                 }
               const r = C(e.reason);
-              return (r.message = t + ": " + r?.message), r;
+              return ((r.message = t + ": " + r?.message), r);
             }
             function L(e) {
               if (e.error instanceof SyntaxError && !/:\d+$/.test(e.error.stack?.trim())) {
                 const t = new j(e.message, e.filename, e.lineno, e.colno, e.error.__newrelic);
-                return (t.name = SyntaxError.name), t;
+                return ((t.name = SyntaxError.name), t);
               }
               return H(e.error) ? e.error : C(e);
             }
@@ -1894,7 +1898,7 @@
                 try {
                   this.removeOnAbort = new AbortController();
                 } catch (e) {}
-                this.ee.on("internal-error", (e, t) => {
+                (this.ee.on("internal-error", (e, t) => {
                   this.abortHandler && (0, x.p)("ierr", [C(e), (0, S.t)(), !0, {}, this.#r, t], void 0, this.featureName, this.ee);
                 }),
                   this.ee.on(t.G4.REPLAY_RUNNING, (e) => {
@@ -1916,10 +1920,10 @@
                     (0, T.jT)(!1, this.removeOnAbort?.signal)
                   ),
                   (this.abortHandler = this.#n),
-                  this.importAggregator(e);
+                  this.importAggregator(e));
               }
               #n() {
-                this.removeOnAbort?.abort(), (this.abortHandler = void 0);
+                (this.removeOnAbort?.abort(), (this.abortHandler = void 0));
               }
             }
             var D = i(8990);
@@ -1960,7 +1964,7 @@
               })(r);
               if (void 0 === p.gm.XMLHttpRequest) return n;
               if (z[n.debugId]++) return n;
-              (z[n.debugId] = 1), (0, F.u)(r);
+              ((z[n.debugId] = 1), (0, F.u)(r));
               var i = (0, W.YM)(n),
                 o = p.gm.XMLHttpRequest,
                 a = p.gm.MutationObserver,
@@ -1973,16 +1977,16 @@
                   const r = new o(t),
                     a = n.context(r);
                   try {
-                    n.emit("new-xhr", [r], a),
+                    (n.emit("new-xhr", [r], a),
                       r.addEventListener(
                         u,
                         ((s = a),
                         function () {
                           var e = this;
-                          e.readyState > 3 && !s.resolved && ((s.resolved = !0), n.emit("xhr-resolved", [], e)), i.inPlace(e, d, "fn-", y);
+                          (e.readyState > 3 && !s.resolved && ((s.resolved = !0), n.emit("xhr-resolved", [], e)), i.inPlace(e, d, "fn-", y));
                         }),
                         (0, T.jT)(!1)
-                      );
+                      ));
                   } catch (t) {
                     (0, e.R)(15, t);
                     try {
@@ -2002,10 +2006,10 @@
                 (f.prototype = o.prototype),
                 i.inPlace(f.prototype, q, "-xhr-", y),
                 n.on("send-xhr-start", function (e, t) {
-                  h(e, t),
+                  (h(e, t),
                     (function (e) {
-                      l.push(e), a && (g ? g.then(b) : c ? c(b) : ((m = -m), (v.data = m)));
-                    })(t);
+                      (l.push(e), a && (g ? g.then(b) : c ? c(b) : ((m = -m), (v.data = m))));
+                    })(t));
                 }),
                 n.on("open-xhr-start", h),
                 a)
@@ -2049,13 +2053,13 @@
                     var e,
                       r = [...arguments],
                       o = {};
-                    t.emit(n + "before-start", [r], o), o[B.P] && o[B.P].dt && (e = o[B.P].dt);
+                    (t.emit(n + "before-start", [r], o), o[B.P] && o[B.P].dt && (e = o[B.P].dt));
                     var a = i.apply(this, r);
                     return (
                       t.emit(n + "start", [r, e], a),
                       a.then(
                         function (e) {
-                          return t.emit(n + "end", [null, e], a), e;
+                          return (t.emit(n + "end", [null, e], a), e);
                         },
                         function (e) {
                           throw (t.emit(n + "end", [e], a), e);
@@ -2067,14 +2071,14 @@
               return (
                 (re[t.debugId] = 1),
                 J.forEach((e) => {
-                  r(Q[te], e, X), r(ee[te], e, X);
+                  (r(Q[te], e, X), r(ee[te], e, X));
                 }),
                 r(p.gm, "fetch", Y),
                 t.on(Y + "end", function (e, r) {
                   var n = this;
                   if (r) {
                     var i = r.headers.get("content-length");
-                    null !== i && (n.rxSize = i), t.emit(Y + "done", [null, r], n);
+                    (null !== i && (n.rxSize = i), t.emit(Y + "done", [null, r], n));
                   } else t.emit(Y + "done", [e], n);
                 }),
                 t
@@ -2117,7 +2121,7 @@
               generateTraceHeader(e, t, r, n, i, o) {
                 if (!("function" == typeof p.gm?.btoa)) return null;
                 var a = { v: [0, 1], d: { ty: "Browser", ac: n, ap: i, id: e, tr: t, ti: r } };
-                return o && n !== o && (a.d.tk = o), btoa((0, P.A)(a));
+                return (o && n !== o && (a.d.tk = o), btoa((0, P.A)(a)));
               }
               shouldGenerateTrace(e) {
                 return this.isDtEnabled() && this.isAllowedOrigin(e);
@@ -2165,23 +2169,23 @@
             class he extends b {
               static featureName = se.T;
               constructor(e, t = !0) {
-                super(e, se.T, t), (this.dt = new ae(e.agentIdentifier)), (this.handler = (e, t, r, n) => (0, x.p)(e, t, r, n, this.ee));
+                (super(e, se.T, t), (this.dt = new ae(e.agentIdentifier)), (this.handler = (e, t, r, n) => (0, x.p)(e, t, r, n, this.ee)));
                 try {
                   const e = { xmlhttprequest: "xhr", fetch: "fetch", beacon: "beacon" };
                   p.gm?.performance?.getEntriesByType("resource").forEach((t) => {
                     if (t.initiatorType in e && 0 !== t.responseStatus) {
                       const r = { status: t.responseStatus },
                         n = { rxSize: t.transferSize, duration: Math.floor(t.duration), cbTime: 0 };
-                      pe(r, t.name), this.handler("xhr", [r, n, t.startTime, t.responseEnd, e[t.initiatorType]], void 0, a.K7.ajax);
+                      (pe(r, t.name), this.handler("xhr", [r, n, t.startTime, t.responseEnd, e[t.initiatorType]], void 0, a.K7.ajax));
                     }
                   });
                 } catch (e) {}
-                ne(this.ee),
+                (ne(this.ee),
                   Z(this.ee),
                   (function (e, t, r, n) {
                     function i(e) {
                       var t = this;
-                      (t.totalCbs = 0),
+                      ((t.totalCbs = 0),
                         (t.called = 0),
                         (t.cbTime = 0),
                         (t.end = R),
@@ -2205,22 +2209,22 @@
                               t.lastSize = e.loaded;
                             },
                             (0, T.jT)(!1)
-                          );
+                          ));
                     }
                     function o(e) {
-                      (this.params = { method: e[0] }), pe(this, e[1]), (this.metrics = {});
+                      ((this.params = { method: e[0] }), pe(this, e[1]), (this.metrics = {}));
                     }
                     function s(t, r) {
                       e.loader_config.xpid && this.sameOrigin && r.setRequestHeader("X-NewRelic-ID", e.loader_config.xpid);
                       var i = n.generateTracePayload(this.parsedOrigin);
                       if (i) {
                         var o = !1;
-                        i.newrelicHeader && (r.setRequestHeader("newrelic", i.newrelicHeader), (o = !0)),
+                        (i.newrelicHeader && (r.setRequestHeader("newrelic", i.newrelicHeader), (o = !0)),
                           i.traceContextParentHeader &&
                             (r.setRequestHeader("traceparent", i.traceContextParentHeader),
                             i.traceContextStateHeader && r.setRequestHeader("tracestate", i.traceContextStateHeader),
                             (o = !0)),
-                          o && (this.dt = i);
+                          o && (this.dt = i));
                       }
                     }
                     function c(e, r) {
@@ -2231,29 +2235,29 @@
                         var a = G(i);
                         a && (n.txSize = a);
                       }
-                      (this.startTime = (0, S.t)()),
+                      ((this.startTime = (0, S.t)()),
                         (this.body = i),
                         (this.listener = function (e) {
                           try {
-                            "abort" !== e.type || o.loadCaptureCalled || (o.params.aborted = !0),
+                            ("abort" !== e.type || o.loadCaptureCalled || (o.params.aborted = !0),
                               ("load" !== e.type ||
                                 (o.called === o.totalCbs && (o.onloadCalled || "function" != typeof r.onload) && "function" == typeof o.end)) &&
-                                o.end(r);
+                                o.end(r));
                           } catch (e) {
                             try {
                               t.emit("internal-error", [e]);
                             } catch (e) {}
                           }
-                        });
+                        }));
                       for (var s = 0; s < de; s++) r.addEventListener(ue[s], this.listener, (0, T.jT)(!1));
                     }
                     function u(e, t, r) {
-                      (this.cbTime += e),
+                      ((this.cbTime += e),
                         t ? (this.onloadCalled = !0) : (this.called += 1),
                         this.called !== this.totalCbs ||
                           (!this.onloadCalled && "function" == typeof r.onload) ||
                           "function" != typeof this.end ||
-                          this.end(r);
+                          this.end(r));
                     }
                     function d(e, t) {
                       var r = "" + V(e) + !!t;
@@ -2299,7 +2303,7 @@
                           else {
                             var o = {};
                             for (var a in r) o[a] = r[a];
-                            (o.headers = new Headers(r.headers || {})), s(o.headers, i) && (this.dt = i), e.length > 1 ? (e[1] = o) : e.push(o);
+                            ((o.headers = new Headers(r.headers || {})), s(o.headers, i) && (this.dt = i), e.length > 1 ? (e[1] = o) : e.push(o));
                           }
                       }
                       function s(e, t) {
@@ -2315,28 +2319,28 @@
                       }
                     }
                     function y(e, t) {
-                      (this.params = {}),
+                      ((this.params = {}),
                         (this.metrics = {}),
                         (this.startTime = (0, S.t)()),
                         (this.dt = t),
                         e.length >= 1 && (this.target = e[0]),
-                        e.length >= 2 && (this.opts = e[1]);
+                        e.length >= 2 && (this.opts = e[1]));
                       var r,
                         n = this.opts || {},
                         i = this.target;
-                      "string" == typeof i
+                      ("string" == typeof i
                         ? (r = i)
                         : "object" == typeof i && i instanceof le
                           ? (r = i.url)
                           : p.gm?.URL && "object" == typeof i && i instanceof URL && (r = i.href),
-                        pe(this, r);
+                        pe(this, r));
                       var o = ("" + ((i && i instanceof le && i.method) || n.method || "GET")).toUpperCase();
-                      (this.params.method = o), (this.body = n.body), (this.txSize = G(n.body) || 0);
+                      ((this.params.method = o), (this.body = n.body), (this.txSize = G(n.body) || 0));
                     }
                     function w(e, t) {
                       if (((this.endTime = (0, S.t)()), this.params || (this.params = {}), (0, ce.iW)(this.params))) return;
                       let n;
-                      (this.params.status = t ? t.status : 0), "string" == typeof this.rxSize && this.rxSize.length > 0 && (n = +this.rxSize);
+                      ((this.params.status = t ? t.status : 0), "string" == typeof this.rxSize && this.rxSize.length > 0 && (n = +this.rxSize));
                       const i = { txSize: this.txSize, rxSize: n, duration: (0, S.t)() - this.startTime };
                       r("xhr", [this.params, i, this.startTime, this.endTime, "fetch"], this, a.K7.ajax);
                     }
@@ -2374,7 +2378,7 @@
                       }
                       e.loadCaptureCalled = !0;
                     }
-                    t.on("new-xhr", i),
+                    (t.on("new-xhr", i),
                       t.on("open-xhr-start", o),
                       t.on("open-xhr-end", s),
                       t.on("send-xhr-start", c),
@@ -2388,21 +2392,21 @@
                       t.on("fetch-before-start", b),
                       t.on("fetch-start", y),
                       t.on("fn-start", m),
-                      t.on("fetch-done", w);
+                      t.on("fetch-done", w));
                   })(e, this.ee, this.handler, this.dt),
-                  this.importAggregator(e);
+                  this.importAggregator(e));
               }
             }
             function pe(e, t) {
               var r = (0, ie.D)(t),
                 n = e.params || e;
-              (n.hostname = r.hostname),
+              ((n.hostname = r.hostname),
                 (n.port = r.port),
                 (n.protocol = r.protocol),
                 (n.host = r.hostname + ":" + r.port),
                 (n.pathname = r.pathname),
                 (e.parsedOrigin = r),
-                (e.sameOrigin = r.sameOrigin);
+                (e.sameOrigin = r.sameOrigin));
             }
             const ge = {},
               me = ["pushState", "replaceState"];
@@ -2410,7 +2414,7 @@
               const t = (function (e) {
                 return (e || B.ee).get("history");
               })(e);
-              return !p.RI || ge[t.debugId]++ || ((ge[t.debugId] = 1), (0, W.YM)(t).inPlace(window.history, me, "-")), t;
+              return (!p.RI || ge[t.debugId]++ || ((ge[t.debugId] = 1), (0, W.YM)(t).inPlace(window.history, me, "-")), t);
             }
             var be = i(3738);
             const { He: ye, bD: we, d3: Re, Kp: xe, TZ: Ee, Lc: Te, uP: Ae, Rz: Se } = be;
@@ -2421,7 +2425,7 @@
                 if (!(0, m.V)(this.agentIdentifier)) return void this.deregisterDrain();
                 const r = this.ee;
                 let n;
-                ve(r),
+                (ve(r),
                   (this.eventsEE = (0, F.u)(r)),
                   this.eventsEE.on(Ae, function (e, t) {
                     this.bstStart = (0, S.t)();
@@ -2430,17 +2434,17 @@
                     (0, x.p)("bst", [e[0], t, this.bstStart, (0, S.t)()], void 0, a.K7.sessionTrace, r);
                   }),
                   r.on(Se + Re, function (e) {
-                    (this.time = (0, S.t)()), (this.startPath = location.pathname + location.hash);
+                    ((this.time = (0, S.t)()), (this.startPath = location.pathname + location.hash));
                   }),
                   r.on(Se + xe, function (e) {
                     (0, x.p)("bstHist", [location.pathname + location.hash, this.startPath, this.time], void 0, a.K7.sessionTrace, r);
-                  });
+                  }));
                 try {
-                  (n = new PerformanceObserver((e) => {
+                  ((n = new PerformanceObserver((e) => {
                     const t = e.getEntries();
                     (0, x.p)(ye, [t], void 0, a.K7.sessionTrace, r);
                   })),
-                    n.observe({ type: we, buffered: !0 });
+                    n.observe({ type: we, buffered: !0 }));
                 } catch (e) {}
                 this.importAggregator(e, { resourceObserver: n });
               }
@@ -2452,18 +2456,18 @@
               #o;
               constructor(e, r = !0) {
                 let n;
-                super(e, t.TZ, r), (this.replayRunning = !1), (this.#o = e);
+                (super(e, t.TZ, r), (this.replayRunning = !1), (this.#o = e));
                 try {
                   n = JSON.parse(localStorage.getItem("".concat(_e.H3, "_").concat(_e.uh)));
                 } catch (e) {}
-                (0, g.SR)(e.agentIdentifier) && this.ee.on(t.G4.RECORD, () => this.#a()),
+                ((0, g.SR)(e.agentIdentifier) && this.ee.on(t.G4.RECORD, () => this.#a()),
                   this.#s(n) ? ((this.#i = n?.sessionReplayMode), this.#c()) : this.importAggregator(e),
                   this.ee.on("err", (e) => {
                     this.replayRunning && ((this.errorNoticed = !0), (0, x.p)(t.G4.ERROR_DURING_REPLAY, [e], void 0, this.featureName, this.ee));
                   }),
                   this.ee.on(t.G4.REPLAY_RUNNING, (e) => {
                     this.replayRunning = e;
-                  });
+                  }));
               }
               #s(e) {
                 return (e && (e.sessionReplayMode === _e.g.FULL || e.sessionReplayMode === _e.g.ERROR)) || (0, g.Aw)(this.agentIdentifier);
@@ -2474,9 +2478,9 @@
                   this.#u = !0;
                   try {
                     const { Recorder: t } = await Promise.all([i.e(478), i.e(249)]).then(i.bind(i, 8589));
-                    (this.recorder ??= new t({ mode: this.#i, agentIdentifier: this.agentIdentifier, trigger: e, ee: this.ee, agentRef: this.#o })),
+                    ((this.recorder ??= new t({ mode: this.#i, agentIdentifier: this.agentIdentifier, trigger: e, ee: this.ee, agentRef: this.#o })),
                       this.recorder.startRecording(),
-                      (this.abortHandler = this.recorder.stopRecording);
+                      (this.abortHandler = this.recorder.stopRecording));
                   } catch (e) {}
                   this.importAggregator(this.#o, { recorder: this.recorder, errorNoticed: this.errorNoticed });
                 }
@@ -2510,7 +2514,7 @@
                   );
                 });
                 const n = () => (0, x.p)("newURL", [(0, S.t)(), "" + window.location], void 0, this.featureName, this.ee);
-                r.on("pushState-end", n), r.on("replaceState-end", n);
+                (r.on("pushState-end", n), r.on("replaceState-end", n));
                 try {
                   this.removeOnAbort = new AbortController();
                 } catch (e) {}
@@ -2525,21 +2529,21 @@
                     i ||
                       ((i = !0),
                       requestAnimationFrame(() => {
-                        (0, x.p)("newDom", [(0, S.t)()], void 0, this.featureName, this.ee), (i = !1);
+                        ((0, x.p)("newDom", [(0, S.t)()], void 0, this.featureName, this.ee), (i = !1));
                       }));
                   }),
                   a = (0, v.s)(
                     (e) => {
-                      (0, x.p)("newUIEvent", [e], void 0, this.featureName, this.ee),
-                        o.observe(document.body, { attributes: !0, childList: !0, subtree: !0, characterData: !0 });
+                      ((0, x.p)("newUIEvent", [e], void 0, this.featureName, this.ee),
+                        o.observe(document.body, { attributes: !0, childList: !0, subtree: !0, characterData: !0 }));
                     },
                     100,
                     { leading: !0 }
                   );
-                (this.abortHandler = function () {
-                  this.removeOnAbort?.abort(), o.disconnect(), (this.abortHandler = void 0);
+                ((this.abortHandler = function () {
+                  (this.removeOnAbort?.abort(), o.disconnect(), (this.abortHandler = void 0));
                 }),
-                  this.importAggregator(e, { domObserver: o });
+                  this.importAggregator(e, { domObserver: o }));
               }
             }
             var je = i(7378);
@@ -2578,18 +2582,18 @@
                     if ("function" != typeof u.parent[u.key]) return;
                     var d = {};
                     function l() {
-                      t.emit("jsonp-end", [], d), e.removeEventListener("load", l, (0, T.jT)(!1)), e.removeEventListener("error", f, (0, T.jT)(!1));
+                      (t.emit("jsonp-end", [], d), e.removeEventListener("load", l, (0, T.jT)(!1)), e.removeEventListener("error", f, (0, T.jT)(!1)));
                     }
                     function f() {
-                      t.emit("jsonp-error", [], d),
+                      (t.emit("jsonp-error", [], d),
                         t.emit("jsonp-end", [], d),
                         e.removeEventListener("load", l, (0, T.jT)(!1)),
-                        e.removeEventListener("error", f, (0, T.jT)(!1));
+                        e.removeEventListener("error", f, (0, T.jT)(!1)));
                     }
-                    r.inPlace(u.parent, [u.key], "cb-", d),
+                    (r.inPlace(u.parent, [u.key], "cb-", d),
                       e.addEventListener("load", l, (0, T.jT)(!1)),
                       e.addEventListener("error", f, (0, T.jT)(!1)),
-                      t.emit("new-jsonp", [e.src], d);
+                      t.emit("new-jsonp", [e.src], d));
                   })(e[0]);
                 }),
                 t
@@ -2619,7 +2623,7 @@
                         s
                       );
                     }
-                    (p.gm.Promise = e),
+                    ((p.gm.Promise = e),
                       Object.defineProperty(e, "name", { value: "Promise" }),
                       (e.toString = function () {
                         return i.toString();
@@ -2636,7 +2640,7 @@
                           return o;
                           function a(e) {
                             return function () {
-                              t.emit("propagate", [null, !i], o, !1, !1), (i = i || !e);
+                              (t.emit("propagate", [null, !i], o, !1, !1), (i = i || !e));
                             };
                           }
                         };
@@ -2645,21 +2649,21 @@
                         const n = i[r];
                         e[r] = function (e) {
                           const r = n.apply(this, arguments);
-                          return e !== r && t.emit("propagate", [e, !0], r, !1, !1), r;
+                          return (e !== r && t.emit("propagate", [e, !0], r, !1, !1), r);
                         };
                       }),
-                      (e.prototype = i.prototype);
+                      (e.prototype = i.prototype));
                     const o = i.prototype.then;
-                    (i.prototype.then = function (...e) {
+                    ((i.prototype.then = function (...e) {
                       var i = this,
                         a = r(i);
-                      (a.promise = i), (e[0] = n(e[0], "cb-", a, null, !1)), (e[1] = n(e[1], "cb-", a, null, !1));
+                      ((a.promise = i), (e[0] = n(e[0], "cb-", a, null, !1)), (e[1] = n(e[1], "cb-", a, null, !1)));
                       const s = o.apply(this, e);
-                      return (a.nextPromise = s), t.emit("propagate", [i, !0], s, !1, !1), s;
+                      return ((a.nextPromise = s), t.emit("propagate", [i, !0], s, !1, !1), s);
                     }),
                       (i.prototype.then[W.Jt] = o),
                       t.on("executor-start", function (e) {
-                        (e[0] = n(e[0], "resolve-", this, null, !1)), (e[1] = n(e[1], "resolve-", this, null, !1));
+                        ((e[0] = n(e[0], "resolve-", this, null, !1)), (e[1] = n(e[1], "resolve-", this, null, !1)));
                       }),
                       t.on("executor-err", function (e, t, r) {
                         e[1](r);
@@ -2673,7 +2677,7 @@
                             if (e instanceof Promise) var r = t.context(e);
                             return r && r.getCtx ? r.getCtx() : this;
                           });
-                      });
+                      }));
                   })(),
                 t
               );
@@ -2699,7 +2703,7 @@
                   e[0] = r(e[0], "fn-", null, n);
                 }),
                 t.on(Ke + Ge, function (e, t, n) {
-                  (this.method = n), (this.timerDuration = isNaN(e[1]) ? 0 : +e[1]), (e[0] = r(e[0], "fn-", this, n));
+                  ((this.method = n), (this.timerDuration = isNaN(e[1]) ? 0 : +e[1]), (e[0] = r(e[0], "fn-", this, n)));
                 }),
                 t
               );
@@ -2745,19 +2749,19 @@
                   l.emit("newURL", ["" + window.location, t]);
                 }
                 function g() {
-                  n++, (r = window.location.hash), (this[et] = (0, S.t)());
+                  (n++, (r = window.location.hash), (this[et] = (0, S.t)()));
                 }
                 function m() {
-                  n--, window.location.hash !== r && h(0, !0);
+                  (n--, window.location.hash !== r && h(0, !0));
                   var e = (0, S.t)();
-                  (this[Je] = ~~this[Je] + e - this[et]), (this[rt] = e);
+                  ((this[Je] = ~~this[Je] + e - this[et]), (this[rt] = e));
                 }
                 function v(e, t) {
                   e.on(t, function () {
                     this[t] = (0, S.t)();
                   });
                 }
-                this.ee.on(et, g),
+                (this.ee.on(et, g),
                   a.on(tt, g),
                   o.on(tt, g),
                   this.ee.on(rt, m),
@@ -2793,10 +2797,10 @@
                     (0, T.jT)(!0, this.removeOnAbort?.signal)
                   ),
                   (this.abortHandler = this.#n),
-                  this.importAggregator(e);
+                  this.importAggregator(e));
               }
               #n() {
-                this.removeOnAbort?.abort(), (this.abortHandler = void 0);
+                (this.removeOnAbort?.abort(), (this.abortHandler = void 0));
               }
             }
             var it = i(3333);
@@ -2843,16 +2847,16 @@
               constructor(e, t = !0) {
                 super(e, at.TZ, t);
                 const r = this.ee;
-                this.ee.on("wrap-logger-end", function ([e]) {
+                (this.ee.on("wrap-logger-end", function ([e]) {
                   const { level: t, customAttributes: n } = this;
                   (0, st.R)(r, e, n, t);
                 }),
-                  this.importAggregator(e);
+                  this.importAggregator(e));
               }
             }
             new (class extends o {
               constructor(t) {
-                super(),
+                (super(),
                   p.gm
                     ? ((this.features = {}),
                       (0, R.bQ)(this.agentIdentifier, this),
@@ -2861,7 +2865,7 @@
                       (this.runSoftNavOverSpa = [...this.desiredFeatures].some((e) => e.featureName === a.K7.softNav)),
                       (0, d.j)(this, t, t.loaderType || "agent"),
                       this.run())
-                    : (0, e.R)(21);
+                    : (0, e.R)(21));
               }
               get config() {
                 return { info: this.info, init: this.init, loader_config: this.loader_config, runtime: this.runtime };
@@ -2870,7 +2874,7 @@
                 try {
                   const t = u(this.agentIdentifier),
                     r = [...this.desiredFeatures];
-                  r.sort((e, t) => a.P3[e.featureName] - a.P3[t.featureName]),
+                  (r.sort((e, t) => a.P3[e.featureName] - a.P3[t.featureName]),
                     r.forEach((r) => {
                       if (!t[r.featureName] && r.featureName !== a.K7.pageViewEvent) return;
                       if (this.runSoftNavOverSpa && r.featureName === a.K7.spa) return;
@@ -2889,21 +2893,21 @@
                             return [];
                         }
                       })(r.featureName).filter((e) => !(e in this.features));
-                      n.length > 0 && (0, e.R)(36, { targetFeature: r.featureName, missingDependencies: n }),
-                        (this.features[r.featureName] = new r(this));
-                    });
+                      (n.length > 0 && (0, e.R)(36, { targetFeature: r.featureName, missingDependencies: n }),
+                        (this.features[r.featureName] = new r(this)));
+                    }));
                 } catch (t) {
                   (0, e.R)(22, t);
                   for (const e in this.features) this.features[e].abortHandler?.();
                   const r = (0, R.Zm)();
-                  delete r.initializedAgents[this.agentIdentifier]?.api,
+                  (delete r.initializedAgents[this.agentIdentifier]?.api,
                     delete r.initializedAgents[this.agentIdentifier]?.features,
-                    delete this.sharedAggregator;
-                  return r.ee.get(this.agentIdentifier).abort(), !1;
+                    delete this.sharedAggregator);
+                  return (r.ee.get(this.agentIdentifier).abort(), !1);
                 }
               }
             })({ features: [he, w, N, Ne, Oe, O, M, ot, ct, Pe, nt], loaderType: "spa" });
-          })();
+          })());
       })();
     </script>
 
