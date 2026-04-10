@@ -13,6 +13,7 @@ router.get("/joinGroup/:group_code", authenticateJWT, validateData.validateGroup
 router.get("/leaveGroup/:group_id", authenticateJWT, validateData.validateGroupId, GroupController.leaveGroup);
 router.get("/", authenticateJWT, GroupController.getAllGroups);
 router.get("/single/:group_id", authenticateJWT, validateData.validateGroupId, validateExpData.validateGroupMembership, GroupController.getGroupDataById);
+router.get("/members/:group_id", authenticateJWT, validateData.validateGroupId, validateExpData.validateGroupMembership, GroupController.getGroupMembers);
 router.get("/expenseLogs/:group_id", authenticateJWT, validateData.validateGroupId, validateExpData.validateGroupMembership, GroupController.getGroupExpenseLogs);
 router.get("/groupTypeList", authenticateJWT, GroupController.getGroupTypeList);
 router.get("/myPairs/:group_id", authenticateJWT, validateData.validateGroupId, validateExpData.validateGroupMembership, GroupController.getMyPairs);

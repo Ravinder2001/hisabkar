@@ -48,12 +48,9 @@ module.exports = {
     const user_id = req.user.user_id;
 
     try {
-      const groupData = await groupModal.getGroupDataById({
-        groupId: group_id,
-        userId: user_id,
-      });
+      const members = await groupModal.getGroupMembers(group_id);
       // Check if the user is NOT part of the group members
-      const isMember = groupData.members?.some((member) => member.id === user_id);
+      const isMember = members?.some((member) => member.id === user_id);
 
       if (!isMember) {
         return commonController.errorResponse(res, Messages.FORBIDDEN, HttpStatus.BAD_REQUEST);

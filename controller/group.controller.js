@@ -106,17 +106,26 @@ module.exports = {
         groupId: req.params.group_id,
         userId: req.user.user_id,
       });
-      // If groupId matches DEMO_GROUP_ID, mask member names
 
-      groupList.members = await Promise.all(
-        groupList.members.map(async (item, index) => ({
+      return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, groupList);
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
+  getGroupMembers: async (req, res) => {
+    try {
+      let members = await groupModel.getGroupMembers(req.params.group_id);
+
+      // If groupId matches DEMO_GROUP_ID, mask member names
+      members = await Promise.all(
+        members.map(async (item, index) => ({
           ...item,
           name: req.params.group_id == DEMO_GROUP_ID ? `DemoUser${index + 1}` : item.name,
           avatar: req.params.group_id == DEMO_GROUP_ID ? "https://api.dicebear.com/7.x/adventurer/svg?seed=345&gender=male" : item.avatar,
         }))
       );
 
-      return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, groupList);
+      return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, members, members.length);
     } catch (error) {
       common.handleAsyncError(error, res);
     }

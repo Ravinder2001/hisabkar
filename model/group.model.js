@@ -225,24 +225,8 @@ module.exports = {
   CASE 
     WHEN g.admin_user = $2 THEN true
     ELSE false
-  END AS is_you_admin,
-  ARRAY(
-    SELECT JSON_BUILD_OBJECT(
-      'id', u.user_id, 
-      'name', u.name, 
-      'avatar', u.avatar, 
-      'total_spent', COALESCE(SUM(e.amount), 0),
-      'is_available', COALESCE(uo.availibilty_status, false),
-      'is_current_user', gm2.is_active -- Include is_active status
-    )
-    FROM tbl_users u
-    JOIN tbl_group_members gm2 ON gm2.user_id = u.user_id
-    LEFT JOIN tbl_expenses e ON e.paid_by = u.user_id AND e.group_id = g.group_id
-    LEFT JOIN tbl_user_options uo ON uo.user_id = u.user_id -- Join user options table
-    WHERE gm2.group_id = g.group_id
-    GROUP BY u.user_id, uo.availibilty_status, gm2.is_active
-    ORDER BY COALESCE(SUM(e.amount), 0) DESC
-  ) AS members
+  END AS is_you_admin
+
 FROM tbl_groups g
 LEFT JOIN tbl_group_members gm ON gm.group_id = g.group_id
 LEFT JOIN tbl_expenses e ON e.group_id = g.group_id
@@ -261,11 +245,35 @@ GROUP BY g.group_id;
       return {
         ...groupData,
         total_amount: parseFloat(groupData.total_amount), // Convert to number
-        members: groupData.members.map((member) => ({
-          ...member,
-          total_spent: parseFloat(member.total_spent), // Convert total_spent to number
-        })),
       };
+    } catch (error) {
+      console.error("Error in fetching group data:", error.message);
+      throw error;
+    }
+  },
+  getGroupMembers: async (groupId) => {
+    try {
+      const query = `
+        SELECT 
+          u.user_id AS id, 
+          u.name, 
+          u.avatar, 
+          COALESCE(SUM(e.amount), 0) AS total_spent,
+          COALESCE(uo.availibilty_status, false) AS is_available,
+          gm2.is_active AS is_current_user
+        FROM tbl_users u
+        JOIN tbl_group_members gm2 ON gm2.user_id = u.user_id
+        LEFT JOIN tbl_expenses e ON e.paid_by = u.user_id AND e.group_id = $1
+        LEFT JOIN tbl_user_options uo ON uo.user_id = u.user_id
+        WHERE gm2.group_id = $1
+        GROUP BY u.user_id, uo.availibilty_status, gm2.is_active
+        ORDER BY COALESCE(SUM(e.amount), 0) DESC
+      `;
+      const membersQuery = await client.query(query, [groupId]);
+      return membersQuery.rows.map((member) => ({
+        ...member,
+        total_spent: parseFloat(member.total_spent),
+      }));
     } catch (error) {
       console.error("Error in fetching group data:", error.message);
       throw error;
