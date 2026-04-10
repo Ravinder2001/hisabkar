@@ -188,7 +188,7 @@ const chatbotController = {
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, {
         text: finalResponseText,
-        remainingMessages: config.CHATBOT_DAILY_LIMIT - usage.currentCount,
+        remainingMessages: usage.isInfinite ? 999 : config.CHATBOT_DAILY_LIMIT - usage.currentCount,
       });
     } catch (error) {
       console.error("Chatbot Controller Error:", error);

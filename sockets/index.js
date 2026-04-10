@@ -16,19 +16,24 @@ const initSockets = (server) => {
     console.log("New client connected:", socket.id);
 
     // Join a group room
-    socket.on("join_group", async (encryptedGroupId) => {
+    socket.on("join_group", async (data) => {
       try {
+        const { groupId: encryptedGroupId, userId } = typeof data === "object" ? data : { groupId: data, userId: null };
         const groupId = await decryptData(encryptedGroupId);
         socket.join(`group_${groupId}`);
-        console.log(`Socket ${socket.id} joined group_${groupId}`);
+        if (userId) {
+          socket.userId = userId.toString();
+        }
+        console.log(`Socket ${socket.id} (User: ${socket.userId}) joined group_${groupId}`);
       } catch (error) {
         console.error("Socket join_group error:", error.message);
       }
     });
 
     // Leave a group room
-    socket.on("leave_group", async (encryptedGroupId) => {
+    socket.on("leave_group", async (data) => {
       try {
+        const { groupId: encryptedGroupId } = typeof data === "object" ? data : { groupId: data };
         const groupId = await decryptData(encryptedGroupId);
         socket.leave(`group_${groupId}`);
         console.log(`Socket ${socket.id} left group_${groupId}`);
@@ -41,6 +46,10 @@ const initSockets = (server) => {
     socket.on("send_message", async (data) => {
       const { groupId: encryptedGroupId, userId, message, expenseId } = data;
       try {
+        if (!message || message.trim().length === 0 || message.length > 500) {
+          return;
+        }
+
         const groupId = await decryptData(encryptedGroupId);
         // Save message using model
         const newMessage = await chatModel.saveMessage({
@@ -54,10 +63,15 @@ const initSockets = (server) => {
           // Auto-mark as read for the sender
           await chatModel.updateReadStatus(userId, groupId, newMessage.chat_id);
           // Broadcast to the room
-          io.to(`group_${groupId}`).emit("receive_message", newMessage);
+          const roomName = `group_${groupId}`;
+          io.to(roomName).emit("receive_message", newMessage);
 
           // ── Push Notifications ──
           try {
+            // Get all userIds currently in this socket room
+            const socketsInRoom = await io.in(roomName).fetchSockets();
+            const activeUserIdsInRoom = new Set(socketsInRoom.filter((s) => s.userId).map((s) => s.userId.toString()));
+
             const subscribers = await chatModel.getNotificationData(groupId, userId);
             const encryptedId = await encryptData(groupId.toString());
 
@@ -68,14 +82,17 @@ const initSockets = (server) => {
             };
 
             subscribers.forEach((sub) => {
-              const subscription = {
-                endpoint: sub.endpoint,
-                keys: {
-                  p256dh: sub.p256dh,
-                  auth: sub.auth,
-                },
-              };
-              sendNotificationsToUsers(subscription, notificationPayload);
+              // Only send if the user is NOT actively in the chat room
+              if (!activeUserIdsInRoom.has(sub.user_id?.toString())) {
+                const subscription = {
+                  endpoint: sub.endpoint,
+                  keys: {
+                    p256dh: sub.p256dh,
+                    auth: sub.auth,
+                  },
+                };
+                sendNotificationsToUsers(subscription, notificationPayload);
+              }
             });
           } catch (pushError) {
             console.error("Error triggering push notifications:", pushError);

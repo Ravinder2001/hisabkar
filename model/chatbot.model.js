@@ -3,13 +3,18 @@ const client = require("../configuration/db");
 const chatBotModel = {
   checkAndIncrementAiUsage: async (userId, limit) => {
     try {
-      // Get current usage
+      // Get current usage and role
       const checkQuery = `
-        SELECT ai_message_count, last_ai_usage_date 
+        SELECT ai_message_count, last_ai_usage_date, role 
         FROM tbl_users WHERE user_id = $1
       `;
       const checkResult = await client.query(checkQuery, [userId]);
       const user = checkResult.rows[0];
+
+      // Bypass limit for ADMIN users
+      if (user.role === "ADMIN") {
+        return { allowed: true, currentCount: (user.ai_message_count || 0) + 1, isInfinite: true };
+      }
 
       let currentCount = 0;
       let lastDate = null;

@@ -144,7 +144,7 @@ module.exports = {
     try {
       const query = `
         SELECT 
-          s.endpoint, s.p256dh, s.auth, 
+          s.endpoint, s.p256dh, s.auth, s.user_id,
           g.group_name
         FROM tbl_sw_subscriptions s
         JOIN tbl_group_members gm ON s.user_id = gm.user_id
