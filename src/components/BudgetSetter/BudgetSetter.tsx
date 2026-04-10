@@ -8,9 +8,10 @@ import CircularProgress from "./CircularProgress";
 interface BudgetSetterProps {
   groupId: string;
   onBudgetSet: () => void;
+  inStack?: boolean; // when true, button is inline inside a parent stack container
 }
 
-export default function BudgetSetter({ groupId, onBudgetSet }: BudgetSetterProps) {
+export default function BudgetSetter({ groupId, onBudgetSet, inStack = false }: BudgetSetterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [budgetVal, setBudgetVal] = useState("");
   const [budgetData, setBudgetData] = useState({ budget: 0, total_spent: 0 });
@@ -50,13 +51,13 @@ export default function BudgetSetter({ groupId, onBudgetSet }: BudgetSetterProps
   const percentage = currentBudget > 0 ? Math.min(100, Math.round((totalSpent / currentBudget) * 100)) : 0;
   const remaining = currentBudget > 0 ? Math.max(0, currentBudget - totalSpent) : 0;
 
+  const btnCls = inStack
+    ? "rounded-full w-14 h-14 shadow-lg bg-purple-500 hover:bg-indigo-700 text-white p-0 flex items-center justify-center transform transition-transform hover:scale-105"
+    : "fixed bottom-6 right-24 rounded-full w-14 h-14 shadow-lg bg-purple-500 hover:bg-indigo-700 text-white p-0 flex items-center justify-center transform transition-transform hover:scale-105";
+
   return (
     <div className="relative">
-      <Button
-        className="fixed bottom-6 right-24 rounded-full w-14 h-14 shadow-lg bg-purple-500 hover:bg-indigo-700 text-white p-0 flex items-center justify-center transform transition-transform hover:scale-105"
-        onClick={() => setIsOpen(!isOpen)}
-        style={{ zIndex: 99998 }}
-      >
+      <Button className={btnCls} onClick={() => setIsOpen(!isOpen)} style={{ zIndex: inStack ? undefined : 99998 }}>
         {currentBudget > 0 ? (
           <div className="w-full h-full flex flex-col items-center justify-center p-1 font-bold text-[10px]">
             <CircularProgress percentage={percentage} />
@@ -68,8 +69,8 @@ export default function BudgetSetter({ groupId, onBudgetSet }: BudgetSetterProps
 
       {isOpen && (
         <div
-          className="fixed bottom-24 right-6 w-64 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-2xl bg-white border border-slate-100 flex flex-col animate-in slide-in-from-bottom-5"
-          style={{ zIndex: 99999 }}
+          className="fixed w-64 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-2xl bg-white border border-slate-100 flex flex-col animate-in slide-in-from-bottom-5"
+          style={{ zIndex: 99999, bottom: inStack ? "300px" : "96px", right: "24px" }}
         >
           <div className="flex justify-between items-center mb-4">
             <h4 className="font-bold text-sm text-slate-800">Your Group Budget</h4>

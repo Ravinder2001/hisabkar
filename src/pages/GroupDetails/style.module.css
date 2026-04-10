@@ -1,154 +1,453 @@
-.container {
+/* ── Design Tokens ─────────────────────────────────────────────────────── */
+:root {
+  --nav-h-mobile: 68px;
+  --nav-h-desktop: 58px;
+
+  /* Gradient palette */
+  --grad-1: #6c63ff;
+  --grad-2: #a855f7;
+  --grad-3: #ec4899;
+  --grad-pill: linear-gradient(135deg, var(--grad-1), var(--grad-2));
+  --grad-active: linear-gradient(135deg, var(--grad-2), var(--grad-3));
+}
+
+/* ── Page wrapper ──────────────────────────────────────────────────────── */
+.pageWrapper {
   display: flex;
+  flex-direction: column;
   height: 100%;
+  position: relative;
+  background: #f4f3ff;
+}
+
+/* ── Content area ──────────────────────────────────────────────────────── */
+.contentArea {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Tab panes ─────────────────────────────────────────────────────────── */
+.tabPane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Stop exactly where the bottom nav starts */
+  bottom: var(--nav-h-mobile);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease;
   overflow: auto;
-  gap: 10px;
 }
 
-.detailsCon {
-  width: 25%;
-}
-.pairsCon {
-  width: 30%;
-}
-.expCon {
-  width: 45%;
+.tabPaneActive {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
 }
 
+/* ── Expense box inside timeline tab (no header = full height) ─────────── */
 .expBox {
-  height: 85%;
-  /* border: 1px solid red; */
+  height: 100%;
   overflow: auto;
   padding: 12px !important;
 }
-.accordion {
-  margin-top: 0px !important;
+
+/* ── Chat tab pane: raw, no Card — ChatModule flex column fills it ──────── */
+.chatTabPane {
+  background: transparent;
+  /* No overflow:auto here — ChatModule manages its own internal scroll */
+  overflow: hidden;
 }
 
-/* CustomSelect.module.css */
-.selectWrapper {
-  width: 100%;
-  max-width: 300px; /* Default max-width for desktop */
+.chatTabPane > * {
+  height: 100%;
+  border-radius: 0;
 }
 
-.customSelect {
-  width: 100%;
-  font-size: 12px; /* Smaller font size for desktop */
-  border: 1px solid rgba(229, 231, 235, var(--tw-border-opacity));
-  border-radius: 4px; /* Smaller border radius */
-  background-color: white;
-  cursor: pointer;
-  padding: 5px 8px;
-}
-
-/* Remove default focus outline and add custom focus style */
-.customSelect:focus {
-  outline: none;
-}
-
-@media only screen and (max-width: 1024px) {
-  .cardHeader {
-    padding: 0px !important;
-  }
-  .container {
-    flex-direction: column;
-    position: relative;
-  }
-  .detailsCon {
-    /* height: 100%; */
-    width: 100%;
-    /* position: absolute; */
-    /* z-index: 11; */
-  }
-  .pairsCon {
-    /* margin-top: 60px; */
-    width: 100%;
-    /* position: absolute; */
-    /* z-index: 10; */
-  }
-  .expCon {
-    /* margin-top: 120px; */
-    width: 100%;
-    height: calc(100% - 61px);
-  }
-  .expBox {
-    height: 87%;
-    overflow: auto;
-  }
-}
-
-@media only screen and (max-width: 768px) {
-  .expBox {
-  }
-  .customSelect {
-    height: 20px; /* Even smaller height for mobile */
-    font-size: 12px; /* Smaller font size for mobile */
-    padding: 0px 3px;
-  }
-
-  .selectWrapper {
-    max-width: 100%; /* Full width on mobile */
-  }
-}
-.list li {
-  margin: 0.75rem 0;
-}
-
-.info {
-  color: rgb(0, 49, 0);
-  background-color: rgb(230, 246, 230);
+.cardHeader {
   padding: 1rem;
-  border-radius: 4px;
 }
 
-.accordion {
-  border-top: 1px solid #ccc;
-  margin-top: 1rem;
+.selectWrapper {
+  max-width: 300px;
 }
 
-.item {
-  border-bottom: 1px solid #ccc;
+/* ── Summary "no group" state ─────────────────────────────────────────── */
+.summaryNoGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
 }
 
-.itemBtn {
-  cursor: pointer;
+.visitBtn {
+  background: var(--grad-pill) !important;
+  color: white !important;
+  border: none !important;
+}
+
+/* ── Empty settings state ─────────────────────────────────────────────── */
+.emptySettings {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  color: #9ca3af;
+}
+
+.emptySettingsIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ede9fe, #fce7f3);
   display: flex;
   align-items: center;
-  width: 100%;
-  margin: 0;
-  padding: 1rem;
-  font-size: 1rem;
-  text-align: left;
-  color: #007bff;
-  background-color: transparent;
+  justify-content: center;
+  color: var(--grad-2);
+}
+
+.emptySettingsTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.emptySettingsDesc {
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   FAB STACK  (timeline tab only)
+   Order top → bottom: Budget · ChatBot · Add Expense
+══════════════════════════════════════════════════════════════════════════ */
+
+.fabStack {
+  position: fixed;
+  right: 20px;
+  /* sit 12px above the mobile navbar */
+  bottom: calc(var(--nav-h-mobile) + 12px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 50;
+}
+
+/* Add Expense button */
+.fabAdd {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #111827;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
   border: none;
+  cursor: pointer;
+  padding: 0;
 }
 
-.itemBtn:hover {
-  background-color: #f3f3f3;
+.fabAdd:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.32);
 }
 
-.itemBtnExpanded {
-  background-color: #e7e7e7;
+/* Desktop: stack sits just above the floating pill nav */
+@media (min-width: 768px) {
+  .fabStack {
+    bottom: calc(var(--nav-h-desktop) + 40px);
+    right: 28px;
+  }
 }
 
-.itemContent {
-  transition: height 0.25s cubic-bezier(0, 0, 0, 1);
+/* ══════════════════════════════════════════════════════════════════════════
+   BOTTOM NAVIGATION
+══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Mobile full-width bar ────────────────────────────────────────────── */
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 0;
+  pointer-events: none; /* inner div handles events */
 }
 
-.itemPanel {
-  padding: 1rem;
+.navInner {
+  pointer-events: all;
+  display: flex;
+  align-items: stretch;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(108, 99, 255, 0.15);
+  box-shadow: 0 -4px 30px rgba(108, 99, 255, 0.12);
+  height: var(--nav-h-mobile);
+  border-radius: 0;
+  gap: 0;
 }
 
-.chevron {
-  margin-left: auto;
-  transition: transform 0.25s cubic-bezier(0, 0, 0, 1);
+/* ── Unread dot on chat icon ──────────────────────────────────────────── */
+.chatIconWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.itemBtnExpanded .chevron {
-  transform: rotate(180deg);
+.unreadDot {
+  position: absolute;
+  top: -3px;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ec4899, #f43f5e);
+  border: 1.5px solid white;
+  box-shadow: 0 0 6px rgba(236, 72, 153, 0.6);
+  animation: dotPulse 1.5s ease infinite;
 }
 
+@keyframes dotPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.85;
+  }
+}
+
+/* Individual tab item */
+.navItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 8px 4px;
+  transition: all 0.22s ease;
+  color: #9ca3af;
+}
+
+.navItem:hover {
+  color: var(--grad-2);
+  background: rgba(168, 85, 247, 0.06);
+}
+
+/* ── Special Add (➕) tab button ─────────────────────────────────────── */
+.navItemAdd {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  /* lift it up so the circle protrudes above the navbar */
+  transform: translateY(-10px);
+  transition: transform 0.22s ease;
+}
+
+.navItemAdd:hover {
+  transform: translateY(-12px);
+}
+
+/* black circle container */
+.navAddCircle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 0 3px rgba(255, 255, 255, 0.9);
+  transition:
+    background 0.22s ease,
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.navItemAdd:hover .navAddCircle {
+  background: #374151;
+  transform: scale(1.08);
+}
+
+/* active: gradient circle */
+.navItemAddActive .navAddCircle {
+  background: linear-gradient(135deg, #6c63ff, #ec4899);
+  box-shadow:
+    0 4px 20px rgba(108, 99, 255, 0.5),
+    0 0 0 3px rgba(255, 255, 255, 0.9);
+}
+
+.navIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.22s ease;
+}
+
+.navItemActive .navIcon {
+  transform: translateY(-2px) scale(1.15);
+  color: var(--grad-1);
+  filter: drop-shadow(0 0 6px rgba(108, 99, 255, 0.5));
+}
+
+.navLabel {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: color 0.22s ease;
+}
+
+.navItemActive .navLabel {
+  font-weight: 700;
+  background: var(--grad-pill);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Active indicator dot */
+.navActivePill {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--grad-pill);
+  box-shadow: 0 0 8px rgba(108, 99, 255, 0.6);
+  animation: dotPop 0.22s ease;
+}
+
+@keyframes dotPop {
+  from {
+    transform: translateX(-50%) scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ── Desktop floating pill ───────────────────────────────────────────── */
+@media (min-width: 768px) {
+  .tabPane {
+    /* Desktop nav floats at bottom:20px, so clear that height + gap */
+    bottom: calc(var(--nav-h-desktop) + 28px);
+  }
+
+  .bottomNav {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    bottom: 20px;
+    width: auto;
+    min-width: 520px;
+    max-width: 660px;
+    padding: 0 0;
+  }
+
+  .navInner {
+    border-radius: 9999px;
+    height: var(--nav-h-desktop);
+    border: 1px solid rgba(108, 99, 255, 0.18);
+    border-top: 1px solid rgba(108, 99, 255, 0.18);
+    box-shadow:
+      0 8px 32px rgba(108, 99, 255, 0.18),
+      0 2px 8px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    padding: 4px 8px;
+    gap: 2px;
+  }
+
+  .navItem {
+    border-radius: 9999px;
+    padding: 6px 10px;
+    min-width: 80px;
+    flex: 1;
+    gap: 3px;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .navItem:hover {
+    background: rgba(168, 85, 247, 0.08);
+  }
+
+  .navItemActive {
+    background: linear-gradient(135deg, rgba(108, 99, 255, 0.13), rgba(168, 85, 247, 0.13)) !important;
+  }
+
+  .navItemActive .navIcon {
+    transform: none;
+    color: var(--grad-1);
+  }
+
+  .navLabel {
+    font-size: 12px;
+    display: block;
+  }
+
+  .navActivePill {
+    display: none;
+  }
+
+  /* Active border highlight */
+  .navItemActive::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    border: 1.5px solid transparent;
+    background: var(--grad-pill) border-box;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) padding-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    opacity: 0.7;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   UNREAD MESSAGES INDICATOR
+══════════════════════════════════════════════════════════════════════════ */
 .unreadIndicator {
   display: flex;
   align-items: center;
@@ -205,4 +504,18 @@
     transform: scale(1.1);
     opacity: 0;
   }
+}
+
+/* ── Misc legacy ─────────────────────────────────────────────────────── */
+.customSelect {
+  width: 100%;
+  font-size: 12px;
+  border: 1px solid rgba(229, 231, 235, 1);
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  padding: 5px 8px;
+}
+.customSelect:focus {
+  outline: none;
 }

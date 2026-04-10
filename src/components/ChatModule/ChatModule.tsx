@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Send, User, MessageSquare, X } from "lucide-react";
+import { Send, User, MessageSquare } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -35,7 +35,7 @@ interface ChatModuleProps {
   onClose?: () => void;
 }
 
-const ChatModule: React.FC<ChatModuleProps> = ({ groupId, onClose }) => {
+const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
   const user = useSelector((state: RootState) => state.user);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -207,18 +207,6 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, onClose }) => {
 
   return (
     <div className={styles.chatContainer}>
-      <div className={styles.chatHeader}>
-        <div className="flex items-center">
-          <MessageSquare size={20} className="text-blue-600" />
-          <h3 className="text-lg font-semibold ml-2">Group Chat</h3>
-        </div>
-        {onClose && (
-          <button onClick={onClose} className={styles.closeBtn}>
-            <X size={20} />
-          </button>
-        )}
-      </div>
-
       <div id="scrollableDiv" className={styles.messagesList}>
         {isLoading ? (
           <CircularLoader />

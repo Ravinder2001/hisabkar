@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
 import styles from "./style.module.css";
-import { GroupDataType, GroupPairsData } from "../../utils/comman/CommanTypes";
+import { GroupDataType, GroupPairsData, MemberType } from "../../utils/comman/CommanTypes";
 import CustomCountUp from "../CustomCountUp/CustomCountUp";
 import SimplifiedComponent from "../SimplifiedModal/SimplifiedModal";
 
@@ -11,10 +11,11 @@ type PropType = {
   isSettled: boolean;
   GroupId: string;
   groupData: GroupDataType;
+  groupMembers: MemberType;
 };
 
 export default function GroupPairs(props: PropType) {
-  const groupMembers = props.groupData.members;
+  const groupMembers = props.groupMembers;
 
   const [selectedTab, setSelectedTab] = useState("SEND");
   const [viewMode, setViewMode] = useState("SIMPLIFIED"); // Default to Simplified if settled, else Detailed

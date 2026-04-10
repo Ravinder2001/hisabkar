@@ -13,3 +13,38 @@
     width: 100%;
   }
 }
+
+/* ── Inline page mode ──────────────────────────────────────────────────── */
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  overflow: hidden;
+}
+
+.pageForm {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  min-height: 0;
+}
+
+.pageForm::-webkit-scrollbar {
+  width: 4px;
+}
+.pageForm::-webkit-scrollbar-track {
+  background: transparent;
+}
+.pageForm::-webkit-scrollbar-thumb {
+  background: #ddd8fe;
+  border-radius: 10px;
+}
+
+.pageSubmitRow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  padding-top: 4px;
+}

@@ -67,6 +67,7 @@ function AddExpenseModal({
   selectedRow,
   callback,
   isClone,
+  inPage = false,
 }: ModalType & {
   groupId: string;
   memberList: MemberType;
@@ -74,6 +75,7 @@ function AddExpenseModal({
   selectedRow: ExpenseType | null;
   callback: () => void;
   isClone: boolean;
+  inPage?: boolean; // when true: render inline as a page, no modal wrapper
 }) {
   const { fetchData: addExpense, response: addRes, isLoading } = useApiFetch("");
   const { fetchData: editExpense, response: editRes, isLoading: editLoading } = useApiFetch("");
@@ -163,7 +165,7 @@ function AddExpenseModal({
 
   useEffect(() => {
     if (addRes?.success === 1) {
-      setIsOpen();
+      if (!inPage) setIsOpen();
       setExpenseList((prev: any) => [addRes.data[0], ...prev]);
       callback();
     }
@@ -218,274 +220,297 @@ function AddExpenseModal({
     }
   }, [isOpen, selectedRow]);
 
+  // ── Shared form body ─────────────────────────────────────────────────
+  const formBody = (
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      validateOnBlur={false}
+      enableReinitialize={inPage} // re-init form when switching back to this tab
+      onSubmit={selectedRow && !isClone ? handleEditSubmit : handleSubmit}
+    >
+      {({ values, errors, touched, setFieldValue, handleBlur, resetForm }) => (
+        <Form className="space-y-4" noValidate>
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-medium text-slate-600">
+                Expense Name <span className="text-red-500">*</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowDescription(!showDescription)}
+                className={`text-[8px] font-semibold px-2 py-0.5 rounded-full transition-colors ${
+                  showDescription ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                }`}
+                style={{ fontSize: "12px" }}
+              >
+                {showDescription ? "− Note" : "+ Note"}
+              </button>
+            </div>
+            <Field name="expenseName">
+              {({ field }: any) => (
+                <Input
+                  {...field}
+                  onBlur={handleBlur}
+                  onKeyDown={(e) => {
+                    if (/[0-9]/.test(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  placeholder="e.g. Dinner"
+                  className={`border-[#e5e7eb] h-9 text-sm rounded-lg ${touched.expenseName && errors.expenseName ? "border-red-500" : ""}`}
+                />
+              )}
+            </Field>
+            {touched.expenseName && errors.expenseName && <div className="text-red-500 text-xs">{errors.expenseName}</div>}
+
+            {showDescription && (
+              <div className="mt-1">
+                <Field name="description">
+                  {({ field }: any) => (
+                    <Textarea
+                      {...field}
+                      onBlur={handleBlur}
+                      placeholder="Add a note..."
+                      rows={2}
+                      className={`border-[#e5e7eb] rounded-lg text-sm ${touched.description && errors.description ? "border-red-500" : ""}`}
+                    />
+                  )}
+                </Field>
+                {touched.description && errors.description && <div className="text-red-500 text-xs">{errors.description}</div>}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-slate-600">Category</label>
+            <div className="flex flex-wrap overflow-x-auto gap-1.5 p-2 no-scrollbar" style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}>
+              {EXPENSE_CATEGORIES.map((cat) => (
+                <button
+                  key={cat.label}
+                  type="button"
+                  onClick={() => setFieldValue("expenseType", cat.label)}
+                  className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] border transition-all ${
+                    values.expenseType === cat.label
+                      ? `${cat.color} border-current ring-1 ring-current`
+                      : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
+                  }`}
+                >
+                  <span>{cat.icon}</span>
+                  <span style={{ fontSize: "12px" }}>{cat.label}</span>
+                </button>
+              ))}
+              <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
+            </div>
+            {touched.expenseType && errors.expenseType && <div className="text-red-500 text-[10px]">{errors.expenseType}</div>}
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-slate-600">
+              Amount <span className="text-red-500">*</span>
+            </label>
+            <Field name="amount">
+              {({ field }: any) => (
+                <Input
+                  type="number"
+                  onWheel={(event) => event.currentTarget.blur()}
+                  {...field}
+                  onBlur={handleBlur}
+                  onKeyDown={(e) => {
+                    if (e.key === "." || e.key === "e" || e.key === "E") {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => {
+                    setFieldValue("amount", e.target.value);
+                    setFieldValue("selectedUsers", []);
+                  }}
+                  className={`border-[#e5e7eb] rounded-lg ${touched.amount && errors.amount ? "border-red-500" : ""}`}
+                />
+              )}
+            </Field>
+            {touched.amount && errors.amount && <div className="text-red-500 text-xs">{errors.amount}</div>}
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-slate-600">Split Type</label>
+            <div className="flex gap-4">
+              {["EQUAL", "PERCENTAGE", "CUSTOM"].map((type) => (
+                <div key={type} className="flex items-center">
+                  <Field
+                    type="radio"
+                    name="splitType"
+                    value={type}
+                    onChange={(e: any) => {
+                      setFieldValue("splitType", e.target.value);
+                      setFieldValue("selectedUsers", []);
+                    }}
+                    id={type}
+                    className="border-2 border-gray-200"
+                  />
+                  <label htmlFor={type} className="ml-2 text-xs capitalize">
+                    {type}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <div className="flex gap-1">
+              <div className="text-xs font-medium text-slate-600">
+                Select Users <span className="text-red-500">*</span>
+              </div>
+              <div>
+                <input
+                  type="checkbox"
+                  checked={values.selectedUsers.length === memberList.length}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      const allUserIds = memberList.filter((user) => user.is_available).map((user) => user.id);
+
+                      setFieldValue("selectedUsers", allUserIds);
+
+                      const amount = parseFloat(values.amount) || 0;
+                      const splits = allUserIds.map((userId) => ({
+                        userId,
+                        amount: values.splitType === "EQUAL" && amount ? amount / allUserIds.length : "",
+                      }));
+
+                      setFieldValue("userSplits", splits);
+                    } else {
+                      setFieldValue("selectedUsers", []);
+                      setFieldValue("userSplits", []);
+                    }
+                  }}
+                  className="cursor-pointer"
+                />
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-4">
+              {memberList.map((user) => {
+                const UserName = user.name.split(" ")[0];
+                return (
+                  <div key={user.id} className="text-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newSelected = values.selectedUsers.includes(user.id)
+                          ? values.selectedUsers.filter((id) => id !== user.id)
+                          : [...values.selectedUsers, user.id];
+                        setFieldValue("selectedUsers", newSelected);
+                        const amount = parseFloat(values.amount) || 0;
+                        const splits = newSelected.map((userId) => ({
+                          userId,
+                          amount: values.splitType === "EQUAL" && amount ? ((amount / newSelected.length) * 100) / 100 : "",
+                        }));
+                        setFieldValue("userSplits", splits);
+                      }}
+                      className={`flex items-center justify-center relative w-12 h-12 rounded-full ${
+                        values.selectedUsers.includes(user.id) ? "bg-blue-100 border-2 border-blue-200" : "bg-gray-100"
+                      }`}
+                    >
+                      <UserAvatar userImage={user.avatar} userName={user.name} />
+
+                      {values.selectedUsers.includes(user.id) && (
+                        <div className="absolute -top-1 -right-1 bg-blue-500 rounded-full p-0.5">
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                    </button>
+                    <div className="text-xs mt-1 flex items-center gap-1">
+                      <div>{UserName}</div>
+                      {!user.is_available ? (
+                        <div
+                          data-tooltip-id="user-not-available-tooltip"
+                          data-tooltip-content={`${UserName} is currently unavailable. Click on the avatar to add them manually.`}
+                        >
+                          <CircleAlert color="red" size={12} />
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {touched.selectedUsers && errors.selectedUsers && <div className="text-red-500 text-xs mt-1">{errors.selectedUsers}</div>}
+          </div>
+
+          {values.selectedUsers.length > 0 && (
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-medium text-slate-600">Split Details</label>
+                <span className="text-[10px] text-gray-500">
+                  Remaining:{" "}
+                  {values.splitType === "PERCENTAGE"
+                    ? (100 - values.userSplits.reduce((sum, split) => sum + Number(split.amount || 0), 0)).toFixed(2) + "%"
+                    : (Number(values.amount || 0) - values.userSplits.reduce((sum, split) => sum + Number(split.amount || 0), 0)).toFixed(2)}
+                </span>
+              </div>
+              <div className="space-y-2">
+                {values.userSplits.map(({ userId }, index) => {
+                  const user = memberList.find((u) => u.id === userId);
+                  if (!user) return null;
+
+                  return (
+                    <div key={userId} className="flex items-center gap-3">
+                      <UserAvatar userImage={user.avatar} userName={user.name} />
+                      <span className="flex-1 text-xs">{user.name.split(" ")[0]}</span>
+                      <Field name={`userSplits.${index}.amount`}>
+                        {({ field }: any) => (
+                          <Input
+                            {...field}
+                            type="text"
+                            disabled={values.splitType === "EQUAL"}
+                            className="w-20 h-8 text-right text-xs"
+                            placeholder={values.splitType === "PERCENTAGE" ? "%" : "0"}
+                            value={
+                              values.splitType === "EQUAL"
+                                ? Number(values.userSplits[index].amount || 0).toFixed(2)
+                                : values.userSplits[index].amount || ""
+                            }
+                          />
+                        )}
+                      </Field>
+                    </div>
+                  );
+                })}
+              </div>
+              {typeof errors.userSplits === "string" && <div className="text-red-500 text-xs mt-1">{errors.userSplits}</div>}
+            </div>
+          )}
+
+          <div className={inPage ? styles.pageSubmitRow : ""}>
+            <ButtonComponent
+              type="submit"
+              text={selectedRow && !isClone ? "Edit Expense" : isClone ? "Clone Expense" : "Add Expense"}
+              isLoading={isLoading || editLoading}
+            />
+            {inPage && (
+              <button type="button" onClick={() => resetForm()} className="text-xs text-slate-400 hover:text-slate-600 transition-colors mt-1">
+                Reset form
+              </button>
+            )}
+          </div>
+        </Form>
+      )}
+    </Formik>
+  );
+
+  // ── Inline page mode (no modal) ───────────────────────────────────────
+  if (inPage) {
+    return (
+      <div className={styles.pageContainer}>
+        <div className={styles.pageForm}>{formBody}</div>
+        <Tooltip id="user-not-available-tooltip" />
+      </div>
+    );
+  }
+
+  // ── Modal mode (edit / clone) ─────────────────────────────────────────
   return (
     <ModalComponent isOpen={isOpen} setIsOpen={setIsOpen}>
       <div className={styles.container}>
         <div className="text-sm font-bold mb-4">{selectedRow && !isClone ? "Edit" : isClone ? "Cloning" : "Add"} Expense</div>
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          validateOnBlur={false}
-          onSubmit={selectedRow && !isClone ? handleEditSubmit : handleSubmit}
-        >
-          {({ values, errors, touched, setFieldValue, handleBlur }) => (
-            <Form className="space-y-4" noValidate>
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <label className="text-xs font-medium text-slate-600">
-                    Expense Name <span className="text-red-500">*</span>
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setShowDescription(!showDescription)}
-                    className={`text-[8px] font-semibold px-2 py-0.5 rounded-full transition-colors ${
-                      showDescription ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                    }`}
-                    style={{ fontSize: "12px" }}
-                  >
-                    {showDescription ? "− Note" : "+ Note"}
-                  </button>
-                </div>
-                <Field name="expenseName">
-                  {({ field }: any) => (
-                    <Input
-                      {...field}
-                      onBlur={handleBlur}
-                      onKeyDown={(e) => {
-                        if (/[0-9]/.test(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                      placeholder="e.g. Dinner"
-                      className={`border-[#e5e7eb] h-9 text-sm rounded-lg ${touched.expenseName && errors.expenseName ? "border-red-500" : ""}`}
-                    />
-                  )}
-                </Field>
-                {touched.expenseName && errors.expenseName && <div className="text-red-500 text-xs">{errors.expenseName}</div>}
-
-                {showDescription && (
-                  <div className="mt-1">
-                    <Field name="description">
-                      {({ field }: any) => (
-                        <Textarea
-                          {...field}
-                          onBlur={handleBlur}
-                          placeholder="Add a note..."
-                          rows={2}
-                          className={`border-[#e5e7eb] rounded-lg text-sm ${touched.description && errors.description ? "border-red-500" : ""}`}
-                        />
-                      )}
-                    </Field>
-                    {touched.description && errors.description && <div className="text-red-500 text-xs">{errors.description}</div>}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-600">Category</label>
-                <div className="flex flex-wrap overflow-x-auto gap-1.5 p-2 no-scrollbar" style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}>
-                  {EXPENSE_CATEGORIES.map((cat) => (
-                    <button
-                      key={cat.label}
-                      type="button"
-                      onClick={() => setFieldValue("expenseType", cat.label)}
-                      className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] border transition-all ${
-                        values.expenseType === cat.label
-                          ? `${cat.color} border-current ring-1 ring-current`
-                          : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
-                      }`}
-                    >
-                      <span>{cat.icon}</span>
-                      <span style={{ fontSize: "12px" }}>{cat.label}</span>
-                    </button>
-                  ))}
-                  <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
-                </div>
-                {touched.expenseType && errors.expenseType && <div className="text-red-500 text-[10px]">{errors.expenseType}</div>}
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-600">
-                  Amount <span className="text-red-500">*</span>
-                </label>
-                <Field name="amount">
-                  {({ field }: any) => (
-                    <Input
-                      type="number"
-                      onWheel={(event) => event.currentTarget.blur()}
-                      {...field}
-                      onBlur={handleBlur}
-                      onKeyDown={(e) => {
-                        if (e.key === "." || e.key === "e" || e.key === "E") {
-                          e.preventDefault();
-                        }
-                      }}
-                      onChange={(e) => {
-                        setFieldValue("amount", e.target.value);
-                        setFieldValue("selectedUsers", []);
-                      }}
-                      className={`border-[#e5e7eb] rounded-lg ${touched.amount && errors.amount ? "border-red-500" : ""}`}
-                    />
-                  )}
-                </Field>
-                {touched.amount && errors.amount && <div className="text-red-500 text-xs">{errors.amount}</div>}
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-600">Split Type</label>
-                <div className="flex gap-4">
-                  {["EQUAL", "PERCENTAGE", "CUSTOM"].map((type) => (
-                    <div key={type} className="flex items-center">
-                      <Field
-                        type="radio"
-                        name="splitType"
-                        value={type}
-                        onChange={(e: any) => {
-                          setFieldValue("splitType", e.target.value);
-                          setFieldValue("selectedUsers", []);
-                        }}
-                        id={type}
-                        className="border-2 border-gray-200"
-                      />
-                      <label htmlFor={type} className="ml-2 text-xs capitalize">
-                        {type}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                <div className="flex gap-1">
-                  <div className="text-xs font-medium text-slate-600">
-                    Select Users <span className="text-red-500">*</span>
-                  </div>
-                  <div>
-                    <input
-                      type="checkbox"
-                      checked={values.selectedUsers.length === memberList.length} // Only check if the available users are selected
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          const allUserIds = memberList
-                            .filter((user) => user.is_available) // Only add users with is_available === true
-                            .map((user) => user.id);
-
-                          setFieldValue("selectedUsers", allUserIds);
-
-                          const amount = parseFloat(values.amount) || 0;
-                          const splits = allUserIds.map((userId) => ({
-                            userId,
-                            amount: values.splitType === "EQUAL" && amount ? amount / allUserIds.length : "",
-                          }));
-
-                          setFieldValue("userSplits", splits);
-                        } else {
-                          setFieldValue("selectedUsers", []);
-                          setFieldValue("userSplits", []);
-                        }
-                      }}
-                      className="cursor-pointer"
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-4">
-                  {memberList.map((user) => {
-                    const UserName = user.name.split(" ")[0];
-                    return (
-                      <div key={user.id} className="text-center">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newSelected = values.selectedUsers.includes(user.id)
-                              ? values.selectedUsers.filter((id) => id !== user.id)
-                              : [...values.selectedUsers, user.id];
-                            setFieldValue("selectedUsers", newSelected);
-                            const amount = parseFloat(values.amount) || 0;
-                            const splits = newSelected.map((userId) => ({
-                              userId,
-                              amount: values.splitType === "EQUAL" && amount ? ((amount / newSelected.length) * 100) / 100 : "",
-                            }));
-                            setFieldValue("userSplits", splits);
-                          }}
-                          className={`flex items-center justify-center relative w-12 h-12 rounded-full ${
-                            values.selectedUsers.includes(user.id) ? "bg-blue-100 border-2 border-blue-200" : "bg-gray-100"
-                          }`}
-                        >
-                          <UserAvatar userImage={user.avatar} userName={user.name} />
-
-                          {values.selectedUsers.includes(user.id) && (
-                            <div className="absolute -top-1 -right-1 bg-blue-500 rounded-full p-0.5">
-                              <Check className="w-3 h-3 text-white" />
-                            </div>
-                          )}
-                        </button>
-                        <div className="text-xs mt-1 flex items-center gap-1">
-                          <div>{UserName}</div>
-                          {!user.is_available ? (
-                            <div
-                              data-tooltip-id="user-not-available-tooltip"
-                              data-tooltip-content={`${UserName} is currently unavailable. Click on the avatar to add them manually.`}
-                            >
-                              <CircleAlert color="red" size={12} />
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                {touched.selectedUsers && errors.selectedUsers && <div className="text-red-500 text-xs mt-1">{errors.selectedUsers}</div>}
-              </div>
-
-              {values.selectedUsers.length > 0 && (
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center">
-                    <label className="text-xs font-medium text-slate-600">Split Details</label>
-                    <span className="text-[10px] text-gray-500">
-                      Remaining:{" "}
-                      {values.splitType === "PERCENTAGE"
-                        ? (100 - values.userSplits.reduce((sum, split) => sum + Number(split.amount || 0), 0)).toFixed(2) + "%"
-                        : (Number(values.amount || 0) - values.userSplits.reduce((sum, split) => sum + Number(split.amount || 0), 0)).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {values.userSplits.map(({ userId }, index) => {
-                      const user = memberList.find((u) => u.id === userId);
-                      if (!user) return null;
-
-                      return (
-                        <div key={userId} className="flex items-center gap-3">
-                          <UserAvatar userImage={user.avatar} userName={user.name} />
-                          <span className="flex-1 text-xs">{user.name.split(" ")[0]}</span>
-                          <Field name={`userSplits.${index}.amount`}>
-                            {({ field }: any) => (
-                              <Input
-                                {...field}
-                                type="text"
-                                disabled={values.splitType === "EQUAL"}
-                                className="w-20 h-8 text-right text-xs"
-                                placeholder={values.splitType === "PERCENTAGE" ? "%" : "0"}
-                                value={
-                                  values.splitType === "EQUAL"
-                                    ? Number(values.userSplits[index].amount || 0).toFixed(2)
-                                    : values.userSplits[index].amount || ""
-                                }
-                              />
-                            )}
-                          </Field>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {typeof errors.userSplits === "string" && <div className="text-red-500 text-xs mt-1">{errors.userSplits}</div>}
-                </div>
-              )}
-              <ButtonComponent
-                type="submit"
-                text={selectedRow && !isClone ? "Edit Expense" : isClone ? "Clone Expense" : "Add Expense"}
-                isLoading={isLoading || editLoading}
-              />
-            </Form>
-          )}
-        </Formik>
+        {formBody}
       </div>
       <Tooltip id="user-not-available-tooltip" />
     </ModalComponent>

@@ -13,6 +13,7 @@ interface Message {
 
 interface ChatAssistantProps {
   groupId: string;
+  inStack?: boolean; // when true, button is inline inside a parent stack container
 }
 
 const TypewriterMessage = ({ text, isNew }: { text: string; isNew?: boolean }) => {
@@ -36,7 +37,7 @@ const TypewriterMessage = ({ text, isNew }: { text: string; isNew?: boolean }) =
   );
 };
 
-export default function ChatAssistant({ groupId }: ChatAssistantProps) {
+export default function ChatAssistant({ groupId, inStack = false }: ChatAssistantProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -85,9 +86,11 @@ export default function ChatAssistant({ groupId }: ChatAssistantProps) {
     <>
       {/* Floating Button */}
       <Button
-        className="fixed bottom-24 right-6 rounded-full w-14 h-14 shadow-lg bg-gradient-to-tr from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white p-0 flex items-center justify-center transform transition-transform hover:scale-110 active:scale-95 shadow-purple-500/20"
+        className={`${
+          inStack ? "" : "fixed bottom-24 right-6 "
+        }rounded-full w-14 h-14 shadow-lg bg-gradient-to-tr from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white p-0 flex items-center justify-center transform transition-transform hover:scale-110 active:scale-95 shadow-purple-500/20`}
         onClick={() => setIsOpen(!isOpen)}
-        style={{ zIndex: 40 }}
+        style={{ zIndex: inStack ? undefined : 40 }}
       >
         <Sparkles className="w-6 h-6 animate-pulse" />
       </Button>

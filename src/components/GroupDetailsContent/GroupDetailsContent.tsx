@@ -4,7 +4,7 @@ import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Badge } from "../../components/ui/badge";
 import styles from "./style.module.css";
-import { GroupDataType } from "../../utils/comman/CommanTypes";
+import { GroupDataType, MemberType } from "../../utils/comman/CommanTypes";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import CustomCountUp from "../CustomCountUp/CustomCountUp";
@@ -26,6 +26,7 @@ function GroupDetailsContent(
     handleGroupSettingModal: () => void;
     handleLogs: () => void;
     handleAnalysis: () => void;
+    membersList: MemberType;
   }
 ) {
   const GroupTypeList = useSelector((state: RootState) => state.data.groupTypeList);
@@ -163,7 +164,7 @@ function GroupDetailsContent(
       {data.is_you_admin ? (
         <div className="flex items-center gap-2">
           <Users2 className="h-5 w-5 text-blue-500" />
-          <span>{data.members.length} members</span>
+          <span>{data.membersList.length} members</span>
           <Badge variant="secondary" className="ml-auto bg-yellow-100 text-yellow-800 border-yellow-200">
             You&apos;re admin
           </Badge>
@@ -182,7 +183,7 @@ function GroupDetailsContent(
       <div className="space-y-4">
         <h3 className="font-semibold">Members</h3>
         <div className={`${styles.membersCon} space-y-3`}>
-          {data.members.map((member, index) => (
+          {data.membersList.map((member, index) => (
             <div key={member.name} className="flex items-center gap-3">
               <Avatar>
                 <AvatarImage src={member.avatar} />

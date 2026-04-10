@@ -1,19 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Card, CardContent, CardHeader } from "../../components/ui/card";
 
 import styles from "./style.module.css";
+
 import { Button } from "../../components/ui/button";
 import AddExpenseModal from "../../components/AddExpense/AddExpense";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
 import { useLocation } from "react-router-dom";
 import GroupDetailsContent from "../../components/GroupDetailsContent/GroupDetailsContent";
-import { Plus, MessageSquare } from "lucide-react";
-import { ExpenseType, GroupDataType, GroupPairsData } from "../../utils/comman/CommanTypes";
+import { LayoutDashboard, Users, TrendingUp, PlusCircle, MessageSquare } from "lucide-react";
+import { ExpenseType, GroupDataType, GroupPairsData, MemberType } from "../../utils/comman/CommanTypes";
 import ExpenseCard from "../../components/ExpenseCard/ExpenseCard";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -27,13 +26,13 @@ import GroupLogs from "../../components/GroupLogs/GroupLogs";
 import GroupSpendAnalysis from "../../components/GroupSpendAnalysis/GroupSpendAnalysis";
 import SuccessModal from "../../components/SuccessModal/SuccessModal";
 import AddMemberModal from "../../components/AddMemberModal/AddMemberModal";
-import CustomAccordion from "../../components/CustomAccordian/CustomAccordian";
 import GroupSettingModal from "../../components/GroupSettingModal/GroupSettingModal";
-import ModalComponent from "../../components/ModalComponent/ModalComponent";
 import ChatModule from "../../components/ChatModule/ChatModule";
 import ShareExpenseModal from "../../components/ChatModule/ShareExpenseModal";
 import BudgetSetter from "../../components/BudgetSetter/BudgetSetter";
 import ChatAssistant from "../../components/ChatBotAssistant/ChatAssistant";
+
+type TabId = "timeline" | "details" | "addExpense" | "summary" | "chat";
 
 export default function GroupDetails() {
   const location = useLocation();
@@ -41,6 +40,10 @@ export default function GroupDetails() {
   const user = useSelector((state: RootState) => state.user);
   const expenseRefs = useRef<(HTMLDivElement | null)[]>([]);
   const socketRef = useRef<Socket | null>(null);
+
+  const [activeTab, setActiveTab] = useState<TabId>("timeline");
+  // Track which tabs have been visited to lazy-load APIs
+  const [visitedTabs, setVisitedTabs] = useState<Set<TabId>>(new Set<TabId>(["timeline"]));
 
   const {
     fetchData: fetchGroupDetails,
@@ -56,7 +59,10 @@ export default function GroupDetails() {
   const { fetchData: deleteExpense, response: deleteExpRes, isLoading: deleteExpLoading } = useApiFetch("");
   const { fetchData: fetchUnreadStatus, response: unreadRes } = useApiFetch(CONSTANTS.API_ROUTES.UNREAD_STATUS + "/" + GroupId);
 
+  const { fetchData: fetchGroupMembers, response: membersRes } = useApiFetch(CONSTANTS.API_ROUTES.GROUP_MEMBERS + "/" + GroupId);
+
   const [groupData, setGroupData] = useState<GroupDataType | null>(null);
+  const [groupMembers, setGroupMembers] = useState<MemberType>([]);
   const [expenseList, setExpenseList] = useState<ExpenseType[]>([]);
   const [tempExpenseList, setTempExpenseList] = useState<ExpenseType[]>([]);
   const [pairsData, setPairsData] = useState<GroupPairsData>({
@@ -69,15 +75,18 @@ export default function GroupDetails() {
   const [logModal, setLogModal] = useState<boolean>(false);
   const [spendAnalysisModal, setSpendAnalysisModal] = useState<boolean>(false);
   const [successModal, setSuccessModal] = useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<string>("-1");
   const [addMemberModal, setAddMemberModal] = useState<boolean>(false);
   const [groupSettingModal, setGroupSettingModal] = useState<boolean>(false);
-  const [chatModal, setChatModal] = useState<boolean>(false);
   const [isClone, setIsClone] = useState(false);
   const [isShareModal, setShareModal] = useState<boolean>(false);
   const [sharingExpense, setSharingExpense] = useState<ExpenseType | null>(null);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [isFetchingMore, setIsFetchingMore] = useState<boolean>(false);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState<boolean>(false);
+
+  // Chat is now a tab — track if it's active to clear unread
+  const isChatTabActiveRef = useRef<boolean>(false);
+
   const loadMoreExpenses = useCallback(() => {
     if (expenseListLoading || isFetchingMore || !hasMore || expenseList.length === 0) return;
     const lastId = expenseList[expenseList.length - 1].expense_id;
@@ -100,16 +109,29 @@ export default function GroupDetails() {
     [expenseListLoading, isFetchingMore, hasMore, loadMoreExpenses]
   );
 
-  const [hasUnreadMessages, setHasUnreadMessages] = useState<boolean>(false);
-  const isChatOpenRef = useRef<boolean>(false);
+  // ── Tab switching with lazy loading ──────────────────────────────────────
+  const handleTabChange = (tab: TabId) => {
+    setActiveTab(tab);
 
-  const groupMemberOptionsList = [
-    { value: "-1", label: "All" },
-    ...(groupData?.members?.map((item) => ({
-      label: item.name,
-      value: item.id,
-    })) || []),
-  ];
+    // When chat tab opened, clear unread indicator
+    if (tab === "chat") {
+      isChatTabActiveRef.current = true;
+      setHasUnreadMessages(false);
+    } else {
+      isChatTabActiveRef.current = false;
+    }
+
+    if (!visitedTabs.has(tab)) {
+      setVisitedTabs((prev) => new Set<TabId>(Array.from(prev).concat(tab)));
+      // Trigger API fetch on first visit
+      if (tab === "details") {
+        fetchGroupDetails();
+      } else if (tab === "summary") {
+        fetchMyPairs();
+      }
+    }
+  };
+
   const handleExpModal = () => {
     if (isAddExpModal && selectedRow) {
       setSelectedRow(null);
@@ -144,15 +166,6 @@ export default function GroupDetails() {
     setSpendAnalysisModal(!spendAnalysisModal);
   };
 
-  const handleChatModal = () => {
-    const nextState = !chatModal;
-    setChatModal(nextState);
-    isChatOpenRef.current = nextState;
-    if (nextState) {
-      setHasUnreadMessages(false);
-    }
-  };
-
   const handleShareInChat = (expense: ExpenseType) => {
     setSharingExpense(expense);
     setShareModal(true);
@@ -177,12 +190,6 @@ export default function GroupDetails() {
     setSharingExpense(null);
   };
 
-  useEffect(() => {
-    if (unreadRes?.success === 1) {
-      setHasUnreadMessages(unreadRes.hasUnread);
-    }
-  }, [unreadRes]);
-
   const handleScrollToExpense = (id: any) => {
     const element = expenseRefs.current[id];
     if (element) {
@@ -190,11 +197,9 @@ export default function GroupDetails() {
     }
   };
 
+  // Fetch members first, which then triggers expenses in a separate useEffect
   useEffect(() => {
-    fetchGroupDetails();
-    fetchAllExpenses();
-    fetchMyPairs();
-
+    fetchGroupMembers();
     fetchUnreadStatus();
 
     const socket = io(ENVConfig.baseURL, { withCredentials: true });
@@ -202,8 +207,8 @@ export default function GroupDetails() {
     socket.emit("join_group", GroupId);
 
     socket.on("receive_message", (message) => {
-      // If modal is closed AND not me, show unread indicator
-      if (!isChatOpenRef.current && String(message.user_id) !== String(user.id)) {
+      // Only show unread indicator when chat tab is NOT active
+      if (!isChatTabActiveRef.current && String(message.user_id) !== String(user.id)) {
         setHasUnreadMessages(true);
       }
     });
@@ -214,29 +219,38 @@ export default function GroupDetails() {
   }, [GroupId]);
 
   useEffect(() => {
+    if (unreadRes?.success === 1) {
+      setHasUnreadMessages(unreadRes.hasUnread);
+    }
+  }, [unreadRes]);
+
+  useEffect(() => {
     if (groupRes?.success == 1) {
       setGroupData(groupRes.data);
     }
   }, [groupRes]);
 
   useEffect(() => {
+    if (membersRes?.success === 1) {
+      setGroupMembers(membersRes.data);
+      if (expenseList.length === 0 && !isFetchingMore) {
+        fetchAllExpenses();
+      }
+    }
+  }, [membersRes]);
+
+  useEffect(() => {
     if (expenseRes?.success === 1) {
       if (isFetchingMore) {
         setExpenseList((prev) => [...prev, ...expenseRes.data]);
-        setTempExpenseList((prev) => {
-          const newList = [...prev, ...expenseRes.data];
-          if (selectedUser === "-1") return newList;
-          return newList.filter((expense) => expense.paid_by == selectedUser);
-        });
+        setTempExpenseList((prev) => [...prev, ...expenseRes.data]);
         if (expenseRes.data.length < 10) {
           setHasMore(false);
         }
         setIsFetchingMore(false);
       } else {
         setExpenseList(expenseRes.data);
-        setTempExpenseList(
-          selectedUser === "-1" ? expenseRes.data : expenseRes.data.filter((expense: ExpenseType) => expense.paid_by == selectedUser)
-        );
+        setTempExpenseList(expenseRes.data);
         if (expenseRes.data.length < 10) {
           setHasMore(false);
         } else {
@@ -268,152 +282,198 @@ export default function GroupDetails() {
     }
   }, [deleteExpRes]);
 
-  useEffect(() => {
-    if (selectedUser == "-1") {
-      setTempExpenseList(expenseList);
-    } else {
-      setTempExpenseList(expenseList.filter((expense) => expense.paid_by == selectedUser));
-    }
-  }, [selectedUser]);
+  // Nav tab definitions (built here so hasUnreadMessages is in scope)
+  const NAV_TABS: { id: TabId; label: string; icon: React.ReactNode; isAdd?: boolean }[] = [
+    { id: "timeline", label: "Timeline", icon: <TrendingUp size={20} /> },
+    { id: "details", label: "Details", icon: <LayoutDashboard size={20} /> },
+    { id: "addExpense", label: "Add", icon: <PlusCircle size={28} />, isAdd: true },
+    { id: "summary", label: "Summary", icon: <Users size={20} /> },
+    {
+      id: "chat",
+      label: "Chat",
+      icon: (
+        <span className={styles.chatIconWrap}>
+          <MessageSquare size={20} />
+          {hasUnreadMessages && <span className={styles.unreadDot} />}
+        </span>
+      ),
+    },
+  ];
 
   return (
-    <div className={styles.container}>
-      <div className={styles.detailsCon}>
-        <Card className="bg-white p-0 h-full">
-          <CardHeader className={styles.cardHeader}>
-            <CustomAccordion header="Group Details" padding="1rem">
-              {groupDetailsLoading ? (
-                <CircularLoader />
-              ) : groupData ? (
-                <GroupDetailsContent
-                  {...groupData}
-                  GroupId={GroupId}
-                  setGroupData={setGroupData}
-                  handleAddMemModal={handleAddMemModal}
-                  handleGroupSettingModal={handleGroupSettingModal}
-                  handleLogs={handleLogModal}
-                  handleAnalysis={handleSpendAnalysisModal}
-                />
-              ) : null}
-            </CustomAccordion>
-          </CardHeader>
-        </Card>
-      </div>
-      <div className={styles.pairsCon}>
-        <Card className="bg-white p-0 h-full">
-          <CardHeader className={styles.cardHeader}>
-            <CustomAccordion header="Your Expense Summary" padding="1rem">
-              {pairsLoading ? (
-                <CircularLoader />
-              ) : groupData ? (
-                <GroupPairs isSettled={groupData.is_settled} pairsData={pairsData} GroupId={GroupId} groupData={groupData} />
-              ) : null}
-            </CustomAccordion>
-          </CardHeader>
-        </Card>
-      </div>
-
-      <div className={styles.expCon}>
-        <Card className="bg-white h-full">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Expenses Timeline</CardTitle>
-            <div className="flex items-center gap-2">
-              <div className={styles.selectWrapper}>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-8 gap-1 text-xs font-medium pr-2">
-                      {groupMemberOptionsList.find((opt) => opt.value === selectedUser)?.label || "All"}
-                      <ChevronDown className="h-3 w-3 text-gray-500" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-[150px] bg-white">
-                    {groupMemberOptionsList.map((option) => (
-                      <DropdownMenuItem
-                        key={option.value}
-                        onClick={() => setSelectedUser(option.value)}
-                        className={`text-xs cursor-pointer ${selectedUser === option.value ? "bg-gray-100 font-semibold" : ""}`}
-                      >
-                        {option.label}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              <div className="flex items-center gap-2 relative ml-2">
-                {hasUnreadMessages && (
-                  <div className={styles.unreadIndicator}>
-                    <span className={styles.unreadText}>New messages</span>
-                    <div className={styles.unreadBlinkBorder}></div>
+    <div className={styles.pageWrapper}>
+      {/* ── Tab Content Area ────────────────────────────────────────────── */}
+      <div className={styles.contentArea}>
+        {/* TIMELINE TAB — no header, no filter */}
+        <div className={`${styles.tabPane} ${activeTab === "timeline" ? styles.tabPaneActive : ""}`}>
+          <Card className="bg-white h-full">
+            {expenseListLoading && !isFetchingMore ? (
+              <CircularLoader />
+            ) : (
+              <CardContent className={styles.expBox}>
+                {tempExpenseList.map((expense, index) => (
+                  <ExpenseCard
+                    key={expense.expense_id}
+                    {...expense}
+                    allMembersList={groupMembers}
+                    index={index}
+                    totalItemsCount={expenseList.length}
+                    setAddExpModal={() => {
+                      handleExpModal();
+                      setSelectedRow(expense);
+                      setIsClone(false);
+                    }}
+                    setDeleteModal={() => {
+                      handleDeleteModal();
+                      setSelectedRow(expense);
+                    }}
+                    ref={(el) => {
+                      expenseRefs.current[expense.expense_id] = el;
+                    }}
+                    isSettled={groupData?.is_settled ?? false}
+                    onCloneClick={() => {
+                      handleExpModal();
+                      setSelectedRow(expense);
+                      setIsClone(true);
+                    }}
+                    onShareClick={() => handleShareInChat(expense)}
+                  />
+                ))}
+                <div ref={lastExpenseElementRef} style={{ height: "10px" }} />
+                {isFetchingMore && (
+                  <div className="py-4">
+                    <CircularLoader />
                   </div>
                 )}
-                <MessageSquare onClick={handleChatModal} size={20} className="cursor-pointer text-blue-600 hover:text-blue-700 transition-colors" />
-              </div>
-            </div>
-          </CardHeader>
-          {expenseListLoading && !isFetchingMore ? (
-            <CircularLoader />
-          ) : (
-            <CardContent className={styles.expBox}>
-              {/* <ScrollArea className="h-[400px] lg:h-[400px]"> */}
-              {tempExpenseList.map((expense, index) => (
-                <ExpenseCard
-                  key={expense.expense_id}
-                  {...expense}
-                  allMembersList={groupData?.members ?? []}
-                  index={index}
-                  totalItemsCount={expenseList.length}
-                  setAddExpModal={() => {
-                    handleExpModal();
-                    setSelectedRow(expense);
-                    setIsClone(false);
-                  }}
-                  setDeleteModal={() => {
-                    handleDeleteModal();
-                    setSelectedRow(expense);
-                  }}
-                  ref={(el) => {
-                    expenseRefs.current[expense.expense_id] = el;
-                  }}
-                  isSettled={groupData?.is_settled ?? false}
-                  onCloneClick={() => {
-                    handleExpModal();
-                    setSelectedRow(expense);
-                    setIsClone(true);
-                  }}
-                  onShareClick={() => handleShareInChat(expense)}
-                />
-              ))}
-              <div ref={lastExpenseElementRef} style={{ height: "10px" }} />
-              {isFetchingMore && (
-                <div className="py-4">
+              </CardContent>
+            )}
+          </Card>
+        </div>
+
+        {/* GROUP DETAILS TAB */}
+        <div className={`${styles.tabPane} ${activeTab === "details" ? styles.tabPaneActive : ""}`}>
+          <Card className="bg-white h-full overflow-auto">
+            <CardHeader className={styles.cardHeader}>
+              {visitedTabs.has("details") ? (
+                groupDetailsLoading ? (
                   <CircularLoader />
-                </div>
-              )}
-              {/* </ScrollArea> */}
-            </CardContent>
+                ) : groupData ? (
+                  <GroupDetailsContent
+                    {...groupData}
+                    membersList={groupMembers}
+                    GroupId={GroupId}
+                    setGroupData={setGroupData}
+                    handleAddMemModal={handleAddMemModal}
+                    handleGroupSettingModal={handleGroupSettingModal}
+                    handleLogs={handleLogModal}
+                    handleAnalysis={handleSpendAnalysisModal}
+                  />
+                ) : null
+              ) : null}
+            </CardHeader>
+          </Card>
+        </div>
+
+        {/* ADD EXPENSE TAB — inline form */}
+        <div className={`${styles.tabPane} ${activeTab === "addExpense" ? styles.tabPaneActive : ""}`}>
+          {!groupData?.is_settled ? (
+            <AddExpenseModal
+              isOpen={true}
+              setIsOpen={() => handleTabChange("timeline")}
+              groupId={GroupId}
+              memberList={groupMembers}
+              setExpenseList={setTempExpenseList}
+              selectedRow={null}
+              callback={() => {
+                fetchMyPairs();
+                fetchGroupDetails();
+                setSuccessModal(true);
+                handleTabChange("timeline");
+              }}
+              isClone={false}
+              inPage
+            />
+          ) : (
+            <div className={styles.emptySettings}>
+              <p className="text-sm text-gray-400">This group is settled — no new expenses can be added.</p>
+            </div>
           )}
-        </Card>
+        </div>
+
+        {/* EXPENSE SUMMARY TAB */}
+        <div className={`${styles.tabPane} ${activeTab === "summary" ? styles.tabPaneActive : ""}`}>
+          <Card className="bg-white h-full overflow-auto">
+            <CardHeader className={styles.cardHeader}>
+              {visitedTabs.has("summary") ? (
+                pairsLoading ? (
+                  <CircularLoader />
+                ) : groupData ? (
+                  <GroupPairs
+                    isSettled={groupData.is_settled}
+                    pairsData={pairsData}
+                    GroupId={GroupId}
+                    groupData={groupData}
+                    groupMembers={groupMembers}
+                  />
+                ) : (
+                  <div className={styles.summaryNoGroup}>
+                    <p>
+                      Please visit <strong>Group Details</strong> first to load group data.
+                    </p>
+                    <Button size="sm" onClick={() => handleTabChange("details")} className={styles.visitBtn}>
+                      Go to Group Details
+                    </Button>
+                  </div>
+                )
+              ) : null}
+            </CardHeader>
+          </Card>
+        </div>
+
+        {/* CHAT TAB — inline page, not a modal */}
+        <div className={`${styles.tabPane} ${styles.chatTabPane} ${activeTab === "chat" ? styles.tabPaneActive : ""}`}>
+          {/* Always mount ChatModule once chat tab is first visited so socket stays alive */}
+          {visitedTabs.has("chat") && <ChatModule groupId={GroupId} />}
+        </div>
       </div>
 
-      {!groupData?.is_settled ? (
-        <>
-          <Button
-            className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg bg-black text-white z-50 hover:scale-105 transition-transform"
-            onClick={handleExpModal}
-          >
-            <Plus className="w-6 h-6" />
-          </Button>
-          <BudgetSetter groupId={GroupId} onBudgetSet={() => fetchGroupDetails()} />
-          <ChatAssistant groupId={GroupId} />
-        </>
-      ) : null}
+      {/* ── Floating / Mobile Bottom Nav ────────────────────────────────── */}
+      <nav className={styles.bottomNav}>
+        <div className={styles.navInner}>
+          {NAV_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              className={`${tab.isAdd ? styles.navItemAdd : styles.navItem} ${
+                activeTab === tab.id && !tab.isAdd ? styles.navItemActive : ""
+              } ${activeTab === tab.id && tab.isAdd ? styles.navItemAddActive : ""}`}
+              onClick={() => handleTabChange(tab.id)}
+              aria-label={tab.label}
+            >
+              <span className={tab.isAdd ? styles.navAddCircle : styles.navIcon}>{tab.icon}</span>
+              {!tab.isAdd && <span className={styles.navLabel}>{tab.label}</span>}
+              {activeTab === tab.id && !tab.isAdd && <span className={styles.navActivePill} />}
+            </button>
+          ))}
+        </div>
+      </nav>
 
+      {/* ── FAB Stack — timeline tab only (Budget + ChatBot) ─────────── */}
+      {activeTab === "timeline" && !groupData?.is_settled && (
+        <div className={styles.fabStack}>
+          {/* Budget — top */}
+          <BudgetSetter groupId={GroupId} onBudgetSet={() => fetchGroupDetails()} inStack />
+          {/* ChatBot — bottom */}
+          <ChatAssistant groupId={GroupId} inStack />
+        </div>
+      )}
+
+      {/* ── Modals ──────────────────────────────────────────────────────── */}
       {isAddExpModal ? (
         <AddExpenseModal
           isOpen={isAddExpModal}
           setIsOpen={handleExpModal}
           groupId={GroupId}
-          memberList={groupData?.members ?? []}
+          memberList={groupMembers}
           setExpenseList={setTempExpenseList}
           selectedRow={selectedRow}
           callback={() => {
@@ -435,12 +495,7 @@ export default function GroupDetails() {
         <GroupLogs groupId={GroupId} isOpen={logModal} setIsOpen={handleLogModal} onExpenseClick={(id) => handleScrollToExpense(id)} />
       ) : null}
       {spendAnalysisModal ? (
-        <GroupSpendAnalysis
-          groupId={GroupId}
-          isOpen={spendAnalysisModal}
-          setIsOpen={handleSpendAnalysisModal}
-          groupMembers={groupData?.members ?? []}
-        />
+        <GroupSpendAnalysis groupId={GroupId} isOpen={spendAnalysisModal} setIsOpen={handleSpendAnalysisModal} groupMembers={groupMembers} />
       ) : null}
       {successModal ? <SuccessModal open={successModal} setOpen={setSuccessModal} /> : null}
       {addMemberModal ? (
@@ -459,15 +514,10 @@ export default function GroupDetails() {
           isOpen={groupSettingModal}
           setIsOpen={setGroupSettingModal}
           data={groupData}
+          membersList={groupMembers}
           groupId={GroupId}
           callbackFunc={() => fetchGroupDetails()}
         />
-      ) : null}
-
-      {chatModal ? (
-        <ModalComponent isOpen={chatModal} setIsOpen={handleChatModal} customStyle={{ padding: 0, width: "auto" }} hideCloseBtn={true}>
-          <ChatModule groupId={GroupId} onClose={() => setChatModal(false)} />
-        </ModalComponent>
       ) : null}
 
       <ShareExpenseModal isOpen={isShareModal} setIsOpen={setShareModal} expense={sharingExpense} onShare={onConfirmShare} />

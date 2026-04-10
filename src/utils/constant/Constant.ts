@@ -20,6 +20,7 @@ const CONSTANTS = {
     ALL_GROUPS: "/group",
     GROUP_TYPE_LIST: "/group/groupTypeList",
     GROUP_DETAILS: "/group/single",
+    GROUP_MEMBERS: "/group/members",
     ALL_EXPENSES: "/expense/getAllExpenses",
     ADD_EXPENSE: "/expense/addExpense",
     EDIT_EXPENSE: "/expense/editExpense",

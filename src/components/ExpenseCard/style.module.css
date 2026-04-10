@@ -22,7 +22,7 @@
 /* ─── Coloured header ────────────────────────────────── */
 .cardHeader {
   position: relative;
-  padding: 16px 14px 18px;
+  padding: 12px 14px 14px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
