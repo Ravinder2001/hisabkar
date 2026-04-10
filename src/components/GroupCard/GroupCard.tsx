@@ -49,30 +49,51 @@ export function propsCard(
   }, [visibilityRes]);
 
   return (
-    <Card className="w-[100%] max-w-sm overflow-hidden transition-all duration-300 ease-in-out transform hover:shadow-xl bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 cursor-pointer">
+    <Card
+      className="w-[100%] max-w-sm overflow-hidden transition-all duration-300 ease-in-out transform hover:shadow-xl bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 cursor-pointer"
+      onClick={() => navigate(CONSTANTS.PROJECT_ROUTES.GROUP + `/${props.group_id}`)}
+    >
       <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-400 to-blue-500 rounded-bl-full opacity-20"></div>
       <CardHeader className="relative z-10 flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-2xl font-bold text-purple-700 dark:text-purple-300">{props.group_name}</CardTitle>
         <div className="flex items-center space-x-2">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
               <Button variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Open menu</span>
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white">
-              <DropdownMenuItem onClick={props.handleLinkShare} className="text-black-600 dark:text-black-400 bg-white cursor-pointer">
+            <DropdownMenuContent align="end" className="bg-white" onClick={(e) => e.stopPropagation()}>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props.handleLinkShare();
+                }}
+                className="text-black-600 dark:text-black-400 bg-white cursor-pointer"
+              >
                 <Share className="mr-2 h-4 w-4" />
                 <span>Share this group</span>
               </DropdownMenuItem>
               {props.is_you_admin ? (
-                <DropdownMenuItem onClick={handleConfirmModal} className="text-red-600 dark:text-red-400 bg-white cursor-pointer">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleConfirmModal();
+                  }}
+                  className="text-red-600 dark:text-red-400 bg-white cursor-pointer"
+                >
                   <Trash2 className="mr-2 h-4 w-4" />
                   <span>Delete this group</span>
                 </DropdownMenuItem>
               ) : (
-                <DropdownMenuItem onClick={handleConfirmModal} className="text-red-600 dark:text-red-400 bg-white cursor-pointer">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleConfirmModal();
+                  }}
+                  className="text-red-600 dark:text-red-400 bg-white cursor-pointer"
+                >
                   <Trash2 className="mr-2 h-4 w-4" />
                   <span>Leave this group</span>
                 </DropdownMenuItem>
@@ -81,7 +102,7 @@ export function propsCard(
           </DropdownMenu>
         </div>
       </CardHeader>
-      <CardContent onClick={() => navigate(CONSTANTS.PROJECT_ROUTES.GROUP + `/${props.group_id}`)}>
+      <CardContent>
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-center space-x-2">
             <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full">

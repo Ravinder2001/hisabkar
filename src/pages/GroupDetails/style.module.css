@@ -15,10 +15,9 @@
 .pageWrapper {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  height: 100dvh; /* Use dynamic viewport height for mobile */
-  position: relative;
+  height: 100%; /* fills the space left by the top navbar */
   background: #f4f3ff;
+  border-radius: var(--borderRadius);
   overflow: hidden;
 }
 
@@ -27,6 +26,7 @@
   flex: 1;
   position: relative;
   overflow: hidden;
+  min-height: 0; /* critical: allows flex child to shrink below its content size */
 }
 
 /* ── Tab panes ─────────────────────────────────────────────────────────── */
@@ -35,8 +35,7 @@
   top: 0;
   left: 0;
   right: 0;
-  /* Stop exactly where the bottom nav starts, with a tiny buffer for safety */
-  bottom: calc(var(--nav-h-mobile) + env(safe-area-inset-bottom) + 2px);
+  bottom: 0; /* fills exactly the contentArea height, no more */
   opacity: 0;
   pointer-events: none;
   transform: translateY(12px);
@@ -64,10 +63,7 @@
 /* ── Chat tab pane: raw, no Card — ChatModule flex column fills it ──────── */
 .chatTabPane {
   background: transparent;
-  /* No overflow:auto here — ChatModule manages its own internal scroll */
   overflow: hidden;
-  /* Ensure the input box at the bottom of ChatModule is fully clear of the bar */
-  padding-bottom: 4px;
 }
 
 .chatTabPane > * {
@@ -185,15 +181,16 @@
    BOTTOM NAVIGATION
 ══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Mobile full-width bar ────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════
+   BOTTOM NAVIGATION — part of the flex column (NOT fixed on mobile)
+   This way contentArea gets the correct remaining height automatically.
+══════════════════════════════════════════════════════════════════════════ */
+
 .bottomNav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  flex-shrink: 0; /* Never compress, never overlap */
   z-index: 100;
-  padding: 0;
-  pointer-events: none; /* inner div handles events */
+  background: #fff;
+  border-radius: 9999px;
 }
 
 .navInner {
@@ -204,7 +201,6 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid rgba(108, 99, 255, 0.15);
-  box-shadow: 0 -4px 30px rgba(108, 99, 255, 0.12);
   box-shadow: 0 -4px 30px rgba(108, 99, 255, 0.12);
   height: calc(var(--nav-h-mobile) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
@@ -377,11 +373,12 @@
 /* ── Desktop floating pill ───────────────────────────────────────────── */
 @media (min-width: 768px) {
   .tabPane {
-    /* Desktop nav floats at bottom:20px, so clear that height + gap */
+    /* Desktop pill floats at bottom:20px + its own height + gap */
     bottom: calc(var(--nav-h-desktop) + 28px);
   }
 
   .bottomNav {
+    position: fixed; /* Floating pill only on desktop */
     left: 50%;
     right: auto;
     transform: translateX(-50%);
@@ -389,7 +386,7 @@
     width: auto;
     min-width: 520px;
     max-width: 660px;
-    padding: 0 0;
+    padding: 0;
   }
 
   .navInner {

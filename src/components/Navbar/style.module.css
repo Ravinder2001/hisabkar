@@ -3,8 +3,7 @@
   background-color: white;
   z-index: 50;
   border-radius: var(--borderRadius);
-  position: sticky;
-  top: 0;
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.08); /* subtle themed shadow */
   padding-top: env(safe-area-inset-top); /* Added for iPhone safe area */
 }
 @media (max-width: 768px) {

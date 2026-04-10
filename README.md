@@ -1,6 +1,12 @@
-# Hisabkar - Expense Splitting PWA
+# Hisabkar - The Ultimate Group Expense Co-Pilot
 
-Hisabkar is a **Progressive Web Application (PWA)** designed for seamless group expense management. Built with **React TypeScript** on the frontend, **Node.js** on the backend, and **PostgreSQL** as the database, it offers a fast, mobile-friendly, and intuitive interface for managing shared expenses.
+**Hisabkar** is an industry-grade **Progressive Web Application (PWA)** that transforms complex group finances into a seamless, social experience. Built with a **High-Performance Tech Stack** (React, TypeScript, Node.js), it combines data-driven expense splitting with **Real-time Social Interaction** and **GenAI-powered Intelligence**.
+
+### Why Hisabkar?
+- **Premium Experience**: A state-of-the-art UI featuring floating card architectures, glassmorphism, and smooth micro-animations.
+- **AI Financial Sensei**: An integrated **Gemini 2.0** powered advisor that provides deep analytical insights into your spending habits.
+- **Zero Friction**: PWA technology means you get a native app experience directly in your browser—no app store downloads required.
+- **Social by Design**: Built-in real-time chat so your group stays connected while staying on budget.
 
 ## Features
 
