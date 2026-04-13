@@ -29,12 +29,16 @@
     padding: 15px;
   }
   .pairsBox {
-    max-height: 400px;
+    max-height: none;
   }
 }
 @media only screen and (max-width: 768px) {
   .container {
     height: auto;
-    overflow: hidden;
+    overflow: visible;
+  }
+  .pairsBox {
+    max-height: none;
+    overflow: visible;
   }
 }

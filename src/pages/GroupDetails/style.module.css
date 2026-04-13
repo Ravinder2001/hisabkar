@@ -42,7 +42,8 @@
   transition:
     opacity 0.28s ease,
     transform 0.28s ease;
-  overflow: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   max-width: 860px;
   margin: 0 auto;
 }
@@ -56,7 +57,8 @@
 /* ── Expense box inside timeline tab (no header = full height) ─────────── */
 .expBox {
   height: 100%;
-  overflow: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 12px !important;
 }
 
@@ -73,7 +75,8 @@
 
 .cardHeader {
   padding: 1rem;
-  height: 100%;
+  height: auto;
+  min-height: 100%;
 }
 
 .selectWrapper {

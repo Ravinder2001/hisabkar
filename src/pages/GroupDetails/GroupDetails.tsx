@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader } from "../../components/ui/card";
+import { Card, CardContent } from "../../components/ui/card";
 import styles from "./style.module.css";
 import AddExpenseModal from "../../components/AddExpense/AddExpense";
 import useApiFetch from "../../hooks/useAPIFetch";
@@ -83,7 +83,6 @@ export default function GroupDetails() {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [isFetchingMore, setIsFetchingMore] = useState<boolean>(false);
   const [hasUnreadMessages, setHasUnreadMessages] = useState<boolean>(false);
-  const [isTransitioning, setIsTransitioning] = useState<boolean>(true);
 
   // Chat is now a tab — track if it's active to clear unread
   const isChatTabActiveRef = useRef<boolean>(false);
@@ -220,9 +219,7 @@ export default function GroupDetails() {
     }
   };
 
-  // Reset expense list when moving to a different group to avoid showing stale data
   useEffect(() => {
-    setIsTransitioning(true);
     setExpenseList([]);
     setTempExpenseList([]);
     setHasMore(true);
@@ -272,7 +269,6 @@ export default function GroupDetails() {
 
   useEffect(() => {
     if (expenseRes?.success === 1) {
-      setIsTransitioning(false);
       if (isFetchingMore) {
         setExpenseList((prev) => [...prev, ...expenseRes.data]);
         setTempExpenseList((prev) => [...prev, ...expenseRes.data]);
@@ -283,14 +279,9 @@ export default function GroupDetails() {
       } else {
         setExpenseList(expenseRes.data);
         setTempExpenseList(expenseRes.data);
-        if (expenseRes.data.length < 10) {
-          setHasMore(false);
-        } else {
-          setHasMore(true);
-        }
+        setHasMore(expenseRes.data.length >= 10);
       }
     } else if (expenseRes?.success === 0) {
-      setIsTransitioning(false);
       setIsFetchingMore(false);
     }
   }, [expenseRes]);
@@ -316,22 +307,25 @@ export default function GroupDetails() {
   }, [deleteExpRes]);
 
   // Nav tab definitions (built here so hasUnreadMessages is in scope)
-  const NAV_TABS: { id: TabId; label: string; icon: React.ReactNode; isAdd?: boolean }[] = [
-    { id: "timeline", label: "Timeline", icon: <TrendingUp size={20} /> },
-    { id: "details", label: "Details", icon: <LayoutDashboard size={20} /> },
-    { id: "addExpense", label: "Add", icon: <PlusCircle size={28} />, isAdd: true },
-    { id: "summary", label: "Summary", icon: <Users size={20} /> },
-    {
-      id: "chat",
-      label: "Chat",
-      icon: (
-        <span className={styles.chatIconWrap}>
-          <MessageSquare size={20} />
-          {hasUnreadMessages && <span className={styles.unreadDot} />}
-        </span>
-      ),
-    },
-  ];
+  const NAV_TABS = React.useMemo<{ id: TabId; label: string; icon: React.ReactNode; isAdd?: boolean }[]>(
+    () => [
+      { id: "timeline", label: "Timeline", icon: <TrendingUp size={20} /> },
+      { id: "details", label: "Details", icon: <LayoutDashboard size={20} /> },
+      { id: "addExpense", label: "Add", icon: <PlusCircle size={28} />, isAdd: true },
+      { id: "summary", label: "Summary", icon: <Users size={20} /> },
+      {
+        id: "chat",
+        label: "Chat",
+        icon: (
+          <span className={styles.chatIconWrap}>
+            <MessageSquare size={20} />
+            {hasUnreadMessages && <span className={styles.unreadDot} />}
+          </span>
+        ),
+      },
+    ],
+    [hasUnreadMessages]
+  );
 
   return (
     <div className={styles.pageWrapper}>
@@ -340,7 +334,7 @@ export default function GroupDetails() {
         {/* TIMELINE TAB — no header, no filter */}
         <div className={`${styles.tabPane} ${activeTab === "timeline" ? styles.tabPaneActive : ""}`}>
           <Card className="bg-white h-full">
-            {(expenseListLoading && !isFetchingMore) || !expenseRes || isTransitioning ? (
+            {(expenseListLoading && !isFetchingMore) || !expenseRes ? (
               <CardContent className={styles.expBox}>
                 {[1, 2, 3].map((i) => (
                   <ExpenseSkeleton key={i} />
@@ -351,7 +345,7 @@ export default function GroupDetails() {
                 {tempExpenseList.length > 0 ? (
                   tempExpenseList.map((expense, index) => (
                     <ExpenseCard
-                      key={expense.expense_id}
+                      key={`${expense.expense_id}-${index}`}
                       {...expense}
                       allMembersList={groupMembers}
                       index={index}
@@ -365,7 +359,7 @@ export default function GroupDetails() {
                         handleDeleteModal();
                         setSelectedRow(expense);
                       }}
-                      ref={(el) => {
+                      ref={(el: any) => {
                         expenseRefs.current[expense.expense_id] = el;
                       }}
                       isSettled={groupData?.is_settled ?? false}
@@ -439,8 +433,8 @@ export default function GroupDetails() {
 
         {/* GROUP DETAILS TAB */}
         <div className={`${styles.tabPane} ${activeTab === "details" ? styles.tabPaneActive : ""}`}>
-          <Card className="bg-white h-full overflow-auto">
-            <CardHeader className={styles.cardHeader}>
+          <Card className="bg-white h-full">
+            <CardContent className={styles.expBox}>
               {visitedTabs.has("details") ? (
                 groupDetailsLoading ? (
                   <GroupDetailsSkeleton />
@@ -457,13 +451,13 @@ export default function GroupDetails() {
                   />
                 ) : null
               ) : null}
-            </CardHeader>
+            </CardContent>
           </Card>
         </div>
 
         {/* ADD EXPENSE TAB — inline form */}
         <div className={`${styles.tabPane} ${activeTab === "addExpense" ? styles.tabPaneActive : ""}`}>
-          {(groupDetailsLoading && !groupData) || isTransitioning ? (
+          {groupDetailsLoading && !groupData ? (
             <div className="flex w-full h-full pt-4">
               <GroupDetailsSkeleton />
             </div>
@@ -488,8 +482,8 @@ export default function GroupDetails() {
 
         {/* EXPENSE SUMMARY TAB */}
         <div className={`${styles.tabPane} ${activeTab === "summary" ? styles.tabPaneActive : ""}`}>
-          <Card className="bg-white h-full overflow-auto">
-            <CardHeader className={styles.cardHeader}>
+          <Card className="bg-white h-full">
+            <CardContent className={styles.expBox}>
               {visitedTabs.has("summary") ? (
                 pairsLoading || groupDetailsLoading ? (
                   <GroupDetailsSkeleton />
@@ -497,7 +491,7 @@ export default function GroupDetails() {
                   <GroupPairs isSettled={groupData?.is_settled ?? false} pairsData={pairsData} GroupId={GroupId} groupMembers={groupMembers} />
                 )
               ) : null}
-            </CardHeader>
+            </CardContent>
           </Card>
         </div>
 

@@ -1,5 +1,4 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
@@ -16,8 +15,9 @@ import CustomAlert from "../CustomAlert/CustomAlert";
 import useApiFetch from "../../hooks/useAPIFetch";
 import showToast from "../../utils/helpers/toastHelper";
 import Messages from "../../utils/constant/Messages";
+import { motion } from "framer-motion";
 
-export function propsCard(
+export function GroupCard(
   props: GroupType & {
     setGroupList: Dispatch<SetStateAction<GroupType[]>>;
     handleLinkShare: () => void;
@@ -49,19 +49,25 @@ export function propsCard(
   }, [visibilityRes]);
 
   return (
-    <Card
-      className="w-[100%] max-w-sm overflow-hidden transition-all duration-300 ease-in-out transform hover:shadow-xl bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 cursor-pointer"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.3 }}
+      className={styles.card}
       onClick={() => navigate(CONSTANTS.PROJECT_ROUTES.GROUP + `/${props.group_id}`)}
     >
-      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-400 to-blue-500 rounded-bl-full opacity-20"></div>
-      <CardHeader className="relative z-10 flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-2xl font-bold text-purple-700 dark:text-purple-300">{props.group_name}</CardTitle>
-        <div className="flex items-center space-x-2">
+      {/* Header with Pattern and Name */}
+      <div className={styles.header}>
+        <div className={styles.headerTop}>
+          <div className="flex flex-col gap-1">
+            <h3 className={styles.groupName}>{props.group_name}</h3>
+            {props.is_you_admin && <Badge className={styles.adminBadge}>Admin</Badge>}
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreVertical className="h-4 w-4" />
+              <Button variant="ghost" className="h-8 w-8 p-0 text-white/80 hover:bg-white/10 hover:text-white rounded-full">
+                <MoreVertical className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-white" onClick={(e) => e.stopPropagation()}>
@@ -70,89 +76,68 @@ export function propsCard(
                   e.stopPropagation();
                   props.handleLinkShare();
                 }}
-                className="text-black-600 dark:text-black-400 bg-white cursor-pointer"
+                className="cursor-pointer"
               >
                 <Share className="mr-2 h-4 w-4" />
-                <span>Share this group</span>
+                <span>Share Group</span>
               </DropdownMenuItem>
-              {props.is_you_admin ? (
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleConfirmModal();
-                  }}
-                  className="text-red-600 dark:text-red-400 bg-white cursor-pointer"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  <span>Delete this group</span>
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleConfirmModal();
-                  }}
-                  className="text-red-600 dark:text-red-400 bg-white cursor-pointer"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  <span>Leave this group</span>
-                </DropdownMenuItem>
-              )}
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleConfirmModal();
+                }}
+                className={`${props.is_you_admin ? "text-red-600" : "text-orange-600"} cursor-pointer`}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                <span>{props.is_you_admin ? "Delete Group" : "Leave Group"}</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex items-center space-x-2">
-            <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full">
-              <img src={groupType?.icon ?? ""} alt={groupType?.name} className="w-6 h-6 object-cover" />
-            </div>
-            <span className="text-sm font-medium text-purple-600 dark:text-purple-300">{groupType?.name}</span>
-          </div>
-          <div className="flex items-center space-x-2 justify-self-end">
-            <Users className="w-5 h-5 text-blue-500" />
-            <span className="text-sm font-medium text-blue-600 dark:text-blue-300">{props.total_members_count} members</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full">
-              <IndianRupee className="w-5 h-5 text-green-500" />
-            </div>
-            <span className="text-lg font-bold text-green-600 dark:text-green-300">
-              ₹<CustomCountUp count={props.total_amount} />
-            </span>
-          </div>
-          <div className="justify-self-end">
-            {props.is_you_admin && (
-              <Badge
-                variant="outline"
-                className="bg-yellow-100 text-yellow-700 border-yellow-300 dark:bg-yellow-900 dark:text-yellow-300 dark:border-yellow-700"
-              >
-                You&apos;re admin
-              </Badge>
-            )}
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter className="flex justify-between items-center bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900 p-4 mt-4">
-        <div className={styles.card_wrapper}>
-          <div className={styles.card_wrapper_acounts}>
-            {props.remaining_members > 0 ? <div className={styles.card_score}>{props.remaining_members}</div> : null}
+      </div>
 
-            {props.members.map((userImage, index) => (
-              <div key={index} className={styles.card_acounts}>
-                <UserAvatar userImage={userImage} />
-              </div>
-            ))}
+      {/* Body with Landscape and Stats */}
+      <div className={styles.body}>
+        <div className={styles.statsGrid}>
+          <div className={styles.statItem}>
+            <span className={styles.statLabel}>Category</span>
+            <div className={styles.statValue}>
+              <img src={groupType?.icon ?? ""} alt={groupType?.name} className={styles.typeIcon} />
+              <span>{groupType?.name}</span>
+            </div>
+          </div>
+          <div className={styles.statItem}>
+            <span className={styles.statLabel}>Members</span>
+            <div className={styles.statValue}>
+              <Users className="w-4 h-4 text-indigo-500" />
+              <span>{props.total_members_count} Joined</span>
+            </div>
+          </div>
+          <div className={`${styles.statItem} col-span-2 mt-2`}>
+            <span className={styles.statLabel}>Total Group Spending</span>
+            <div className={`${styles.statValue} ${styles.amount}`}>
+              <IndianRupee className="w-5 h-5 text-emerald-600" />
+              <span className="font-extrabold text-slate-900">
+                <CustomCountUp count={props.total_amount} />
+              </span>
+            </div>
           </div>
         </div>
-        <Badge
-          variant={props.is_settled ? "secondary" : "default"}
-          className={`bg-${props.is_settled ? "green-500" : "black"} text-white backdrop-blur-sm`}
-        >
-          {props.is_settled ? "Settled" : "Unsettled"}
-        </Badge>
-      </CardFooter>
+      </div>
+
+      {/* Footer with Member Pile and Status */}
+      <div className={styles.footer}>
+        <div className={styles.membersList}>
+          {props.members.slice(0, 3).map((userImage, index) => (
+            <div key={index} className={styles.memberAvatarWrap} style={{ zIndex: 3 - index }}>
+              <UserAvatar userImage={userImage} />
+            </div>
+          ))}
+          {props.remaining_members > 0 && <div className={styles.remainingMembers}>+{props.remaining_members}</div>}
+        </div>
+        <Badge className={props.is_settled ? styles.badgeSettled : styles.badgeUnsettled}>{props.is_settled ? "Settled" : "Unsettled"}</Badge>
+      </div>
+
       <CustomAlert
         isOpen={confirmationModal}
         onClose={handleConfirmModal}
@@ -160,8 +145,8 @@ export function propsCard(
         description={props.is_you_admin ? Messages.EXPENSE.DELETE_GROUP(props.group_name) : Messages.EXPENSE.LEAVE_GROUP(props.group_name)}
         isLoading={visibilityLoading}
       />
-    </Card>
+    </motion.div>
   );
 }
 
-export default propsCard;
+export default GroupCard;

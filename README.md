@@ -3,8 +3,9 @@
 **Hisabkar** is an industry-grade **Progressive Web Application (PWA)** that transforms complex group finances into a seamless, social experience. Built with a **High-Performance Tech Stack** (React, TypeScript, Node.js), it combines data-driven expense splitting with **Real-time Social Interaction** and **GenAI-powered Intelligence**.
 
 ### Why Hisabkar?
+
 - **Premium Experience**: A state-of-the-art UI featuring floating card architectures, glassmorphism, and smooth micro-animations.
-- **AI Financial Sensei**: An integrated **Gemini 2.0** powered advisor that provides deep analytical insights into your spending habits.
+- **AI Financial Sensei**: An integrated **AI-powered** advisor (via OpenRouter) that provides deep analytical insights into your spending habits.
 - **Zero Friction**: PWA technology means you get a native app experience directly in your browser—no app store downloads required.
 - **Social by Design**: Built-in real-time chat so your group stays connected while staying on budget.
 
@@ -13,7 +14,7 @@
 - **Google Authentication**: One-click Google Sign-In for quick access.
 - **Group Expense Management**: Create and manage expense groups effortlessly.
 - **Real-time Group Chat**: Discuss expenses and coordinate with your group members using the built-in real-time chat system.
-- **AI Chat Assistant (Gemini)**: Get smart financial insights and help with your expenses via the integrated AI chatbot.
+- **AI Chat Assistant (OpenRouter)**: Get smart financial insights and help with your expenses via the integrated AI chatbot.
 - **Budget Tracking**: Set and monitor group-specific budgets to keep your expenditures under control.
 - **Flexible Expense Splitting**: Choose from **equal, percentage-based, or custom splits**.
 - **Smart Settlement System**: Optimized calculations reduce unnecessary transactions.
@@ -91,7 +92,7 @@
   - Includes message history and unread message indicators.
 - **Budget & AI Tools**:
   - **Budget Tracker**: Set group spending limits and track progress visually.
-  - **AI Assistant**: A floating Gemini-powered assistant for financial analysis and group queries.
+  - **AI Assistant**: A floating AI-powered assistant for financial analysis and group queries.
 - **Expense Summary**:
   - Shows simplified transactions to minimize settlement steps.
 - **Expense List**:
