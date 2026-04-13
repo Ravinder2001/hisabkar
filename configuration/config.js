@@ -39,8 +39,10 @@ const config = {
           CERT: fs.readFileSync(process.env.SSL_CERT),
         }
       : null,
-  GEMINI: {
-    API_KEY: process.env.GEMINI_API_KEY,
+  OPENROUTER: {
+    API_KEY: process.env.OPENROUTER_API_KEY,
+    BASE_URL: "https://openrouter.ai/api/v1",
+    MODELS: ["deepseek/deepseek-chat", "meta-llama/llama-3-70b-instruct", "mistralai/mixtral-8x7b-instruct"],
   },
   CHATBOT_DAILY_LIMIT: process.env.CHATBOT_DAILY_LIMIT || 5,
 };

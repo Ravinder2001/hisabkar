@@ -661,7 +661,7 @@ ORDER BY gl.created_at DESC;
       // Delete related expense members
       await client.query(
         `DELETE FROM tbl_expense_members 
- WHERE expense_id IN (SELECT expense_id FROM tbl_expenses WHERE group_id = ANY($1));`,
+        WHERE expense_id IN (SELECT expense_id FROM tbl_expenses WHERE group_id = ANY($1));`,
         [groupIds]
       );
 

@@ -189,7 +189,7 @@ module.exports = {
           COUNT(em.user_id) AS members_count,
           JSON_AGG(
             JSON_BUILD_OBJECT(
-              'id', em.user_id,  
+              'id', em.user_id,
               'amount', em.amount::FLOAT
             )
           ) AS members,
