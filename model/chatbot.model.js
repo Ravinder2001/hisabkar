@@ -126,7 +126,7 @@ const chatBotModel = {
 
   getPredictionDataForAi: async (groupId) => {
     try {
-      const query = `
+      const statsQuery = `
         SELECT 
           COALESCE(SUM(amount)::FLOAT, 0) as total_spent,
           MIN(created_at) as first_expense_date,
@@ -134,16 +134,27 @@ const chatBotModel = {
         FROM tbl_expenses
         WHERE group_id = $1 AND is_active = TRUE
       `;
-      const result = await client.query(query, [groupId]);
-      const data = result.rows[0];
+      const statsResult = await client.query(statsQuery, [groupId]);
+      const data = statsResult.rows[0];
 
-      // Also get the group creation date just in case no expenses exist
+      // Get the group creation date
       const groupQuery = `SELECT created_at FROM tbl_groups WHERE group_id = $1`;
       const groupResult = await client.query(groupQuery, [groupId]);
+
+      // Get detailed expense history for AI analysis (last 40 expenses)
+      const historyQuery = `
+        SELECT expense_name as name, amount::FLOAT, created_at as date
+        FROM tbl_expenses
+        WHERE group_id = $1 AND is_active = TRUE
+        ORDER BY created_at DESC
+        LIMIT 40
+      `;
+      const historyResult = await client.query(historyQuery, [groupId]);
 
       return {
         ...data,
         group_created_at: groupResult.rows[0]?.created_at,
+        expense_history: historyResult.rows,
       };
     } catch (error) {
       console.error("Error in getPredictionDataForAi:", error.message);
@@ -179,6 +190,37 @@ const chatBotModel = {
       return result.rows;
     } catch (error) {
       console.error("Error in getSpendingByCategory:", error.message);
+      throw error;
+    }
+  },
+  getGroupMembersForAi: async (groupId) => {
+    try {
+      const query = `
+        SELECT u.user_id as id, u.name
+        FROM tbl_group_members gm
+        JOIN tbl_users u ON gm.user_id = u.user_id
+        WHERE gm.group_id = $1 AND gm.is_active = TRUE
+      `;
+      const result = await client.query(query, [groupId]);
+      return result.rows;
+    } catch (error) {
+      console.error("Error in getGroupMembersForAi:", error.message);
+      throw error;
+    }
+  },
+  getDetailedUserExpensesForAi: async (groupId, userId) => {
+    try {
+      const query = `
+        SELECT expense_name as name, amount::FLOAT, created_at as date
+        FROM tbl_expenses
+        WHERE group_id = $1 AND paid_by = $2 AND is_active = TRUE
+        ORDER BY created_at DESC
+        LIMIT 20
+      `;
+      const result = await client.query(query, [groupId, userId]);
+      return result.rows;
+    } catch (error) {
+      console.error("Error in getDetailedUserExpensesForAi:", error.message);
       throw error;
     }
   },

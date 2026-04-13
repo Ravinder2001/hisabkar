@@ -39,13 +39,27 @@ const chatbotController = {
         {
           type: "function",
           function: {
-            name: "getMyPersonalSpending",
-            description: "Provides the total number of expenses and total amount the current user has paid for in this group.",
+            name: "getGroupMembers",
+            description: "Fetches the list of all members in the group (names and IDs). Use this to find who is who.",
             parameters: {
               type: "object",
               properties: {
-                groupId: { type: "string", description: "The ID of the group" },
-                userId: { type: "string", description: "The ID of the user" },
+                groupId: { type: "string" },
+              },
+              required: ["groupId"],
+            },
+          },
+        },
+        {
+          type: "function",
+          function: {
+            name: "getDetailedUserExpenses",
+            description: "Provides a detailed list of expenses (name, amount, date) paid by a specific user in this group.",
+            parameters: {
+              type: "object",
+              properties: {
+                groupId: { type: "string" },
+                userId: { type: "string", description: "The ID of the user to get expenses for." },
               },
               required: ["groupId", "userId"],
             },
@@ -54,7 +68,21 @@ const chatbotController = {
         {
           type: "function",
           function: {
-            name: "findExpensesByName",
+            name: "getMyPersonalSpendingSummary",
+            description: "Provides the total number of expenses and total amount YOU (the current user) have paid in this group.",
+            parameters: {
+              type: "object",
+              properties: {
+                groupId: { type: "string" },
+              },
+              required: ["groupId"],
+            },
+          },
+        },
+        {
+          type: "function",
+          function: {
+            name: "findExpensesByKeyword",
             description: "Searches for specific expenses in the group by name (e.g., 'Pizza', 'Rent').",
             parameters: {
               type: "object",
@@ -86,28 +114,13 @@ const chatbotController = {
           type: "function",
           function: {
             name: "predictMonthlySpending",
-            description: "Fetches historical data to predict what the total spending will be by the end of the month.",
+            description: "Fetches historical data including last 40 expenses (names, amounts, dates) to perform a detailed audit and predict future spending trends.",
             parameters: {
               type: "object",
               properties: {
                 groupId: { type: "string" },
               },
               required: ["groupId"],
-            },
-          },
-        },
-        {
-          type: "function",
-          function: {
-            name: "getExpensesByCategory",
-            description: "Provides a list of expenses for a specific category (e.g., 'Food', 'Grocery', 'Bills').",
-            parameters: {
-              type: "object",
-              properties: {
-                groupId: { type: "string" },
-                category: { type: "string", description: "The category to filter by (e.g., Food, Grocery, Bills, Shopping, Cab, Entertainment, Health, Others)" },
-              },
-              required: ["groupId", "category"],
             },
           },
         },
@@ -127,24 +140,29 @@ const chatbotController = {
         },
       ];
 
-      // 3. Build system prompt context
+      // 3. Fetch User Info for context
+      const members = await chatBotModel.getGroupMembersForAi(groupId);
+      const currentUser = members.find((m) => String(m.id) === String(userId));
+      const userName = currentUser ? currentUser.name : "User";
+
       const systemMsg = {
         role: "system",
         content: `Role: You are 'Hisabkar Assistant', a smart and concise financial helper.
-Objective: Give clear, short answers for Group ID [${groupId}]. Your User ID is [${userId}]. Date: ${new Date().toLocaleDateString("en-IN")}.
+Objective: Give clear, short answers for Group ID [${groupId}]. Date: ${new Date().toLocaleDateString("en-IN")}.
 
-Context:
-- Current Group ID: ${groupId}
-- Your User ID: ${userId} (Use this for personal tool calls)
+User Context:
+- Current User Name: ${userName}
+- Current User ID: ${userId}
+- This group has ${members.length} members.
 
 Response Protocol:
-- BE CONCISE: Get straight to the point. Avoid long introductions or elaborate fluff.
-- SIMPLE WORDS: Use plain English that is easy to understand.
-- FORMATTING: Use bullet points for lists and bolding for amounts (e.g., **₹520**).
-- ACTIONABLE: If tools show high spending, give 1 short tip.
+- BE CONCISE: Get straight to the point.
+- SIMPLE WORDS: Use plain English.
+- FORMATTING: Use bullet points and bolding for amounts (e.g., **₹520**).
+- ANALYTICAL: When predicting or analyzing, look for patterns in the provided history.
 - NO AI DISCLOSURE: Do not mention being an AI model.
 
-Keep it simple, short, and helpful. One or two short paragraphs or a few bullets is enough.`,
+Keep it simple, short, and helpful.`,
       };
 
       // 4. Prepare messages
@@ -246,17 +264,18 @@ async function callOpenRouterWithTools(model, messages, tools, groupId, userId) 
 
         if (functionName === "getGroupFinancialSummary") {
           callResult = await chatBotModel.getGroupSummaryForAi(args.groupId || groupId);
-        } else if (functionName === "getMyPersonalSpending") {
-          // Safety: Always use the session userId for personal spending
+        } else if (functionName === "getGroupMembers") {
+          callResult = await chatBotModel.getGroupMembersForAi(args.groupId || groupId);
+        } else if (functionName === "getDetailedUserExpenses") {
+          callResult = await chatBotModel.getDetailedUserExpensesForAi(args.groupId || groupId, args.userId);
+        } else if (functionName === "getMyPersonalSpendingSummary") {
           callResult = await chatBotModel.getUserExpensesForAi(groupId, userId);
-        } else if (functionName === "findExpensesByName") {
+        } else if (functionName === "findExpensesByKeyword") {
           callResult = await chatBotModel.findExpensesByName(args.groupId || groupId, args.name);
         } else if (functionName === "getExpensesByAmountRange") {
           callResult = await chatBotModel.getExpensesByAmountRange(args.groupId || groupId, args.minAmount, args.maxAmount);
         } else if (functionName === "predictMonthlySpending") {
           callResult = await chatBotModel.getPredictionDataForAi(args.groupId || groupId);
-        } else if (functionName === "getExpensesByCategory") {
-          callResult = await chatBotModel.getExpensesByCategory(args.groupId || groupId, args.category);
         } else if (functionName === "getSpendingByCategory") {
           callResult = await chatBotModel.getSpendingByCategory(args.groupId || groupId);
         }
