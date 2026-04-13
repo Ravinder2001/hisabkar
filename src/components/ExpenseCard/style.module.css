@@ -159,10 +159,10 @@
 
 /* ─── Date ───────────────────────────────────────────── */
 .dateText {
-  font-size: 11px;
-  color: #94a3b8;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 /* ─── Description ────────────────────────────────────── */

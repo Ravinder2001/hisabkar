@@ -1,53 +1,191 @@
-.cardCon {
+/* ─── Card Container ─────────────────────────────────────── */
+.card {
   width: 100%;
-}
-.card_wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.card_wrapper_acounts {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  z-index: 1;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  background: #ffffff;
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease;
   cursor: pointer;
+  position: relative;
 }
 
-.card_wrapper_acounts > div:nth-child(2) {
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.header {
+  position: relative;
+  padding: 12px 16px 16px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0d9488 0%, #2563eb 100%);
+}
+
+.header::before {
+  content: "";
   position: absolute;
-  left: 25px;
-  z-index: -1;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='white' fill-opacity='0.16'/%3E%3C/svg%3E");
+  background-size: 16px 16px;
+  pointer-events: none;
 }
 
-.card_wrapper_acounts > div:nth-child(3) {
+.header::after {
+  content: "";
   position: absolute;
-  left: 50px;
-  z-index: -2;
+  top: -20px;
+  right: -20px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  filter: blur(20px);
+  pointer-events: none;
 }
 
-.card_score {
+.headerTop {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: 10;
+}
+
+.groupName {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ─── Body ───────────────────────────────────────────────── */
+.body {
+  padding: 12px 16px;
+  position: relative;
+  background: #ffffff;
+  /* Soft colorful mountain landscape */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='xMidYMax slice'%3E%3Cpath d='M0 90 L20 55 L45 78 L70 40 L95 68 L125 28 L155 60 L180 42 L205 65 L230 30 L260 58 L285 38 L315 62 L345 20 L375 52 L400 35 L400 120 L0 120 Z' fill='%236366f1' opacity='0.1'/%3E%3Cpath d='M0 105 L30 72 L60 88 L95 58 L125 80 L158 55 L185 75 L215 62 L245 82 L275 60 L305 78 L340 52 L370 72 L400 60 L400 120 L0 120 Z' fill='%23a855f7' opacity='0.08'/%3E%3Cpath d='M0 120 Q40 100 80 108 Q120 116 170 102 Q215 90 260 106 Q305 118 360 98 Q380 92 400 100 L400 120 Z' fill='%23f43f5e' opacity='0.06'/%3E%3C/svg%3E");
+  background-position: bottom center;
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  min-height: 80px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.statValue {
+  display: flex;
   align-items: center;
-  font-weight: 500;
-  font-size: 16px;
-  color: #fff;
-  width: 40px;
-  height: 40px;
-  border-radius: 100%;
-  background: #000;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
 }
 
-.card_acounts {
-  width: 42px;
-  height: 42px;
+.amount {
+  font-size: 18px;
+  color: #0f172a;
 }
 
-.card_acounts svg {
-  width: 100%;
-  height: 100%;
+/* ─── Footer ─────────────────────────────────────────────── */
+.footer {
+  padding: 8px 16px;
+  background: #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f1f5f9;
+}
+
+.membersList {
+  display: flex;
+  align-items: center;
+}
+
+.memberAvatarWrap {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  overflow: hidden;
+  margin-left: -12px;
+  background: #f1f5f9;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.memberAvatarWrap:first-child {
+  margin-left: 0;
+}
+
+.remainingMembers {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #334155;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: -12px;
+  z-index: 10;
+}
+
+.badgeSettled {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+}
+
+.badgeUnsettled {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+}
+
+.adminBadge {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(4px);
+  font-size: 10px !important;
+  padding: 2px 8px !important;
+}
+
+.typeIcon {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }

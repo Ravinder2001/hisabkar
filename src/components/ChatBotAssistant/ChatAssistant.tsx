@@ -7,8 +7,8 @@ import { Input } from "../ui/input";
 import ReactMarkdown from "react-markdown";
 
 interface Message {
-  role: "user" | "model";
-  parts: { text: string }[];
+  role: "user" | "assistant";
+  content: string;
   isNew?: boolean;
 }
 
@@ -60,7 +60,7 @@ export default function ChatAssistant({ groupId, inStack = false }: ChatAssistan
     const messageToSend = (overrideInput || input).trim();
     if (!messageToSend || isLoading) return;
 
-    const userMsg: Message = { role: "user", parts: [{ text: messageToSend }] };
+    const userMsg: Message = { role: "user", content: messageToSend };
     setMessages((prev) => [...prev.map((m) => ({ ...m, isNew: false })), userMsg]);
     setInput("");
 
@@ -68,18 +68,18 @@ export default function ChatAssistant({ groupId, inStack = false }: ChatAssistan
       method: "POST",
       data: {
         message: messageToSend,
-        history: messages.map(({ role, parts }) => ({ role, parts })),
+        history: messages.map(({ role, content }) => ({ role, content })),
       },
     });
   };
 
   useEffect(() => {
     if (response?.success === 1 && response?.data) {
-      const modelMsg: Message = { role: "model", parts: [{ text: response.data.text }], isNew: true };
-      setMessages((prev) => [...prev, modelMsg]);
+      const assistantMsg: Message = { role: "assistant", content: response.data.text, isNew: true };
+      setMessages((prev) => [...prev, assistantMsg]);
     } else if (response?.success === 0 && response?.message) {
-      const modelErrorMsg: Message = { role: "model", parts: [{ text: `**Error:** ${response.message}` }], isNew: true };
-      setMessages((prev) => [...prev, modelErrorMsg]);
+      const assistantErrorMsg: Message = { role: "assistant", content: `**Error:** ${response.message}`, isNew: true };
+      setMessages((prev) => [...prev, assistantErrorMsg]);
     }
   }, [response]);
 
@@ -114,7 +114,7 @@ export default function ChatAssistant({ groupId, inStack = false }: ChatAssistan
                   <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-xl tracking-tight">Gemini Assistant</h4>
+                  <h4 className="font-bold text-xl tracking-tight">AI Assistant</h4>
                 </div>
               </div>
               <button onClick={() => setIsOpen(false)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
@@ -176,7 +176,7 @@ export default function ChatAssistant({ groupId, inStack = false }: ChatAssistan
                         : "bg-white text-slate-700 border border-slate-100 rounded-tl-none"
                     }`}
                   >
-                    {msg.role === "model" ? <TypewriterMessage text={msg.parts[0].text} isNew={msg.isNew} /> : msg.parts[0].text}
+                    {msg.role === "assistant" ? <TypewriterMessage text={msg.content} isNew={msg.isNew} /> : msg.content}
                   </div>
                 </div>
               ))}
