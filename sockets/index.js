@@ -1,5 +1,6 @@
 const { Server } = require("socket.io");
 const chatModel = require("../model/chat.model");
+const groupModel = require("../model/group.model");
 const { decryptData, encryptData } = require("../utils/encryption");
 const { sendNotificationsToUsers } = require("../helpers/pushService");
 
@@ -20,10 +21,19 @@ const initSockets = (server) => {
       try {
         const { groupId: encryptedGroupId, userId } = typeof data === "object" ? data : { groupId: data, userId: null };
         const groupId = await decryptData(encryptedGroupId);
-        socket.join(`group_${groupId}`);
+
+        // Security check: Verify membership
         if (userId) {
+          const members = await groupModel.getAllGroupMemebers(groupId);
+          const isMember = members.some((m) => String(m.user_id) === String(userId) && m.is_active);
+          if (!isMember) {
+            console.log(`Unauthorized join attempt from User ${userId} for group_${groupId}`);
+            return;
+          }
           socket.userId = userId.toString();
         }
+
+        socket.join(`group_${groupId}`);
         console.log(`Socket ${socket.id} (User: ${socket.userId}) joined group_${groupId}`);
       } catch (error) {
         console.error("Socket join_group error:", error.message);
@@ -51,6 +61,15 @@ const initSockets = (server) => {
         }
 
         const groupId = await decryptData(encryptedGroupId);
+
+        // Security check: Verify sender membership
+        const members = await groupModel.getAllGroupMemebers(groupId);
+        const isMember = members.some((m) => String(m.user_id) === String(userId) && m.is_active);
+        if (!isMember) {
+          console.log(`Unauthorized send attempt from User ${userId} for group_${groupId}`);
+          return;
+        }
+
         // Save message using model
         const newMessage = await chatModel.saveMessage({
           groupId,
