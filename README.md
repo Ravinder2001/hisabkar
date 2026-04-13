@@ -9,8 +9,7 @@ Hisabkar is a feature-rich expense splitting application with a robust backend b
 - **Expense Tracking**: Add, edit, and delete expenses with support for equal, percentage-based, or custom splits.
 - **Expense Summary**: Track your **Send** & **Receive** amounts for quick settlements.
 - **Audit Logs**: View changes in group expenses, including edits and deletions.
-- **Spend Analysis**: Get category-wise spending breakdowns.
-- **User Availability**: Mark yourself unavailable to avoid unnecessary expense allocations.
+- **AI Financial Assistant**: Integrated ChatBot via **OpenRouter** for smart expense analysis and predictions.
 - **Notifications**: Receive notifications via **service workers** (PWA support).
 - **Data Export**: Download group expense details in **Excel format**.
 - **Security**: Implements JWT authentication and **AES encryption** for sensitive data.
@@ -22,6 +21,7 @@ Hisabkar is a feature-rich expense splitting application with a robust backend b
 - **Authentication**: JWT, OAuth (Google Sign-In)
 - **Security**: AES Encryption, VAPID keys for push notifications
 - **Email Services**: Nodemailer for OTP-based authentication
+- **AI Integration**: OpenRouter API for intelligent financial consulting
 - **Cloud Storage**: Avatar generation via DiceBear API
 
 ## Installation
@@ -70,6 +70,10 @@ Hisabkar is a feature-rich expense splitting application with a robust backend b
    # Crypto Encryption
    CRYPTO_SECRET_KEY=
    CRYPTO_IV=
+
+   # OpenRouter AI
+   OPENROUTER_API_KEY=
+   CHATBOT_DAILY_LIMIT=5
 
    # PostgreSQL CA Certificate
    PG_CA_CERT=
