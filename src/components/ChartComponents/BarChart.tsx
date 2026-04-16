@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
-import CONSTANTS from "../../utils/constant/Constant";
+import { EXPENSE_CATEGORIES } from "../../utils/constant/Categories";
 
 // Register chart components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -11,104 +11,97 @@ interface ExpenseData {
   expense_type: string;
   total_amount_spent: string;
 }
-const getRandomColor = () => {
-  const r = Math.floor(Math.random() * 256);
-  const g = Math.floor(Math.random() * 256);
-  const b = Math.floor(Math.random() * 256);
-  return `rgba(${r}, ${g}, ${b}, 0.5)`;
-};
 
 const BarChart: React.FC<{ data: ExpenseData[] }> = ({ data }) => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
-  // Prepare the data for the bar chart
+  const chartLabels = data.map((item) => {
+    const cat = EXPENSE_CATEGORIES.find((c) => c.label === item.expense_type);
+    return cat ? `${cat.icon} ${cat.label}` : item.expense_type;
+  });
+
   const chartData = {
-    labels: data.map((item) => item.expense_type),
+    labels: chartLabels,
     datasets: [
       {
         label: "Total Amount Spent",
         data: data.map((item) => parseFloat(item.total_amount_spent)),
-        backgroundColor: data.map(() => getRandomColor()), // Generate a random color for each bar
+        backgroundColor: data.map((item) => {
+          const cat = EXPENSE_CATEGORIES.find((c) => c.label === item.expense_type);
+          return (cat ? cat.hex : "#3b82f6") + "CC";
+        }),
+        borderColor: data.map((item) => {
+          const cat = EXPENSE_CATEGORIES.find((c) => c.label === item.expense_type);
+          return cat ? cat.hex : "#3b82f6";
+        }),
+        borderWidth: 1,
+        borderRadius: 8,
+        barThickness: isMobile ? 25 : 40,
       },
     ],
   };
 
-  // Chart options (customize as needed)
   const options: any = {
+    indexAxis: isMobile ? "y" : "x", // Responsive as requested
     responsive: true,
-    indexAxis: isMobile ? "y" : "x",
+    maintainAspectRatio: false,
     plugins: {
-      title: {
-        display: false,
-        text: "Expense Breakdown",
-      },
+      legend: { display: false },
       tooltip: {
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        titleColor: "#1e293b",
+        bodyColor: "#1e293b",
+        borderColor: "#e2e8f0",
+        borderWidth: 1,
+        padding: 12,
         callbacks: {
-          label: (tooltipItem: any) => `₹ ${tooltipItem.raw.toFixed(2)}`,
+          label: (context: any) => ` ₹${context.raw.toLocaleString("en-IN")}`,
         },
-        titleFont: {
-          size: 16,
-          family: CONSTANTS.FONT_FAMILY,
-        },
-        bodyFont: {
-          size: 18,
-        },
-        footerFont: {
-          size: 20, // there is no footer by default
-        },
-      },
-      legend: {
-        display: false,
-        labels: {
-          // This more specific font property overrides the global property
-          font: {
-            family: CONSTANTS.FONT_FAMILY, // Change X-axis labels font
-            size: 14,
-            weight: "bold",
-          },
-        },
+        titleFont: { family: "Nunito", size: 14, weight: "bold" },
+        bodyFont: { family: "Nunito", size: 16 },
       },
     },
     scales: {
       x: {
+        type: isMobile ? "linear" : "category",
+        grid: { display: !isMobile, color: "#f1f5f9" },
+        beginAtZero: true,
         ticks: {
-          autoSkip: false,
-          //   maxRotation: isMobile ? 0 : 90,
-          //   minRotation: isMobile ? 0 : 90,
-          font: {
-            family: CONSTANTS.FONT_FAMILY, // Change X-axis labels font
-            size: 14,
-            weight: "bold",
+          font: { family: "Nunito", size: isMobile ? 10 : 12 },
+          color: "#64748b",
+          callback: (value: any, index: number) => {
+            if (isMobile) return `₹${value}`;
+            return chartLabels[index];
           },
-        },
-        grid: {
-          display: false,
         },
       },
       y: {
+        type: isMobile ? "category" : "linear",
+        grid: { display: isMobile, color: "#f1f5f9" },
         beginAtZero: true,
         ticks: {
-          font: {
-            family: CONSTANTS.FONT_FAMILY, // Change X-axis labels font
-            size: 14,
-            weight: "bold",
+          font: { family: "Nunito", size: isMobile ? 11 : 12 },
+          color: "#64748b",
+          callback: (value: any, index: number) => {
+            if (!isMobile) return `₹${value}`;
+            return chartLabels[index];
           },
-        },
-        grid: {
-          display: false,
         },
       },
     },
   };
-  // Detect screen width changes
+
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  return <Bar data={chartData} options={options} />;
+
+  return (
+    <div style={{ height: "400px", width: "100%", padding: "5px" }}>
+      <Bar data={chartData} options={options} />
+    </div>
+  );
 };
 
 export default BarChart;
