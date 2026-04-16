@@ -33,7 +33,7 @@ const EXPENSE_CATEGORIES = [
   { label: "Food", icon: "🍴", color: "bg-orange-50 text-orange-600 border-orange-200" },
   { label: "Grocery", icon: "🛒", color: "bg-green-50 text-green-600 border-green-200" },
   { label: "Bills", icon: "📄", color: "bg-blue-50 text-blue-600 border-blue-200" },
-  { label: "Ent", icon: "🎬", color: "bg-purple-50 text-purple-600 border-purple-200" },
+  { label: "Entertainment", icon: "🎬", color: "bg-purple-50 text-purple-600 border-purple-200" },
   { label: "Travel", icon: "🚕", color: "bg-yellow-50 text-yellow-600 border-yellow-200" },
   { label: "Shopping", icon: "🛍️", color: "bg-slate-50 text-slate-600 border-slate-200" },
   { label: "Others", icon: "✨", color: "bg-slate-50 text-slate-600 border-slate-200" },
@@ -312,8 +312,8 @@ function AddExpenseModal({
                       : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
                   }`}
                 >
-                  <span style={{ fontSize: "12px" }}>{cat.icon}</span>
-                  <span style={{ fontSize: "13px" }}>{cat.label}</span>
+                  <span style={{ fontSize: "11px" }}>{cat.icon}</span>
+                  <span style={{ fontSize: "12px" }}>{cat.label}</span>
                 </button>
               ))}
               <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
