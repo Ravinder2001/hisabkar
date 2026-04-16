@@ -311,7 +311,7 @@ module.exports = {
 
       await client.query("COMMIT");
       console.log("Expense deleted successfully.");
-      return { groupData: await getGroupDataById(expense.group_id) };
+      return { groupData: await getGroupDataById(expense.group_id), deletedExpenseMembers: members };
     } catch (error) {
       await client.query("ROLLBACK");
       console.error("Error in deleting expense:", error.message);
