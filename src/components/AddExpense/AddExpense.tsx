@@ -34,7 +34,8 @@ const EXPENSE_CATEGORIES = [
   { label: "Grocery", icon: "🛒", color: "bg-green-50 text-green-600 border-green-200" },
   { label: "Bills", icon: "📄", color: "bg-blue-50 text-blue-600 border-blue-200" },
   { label: "Ent", icon: "🎬", color: "bg-purple-50 text-purple-600 border-purple-200" },
-  { label: "Cab", icon: "🚕", color: "bg-yellow-50 text-yellow-600 border-yellow-200" },
+  { label: "Travel", icon: "🚕", color: "bg-yellow-50 text-yellow-600 border-yellow-200" },
+  { label: "Shopping", icon: "🛍️", color: "bg-slate-50 text-slate-600 border-slate-200" },
   { label: "Others", icon: "✨", color: "bg-slate-50 text-slate-600 border-slate-200" },
 ];
 
@@ -80,6 +81,7 @@ function AddExpenseModal({
   const { fetchData: addExpense, response: addRes, isLoading } = useApiFetch("");
   const { fetchData: editExpense, response: editRes, isLoading: editLoading } = useApiFetch("");
   const [showDescription, setShowDescription] = useState(false);
+  const formikRef = useRef<any>(null);
 
   const [initialValues, setInitialValues] = useState<FormValues>({
     expenseName: "",
@@ -174,6 +176,9 @@ function AddExpenseModal({
         if (isDuplicate) return prev;
         return [addRes.data[0], ...prev];
       });
+      if (formikRef.current) {
+        formikRef.current.resetForm();
+      }
       callback();
     }
   }, [addRes, setIsOpen, callback, inPage]);
@@ -233,6 +238,7 @@ function AddExpenseModal({
   // ── Shared form body ─────────────────────────────────────────────────
   const formBody = (
     <Formik
+      innerRef={formikRef}
       initialValues={initialValues}
       validationSchema={validationSchema}
       validateOnBlur={false}
@@ -294,7 +300,7 @@ function AddExpenseModal({
 
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-600">Category</label>
-            <div className="flex flex-wrap overflow-x-auto gap-1.5 p-2 no-scrollbar" style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}>
+            <div className="flex flex-wrap overflow-x-auto gap-1 no-scrollbar" style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}>
               {EXPENSE_CATEGORIES.map((cat) => (
                 <button
                   key={cat.label}
@@ -306,8 +312,8 @@ function AddExpenseModal({
                       : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
                   }`}
                 >
-                  <span>{cat.icon}</span>
-                  <span style={{ fontSize: "13px" }}>{cat.label}</span>
+                  <span style={{ fontSize: "10px" }}>{cat.icon}</span>
+                  <span style={{ fontSize: "12px" }}>{cat.label}</span>
                 </button>
               ))}
               <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
