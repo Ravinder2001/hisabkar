@@ -250,6 +250,12 @@ export default function GroupDetails() {
   }, [GroupId]);
 
   useEffect(() => {
+    const handleOpenSpendAnalysis = () => setSpendAnalysisModal(true);
+    window.addEventListener("openSpendAnalysis", handleOpenSpendAnalysis);
+    return () => window.removeEventListener("openSpendAnalysis", handleOpenSpendAnalysis);
+  }, []);
+
+  useEffect(() => {
     if (unreadRes?.success === 1) {
       setHasUnreadMessages(unreadRes.hasUnread);
     }

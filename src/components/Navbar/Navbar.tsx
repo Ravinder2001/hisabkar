@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, TrendingUp } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
@@ -11,8 +11,14 @@ import CONSTANTS from "../../utils/constant/Constant";
 
 const Navbar = () => {
   const dispatch = useDispatch();
-  const location = useLocation(); // Add this to get current URL
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+
+  const isGroupDetailPage = location.pathname.includes("/group/") && !location.pathname.includes("/join-group");
+
+  const openSpendAnalysis = () => {
+    window.dispatchEvent(new CustomEvent("openSpendAnalysis"));
+  };
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -78,10 +84,24 @@ const Navbar = () => {
               </Link>
             </div>
           </div>
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center gap-4">
+            {isGroupDetailPage && (
+              <button
+                onClick={openSpendAnalysis}
+                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                title="Spend Analysis"
+              >
+                <TrendingUp size={24} />
+              </button>
+            )}
             <UserMenu />
           </div>
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center gap-2">
+            {isGroupDetailPage && (
+              <button onClick={openSpendAnalysis} className="p-2 text-gray-600 hover:text-blue-600" title="Spend Analysis">
+                <TrendingUp size={24} />
+              </button>
+            )}
             <button
               onClick={toggleMenu}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"

@@ -29,15 +29,7 @@ interface FormValues {
   expenseType: string;
 }
 
-const EXPENSE_CATEGORIES = [
-  { label: "Food", icon: "🍴", color: "bg-orange-50 text-orange-600 border-orange-200" },
-  { label: "Grocery", icon: "🛒", color: "bg-green-50 text-green-600 border-green-200" },
-  { label: "Bills", icon: "📄", color: "bg-blue-50 text-blue-600 border-blue-200" },
-  { label: "Entertainment", icon: "🎬", color: "bg-purple-50 text-purple-600 border-purple-200" },
-  { label: "Travel", icon: "🚕", color: "bg-yellow-50 text-yellow-600 border-yellow-200" },
-  { label: "Shopping", icon: "🛍️", color: "bg-slate-50 text-slate-600 border-slate-200" },
-  { label: "Others", icon: "✨", color: "bg-slate-50 text-slate-600 border-slate-200" },
-];
+import { EXPENSE_CATEGORIES } from "../../utils/constant/Categories";
 
 const validationSchema = Yup.object().shape({
   expenseName: Yup.string()
@@ -300,23 +292,22 @@ function AddExpenseModal({
 
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-600">Category</label>
-            <div className="flex flex-wrap overflow-x-auto gap-1 no-scrollbar" style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}>
+            <div className={`flex ${inPage ? "flex-wrap" : "flex-col sm:flex-row"} gap-2`}>
               {EXPENSE_CATEGORIES.map((cat) => (
                 <button
                   key={cat.label}
                   type="button"
                   onClick={() => setFieldValue("expenseType", cat.label)}
-                  className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] border transition-all ${
+                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm border transition-all ${
                     values.expenseType === cat.label
-                      ? `${cat.color} border-current ring-1 ring-current`
-                      : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
-                  }`}
+                      ? `${cat.color} border-current ring-1 ring-current shadow-sm`
+                      : "bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                  } ${inPage ? "flex-shrink-0" : "w-full sm:w-auto"}`}
                 >
-                  <span style={{ fontSize: "11px" }}>{cat.icon}</span>
-                  <span style={{ fontSize: "12px" }}>{cat.label}</span>
+                  <span className="text-lg">{cat.icon}</span>
+                  <span className="font-medium">{cat.label}</span>
                 </button>
               ))}
-              <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
             </div>
             {touched.expenseType && errors.expenseType && <div className="text-red-500 text-xs">{errors.expenseType}</div>}
           </div>
