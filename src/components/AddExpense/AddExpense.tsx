@@ -312,8 +312,8 @@ function AddExpenseModal({
                       : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
                   }`}
                 >
-                  <span style={{ fontSize: "10px" }}>{cat.icon}</span>
-                  <span style={{ fontSize: "12px" }}>{cat.label}</span>
+                  <span style={{ fontSize: "12px" }}>{cat.icon}</span>
+                  <span style={{ fontSize: "13px" }}>{cat.label}</span>
                 </button>
               ))}
               <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
