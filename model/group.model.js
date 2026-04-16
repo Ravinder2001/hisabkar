@@ -525,9 +525,8 @@ GROUP BY g.group_id;
 
       // Fetch expenses with breakdown
       const expensesQuery = `
-    SELECT e.expense_id, e.expense_name, et.type_name AS expense_type, e.amount AS expense_amount, e.created_at, u.name AS paid_by
+    SELECT e.expense_id, e.expense_name, e.expense_type, e.amount AS expense_amount, e.created_at, u.name AS paid_by
     FROM tbl_expenses e
-    JOIN tbl_expense_types et ON e.expense_type_id = et.expense_type_id
     JOIN tbl_users u ON e.paid_by = u.user_id
     WHERE e.group_id = $1;
   `;
@@ -616,19 +615,28 @@ ORDER BY gl.created_at DESC;
       // Base query for fetching group logs with the join to get the expense name if action type involves expenses
       let query = `
           SELECT 
-              et.type_name AS expense_type,
+              cat.label AS expense_type,
               COALESCE(SUM(e.amount), 0) AS total_amount_spent
-          FROM 
-              tbl_expense_types et
+          FROM (
+              VALUES ('Food'), ('Grocery'), ('Bills'), ('Entertainment'), ('Travel'), ('Shopping'), ('Others')
+          ) AS cat(label)
           LEFT JOIN 
-              tbl_expenses e ON e.expense_type_id = et.expense_type_id 
+              tbl_expenses e ON e.expense_type = cat.label 
               AND e.group_id = $1
               AND e.is_active = TRUE
               AND ($2::INTEGER IS NULL OR e.paid_by = $2::INTEGER)
           GROUP BY 
-              et.type_name
+              cat.label
           ORDER BY 
-              expense_type ASC;`;
+              CASE cat.label 
+                  WHEN 'Food' THEN 1
+                  WHEN 'Grocery' THEN 2
+                  WHEN 'Bills' THEN 3
+                  WHEN 'Entertainment' THEN 4
+                  WHEN 'Travel' THEN 5
+                  WHEN 'Shopping' THEN 6
+                  WHEN 'Others' THEN 7
+              END;`;
 
       const queryParams = [group_id, user_id];
 
