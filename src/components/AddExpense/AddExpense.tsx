@@ -298,7 +298,7 @@ function AddExpenseModal({
                   key={cat.label}
                   type="button"
                   onClick={() => setFieldValue("expenseType", cat.label)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm border transition-all ${
+                  className={`flex items-center gap-2 px-1 py-1 rounded-xl text-sm border transition-all ${
                     values.expenseType === cat.label
                       ? `${cat.color} border-current ring-1 ring-current shadow-sm`
                       : "bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
