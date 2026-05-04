@@ -173,7 +173,7 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, groupName }) => {
     setNewMessage(e.target.value);
 
     if (!socketRef.current) return;
-    const firstName = user.name.split(" ")[0];
+    const firstName = user?.name ? user.name.split(" ")[0] : "User";
 
     // Emit typing event
     socketRef.current.emit("typing", { groupId, userName: firstName });
@@ -190,7 +190,7 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, groupName }) => {
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !socketRef.current) return;
-    const firstName = user.name.split(" ")[0];
+    const firstName = user?.name ? user.name.split(" ")[0] : "User";
 
     // Stop typing immediately when sending
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
