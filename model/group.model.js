@@ -156,6 +156,15 @@ module.exports = {
       throw error;
     }
   },
+  getAllGroupMemebers: async (groupId) => {
+    try {
+      let groupQuery = await client.query(`SELECT * FROM tbl_group_members WHERE group_id = $1`, [groupId]);
+      return groupQuery.rows;
+    } catch (error) {
+      console.error("Error in fetching group members:", error.message);
+      throw error;
+    }
+  },
   getAllGroups: async (userId) => {
     try {
       // SQL query to get all the required information
