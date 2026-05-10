@@ -134,8 +134,8 @@ export default function Profile() {
   }, [editProfileRes]);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Card className="max-w-2xl bg-white">
+    <form onSubmit={handleSubmit} className="h-full overflow-y-auto w-full pb-6">
+      <Card className="max-w-2xl mx-auto bg-white">
         <CardHeader>
           <CardTitle>Edit Profile</CardTitle>
         </CardHeader>

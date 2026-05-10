@@ -50,6 +50,7 @@ const CONSTANTS = {
     TOGGLE_MEMBER_STATUS: "/group/toggleMemberStatus",
     UNREAD_STATUS: "/chat/unread-status",
     BUDGET_DETAILS: "/group/budgetDetails",
+    SEND_REMINDER: "/group/sendReminder",
   },
   FONT_FAMILY: "Nunito",
 };

@@ -84,6 +84,12 @@ export default function GroupDetails() {
   const [isFetchingMore, setIsFetchingMore] = useState<boolean>(false);
   const [hasUnreadMessages, setHasUnreadMessages] = useState<boolean>(false);
 
+  const isUserAvailable = React.useMemo(() => {
+    if (!groupMembers || groupMembers.length === 0) return false; // Default to false while loading
+    const currentUserMember = groupMembers.find((m: any) => String(m.id) === String(user.id));
+    return currentUserMember ? currentUserMember.is_available : false;
+  }, [groupMembers, user.id]);
+
   // Chat is now a tab — track if it's active to clear unread
   const isChatTabActiveRef = useRef<boolean>(false);
 
@@ -316,9 +322,9 @@ export default function GroupDetails() {
   const NAV_TABS = React.useMemo<{ id: TabId; label: string; icon: React.ReactNode; isAdd?: boolean }[]>(
     () => [
       { id: "timeline", label: "Timeline", icon: <TrendingUp size={20} /> },
-      { id: "details", label: "Details", icon: <LayoutDashboard size={20} /> },
-      { id: "addExpense", label: "Add", icon: <PlusCircle size={28} />, isAdd: true },
       { id: "summary", label: "Summary", icon: <Users size={20} /> },
+      { id: "addExpense", label: "Add", icon: <PlusCircle size={28} />, isAdd: true },
+      { id: "details", label: "Details", icon: <LayoutDashboard size={20} /> },
       {
         id: "chat",
         label: "Chat",
@@ -415,15 +421,17 @@ export default function GroupDetails() {
                       This timeline is waiting for your first group expense. Add one now to see the magic happen!
                     </p>
 
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handleTabChange("addExpense")}
-                      className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-purple-200 flex items-center gap-2 hover:shadow-xl transition-all"
-                    >
-                      <PlusCircle size={18} />
-                      Add First Expense
-                    </motion.button>
+                    {isUserAvailable && (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleTabChange("addExpense")}
+                        className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-purple-200 flex items-center gap-2 hover:shadow-xl transition-all"
+                      >
+                        <PlusCircle size={18} />
+                        Add First Expense
+                      </motion.button>
+                    )}
                   </motion.div>
                 )}
                 <div ref={lastExpenseElementRef} style={{ height: "10px" }} />
@@ -511,7 +519,7 @@ export default function GroupDetails() {
       {/* ── Floating / Mobile Bottom Nav ────────────────────────────────── */}
       <nav className={styles.bottomNav}>
         <div className={styles.navInner}>
-          {NAV_TABS.filter((tab) => !tab.isAdd || !groupData?.is_settled).map((tab) => (
+          {NAV_TABS.filter((tab) => !tab.isAdd || (!groupData?.is_settled && isUserAvailable)).map((tab) => (
             <button
               key={tab.id}
               className={`${tab.isAdd ? styles.navItemAdd : styles.navItem} ${
