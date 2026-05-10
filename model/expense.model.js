@@ -209,7 +209,10 @@ module.exports = {
       const queryValues = [groupId, userId, limit];
 
       if (lastId) {
-        query += ` AND e.expense_id < $4 `;
+        query += ` AND (e.created_at, e.expense_id) < (
+                     (SELECT created_at FROM tbl_expenses WHERE expense_id = $4), 
+                     $4
+                   ) `;
         queryValues.push(lastId);
       }
 
@@ -217,7 +220,7 @@ module.exports = {
         GROUP BY 
           e.expense_id, e.paid_by
         ORDER BY 
-          e.expense_id DESC
+          e.created_at DESC, e.expense_id DESC
         LIMIT $3
       `;
 

@@ -44,5 +44,6 @@ router.put("/toggleMemberStatus/:group_id/:user_id", authenticateJWT, validateDa
 
 router.post("/setBudget/:group_id", authenticateJWT, validateData.validateGroupId, validateExpData.validateGroupMembership, GroupController.setGroupBudget);
 router.get("/budgetDetails/:group_id", authenticateJWT, validateData.validateGroupId, validateExpData.validateGroupMembership, GroupController.getBudgetDetails);
+router.post("/sendReminder/:group_id/:to_user_id", authenticateJWT, validateData.validateGroupId, validateExpData.validateGroupMembership, GroupController.sendReminder);
 
 module.exports = router;

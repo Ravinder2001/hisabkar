@@ -379,4 +379,26 @@ module.exports = {
       common.handleAsyncError(error, res);
     }
   },
+  sendReminder: async (req, res) => {
+    try {
+      const toUserId = req.params.to_user_id;
+      const groupId = req.params.group_id;
+
+      // Get subscriptions for the target user
+      let subscriptions = await usersModel.getUsersSWData([toUserId]);
+
+      if (subscriptions && subscriptions.length > 0) {
+        const payload = {
+          title: "Payment Reminder",
+          body: `${req.user.name} has reminded you to settle your expenses.`,
+          group_id: await encryptData(groupId),
+        };
+        subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
+      }
+
+      return common.successResponse(res, "Reminder sent successfully", HttpStatus.OK);
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
 };

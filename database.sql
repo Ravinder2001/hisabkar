@@ -179,3 +179,61 @@ CREATE TABLE IF NOT EXISTS tbl_tickets (
     (ticket_type = 'FEEDBACK')
   )
 );
+
+-- ================= STORED PROCEDURES =================
+-- SP to add an expense on a previous date
+CREATE OR REPLACE PROCEDURE sp_add_past_expense(
+    p_group_id INT,
+    p_expense_name VARCHAR(255),
+    p_amount NUMERIC(10,2),
+    p_paid_by INT,
+    p_expense_date TIMESTAMP,
+    p_members JSONB
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_expense_id INT;
+    v_member_id INT;
+    v_split_amount NUMERIC(10,2);
+    v_member_count INT;
+BEGIN
+    -- Calculate equal split amount
+    v_member_count := jsonb_array_length(p_members);
+    IF v_member_count = 0 THEN
+        RAISE EXCEPTION 'Members array cannot be empty';
+    END IF;
+    
+    v_split_amount := ROUND(p_amount / v_member_count, 2);
+
+    -- 1. Insert into tbl_expenses
+    INSERT INTO tbl_expenses (
+        group_id, expense_name, description, amount, paid_by, split_type, expense_type, created_at
+    ) VALUES (
+        p_group_id, p_expense_name, 'Past expense added via SP', p_amount, p_paid_by, 'EQUAL', 'Others', p_expense_date
+    ) RETURNING expense_id INTO v_expense_id;
+
+    -- 2. Insert into tbl_expense_members
+    FOR v_member_id IN SELECT jsonb_array_elements_text(p_members)::INT
+    LOOP
+        INSERT INTO tbl_expense_members (
+            expense_id, user_id, amount, created_at
+        ) VALUES (
+            v_expense_id, v_member_id, v_split_amount, p_expense_date
+        );
+    END LOOP;
+
+    -- 3. Update tbl_groups total_amount
+    UPDATE tbl_groups
+    SET total_amount = total_amount + p_amount
+    WHERE group_id = p_group_id;
+
+    -- 4. Log the expense addition in tbl_group_logs
+    INSERT INTO tbl_group_logs (
+        group_id, expense_id, user_id, action_type, old_amount, new_amount, created_at
+    ) VALUES (
+        p_group_id, v_expense_id, p_paid_by, 'ADDED', NULL, p_amount, p_expense_date
+    );
+
+END;
+$$;
