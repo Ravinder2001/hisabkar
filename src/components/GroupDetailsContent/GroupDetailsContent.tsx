@@ -137,10 +137,12 @@ function GroupDetailsContent(
               <span className="text-black-800">Spend Analysis</span>
             </DropdownMenuItem> */}
 
-            <DropdownMenuItem onClick={handleConfirmModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
-              <CircleCheckBig className="mr-2 h-4 w-4" color="green" />
-              <span className="text-green-800">{data.is_settled ? "Un-settle this group" : "Make Settlement"}</span>
-            </DropdownMenuItem>
+            {data.is_you_admin ? (
+              <DropdownMenuItem onClick={handleConfirmModal} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
+                <CircleCheckBig className="mr-2 h-4 w-4" color="green" />
+                <span className="text-green-800">{data.is_settled ? "Un-settle this group" : "Make Settlement"}</span>
+              </DropdownMenuItem>
+            ) : null}
             {data.is_settled ? (
               <DropdownMenuItem onClick={handleDownloadGroupData} className="text-black-600 dark:text-red-400 bg-white cursor-pointer">
                 <Download className="mr-2 h-4 w-4" color="black" />

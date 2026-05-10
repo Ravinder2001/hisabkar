@@ -4,8 +4,9 @@ import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
-import { ArrowRight, IndianRupee } from "lucide-react";
+import { ArrowRight, IndianRupee, Bell } from "lucide-react";
 import CustomAccordion from "../CustomAccordian/CustomAccordian";
+import showToast from "../../utils/helpers/toastHelper";
 
 type PropsType = {
   groupId: string;
@@ -16,6 +17,7 @@ type PropsType = {
     total_spent: number;
     is_available: boolean;
   }[];
+  isSettled?: boolean;
 };
 
 type SimplifiedDataType = {
@@ -29,6 +31,7 @@ function SimplifiedComponent(props: PropsType) {
   const [simplifiedData, setSimplifiedData] = useState<SimplifiedDataType>([]);
 
   const { fetchData, response, isLoading } = useApiFetch(CONSTANTS.API_ROUTES.GET_SIMPLIFIED + "/" + props.groupId);
+  const { fetchData: sendReminder, response: reminderRes, isLoading: isReminding } = useApiFetch("");
 
   useEffect(() => {
     fetchData();
@@ -39,6 +42,12 @@ function SimplifiedComponent(props: PropsType) {
       setSimplifiedData(response.data);
     }
   }, [response]);
+
+  useEffect(() => {
+    if (reminderRes?.success === 1) {
+      showToast("Reminder sent successfully", "success");
+    }
+  }, [reminderRes]);
 
   // Helper function to get member name by ID
   const getMemberName = (id: string) => {
@@ -59,23 +68,27 @@ function SimplifiedComponent(props: PropsType) {
   // Filter user's transactions
   const userTransactions = simplifiedData.filter((transaction) => transaction.from === LoggedInUser || transaction.to === LoggedInUser);
 
+  const handleSendReminder = (toUserId: string) => {
+    sendReminder(CONSTANTS.API_ROUTES.SEND_REMINDER + "/" + props.groupId + "/" + toUserId, { method: "POST" });
+  };
+
   return (
     <div id={styles.container} className="max-w-3xl mx-auto bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl">
       <h2 className="text-md sm:text-2xl font-bold text-gray-800 mb-2 p-2">Expense Simplification</h2>
 
       {userTransactions.length > 0 && (
-        <div className="mb-8 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 shadow-lg border border-indigo-100 transform transition-all duration-300 hover:scale-[1.01]">
-          <h3 className="text-sm sm:text-lg font-semibold text-indigo-700 mb-3 flex items-center">
+        <div className="mb-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-2 sm:p-3 shadow-sm border border-indigo-100 transform transition-all duration-300">
+          <h3 className="text-sm sm:text-lg font-semibold text-indigo-700 mb-2 flex items-center px-1">
             <IndianRupee className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
             Your Simplified Expenses
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {userTransactions.map((transaction, index) => (
               <div
                 key={index}
-                className={`flex justify-between items-center p-3 rounded-lg ${
+                className={`flex justify-between items-center p-2 rounded-lg ${
                   transaction.from === LoggedInUser ? "bg-red-50 border-l-4 border-red-400" : "bg-green-50 border-l-4 border-green-400"
-                } transition-all duration-300 hover:shadow-md`}
+                } transition-all duration-300 hover:shadow-sm`}
               >
                 <div className="flex items-center">
                   <div className="relative">
@@ -101,8 +114,20 @@ function SimplifiedComponent(props: PropsType) {
                     </p>
                   </div>
                 </div>
-                <div className={`text-sm sm:text-lg font-bold ${transaction.from === LoggedInUser ? "text-red-600" : "text-green-600"}`}>
-                  {transaction.from === LoggedInUser ? "-" : "+"}₹{transaction.amount.toFixed(2)}
+                <div className="flex items-center gap-3">
+                  <div className={`text-sm sm:text-lg font-bold ${transaction.from === LoggedInUser ? "text-red-600" : "text-green-600"}`}>
+                    {transaction.from === LoggedInUser ? "-" : "+"}₹{transaction.amount.toFixed(2)}
+                  </div>
+                  {transaction.to === LoggedInUser && props.isSettled && (
+                    <button
+                      title="Send Reminder"
+                      className="p-2 rounded-full hover:bg-green-100 transition-colors"
+                      onClick={() => handleSendReminder(transaction.from)}
+                      disabled={isReminding}
+                    >
+                      <Bell className={`w-4 h-4 sm:w-5 sm:h-5 text-green-600 ${isReminding ? "opacity-50" : ""}`} />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

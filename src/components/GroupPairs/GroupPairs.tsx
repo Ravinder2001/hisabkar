@@ -17,7 +17,7 @@ export default function GroupPairs(props: PropType) {
   const groupMembers = props.groupMembers;
 
   const [selectedTab, setSelectedTab] = useState("SEND");
-  const [viewMode, setViewMode] = useState(props.isSettled ? "DETAILED" : "SIMPLIFIED"); // Default to Simplified if settled, else Detailed
+  const [viewMode, setViewMode] = useState("SIMPLIFIED");
 
   const handleTabClick = () => {
     setSelectedTab(selectedTab === "SEND" ? "RECEIVE" : "SEND");
@@ -127,7 +127,7 @@ export default function GroupPairs(props: PropType) {
           )}
         </>
       ) : (
-        <SimplifiedComponent groupId={props.GroupId} groupMembers={groupMembers} />
+        <SimplifiedComponent groupId={props.GroupId} groupMembers={groupMembers} isSettled={props.isSettled} />
       )}
     </div>
   );
