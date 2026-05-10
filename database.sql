@@ -237,3 +237,12 @@ BEGIN
 
 END;
 $$;
+
+CALL sp_add_past_expense(
+    1,                                  -- p_group_id
+    'Movie Tickets Last Week',          -- p_expense_name
+    1200.00,                            -- p_amount (Total amount)
+    5,                                  -- p_paid_by
+    '2024-03-20 18:00:00',              -- p_expense_date
+    '[5, 8, 10]'::jsonb                 -- p_members: Just an array of user_ids now!
+);
