@@ -516,7 +516,7 @@ export default function GroupDetails() {
         </div>
       </div>
 
-      /* ── Floating / Mobile Bottom Nav ────────────────────────────────── */
+      {/* ── Floating / Mobile Bottom Nav ── */}
       <nav className={styles.bottomNav}>
         <div className={styles.navInner}>
           {NAV_TABS.filter(
