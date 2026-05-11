@@ -516,21 +516,35 @@ export default function GroupDetails() {
         </div>
       </div>
 
-      {/* ── Floating / Mobile Bottom Nav ────────────────────────────────── */}
+      /* ── Floating / Mobile Bottom Nav ────────────────────────────────── */
       <nav className={styles.bottomNav}>
         <div className={styles.navInner}>
-          {NAV_TABS.filter((tab) => !tab.isAdd || (!groupData?.is_settled && isUserAvailable)).map((tab) => (
+          {NAV_TABS.filter(
+            (tab) =>
+              !tab.isAdd ||
+              (groupData?.is_settled === false && isUserAvailable)
+          ).map((tab) => (
             <button
               key={tab.id}
-              className={`${tab.isAdd ? styles.navItemAdd : styles.navItem} ${
-                activeTab === tab.id && !tab.isAdd ? styles.navItemActive : ""
-              } ${activeTab === tab.id && tab.isAdd ? styles.navItemAddActive : ""}`}
+              className={`
+          ${tab.isAdd ? styles.navItemAdd : styles.navItem}
+          ${activeTab === tab.id && !tab.isAdd ? styles.navItemActive : ""}
+          ${activeTab === tab.id && tab.isAdd ? styles.navItemAddActive : ""}
+        `}
               onClick={() => handleTabChange(tab.id)}
               aria-label={tab.label}
             >
-              <span className={tab.isAdd ? styles.navAddCircle : styles.navIcon}>{tab.icon}</span>
-              {!tab.isAdd && <span className={styles.navLabel}>{tab.label}</span>}
-              {activeTab === tab.id && !tab.isAdd && <span className={styles.navActivePill} />}
+              <span className={tab.isAdd ? styles.navAddCircle : styles.navIcon}>
+                {tab.icon}
+              </span>
+
+              {!tab.isAdd && (
+                <span className={styles.navLabel}>{tab.label}</span>
+              )}
+
+              {activeTab === tab.id && !tab.isAdd && (
+                <span className={styles.navActivePill} />
+              )}
             </button>
           ))}
         </div>
@@ -538,16 +552,18 @@ export default function GroupDetails() {
 
       {/* ── FAB Stack — timeline tab only (Budget + ChatBot) ─────────── */}
       <div className={styles.fabStack}>
-        {activeTab === "timeline" && !groupData?.is_settled && (
-          <>
-            {/* Budget — top */}
-            <BudgetSetter
-              groupId={GroupId}
-              onBudgetSet={() => fetchGroupDetails()}
-              inStack
-            />
-          </>
-        )}
+        {activeTab === "timeline" &&
+          groupData &&
+          !groupData.is_settled && (
+            <>
+              {/* Budget — top */}
+              <BudgetSetter
+                groupId={GroupId}
+                onBudgetSet={() => fetchGroupDetails()}
+                inStack
+              />
+            </>
+          )}
 
         {/* ChatBot — bottom */}
         <ChatAssistant groupId={GroupId} inStack />
