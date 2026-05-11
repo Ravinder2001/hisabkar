@@ -537,14 +537,14 @@ export default function GroupDetails() {
       </nav>
 
       {/* ── FAB Stack — timeline tab only (Budget + ChatBot) ─────────── */}
-      {activeTab === "timeline" && !groupData?.is_settled && (
         <div className={styles.fabStack}>
+        {activeTab === "timeline" && !groupData?.is_settled && (
           {/* Budget — top */}
           <BudgetSetter groupId={GroupId} onBudgetSet={() => fetchGroupDetails()} inStack />
           {/* ChatBot — bottom */}
-          <ChatAssistant groupId={GroupId} inStack />
+        )}
+        <ChatAssistant groupId={GroupId} inStack />
         </div>
-      )}
 
       {/* ── Modals ──────────────────────────────────────────────────────── */}
       {/* Edit/Clone is now handled inline via the 'Add' tab */}
