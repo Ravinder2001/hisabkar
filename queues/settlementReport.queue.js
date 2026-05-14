@@ -99,7 +99,7 @@ const settlementReportWorker = new Worker(
     console.log(`[BullMQ Worker] Generating settlement reports for group ${groupId}...`);
 
     try {
-      // 1. Fetch all necessary data
+      // 1. Fetch all necessary data directly from DB for absolute freshness
       const groupData = await groupModel.downloadGroupData({ group_id: groupId });
       const { group, members, expenses, expenseMembers } = groupData;
       const simplifiedPairs = await groupModel.getSimplifiedPairs({ group_id: groupId });
@@ -116,7 +116,7 @@ const settlementReportWorker = new Worker(
         },
       });
 
-      // Fetch the actual member list from the database to get real emails!
+      // Fetch the actual member list from the database directly (guarantees real emails)
       const realMembers = await groupModel.getGroupMembers(groupId);
 
       // 4. Generate and send email to each member
@@ -125,6 +125,7 @@ const settlementReportWorker = new Worker(
         const realMemberData = realMembers.find((m) => m.id === member.user_id);
 
         const targetEmail = realMemberData ? realMemberData.email : null;
+        console.log("🚀 ~ targetEmail:", targetEmail);
 
         if (!targetEmail) {
           console.log(`[BullMQ Worker] Skipping ${member.name} because they have no email address.`);
