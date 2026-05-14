@@ -22,8 +22,13 @@ const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
+const generateCacheKey = (key) => {
+  return `${config.NODE_ENV}:${key}`;
+};
+
 module.exports = {
   maskEmail,
   generateAvatarImage,
   generateOTP,
+  generateCacheKey,
 };

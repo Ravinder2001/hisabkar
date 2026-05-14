@@ -13,7 +13,7 @@ const initSockets = require("./sockets/index");
 const mainRouter = require("./routes/routes");
 const config = require("./configuration/config");
 const Messages = require("./utils/constant/messages");
-const { encryptData } = require("./utils/encryption");
+
 const client = require("./configuration/db");
 
 require("./jobs/cronJob");
@@ -49,22 +49,6 @@ morgan.token("user", (req) => {
 app.disable("x-powered-by");
 app.use(helmet());
 app.use(cors(corsOptions));
-app.use((req, res, next) => {
-  const originalSend = res.json;
-
-  res.json = function (data) {
-    if (config.NODE_ENV === "prod" && data.data) {
-      const encryptedData = encryptData(data.data);
-      originalSend.call(this, {
-        ...data,
-        data: encryptedData,
-      });
-    } else {
-      originalSend.call(this, data);
-    }
-  };
-  next();
-});
 
 app.use(
   helmet.contentSecurityPolicy({

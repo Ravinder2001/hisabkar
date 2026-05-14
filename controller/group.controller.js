@@ -6,7 +6,7 @@ const Messages = require("../utils/constant/messages");
 const { getExpenseChangeLog, trackExpenseChange } = require("../helpers/expenseLog");
 const ExcelJS = require("exceljs");
 const { sendNotificationsToUsers } = require("../helpers/pushService");
-const { maskEmail } = require("../utils/common/common");
+const { maskEmail, generateCacheKey } = require("../utils/common/common");
 const { encryptData } = require("../utils/encryption");
 const { DEMO_GROUP_ID } = require("../configuration/config");
 const redisClient = require("../configuration/redis");
@@ -21,7 +21,7 @@ module.exports = {
       createRes.group_data.group_id = await encryptData(createRes.group_data.group_id);
 
       // Invalidate the cache for the user's groups
-      await redisClient.del(`user:${req.user.user_id}:groups`);
+      await redisClient.del(generateCacheKey(`user:${req.user.user_id}:groups`));
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, createRes);
     } catch (error) {
@@ -61,7 +61,7 @@ module.exports = {
         newAmount: null,
       });
       // Invalidate the cache for the user's groups
-      await redisClient.del(`user:${req.user.user_id}:groups`);
+      await redisClient.del(generateCacheKey(`user:${req.user.user_id}:groups`));
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response);
     } catch (error) {
@@ -84,7 +84,7 @@ module.exports = {
         newAmount: null,
       });
       // Invalidate the cache for the user's groups
-      await redisClient.del(`user:${req.user.user_id}:groups`);
+      await redisClient.del(generateCacheKey(`user:${req.user.user_id}:groups`));
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response);
     } catch (error) {
@@ -94,7 +94,7 @@ module.exports = {
   getAllGroups: async (req, res) => {
     try {
       const userId = req.user.user_id;
-      const cacheKey = `user:${userId}:groups`;
+      const cacheKey = generateCacheKey(`user:${userId}:groups`);
 
       // ==========================================
       // SCENARIO A: Check Cache (Cache Hit)
