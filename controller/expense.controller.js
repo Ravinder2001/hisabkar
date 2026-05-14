@@ -53,6 +53,7 @@ module.exports = {
 
       // Invalidate the group expenses cache
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:expenses`));
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:simplified`));
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response.expenseData);
     } catch (error) {
@@ -91,6 +92,7 @@ module.exports = {
 
       // Invalidate the group expenses cache
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:expenses`));
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:simplified`));
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response.expenseData);
     } catch (error) {
@@ -152,6 +154,7 @@ module.exports = {
 
       // Invalidate the group expenses cache
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:expenses`));
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:simplified`));
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
     } catch (error) {

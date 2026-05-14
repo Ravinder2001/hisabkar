@@ -203,6 +203,8 @@ module.exports = {
         newAmount: null,
       });
 
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:simplified`));
+
       return common.successResponse(res, Messages.GROUP_SETTLEMNT_TOGGLE(response.is_settled), HttpStatus.OK);
     } catch (error) {
       common.handleAsyncError(error, res);
@@ -346,7 +348,19 @@ module.exports = {
   },
   getSimplifiedPairs: async (req, res) => {
     try {
+      const cacheKey = generateCacheKey(`group:${req.params.group_id}:simplified`);
+      const cachedData = await redisClient.get(cacheKey);
+
+      if (cachedData) {
+        console.log(`⚡ CACHE HIT for ${cacheKey}`);
+        const parsedData = JSON.parse(cachedData);
+        return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, parsedData, parsedData.length);
+      }
+
+      console.log(`🐌 CACHE MISS for ${cacheKey}. Fetching from PostgreSQL...`);
       const response = await groupModel.getSimplifiedPairs(req.params);
+
+      await redisClient.setEx(cacheKey, TIME.REDIS_CACHE_EXPIRY, JSON.stringify(response));
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response, response.length);
     } catch (error) {
