@@ -1,7 +1,7 @@
 const groupModel = require("../model/group.model");
 const usersModel = require("../model/users.model");
 const common = require("./common.controller");
-const { HttpStatus } = require("../utils/constant/constant");
+const { HttpStatus, TIME } = require("../utils/constant/constant");
 const Messages = require("../utils/constant/messages");
 const { getExpenseChangeLog, trackExpenseChange } = require("../helpers/expenseLog");
 const ExcelJS = require("exceljs");
@@ -9,6 +9,7 @@ const { sendNotificationsToUsers } = require("../helpers/pushService");
 const { maskEmail } = require("../utils/common/common");
 const { encryptData } = require("../utils/encryption");
 const { DEMO_GROUP_ID } = require("../configuration/config");
+const redisClient = require("../configuration/redis");
 
 module.exports = {
   createGroup: async (req, res) => {
@@ -18,6 +19,10 @@ module.exports = {
         userId: req.user.user_id,
       });
       createRes.group_data.group_id = await encryptData(createRes.group_data.group_id);
+
+      // Invalidate the cache for the user's groups
+      await redisClient.del(`user:${req.user.user_id}:groups`);
+
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, createRes);
     } catch (error) {
       common.handleAsyncError(error, res);
@@ -55,6 +60,8 @@ module.exports = {
         oldAmount: null,
         newAmount: null,
       });
+      // Invalidate the cache for the user's groups
+      await redisClient.del(`user:${req.user.user_id}:groups`);
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response);
     } catch (error) {
@@ -76,6 +83,8 @@ module.exports = {
         oldAmount: null,
         newAmount: null,
       });
+      // Invalidate the cache for the user's groups
+      await redisClient.del(`user:${req.user.user_id}:groups`);
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response);
     } catch (error) {
@@ -84,16 +93,35 @@ module.exports = {
   },
   getAllGroups: async (req, res) => {
     try {
-      let groupList = await groupModel.getAllGroups(req.user.user_id);
+      const userId = req.user.user_id;
+      const cacheKey = `user:${userId}:groups`;
 
-      // Encrypt group_id properly
+      // ==========================================
+      // SCENARIO A: Check Cache (Cache Hit)
+      // ==========================================
+
+      const cachedGroups = await redisClient.get(cacheKey);
+      if (cachedGroups) {
+        // If it exists in Redis, parse it back to JSON and return instantly!
+        console.log(`⚡ CACHE HIT for ${cacheKey}`);
+        const groupList = JSON.parse(cachedGroups);
+        return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, groupList, groupList.length);
+      }
+
+      // ==========================================
+      // SCENARIO B: Fetch from Database (Cache Miss)
+      // ==========================================
+      console.log(`🐌 CACHE MISS for ${cacheKey}. Fetching from PostgreSQL...`);
+      let groupList = await groupModel.getAllGroups(userId);
+      // Encrypt group_id properly (your existing code)
       groupList = await Promise.all(
         groupList.map(async (item) => ({
           ...item,
-          group_id: await encryptData(item.group_id), // Ensure encryption is awaited
+          group_id: await encryptData(item.group_id),
         }))
       );
-
+      // Save the fresh database result into Redis
+      await redisClient.setEx(cacheKey, TIME.REDIS_CACHE_EXPIRY, JSON.stringify(groupList));
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, groupList, groupList.length);
     } catch (error) {
       common.handleAsyncError(error, res);

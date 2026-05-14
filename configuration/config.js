@@ -45,6 +45,7 @@ const config = {
     MODELS: ["deepseek/deepseek-chat", "meta-llama/llama-3-70b-instruct", "mistralai/mixtral-8x7b-instruct"],
   },
   CHATBOT_DAILY_LIMIT: process.env.CHATBOT_DAILY_LIMIT || 5,
+  REDIS_URL: process.env.REDIS_URL,
 };
 
 module.exports = config;

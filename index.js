@@ -18,6 +18,7 @@ const client = require("./configuration/db");
 
 require("./jobs/cronJob");
 require("./configuration/db");
+require("./configuration/redis");
 
 const port = config.PORT;
 

@@ -26,6 +26,7 @@ module.exports = {
   },
   TIME: {
     expiry_time: 10, //Minutes
+    REDIS_CACHE_EXPIRY: 864000, // 10 Days in seconds
   },
   LENGTH_VALIDATIONS: {
     NAME: 20,
