@@ -63,6 +63,8 @@ module.exports = {
       // Invalidate the cache for the user's groups
       await redisClient.del(generateCacheKey(`user:${req.user.user_id}:groups`));
 
+      await redisClient.del(generateCacheKey(`group:${response.group_id}:members`));
+
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response);
     } catch (error) {
       common.handleAsyncError(error, res);
@@ -85,6 +87,8 @@ module.exports = {
       });
       // Invalidate the cache for the user's groups
       await redisClient.del(generateCacheKey(`user:${req.user.user_id}:groups`));
+
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:members`));
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response);
     } catch (error) {
@@ -141,6 +145,16 @@ module.exports = {
   },
   getGroupMembers: async (req, res) => {
     try {
+      const cacheKey = generateCacheKey(`group:${req.params.group_id}:members`);
+      const cachedMembers = await redisClient.get(cacheKey);
+
+      if (cachedMembers) {
+        console.log(`⚡ CACHE HIT for ${cacheKey}`);
+        const parsedMembers = JSON.parse(cachedMembers);
+        return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, parsedMembers, parsedMembers.length);
+      }
+
+      console.log(`🐌 CACHE MISS for ${cacheKey}. Fetching from PostgreSQL...`);
       let members = await groupModel.getGroupMembers(req.params.group_id);
 
       // If groupId matches DEMO_GROUP_ID, mask member names
@@ -151,6 +165,8 @@ module.exports = {
           avatar: req.params.group_id == DEMO_GROUP_ID ? "https://api.dicebear.com/7.x/adventurer/svg?seed=345&gender=male" : item.avatar,
         }))
       );
+
+      await redisClient.setEx(cacheKey, TIME.REDIS_CACHE_EXPIRY, JSON.stringify(members));
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, members, members.length);
     } catch (error) {
@@ -341,6 +357,8 @@ module.exports = {
     try {
       await groupModel.addGroupMember({ userId: req.user.user_id, groupId: req.params.group_id, ...req.body });
 
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:members`));
+
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
     } catch (error) {
       common.handleAsyncError(error, res);
@@ -387,6 +405,8 @@ module.exports = {
         userId: req.user.user_id,
         memberId: req.params.user_id,
       });
+
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:members`));
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
     } catch (error) {
