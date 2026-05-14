@@ -10,7 +10,7 @@ const { maskEmail, generateCacheKey } = require("../utils/common/common");
 const { encryptData } = require("../utils/encryption");
 const { DEMO_GROUP_ID } = require("../configuration/config");
 const redisClient = require("../configuration/redis");
-
+const { settlementReportQueue } = require("../queues/settlementReport.queue");
 module.exports = {
   createGroup: async (req, res) => {
     try {
@@ -220,6 +220,11 @@ module.exports = {
       });
 
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:simplified`));
+
+      if (response.is_settled) {
+        // Dispatch background job to generate and send detailed emails
+        settlementReportQueue.add("sendReport", { groupId: req.params.group_id });
+      }
 
       return common.successResponse(res, Messages.GROUP_SETTLEMNT_TOGGLE(response.is_settled), HttpStatus.OK);
     } catch (error) {

@@ -19,6 +19,7 @@ const client = require("./configuration/db");
 require("./jobs/cronJob");
 require("./configuration/db");
 require("./configuration/redis");
+require("./queues/settlementReport.queue");
 
 const port = config.PORT;
 

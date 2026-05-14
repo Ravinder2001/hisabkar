@@ -266,7 +266,8 @@ GROUP BY g.group_id;
         SELECT 
           u.user_id AS id, 
           u.name, 
-          u.avatar, 
+          u.avatar,
+          u.email, 
           COALESCE(SUM(e.amount), 0) AS total_spent,
           COALESCE(uo.availibilty_status, false) AS is_available,
           gm2.is_active AS is_current_user
@@ -519,15 +520,12 @@ GROUP BY g.group_id;
 
       const group = groupResult.rows[0];
 
-      // Fetch group members with their total spending
+      // Fetch group members
       const membersQuery = `
     SELECT u.user_id, u.name
     FROM tbl_group_members gm
     JOIN tbl_users u ON gm.user_id = u.user_id
-    LEFT JOIN tbl_expense_members em ON gm.user_id = em.user_id
-    LEFT JOIN tbl_expenses e ON em.expense_id = e.expense_id
-    WHERE gm.group_id = $1 AND e.group_id = $1
-    GROUP BY u.user_id, u.name;
+    WHERE gm.group_id = $1 AND gm.is_active = TRUE;
   `;
       const membersResult = await client.query(membersQuery, [group_id]);
       const members = membersResult.rows;
