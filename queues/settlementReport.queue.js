@@ -38,8 +38,8 @@ const generateEmailHTML = (member, group, expenses, expenseMembers, simplifiedPa
   html += `<p style="font-size: 16px;">Hi <strong>${member.name}</strong>,</p>`;
   html += `<p style="font-size: 16px;">The group <strong>${group.group_name}</strong> has just been marked as settled. Here is your final summary report!</p>`;
 
-  html += `<h2 style="border-bottom: 2px solid #f3f4f6; padding-bottom: 5px;">Group Spends Overview</h2>`;
-  html += `<div style="text-align: center;"><img src="${chartUrl}" alt="Spend Chart" style="max-width: 100%; border-radius: 8px;" /></div>`;
+  html += `<h2 style="border-bottom: 2px solid #f3f4f6; padding-bottom: 5px;">Your Category-wise Spending</h2>`;
+  html += `<div style="text-align: center;"><img src="${chartUrl}" alt="Personal Spend Chart" style="max-width: 100%; border-radius: 8px;" /></div>`;
 
   html += `<h2 style="border-bottom: 2px solid #f3f4f6; padding-bottom: 5px; margin-top: 30px;">Your Settlement Details</h2>`;
 
@@ -104,32 +104,7 @@ const settlementReportWorker = new Worker(
       const { group, members, expenses, expenseMembers } = groupData;
       const simplifiedPairs = await groupModel.getSimplifiedPairs({ group_id: groupId });
 
-      // 2. Calculate data for the chart (Total spent by each member)
-      const spentMap = {};
-      members.forEach((m) => (spentMap[m.name] = 0));
-      expenses.forEach((e) => {
-        if (spentMap[e.paid_by] !== undefined) {
-          spentMap[e.paid_by] += parseFloat(e.expense_amount);
-        }
-      });
-
-      const chartLabels = Object.keys(spentMap);
-      const chartData = Object.values(spentMap);
-
-      // QuickChart API URL for a simple bar chart
-      const chartConfig = {
-        type: "bar",
-        data: {
-          labels: chartLabels,
-          datasets: [{ label: "Total Spent (₹)", data: chartData, backgroundColor: "#4f46e5" }],
-        },
-        options: {
-          title: { display: true, text: "Total Spent by Member" },
-        },
-      };
-      const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}`;
-
-      // 3. Setup Nodemailer Transporter using Gmail
+      // 2. Setup Nodemailer Transporter using Gmail
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -156,12 +131,40 @@ const settlementReportWorker = new Worker(
           continue;
         }
 
-        const emailHtml = generateEmailHTML(member, group, expenses, expenseMembers, simplifiedPairs, chartUrl, realMembers);
+        // --- Personal Category-wise Spending Calculation ---
+        const userCategoryMap = {};
+        const userRelevantExpenses = expenseMembers.filter((em) => em.name === member.name);
+
+        userRelevantExpenses.forEach((em) => {
+          const exp = expenses.find((e) => e.expense_id === em.expense_id);
+          if (exp) {
+            const cat = exp.expense_type || "Others";
+            userCategoryMap[cat] = (userCategoryMap[cat] || 0) + parseFloat(em.amount);
+          }
+        });
+
+        const catLabels = Object.keys(userCategoryMap);
+        const catData = Object.values(userCategoryMap);
+
+        const chartConfig = {
+          type: "bar",
+          data: {
+            labels: catLabels,
+            datasets: [{ label: "Your Spending (₹)", data: catData, backgroundColor: "#4f46e5" }],
+          },
+          options: {
+            title: { display: true, text: `Your Category-wise Spending` },
+          },
+        };
+        const userChartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}`;
+        // ----------------------------------------------------
+
+        const emailHtml = generateEmailHTML(member, group, expenses, expenseMembers, simplifiedPairs, userChartUrl, realMembers);
 
         await transporter.sendMail({
           from: '"Hisabkar System" <noreply@hisabkar.com>',
           to: targetEmail,
-          subject: `Settlement Report: ${group.group_name}`,
+          subject: `💰 ${group.group_name} Settlement: Final Summary & Report`,
           html: emailHtml,
         });
 
