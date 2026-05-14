@@ -422,16 +422,10 @@ module.exports = {
           group_id: await encryptData(groupId),
         };
 
-        subscriptions.forEach((sub) =>
-          sendNotificationsToUsers(sub, payload)
-        );
+        subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
       }
 
-      return common.successResponse(
-        res,
-        "Reminder sent successfully",
-        HttpStatus.OK
-      );
+      return common.successResponse(res, "Reminder sent successfully", HttpStatus.OK);
     } catch (error) {
       common.handleAsyncError(error, res);
     }

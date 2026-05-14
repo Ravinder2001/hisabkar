@@ -1,7 +1,9 @@
 const expenseModel = require("../model/expense.model");
 const usersModel = require("../model/users.model");
 const common = require("./common.controller");
-const { HttpStatus } = require("../utils/constant/constant");
+const { HttpStatus, TIME } = require("../utils/constant/constant");
+const { generateCacheKey } = require("../utils/common/common");
+const redisClient = require("../configuration/redis");
 const Messages = require("../utils/constant/messages");
 const { trackExpenseChange } = require("../helpers/expenseLog");
 const { sendNotificationsToUsers } = require("../helpers/pushService");
@@ -49,6 +51,9 @@ module.exports = {
         }
       }
 
+      // Invalidate the group expenses cache
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:expenses`));
+
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response.expenseData);
     } catch (error) {
       common.handleAsyncError(error, res);
@@ -84,6 +89,9 @@ module.exports = {
         newAmount: req.body.amount,
       });
 
+      // Invalidate the group expenses cache
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:expenses`));
+
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response.expenseData);
     } catch (error) {
       common.handleAsyncError(error, res);
@@ -92,12 +100,29 @@ module.exports = {
   getAllExpenses: async (req, res) => {
     try {
       const { lastId, limit } = req.query;
+      const isFirstPage = !lastId;
+      const cacheKey = generateCacheKey(`group:${req.params.group_id}:expenses`);
+
+      if (isFirstPage) {
+        const cachedExpenses = await redisClient.get(cacheKey);
+        if (cachedExpenses) {
+          console.log(`⚡ CACHE HIT for ${cacheKey}`);
+          const parsedData = JSON.parse(cachedExpenses);
+          return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, parsedData, parsedData.length);
+        }
+        console.log(`🐌 CACHE MISS for ${cacheKey}. Fetching from PostgreSQL...`);
+      }
+
       let data = await expenseModel.getAllExpenses({
         groupId: req.params.group_id,
         userId: req.user.user_id,
         lastId: lastId ? parseInt(lastId) : null,
         limit: limit ? parseInt(limit) : 10,
       });
+
+      if (isFirstPage) {
+        await redisClient.setEx(cacheKey, TIME.REDIS_CACHE_EXPIRY, JSON.stringify(data));
+      }
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, data, data.length);
     } catch (error) {
@@ -124,6 +149,9 @@ module.exports = {
           subscriptions.forEach((sub) => sendNotificationsToUsers(sub, payload));
         }
       }
+
+      // Invalidate the group expenses cache
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:expenses`));
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
     } catch (error) {
