@@ -1,20 +1,7 @@
-const { Queue, Worker } = require("bullmq");
 const nodemailer = require("nodemailer");
 const https = require("https");
 const groupModel = require("../model/group.model");
 const config = require("../configuration/config");
-
-// Parse Redis URL for BullMQ connection options
-const redisUrlObj = new URL(config.REDIS_URL);
-const connection = {
-  host: redisUrlObj.hostname,
-  port: Number(redisUrlObj.port),
-  password: redisUrlObj.password,
-  tls: redisUrlObj.protocol === "rediss:" ? { rejectUnauthorized: false } : undefined,
-};
-
-// Create the Queue
-const settlementReportQueue = new Queue("SettlementReportQueue", { connection });
 
 // Helper to generate AI message
 async function getAiInsightMessage(totalSpent, memberCount, userSpent, userName) {
@@ -173,102 +160,108 @@ const generateEmailHTML = (member, group, expenses, expenseMembers, simplifiedPa
   return html;
 };
 
-// Create the Worker
-const settlementReportWorker = new Worker(
-  "SettlementReportQueue",
-  async (job) => {
-    const { groupId } = job.data;
-    console.log(`[BullMQ Worker] Generating settlement reports for group ${groupId}...`);
+// Internal function to process and send the report asynchronously in memory
+async function processSettlementReport(groupId) {
+  console.log(`[Background Job] Generating settlement reports for group ${groupId}...`);
 
-    try {
-      // 1. Fetch all necessary data directly from DB for absolute freshness
-      const groupData = await groupModel.downloadGroupData({ group_id: groupId });
-      const { group, members, expenses, expenseMembers } = groupData;
-      const simplifiedPairs = await groupModel.getSimplifiedPairs({ group_id: groupId });
+  try {
+    // 1. Fetch all necessary data directly from DB for absolute freshness
+    const groupData = await groupModel.downloadGroupData({ group_id: groupId });
+    const { group, members, expenses, expenseMembers } = groupData;
+    const simplifiedPairs = await groupModel.getSimplifiedPairs({ group_id: groupId });
 
-      // 2. Setup Nodemailer Transporter using Gmail
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: config.NODEMAILER.EMAIL,
-          pass: config.NODEMAILER.PASSWORD,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-      });
+    // 2. Setup Nodemailer Transporter using Gmail
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: config.NODEMAILER.EMAIL,
+        pass: config.NODEMAILER.PASSWORD,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
 
-      // Fetch the actual member list from the database directly (guarantees real emails)
-      const realMembers = await groupModel.getGroupMembers(groupId);
+    // Fetch the actual member list from the database directly (guarantees real emails)
+    const realMembers = await groupModel.getGroupMembers(groupId);
 
-      // 4. Generate and send email to each member
-      for (const member of members) {
-        // Find the member's real email from the getGroupMembers query
-        const realMemberData = realMembers.find((m) => m.id === member.user_id);
+    // 4. Generate and send email to each member
+    for (const member of members) {
+      // Find the member's real email from the getGroupMembers query
+      const realMemberData = realMembers.find((m) => m.id === member.user_id);
 
-        const targetEmail = realMemberData ? realMemberData.email : null;
+      const targetEmail = realMemberData ? realMemberData.email : null;
 
-        if (!targetEmail) {
-          console.log(`[BullMQ Worker] Skipping ${member.name} because they have no email address.`);
-          continue;
-        }
-
-        // --- Personal Category-wise Spending Calculation ---
-        const userCategoryMap = {};
-        const userRelevantExpenses = expenseMembers.filter((em) => em.name === member.name);
-
-        userRelevantExpenses.forEach((em) => {
-          const exp = expenses.find((e) => e.expense_id === em.expense_id);
-          if (exp) {
-            const cat = exp.expense_type || "Others";
-            userCategoryMap[cat] = (userCategoryMap[cat] || 0) + parseFloat(em.amount);
-          }
-        });
-
-        const catLabels = Object.keys(userCategoryMap);
-        const catData = Object.values(userCategoryMap);
-
-        const chartConfig = {
-          type: "bar",
-          data: {
-            labels: catLabels,
-            datasets: [{ label: "Your Spending (₹)", data: catData, backgroundColor: "#4f46e5" }],
-          },
-          options: {
-            title: { display: true, text: `Your Category-wise Spending` },
-          },
-        };
-        const userChartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}`;
-        // ----------------------------------------------------
-
-        // Generate AI message for this user
-        const totalUserSpent = catData.reduce((sum, val) => sum + val, 0);
-        const aiMessage = await getAiInsightMessage(group.total_amount, members.length, totalUserSpent, member.name);
-
-        const emailHtml = generateEmailHTML(member, group, expenses, expenseMembers, simplifiedPairs, userChartUrl, realMembers, aiMessage);
-
-        await transporter.sendMail({
-          from: '"Hisabkar System" <noreply@hisabkar.com>',
-          to: targetEmail,
-          subject: `💰 ${group.group_name} Settlement: Final Summary & Report`,
-          html: emailHtml,
-        });
-
-        console.log(`📧 [SUCCESS] Settlement email sent to ${member.name} (${targetEmail})`);
+      if (!targetEmail) {
+        console.log(`[Background Job] Skipping ${member.name} because they have no email address.`);
+        continue;
       }
 
-      console.log(`✅ [BullMQ Worker] Finished sending all settlement reports for group ${groupId}`);
-    } catch (error) {
-      console.error(`❌ [BullMQ Worker] Error generating reports for group ${groupId}:`, error);
-    }
-  },
-  { connection }
-);
+      // --- Personal Category-wise Spending Calculation ---
+      const userCategoryMap = {};
+      const userRelevantExpenses = expenseMembers.filter((em) => em.name === member.name);
 
-// Handle worker errors
-settlementReportWorker.on("failed", (job, err) => {
-  console.error(`❌ [BullMQ Worker] Job ${job.id} failed with error ${err.message}`);
-});
+      userRelevantExpenses.forEach((em) => {
+        const exp = expenses.find((e) => e.expense_id === em.expense_id);
+        if (exp) {
+          const cat = exp.expense_type || "Others";
+          userCategoryMap[cat] = (userCategoryMap[cat] || 0) + parseFloat(em.amount);
+        }
+      });
+
+      const catLabels = Object.keys(userCategoryMap);
+      const catData = Object.values(userCategoryMap);
+
+      const chartConfig = {
+        type: "bar",
+        data: {
+          labels: catLabels,
+          datasets: [{ label: "Your Spending (₹)", data: catData, backgroundColor: "#4f46e5" }],
+        },
+        options: {
+          title: { display: true, text: `Your Category-wise Spending` },
+        },
+      };
+      const userChartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}`;
+      // ----------------------------------------------------
+
+      // Generate AI message for this user
+      const totalUserSpent = catData.reduce((sum, val) => sum + val, 0);
+      const aiMessage = await getAiInsightMessage(group.total_amount, members.length, totalUserSpent, member.name);
+
+      const emailHtml = generateEmailHTML(member, group, expenses, expenseMembers, simplifiedPairs, userChartUrl, realMembers, aiMessage);
+
+      await transporter.sendMail({
+        from: '"Hisabkar System" <noreply@hisabkar.com>',
+        to: targetEmail,
+        subject: `💰 ${group.group_name} Settlement: Final Summary & Report`,
+        html: emailHtml,
+      });
+
+      console.log(`📧 [SUCCESS] Settlement email sent to ${member.name} (${targetEmail})`);
+    }
+
+    console.log(`✅ [Background Job] Finished sending all settlement reports for group ${groupId}`);
+  } catch (error) {
+    console.error(`❌ [Background Job] Error generating reports for group ${groupId}:`, error);
+  }
+}
+
+// Mock settlementReportQueue to process jobs asynchronously in memory without Redis/BullMQ commands
+const settlementReportQueue = {
+  add: async (jobName, data) => {
+    // Execute asynchronously to avoid blocking the Express request-response loop
+    setImmediate(async () => {
+      try {
+        await processSettlementReport(data.groupId);
+      } catch (error) {
+        console.error(`❌ [Background Job] Error processing background job:`, error);
+      }
+    });
+    // Return a mock job object structure to mimic BullMQ behavior
+    return { id: `mock-job-${Date.now()}` };
+  },
+};
 
 module.exports = {
   settlementReportQueue,
