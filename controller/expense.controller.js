@@ -51,9 +51,17 @@ module.exports = {
         }
       }
 
-      // Invalidate the group expenses cache
+      // Invalidate the group expenses, members, and simplified cache
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:expenses`));
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:simplified`));
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:members`));
+
+      // Invalidate user groups cache for all group members
+      if (response.groupData && response.groupData.user_ids) {
+        for (const user of response.groupData.user_ids) {
+          await redisClient.del(generateCacheKey(`user:${user.user_id}:groups`));
+        }
+      }
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response.expenseData);
     } catch (error) {
@@ -90,9 +98,17 @@ module.exports = {
         newAmount: req.body.amount,
       });
 
-      // Invalidate the group expenses cache
+      // Invalidate the group expenses, members, and simplified cache
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:expenses`));
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:simplified`));
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:members`));
+
+      // Invalidate user groups cache for all group members
+      if (response.groupData && response.groupData.user_ids) {
+        for (const user of response.groupData.user_ids) {
+          await redisClient.del(generateCacheKey(`user:${user.user_id}:groups`));
+        }
+      }
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, response.expenseData);
     } catch (error) {
@@ -152,9 +168,17 @@ module.exports = {
         }
       }
 
-      // Invalidate the group expenses cache
+      // Invalidate the group expenses, members, and simplified cache
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:expenses`));
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:simplified`));
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:members`));
+
+      // Invalidate user groups cache for all group members
+      if (response.groupData && response.groupData.user_ids) {
+        for (const user of response.groupData.user_ids) {
+          await redisClient.del(generateCacheKey(`user:${user.user_id}:groups`));
+        }
+      }
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
     } catch (error) {

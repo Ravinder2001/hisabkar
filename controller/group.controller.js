@@ -60,8 +60,12 @@ module.exports = {
         oldAmount: null,
         newAmount: null,
       });
-      // Invalidate the cache for the user's groups
-      await redisClient.del(generateCacheKey(`user:${req.user.user_id}:groups`));
+      // Invalidate the cache for all group members' groups lists
+      if (response.groupMembers) {
+        for (const memberId of response.groupMembers) {
+          await redisClient.del(generateCacheKey(`user:${memberId}:groups`));
+        }
+      }
 
       await redisClient.del(generateCacheKey(`group:${response.group_id}:members`));
 
@@ -85,7 +89,13 @@ module.exports = {
         oldAmount: null,
         newAmount: null,
       });
-      // Invalidate the cache for the user's groups
+      // Invalidate the cache for all group members' groups lists
+      const members = await groupModel.getAllGroupMemebers(req.params.group_id);
+      if (members) {
+        for (const member of members) {
+          await redisClient.del(generateCacheKey(`user:${member.user_id}:groups`));
+        }
+      }
       await redisClient.del(generateCacheKey(`user:${req.user.user_id}:groups`));
 
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:members`));
@@ -219,6 +229,14 @@ module.exports = {
         newAmount: null,
       });
 
+      // Invalidate the cache for all group members' groups lists
+      const members = await groupModel.getAllGroupMemebers(req.params.group_id);
+      if (members) {
+        for (const member of members) {
+          await redisClient.del(generateCacheKey(`user:${member.user_id}:groups`));
+        }
+      }
+
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:simplified`));
 
       if (response.is_settled) {
@@ -237,6 +255,14 @@ module.exports = {
         group_id: req.params.group_id,
         user_id: req.user.user_id,
       });
+
+      // Invalidate the cache for all group members' groups lists
+      const members = await groupModel.getAllGroupMemebers(req.params.group_id);
+      if (members) {
+        for (const member of members) {
+          await redisClient.del(generateCacheKey(`user:${member.user_id}:groups`));
+        }
+      }
 
       return common.successResponse(res, Messages.GROUP_STATUS_TOGGLE(response.is_active), HttpStatus.OK);
     } catch (error) {
@@ -362,6 +388,14 @@ module.exports = {
     try {
       await groupModel.addGroupMember({ userId: req.user.user_id, groupId: req.params.group_id, ...req.body });
 
+      // Invalidate the cache for all group members' groups lists
+      const members = await groupModel.getAllGroupMemebers(req.params.group_id);
+      if (members) {
+        for (const member of members) {
+          await redisClient.del(generateCacheKey(`user:${member.user_id}:groups`));
+        }
+      }
+
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:members`));
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
@@ -398,6 +432,17 @@ module.exports = {
         userId: req.user.user_id,
       });
 
+      // Invalidate the cache for all group members' groups lists
+      const members = await groupModel.getAllGroupMemebers(req.params.group_id);
+      if (members) {
+        for (const member of members) {
+          await redisClient.del(generateCacheKey(`user:${member.user_id}:groups`));
+        }
+      }
+
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:members`));
+      await redisClient.del(generateCacheKey(`group:${req.params.group_id}:simplified`));
+
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
     } catch (error) {
       common.handleAsyncError(error, res);
@@ -410,6 +455,14 @@ module.exports = {
         userId: req.user.user_id,
         memberId: req.params.user_id,
       });
+
+      // Invalidate the cache for all group members' groups lists
+      const members = await groupModel.getAllGroupMemebers(req.params.group_id);
+      if (members) {
+        for (const member of members) {
+          await redisClient.del(generateCacheKey(`user:${member.user_id}:groups`));
+        }
+      }
 
       await redisClient.del(generateCacheKey(`group:${req.params.group_id}:members`));
 
