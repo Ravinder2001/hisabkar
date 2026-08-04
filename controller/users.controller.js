@@ -1,10 +1,12 @@
 const userModel = require("../model/users.model");
+const groupModel = require("../model/group.model");
 const common = require("./common.controller");
 const { HttpStatus } = require("../utils/constant/constant");
 const Messages = require("../utils/constant/messages");
 const config = require("../configuration/config");
-const { generateAvatarImage, maskEmail } = require("../utils/common/common");
+const { generateAvatarImage, maskEmail, generateCacheKey } = require("../utils/common/common");
 const { encryptData } = require("../utils/encryption");
+const redisClient = require("../configuration/redis");
 
 module.exports = {
   googleLogin: async (req, res) => {
@@ -77,6 +79,13 @@ module.exports = {
   updateProfileDetails: async (req, res) => {
     try {
       await userModel.updateProfileDetails({ ...req.body, userId: req.user.user_id });
+
+      // Invalidate cached group member lists so the updated availability/profile shows up immediately
+      const groupIds = await groupModel.getGroupIdsByUser(req.user.user_id);
+      for (const groupId of groupIds) {
+        await redisClient.del(generateCacheKey(`group:${groupId}:members`));
+      }
+
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
     } catch (error) {
       common.handleAsyncError(error, res);
@@ -85,6 +94,13 @@ module.exports = {
   toggleAvailiblityStatus: async (req, res) => {
     try {
       await userModel.toggleAvailiblityStatus(req.user.user_id);
+
+      // Invalidate cached group member lists so the new availability shows up immediately
+      const groupIds = await groupModel.getGroupIdsByUser(req.user.user_id);
+      for (const groupId of groupIds) {
+        await redisClient.del(generateCacheKey(`group:${groupId}:members`));
+      }
+
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
     } catch (error) {
       common.handleAsyncError(error, res);

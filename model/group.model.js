@@ -165,6 +165,15 @@ module.exports = {
       throw error;
     }
   },
+  getGroupIdsByUser: async (userId) => {
+    try {
+      const { rows } = await client.query(`SELECT group_id FROM tbl_group_members WHERE user_id = $1 AND is_active = TRUE`, [userId]);
+      return rows.map((row) => row.group_id);
+    } catch (error) {
+      console.error("Error in fetching group ids by user:", error.message);
+      throw error;
+    }
+  },
   getAllGroups: async (userId) => {
     try {
       // SQL query to get all the required information
