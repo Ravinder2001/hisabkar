@@ -17,7 +17,8 @@ const poolConfig = {
 };
 
 if (isProduction && process.env.PG_CA_CERT) {
-  const pem = Buffer.from(fs.readFileSync(process.env.PG_CA_CERT), "base64").toString("utf-8");
+  const raw = fs.readFileSync(process.env.PG_CA_CERT, "utf-8").trim();
+  const pem = raw.startsWith("-----BEGIN") ? raw : Buffer.from(raw, "base64").toString("utf-8");
   poolConfig.ssl = {
     rejectUnauthorized: true,
     ca: pem,
