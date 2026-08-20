@@ -50,6 +50,8 @@ export default function GroupDetails() {
   const [activeTab, setActiveTab] = useState<TabId>("timeline");
   // Track which tabs have been visited to lazy-load APIs
   const [visitedTabs, setVisitedTabs] = useState<Set<TabId>>(new Set<TabId>(["timeline"]));
+  // Only one expense's "..." menu open at a time — lifted here so opening one closes any other
+  const [openExpenseMenuId, setOpenExpenseMenuId] = useState<number | null>(null);
 
   const {
     fetchData: fetchGroupDetails,
@@ -519,6 +521,8 @@ export default function GroupDetails() {
                             expenseRefs.current[expense.expense_id] = el;
                           }}
                           isSettled={groupData?.is_settled ?? false}
+                          openMenuId={openExpenseMenuId}
+                          onMenuOpenChange={setOpenExpenseMenuId}
                           onCloneClick={() => {
                             setSelectedRow(expense);
                             setIsClone(true);
@@ -650,11 +654,7 @@ export default function GroupDetails() {
       {/* ── Floating / Mobile Bottom Nav ── */}
       <nav className={styles.bottomNav}>
         <div className={styles.navInner}>
-          {NAV_TABS.filter(
-            (tab) =>
-              !tab.isAdd ||
-              (groupData?.is_settled === false && isUserAvailable)
-          ).map((tab) => (
+          {NAV_TABS.filter((tab) => !tab.isAdd || (groupData?.is_settled === false && isUserAvailable)).map((tab) => (
             <button
               key={tab.id}
               className={`
@@ -665,17 +665,11 @@ export default function GroupDetails() {
               onClick={() => handleTabChange(tab.id)}
               aria-label={tab.label}
             >
-              <span className={tab.isAdd ? styles.navAddCircle : styles.navIcon}>
-                {tab.icon}
-              </span>
+              <span className={tab.isAdd ? styles.navAddCircle : styles.navIcon}>{tab.icon}</span>
 
-              {!tab.isAdd && (
-                <span className={styles.navLabel}>{tab.label}</span>
-              )}
+              {!tab.isAdd && <span className={styles.navLabel}>{tab.label}</span>}
 
-              {activeTab === tab.id && !tab.isAdd && (
-                <span className={styles.navActivePill} />
-              )}
+              {activeTab === tab.id && !tab.isAdd && <span className={styles.navActivePill} />}
             </button>
           ))}
         </div>

@@ -14,6 +14,8 @@ type PropsType = ExpenseType & {
   onCloneClick: () => void;
   onShareClick: () => void;
   isSettled: boolean;
+  openMenuId: number | null;
+  onMenuOpenChange: (id: number | null) => void;
 };
 
 const EXPENSE_ICON: Record<string, string> = {
@@ -48,8 +50,7 @@ const ExpenseCard = React.memo(
           <div className={styles.body}>
             <div className={styles.title}>{expense.expense_name}</div>
             <div className={styles.meta}>
-              {expense.is_own_expense ? "You" : (paidByUser?.name?.split(" ")[0] ?? "someone")} ·{" "}
-              {SPLIT_LABEL[expense.split_type] ?? "split"}
+              {expense.is_own_expense ? "You" : (paidByUser?.name?.split(" ")[0] ?? "someone")} · {SPLIT_LABEL[expense.split_type] ?? "split"}
             </div>
           </div>
 
@@ -59,14 +60,21 @@ const ExpenseCard = React.memo(
           </div>
 
           {!expense.isSettled && (
-            <DropdownMenu>
+            <DropdownMenu
+              open={expense.openMenuId === expense.expense_id}
+              onOpenChange={(open) => expense.onMenuOpenChange(open ? expense.expense_id : null)}
+            >
               <DropdownMenuTrigger asChild>
                 <button type="button" className={styles.menuBtn}>
                   <span className="sr-only">Open menu</span>
                   <MoreVertical size={18} />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" style={{ background: "var(--hk-surface)", color: "var(--hk-ink)", border: "1px solid var(--hk-border)" }}>
+              <DropdownMenuContent
+                align="end"
+                collisionPadding={{ top: 8, bottom: 90 }}
+                style={{ background: "var(--hk-surface)", color: "var(--hk-ink)", border: "1px solid var(--hk-border)", zIndex: 1000 }}
+              >
                 <DropdownMenuItem onClick={expense.onShareClick} className={`cursor-pointer ${styles.menuItem}`}>
                   <MessageSquare className="mr-2 h-4 w-4" />
                   Share in Chat

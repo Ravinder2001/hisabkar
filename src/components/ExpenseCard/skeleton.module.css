@@ -68,3 +68,16 @@
   width: 60px;
   height: 10px;
 }
+
+/* mirrors ExpenseCard's .splitWrap (the "Split between N people" pill) so the
+   skeleton reserves the same height and nothing shifts when real data lands */
+.splitWrap {
+  padding: 10px 10px 10px 62px;
+}
+
+.splitPill {
+  composes: skeletonBase;
+  width: 150px;
+  height: 24px;
+  border-radius: 999px;
+}

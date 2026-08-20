@@ -10,13 +10,17 @@ export interface userState {
   isNewUser: boolean;
 }
 
+// TEMP (remove before shipping): hardcoded session so the phone doesn't need
+// Google sign-in while the LAN origin isn't registered with Google. Token is
+// a real one grabbed from a normal sign-in (100d expiry, see common.controller.js).
 const initialState: userState = {
-  id: "",
-  name: "",
-  avatar: "",
-  role: "",
-  token: "",
-  isUserLoggedIn: false,
+  id: "1",
+  name: "Ravinder",
+  avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=5080&gender=male",
+  role: "ADMIN",
+  token:
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJoaXNhYmthci1zZXJ2ZXIiLCJpZCI6MSwibmFtZSI6IlJhdmluZGVyIiwicm9sZSI6IkFETUlOIiwiYXZhdGFyIjoiaHR0cHM6Ly9hcGkuZGljZWJlYXIuY29tLzcueC9hZHZlbnR1cmVyL3N2Zz9zZWVkPTUwODAmZ2VuZGVyPW1hbGUiLCJpc05ld1VzZXIiOmZhbHNlLCJpYXQiOjE3ODcyMDk1NzQsImV4cCI6MTc5NTg0OTU3NH0.nXebX8nvweMUVPxqTkhqfBXIYQxPuuFiVJ5pkEg8BjU",
+  isUserLoggedIn: true,
   isNewUser: false,
 };
 
