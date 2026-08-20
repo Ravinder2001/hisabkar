@@ -85,7 +85,7 @@ function CreateGroupModal({
         </motion.div>
         <div>
           <div className={styles.title}>Create a group</div>
-          <div className={styles.subtitle}>Give it a name and pick what it's for</div>
+          <div className={styles.subtitle}>Give it a name and pick what it&apos;s for</div>
         </div>
       </div>
 
