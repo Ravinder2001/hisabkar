@@ -1,20 +1,13 @@
 .skeletonCard {
   width: 100%;
-  max-width: 384px; /* max-w-sm is 24rem = 384px */
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: 16px;
+  padding: 14px;
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  position: relative;
+  gap: 12px;
+  align-items: center;
 }
 
 .skeleton {
-  background: #f3f4f6;
-  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background: linear-gradient(90deg, var(--hk-surface-sunken) 25%, var(--hk-border) 50%, var(--hk-surface-sunken) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite linear;
   border-radius: 4px;
@@ -29,103 +22,66 @@
   }
 }
 
-.header {
+.icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  flex: none;
+}
+
+.body {
+  flex: 1;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .title {
-  width: 60%;
-  height: 24px;
-  border-radius: 8px;
+  width: 55%;
+  height: 16px;
+  border-radius: 6px;
 }
 
-.moreBtn {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.item {
+.metaRow {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex: 1;
-}
-
-.justifyEnd {
-  justify-content: flex-end;
-}
-
-.icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
-
-.iconSmall {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-}
-
-.textShort {
-  width: 40px;
-  height: 14px;
-}
-
-.textMedium {
-  width: 80px;
-  height: 20px;
-}
-
-.badge {
-  width: 70px;
-  height: 20px;
-  border-radius: 12px;
-}
-
-.footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 8px;
-  padding-top: 12px;
-  border-top: 1px solid #f9fafb;
-}
-
-.avatarStack {
-  display: flex;
-  align-items: center;
+  gap: 6px;
 }
 
 .avatar {
-  width: 32px;
-  height: 32px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  border: 2px solid white;
-  margin-left: -12px;
+  margin-left: -8px;
 }
 
 .avatar:first-child {
   margin-left: 0;
 }
 
-.badgeSmall {
+.textShort {
   width: 60px;
-  height: 18px;
-  border-radius: 8px;
+  height: 12px;
+  margin-left: 6px;
+  border-radius: 4px;
+}
+
+.right {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.amt {
+  width: 60px;
+  height: 16px;
+  border-radius: 6px;
+}
+
+.label {
+  width: 50px;
+  height: 10px;
+  border-radius: 4px;
 }

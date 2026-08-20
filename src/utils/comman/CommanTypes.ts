@@ -10,6 +10,8 @@ export type GroupType = {
   remaining_members: number;
   is_you_admin: boolean;
   members: string[];
+  /** positive = owed to you, negative = you owe, 0 = settled/no activity. Requires backend branch feature/group-list-net-balance. */
+  net_balance: number;
 };
 
 export type ModalType = {

@@ -1,0 +1,152 @@
+.header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--hk-surface);
+  border-bottom: 1px solid var(--hk-border);
+}
+
+.backBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--hk-border);
+  color: var(--hk-ink-soft);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.backBtn:hover {
+  background: var(--hk-surface-2);
+  color: var(--hk-ink);
+}
+
+.titleBlock {
+  flex: 1;
+  min-width: 0;
+}
+
+.groupName {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--hk-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subtitle {
+  font-size: 0.78rem;
+  color: var(--hk-ink-faint);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.groupType {
+  color: var(--hk-accent-strong);
+  font-weight: 600;
+}
+
+.menuBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--hk-border);
+  color: var(--hk-ink-soft);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.menuBtn:hover {
+  background: var(--hk-surface-2);
+  color: var(--hk-ink);
+}
+
+.avatarStackBtn {
+  flex: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.avatarStackBtn:hover {
+  opacity: 0.85;
+}
+
+/* ── Members modal ────────────────────────────────────────────────────── */
+.membersModal {
+  width: 380px;
+  max-width: 100%;
+  color: var(--hk-ink);
+}
+
+.membersModalTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-bottom: 14px;
+  color: var(--hk-ink);
+}
+
+.membersList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.memberRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--hk-border);
+}
+
+.memberRow:last-child {
+  border-bottom: none;
+}
+
+.memberInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.memberName {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--hk-ink);
+}
+
+.memberLeft {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--hk-ink-faint);
+  font-style: italic;
+}
+
+.memberSpent {
+  font-size: 0.78rem;
+  color: var(--hk-ink-faint);
+  margin-top: 1px;
+}
