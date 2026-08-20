@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import styles from "./style.module.css";
-import ButtonComponent from "../Atoms/ButtonComponent/ButtonComponent";
+import CustomCircularLoading from "../Atoms/CustomCircularLoading/CustomCircularLoading";
 import { Search, Plus, X } from "lucide-react";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
@@ -188,7 +188,9 @@ function AddMemberModal(props: PropsType) {
         </div>
 
         <div className={styles.modalFooter}>
-          <ButtonComponent text="Add Members" onClick={handleSubmit} isLoading={addMemberLoading} />
+          <button type="button" className={`hk-btn-primary ${styles.submitBtn}`} onClick={handleSubmit} disabled={addMemberLoading}>
+            {addMemberLoading ? <CustomCircularLoading /> : "Add Members"}
+          </button>
         </div>
       </div>
     </ModalComponent>
