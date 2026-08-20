@@ -1,7 +1,7 @@
 import React from "react";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import styles from "./style.module.css";
-import ButtonComponent from "../Atoms/ButtonComponent/ButtonComponent";
+import CustomCircularLoading from "../Atoms/CustomCircularLoading/CustomCircularLoading";
 
 type PropsType = {
   isOpen: boolean;
@@ -19,18 +19,12 @@ function CustomAlert(props: PropsType) {
       </div>
 
       <div className={styles.modalFooter}>
-        <button className={styles.cancelButton} onClick={props.onClose}>
+        <button type="button" className="hk-btn-secondary" onClick={props.onClose}>
           Cancel
         </button>
-        <div>
-          <ButtonComponent
-            text="Submit"
-            isLoading={props.isLoading}
-            onClick={() => {
-              props.onSubmit();
-            }}
-          />
-        </div>
+        <button type="button" className="hk-btn-primary" disabled={props.isLoading} onClick={() => props.onSubmit()}>
+          {props.isLoading ? <CustomCircularLoading /> : "Submit"}
+        </button>
       </div>
     </ModalComponent>
   );

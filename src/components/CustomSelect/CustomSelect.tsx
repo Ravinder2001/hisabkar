@@ -31,36 +31,53 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const customStyles = {
     control: (provided: any, state: any) => ({
       ...provided,
-      backgroundColor: "white",
-      borderRadius: "8px",
-      border: state.isFocused ? "1px solid black" : "1px solid rgba(229, 231, 235, var(--tw-border-opacity))",
-      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+      backgroundColor: "var(--hk-surface-2)",
+      borderRadius: "10px",
+      border: state.isFocused ? "1px solid var(--hk-accent)" : "1px solid var(--hk-border)",
+      boxShadow: state.isFocused ? "0 0 0 1px var(--hk-accent)" : "none",
       minHeight: "36px",
       fontSize: "14px",
       cursor: "pointer",
-      "&:hover": {
-        // border: "1px solid black",
-      },
     }),
     menu: (provided: any) => ({
       ...provided,
-      borderRadius: "8px",
-      boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-      fontSize: "16px",
+      backgroundColor: "var(--hk-surface)",
+      border: "1px solid var(--hk-border)",
+      borderRadius: "10px",
+      boxShadow: "0 20px 40px -20px rgba(var(--hk-shadow), 0.6)",
+      fontSize: "14px",
+      overflow: "hidden",
+    }),
+    menuList: (provided: any) => ({
+      ...provided,
+      backgroundColor: "var(--hk-surface)",
+    }),
+    singleValue: (provided: any) => ({
+      ...provided,
+      color: "var(--hk-ink)",
+    }),
+    input: (provided: any) => ({
+      ...provided,
+      color: "var(--hk-ink)",
     }),
     option: (provided: any, state: any) => ({
       ...provided,
-      backgroundColor: state.isSelected ? "black" : "white",
-      color: state.isSelected ? "white" : "black",
+      backgroundColor: state.isSelected ? "var(--hk-accent)" : state.isFocused ? "var(--hk-surface-sunken)" : "var(--hk-surface)",
+      color: state.isSelected ? "var(--hk-on-accent)" : "var(--hk-ink)",
       padding: "10px",
       cursor: "pointer",
-      "&:hover": {
-        backgroundColor: "rgba(0, 0, 0, 0.1)",
-      },
     }),
     placeholder: (provided: any) => ({
       ...provided,
-      color: "#aaa",
+      color: "var(--hk-ink-faint)",
+    }),
+    indicatorSeparator: (provided: any) => ({
+      ...provided,
+      backgroundColor: "var(--hk-border)",
+    }),
+    dropdownIndicator: (provided: any) => ({
+      ...provided,
+      color: "var(--hk-ink-faint)",
     }),
   };
 
