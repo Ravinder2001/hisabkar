@@ -29,9 +29,9 @@ const useApiFetch = (initialUrl: string, initialOptions?: AxiosRequestConfig) =>
           ...data,
         });
       } catch (error: any) {
-        const errorMessage = error?.data?.message || error.response?.data?.message || "Something went wrong";
+        const errorMessage = error?.data?.message || error?.response?.data?.message || error?.message || "Something went wrong";
         showToast(errorMessage, "error");
-        if (error.status === 401) {
+        if (error?.status === 401) {
           localStorage.clear();
           window.location.href = "/";
         }
