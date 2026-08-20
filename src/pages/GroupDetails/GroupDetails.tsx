@@ -9,7 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import GroupDetailHeader from "../../components/GroupDetailHeader/GroupDetailHeader";
 import axiosInstance from "../../utils/helpers/axiosInstance";
 import { AxiosError } from "axios";
-import { Users, TrendingUp, PlusCircle, MessageSquare, Sparkles } from "lucide-react";
+import { Users, TrendingUp, PlusCircle, MessageSquare, Sparkles, BarChart3 } from "lucide-react";
 import { ExpenseType, GroupDataType, GroupPairsData, MemberType } from "../../utils/comman/CommanTypes";
 import ExpenseCard from "../../components/ExpenseCard/ExpenseCard";
 import { io, Socket } from "socket.io-client";
@@ -84,6 +84,7 @@ export default function GroupDetails() {
   const [logModal, setLogModal] = useState<boolean>(false);
   const [spendAnalysisModal, setSpendAnalysisModal] = useState<boolean>(false);
   const [successModal, setSuccessModal] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string>("Your expense has been added successfully.");
   const [addMemberModal, setAddMemberModal] = useState<boolean>(false);
   const [groupSettingModal, setGroupSettingModal] = useState<boolean>(false);
   const [settlementConfirmModal, setSettlementConfirmModal] = useState<boolean>(false);
@@ -107,7 +108,10 @@ export default function GroupDetails() {
     return totalReceive - totalSend;
   }, [pairsData]);
 
-  const memberName = useCallback((id: string) => groupMembers.find((m) => String(m.id) === String(id))?.name ?? "Someone", [groupMembers]);
+  const memberName = useCallback(
+    (id: string) => (groupMembers.find((m) => String(m.id) === String(id))?.name ?? "Someone").split(" ")[0],
+    [groupMembers]
+  );
 
   // Chat is now a tab — track if it's active to clear unread
   const isChatTabActiveRef = useRef<boolean>(false);
@@ -171,11 +175,12 @@ export default function GroupDetails() {
   }, [handleTabChange]);
 
   const handleAddExpenseSuccess = useCallback(() => {
+    setSuccessMessage(isClone ? "Expense cloned successfully." : selectedRow ? "Expense updated successfully." : "Expense added successfully.");
     fetchMyPairs();
     fetchGroupDetails();
     setSuccessModal(true);
     handleTabChange("timeline");
-  }, [fetchMyPairs, fetchGroupDetails, handleTabChange]);
+  }, [fetchMyPairs, fetchGroupDetails, handleTabChange, isClone, selectedRow]);
 
   // const handleExpModal = () => {
   //   if (isAddExpModal && selectedRow) {
@@ -461,7 +466,7 @@ export default function GroupDetails() {
                 title="Spend Analysis"
                 onClick={handleSpendAnalysisModal}
               >
-                <TrendingUp size={16} />
+                <BarChart3 size={16} />
               </button>
             </div>
           </div>
@@ -698,7 +703,7 @@ export default function GroupDetails() {
       {spendAnalysisModal ? (
         <GroupSpendAnalysis groupId={GroupId} isOpen={spendAnalysisModal} setIsOpen={handleSpendAnalysisModal} groupMembers={groupMembers} />
       ) : null}
-      {successModal ? <SuccessModal open={successModal} setOpen={setSuccessModal} /> : null}
+      {successModal ? <SuccessModal open={successModal} setOpen={setSuccessModal} message={successMessage} /> : null}
       {addMemberModal ? (
         <AddMemberModal
           isOpen={addMemberModal}

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { EXPENSE_CATEGORIES } from "../../utils/constant/Categories";
@@ -15,16 +15,7 @@ interface ExpenseData {
 const BarChart: React.FC<{ data: ExpenseData[] }> = ({ data }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
-  const chartLabels = data.map((item) => {
-    const cat = EXPENSE_CATEGORIES.find((c) => c.label === item.expense_type);
-    return cat ? `${cat.icon} ${cat.label}` : item.expense_type;
-  });
-  // Icon-only version for the axis itself (kept compact); the full name still
-  // shows up via the tooltip title callback below, so nothing is lost on tap/hover.
-  const chartIcons = data.map((item) => {
-    const cat = EXPENSE_CATEGORIES.find((c) => c.label === item.expense_type);
-    return cat ? cat.icon : "✨";
-  });
+  const chartLabels = data.map((item) => item.expense_type);
 
   const chartData = {
     labels: chartLabels,
@@ -76,14 +67,11 @@ const BarChart: React.FC<{ data: ExpenseData[] }> = ({ data }) => {
         grid: { display: !isMobile, color: "#2e3549" }, // --hk-border
         beginAtZero: true,
         ticks: {
-          // x holds the ₹ values on mobile, but the icons themselves on desktop
-          // (indexAxis flips) — icons need a bigger size to read clearly.
-          font: { family: "Nunito", size: isMobile ? 10 : 20 },
+          // x holds the ₹ values on mobile, but the category names on desktop
+          // (indexAxis flips).
+          font: { family: "Nunito", size: isMobile ? 10 : 12 },
           color: "#aeb4c7", // --hk-ink-soft
-          callback: (value: any, index: number) => {
-            if (isMobile) return `₹${value}`;
-            return chartIcons[index];
-          },
+          callback: (value: any, index: number) => (isMobile ? `₹${value}` : chartLabels[index]),
         },
       },
       y: {
@@ -91,13 +79,10 @@ const BarChart: React.FC<{ data: ExpenseData[] }> = ({ data }) => {
         grid: { display: isMobile, color: "#2e3549" }, // --hk-border
         beginAtZero: true,
         ticks: {
-          // y holds the icons on mobile (indexAxis: "y"), ₹ values on desktop.
-          font: { family: "Nunito", size: isMobile ? 20 : 12 },
+          // y holds the category names on mobile, ₹ values on desktop.
+          font: { family: "Nunito", size: isMobile ? 12 : 12 },
           color: "#aeb4c7", // --hk-ink-soft
-          callback: (value: any, index: number) => {
-            if (!isMobile) return `₹${value}`;
-            return chartIcons[index];
-          },
+          callback: (value: any, index: number) => (!isMobile ? `₹${value}` : chartLabels[index]),
         },
       },
     },
