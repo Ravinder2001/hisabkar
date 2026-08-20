@@ -151,6 +151,23 @@
   font-size: 0.68rem;
 }
 
+.versionTag {
+  font-family: var(--hk-font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--hk-ink-faint);
+  background: var(--hk-surface);
+  border: 1px solid var(--hk-border);
+  border-radius: 999px;
+  padding: 4px 12px;
+  text-decoration: none;
+}
+
+.versionTag:hover {
+  color: var(--hk-accent-strong);
+  border-color: var(--hk-accent);
+}
+
 /* ── Desktop: split brand / form layout ──────────────────────────────── */
 .desktop {
   display: none;

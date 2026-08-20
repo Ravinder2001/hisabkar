@@ -8,6 +8,7 @@ const CONSTANTS = {
     JOIN_GROUP: "/join-group",
     PROFILE: "/profile",
     LEGAL: "/legal",
+    WHATS_NEW: "/whats-new",
     SUPPORT: "/support",
     OPEN_EXPENSES: "/openExpenses",
   },

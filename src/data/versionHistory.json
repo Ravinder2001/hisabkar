@@ -1,0 +1,308 @@
+{
+  "currentVersion": "3.4.0",
+  "note": "Hisabkar uses a single version number shared by both the frontend and backend (see package.json in each repo). Every release below covers whatever changed on either side.",
+  "eras": [
+    {
+      "id": 1,
+      "title": "Browser-only app",
+      "range": "v1.0.0 – v1.4.0",
+      "description": "Everything ran in the browser — no server, no database.",
+      "color": "avatar-1"
+    },
+    {
+      "id": 2,
+      "title": "Backend & database",
+      "range": "v2.0.0 – v2.10.0",
+      "description": "A real Node.js/Express API and database replaced browser-only storage.",
+      "color": "focus"
+    },
+    {
+      "id": 3,
+      "title": "Chat, AI & PWA",
+      "range": "v3.0.0 – v3.4.0",
+      "description": "Real-time chat, an AI assistant, offline installable PWA, and the dark/gold theme.",
+      "color": "accent"
+    }
+  ],
+  "versions": [
+    {
+      "version": "3.4.0",
+      "date": "2026-08-20",
+      "type": "minor",
+      "era": 3,
+      "title": "Dark/gold theme & mobile-first redesign",
+      "changes": [
+        { "type": "feature", "text": "New dark/gold theme added across the app" },
+        { "type": "feature", "text": "Full mobile-first redesign: navbar, modals, alerts, group details, expense cards, add-expense form, budget UI, chat & AI assistant screens, create-group/add-member flows, sign-in and home pages" },
+        { "type": "feature", "text": "Net balance shown directly on the group list" }
+      ]
+    },
+    {
+      "version": "3.3.3",
+      "date": "2026-08-19",
+      "type": "patch",
+      "era": 3,
+      "title": "Database connection fix",
+      "changes": [{ "type": "fix", "text": "Fixed a database connection issue on the backend" }]
+    },
+    {
+      "version": "3.3.2",
+      "date": "2026-08-04",
+      "type": "patch",
+      "era": 3,
+      "title": "Cache fix",
+      "changes": [{ "type": "fix", "text": "Fixed group-members cache not refreshing after a profile/availability update" }]
+    },
+    {
+      "version": "3.3.1",
+      "date": "2026-06-09",
+      "type": "patch",
+      "era": 3,
+      "title": "Cache invalidation fix",
+      "changes": [
+        { "type": "fix", "text": "Fixed stale group spending and member totals caused by the Redis cache not invalidating after expense or membership changes" }
+      ]
+    },
+    {
+      "version": "3.3.0",
+      "date": "2026-05-14",
+      "type": "minor",
+      "era": 3,
+      "title": "Caching & scheduled reports",
+      "changes": [
+        { "type": "feature", "text": "Redis caching added for expenses and simplified settlements (faster loads)" },
+        { "type": "feature", "text": "Scheduled email report job added" },
+        { "type": "fix", "text": "Chatbot bugs fixed" }
+      ]
+    },
+    {
+      "version": "3.2.0",
+      "date": "2026-04-10",
+      "type": "minor",
+      "era": 3,
+      "title": "Progressive Web App",
+      "changes": [
+        { "type": "feature", "text": "App converted into an installable, offline-capable PWA" },
+        { "type": "feature", "text": "General UI refresh" },
+        { "type": "fix", "text": "PWA-related bugs fixed" }
+      ]
+    },
+    {
+      "version": "3.1.0",
+      "date": "2026-04-09",
+      "type": "minor",
+      "era": 3,
+      "title": "Budget & AI Chatbot",
+      "changes": [
+        { "type": "feature", "text": "Budget tracking added for groups" },
+        { "type": "feature", "text": "AI chatbot assistant added" },
+        { "type": "feature", "text": "Infinite scrolling added to the expense list" }
+      ]
+    },
+    {
+      "version": "3.0.0",
+      "date": "2026-04-08",
+      "type": "major",
+      "era": 3,
+      "title": "Real-time chat added",
+      "changes": [
+        { "type": "feature", "text": "In-app group chat added, with typing indicator" }
+      ],
+      "note": "Second major milestone: the chat/AI/PWA/theme era begins here and continues through the 3.x releases above."
+    },
+    {
+      "version": "2.10.0",
+      "date": "2025-09-28",
+      "type": "patch",
+      "era": 2,
+      "title": "Maintenance",
+      "changes": [
+        { "type": "fix", "text": "Notification payload fixed" },
+        { "type": "fix", "text": "SSL/certificate updates" },
+        { "type": "feature", "text": "Keep-alive job added so the server doesn't cold-start" }
+      ]
+    },
+    {
+      "version": "2.9.0",
+      "date": "2025-04-03",
+      "type": "minor",
+      "era": 2,
+      "title": "Demo group & cloning",
+      "changes": [
+        { "type": "feature", "text": "Try-it demo group added so new users can preview the app without signing up" },
+        { "type": "feature", "text": "Clone-expense feature added" },
+        { "type": "feature", "text": "Group ID encryption/decryption, meta tags/SEO added" }
+      ]
+    },
+    {
+      "version": "2.8.0",
+      "date": "2025-03-09",
+      "type": "minor",
+      "era": 2,
+      "title": "Simplify view & API hardening",
+      "changes": [
+        { "type": "feature", "text": "\"Simplified\" settlement view added" },
+        { "type": "feature", "text": "Rate limiter added to backend APIs" },
+        { "type": "fix", "text": "Assorted small fixes" }
+      ]
+    },
+    {
+      "version": "2.7.0",
+      "date": "2025-02-26",
+      "type": "minor",
+      "era": 2,
+      "title": "Serverless backend",
+      "changes": [
+        { "type": "feature", "text": "Backend converted to a serverless deployment" },
+        { "type": "feature", "text": "New loader and success/confirmation page added" },
+        { "type": "fix", "text": "Hotfixes" }
+      ]
+    },
+    {
+      "version": "2.6.0",
+      "date": "2025-02-18",
+      "type": "minor",
+      "era": 2,
+      "title": "Export, analytics & legal pages",
+      "changes": [
+        { "type": "feature", "text": "Legal pages added (Terms, Privacy, Disclaimer, About)" },
+        { "type": "feature", "text": "Download group data as Excel added" },
+        { "type": "feature", "text": "Spend analysis screen added" },
+        { "type": "feature", "text": "Group activity log screen added" },
+        { "type": "feature", "text": "New Relic monitoring integrated" },
+        { "type": "fix", "text": "Hotfixes and small issue fixes" }
+      ]
+    },
+    {
+      "version": "2.5.0",
+      "date": "2025-02-13",
+      "type": "minor",
+      "era": 2,
+      "title": "Validations & activity checks",
+      "changes": [
+        { "type": "feature", "text": "Additional form/data validations added" },
+        { "type": "feature", "text": "Active-user validation added" },
+        { "type": "feature", "text": "Animated count-up numbers added" }
+      ]
+    },
+    {
+      "version": "2.4.0",
+      "date": "2025-02-12",
+      "type": "minor",
+      "era": 2,
+      "title": "Push notifications & encryption",
+      "changes": [
+        { "type": "feature", "text": "Service worker groundwork for push notifications added" },
+        { "type": "feature", "text": "API response encryption added" }
+      ]
+    },
+    {
+      "version": "2.3.0",
+      "date": "2025-02-10",
+      "type": "minor",
+      "era": 2,
+      "title": "Settlement pairs",
+      "changes": [
+        { "type": "feature", "text": "\"Who owes whom\" settlement pairs calculation added" },
+        { "type": "feature", "text": "Delete-expense API added" }
+      ]
+    },
+    {
+      "version": "2.2.0",
+      "date": "2025-02-01",
+      "type": "minor",
+      "era": 2,
+      "title": "Group details & expenses UI",
+      "changes": [
+        { "type": "feature", "text": "Group details and expense pages built out" },
+        { "type": "feature", "text": "New navbar" },
+        { "type": "fix", "text": "Edit-expense bug fixes" },
+        { "type": "feature", "text": "Deep link support added" }
+      ]
+    },
+    {
+      "version": "2.1.0",
+      "date": "2025-01-29",
+      "type": "minor",
+      "era": 2,
+      "title": "Google Sign-In",
+      "changes": [
+        { "type": "feature", "text": "Google Sign-In added" },
+        { "type": "feature", "text": "Toast notifications added" }
+      ]
+    },
+    {
+      "version": "2.0.0",
+      "date": "2025-01-27",
+      "type": "major",
+      "era": 2,
+      "title": "Real backend and database introduced",
+      "changes": [
+        { "type": "feature", "text": "Dedicated Node.js/Express backend created with its own database" },
+        { "type": "feature", "text": "Register, Login, Create/Join Group, Add/Edit/Delete Expense APIs added" },
+        { "type": "feature", "text": "Frontend rebuilt on Tailwind CSS and Redux Toolkit" },
+        { "type": "feature", "text": "Full authentication flow wired up end to end" }
+      ],
+      "note": "First major milestone: before this release the app only ran in the browser with no server or database behind it."
+    },
+    {
+      "version": "1.4.0",
+      "date": "2024-03-31",
+      "type": "minor",
+      "era": 1,
+      "title": "Totals summary",
+      "changes": [{ "type": "feature", "text": "Group/expense totals summary added" }],
+      "note": "Last release of the frontend-only era."
+    },
+    {
+      "version": "1.3.0",
+      "date": "2023-11-24",
+      "type": "minor",
+      "era": 1,
+      "title": "Onboarding & UI polish",
+      "changes": [
+        { "type": "feature", "text": "New welcome screen with walkthrough video" },
+        { "type": "feature", "text": "Trash route added" },
+        { "type": "fix", "text": "Bug fixes and scroll-position fix" }
+      ]
+    },
+    {
+      "version": "1.2.0",
+      "date": "2023-11-16",
+      "type": "minor",
+      "era": 1,
+      "title": "Dashboard & group flow rebuilt",
+      "changes": [
+        { "type": "feature", "text": "Home and dashboard screens completed" },
+        { "type": "feature", "text": "End-to-end create-group → add-expense → view flow completed" },
+        { "type": "feature", "text": "Form validations added" }
+      ]
+    },
+    {
+      "version": "1.1.0",
+      "date": "2023-07-07",
+      "type": "minor",
+      "era": 1,
+      "title": "Responsive layout",
+      "changes": [
+        { "type": "feature", "text": "Fully responsive layout across pages" },
+        { "type": "feature", "text": "Trash (soft-delete) support added" },
+        { "type": "fix", "text": "General bug fixes" }
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2023-06-14",
+      "type": "major",
+      "era": 1,
+      "title": "Hisabkar launches (frontend only)",
+      "changes": [
+        { "type": "feature", "text": "First working version of the app" },
+        { "type": "feature", "text": "Bill/expense sharing functionality" },
+        { "type": "feature", "text": "Delete expense/group entries" },
+        { "type": "feature", "text": "WhatsApp-based bill sharing" }
+      ],
+      "note": "The very first release — a browser-only app with no backend or database, and not yet a PWA."
+    }
+  ]
+}

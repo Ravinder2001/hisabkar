@@ -11,18 +11,19 @@ import Messages from "../../utils/constant/Messages";
 import { setUserLoggedIn } from "../../store/features/userSlice";
 import { decodeJWT } from "../../utils/helpers/authHelper";
 import CustomCircularLoading from "../../components/Atoms/CustomCircularLoading/CustomCircularLoading";
+import versionHistory from "../../data/versionHistory.json";
 import styles from "./style.module.css";
+
+const VersionTag = () => (
+  <Link to={CONSTANTS.PROJECT_ROUTES.WHATS_NEW} className={styles.versionTag}>
+    v{versionHistory.currentVersion} · What&apos;s new
+  </Link>
+);
 
 const GoogleMark = () => (
   <svg width="18" height="18" viewBox="0 0 48 48">
-    <path
-      fill="#EA4335"
-      d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.9 2.5 30.4 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6.1C12.3 13.1 17.6 9.5 24 9.5z"
-    />
-    <path
-      fill="#4285F4"
-      d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.5 3-2.2 5.5-4.7 7.2l7.3 5.7c4.3-4 6.8-9.9 6.8-17.4z"
-    />
+    <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.9 2.5 30.4 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6.1C12.3 13.1 17.6 9.5 24 9.5z" />
+    <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.5 3-2.2 5.5-4.7 7.2l7.3 5.7c4.3-4 6.8-9.9 6.8-17.4z" />
     <path fill="#FBBC05" d="M10.4 19.3c-.5 1.5-.8 3.1-.8 4.7s.3 3.2.8 4.7l-7.8 6.1C1 31.6 0 27.9 0 24s1-7.6 2.6-10.8z" />
     <path
       fill="#34A853"
@@ -105,6 +106,7 @@ function SignIn() {
             <span>✓ Verified</span>
           </div>
           <FootLinks />
+          <VersionTag />
           <div className={styles.copyright}>© {new Date().getFullYear()} Hisabkar. All rights reserved.</div>
         </div>
       </div>
@@ -145,6 +147,7 @@ function SignIn() {
               <span>✓ Verified</span>
             </div>
             <FootLinks />
+            <VersionTag />
           </div>
         </div>
       </div>

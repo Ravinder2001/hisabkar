@@ -1,0 +1,311 @@
+/* height:100% lets this fill the navbar-wrapped shell (which manages overflow
+   itself); min-height covers the case where this renders as a bare public
+   page with no fixed-height ancestor. Either way THIS element owns the
+   scrollbar, not a parent with overflow:hidden. */
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--hk-bg);
+  color: var(--hk-ink);
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  background: rgba(16, 19, 28, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--hk-border);
+}
+
+.backBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--hk-surface);
+  border: 1px solid var(--hk-border);
+  color: var(--hk-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  cursor: pointer;
+}
+
+.headerTitle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--hk-ink);
+}
+
+.headerSub {
+  margin: 2px 0 0;
+  font-size: 0.76rem;
+  color: var(--hk-ink-faint);
+}
+
+.currentPill {
+  margin-left: auto;
+  flex: none;
+  background: var(--hk-accent);
+  color: var(--hk-on-accent);
+  font-family: var(--hk-font-mono);
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.content {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0px 20px 60px;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 40px;
+}
+
+.line {
+  position: absolute;
+  left: 15px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: linear-gradient(var(--hk-border), var(--hk-border));
+}
+
+/* ── era / branch marker ─────────────────────────────────────────────── */
+.eraRow {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  margin: 32px 0 18px;
+}
+
+.eraRow:first-child {
+  margin-top: 0;
+}
+
+.eraMarker {
+  position: relative;
+  left: -40px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--era-color, var(--hk-accent));
+  color: var(--hk-on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  z-index: 1;
+  box-shadow: 0 0 0 4px var(--hk-bg);
+}
+
+.eraCard {
+  margin-left: -40px;
+  flex: 1;
+  border: 1px solid var(--era-color, var(--hk-border));
+  background: var(--hk-surface-2);
+  border-radius: 14px;
+  padding: 12px 16px;
+}
+
+.eraRange {
+  font-family: var(--hk-font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--era-color, var(--hk-accent));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.eraTitle {
+  margin: 3px 0 4px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--hk-ink);
+}
+
+.eraDesc {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--hk-ink-soft);
+}
+
+/* ── version entry ────────────────────────────────────────────────────── */
+.entryRow {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding-bottom: 22px;
+}
+
+.marker {
+  position: relative;
+  left: -40px;
+  flex: none;
+  z-index: 1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hk-surface);
+  border: 2px solid var(--hk-border);
+  box-shadow: 0 0 0 4px var(--hk-bg);
+}
+
+.marker.major {
+  width: 32px;
+  height: 32px;
+  background: var(--hk-accent);
+  border-color: var(--hk-accent);
+  color: var(--hk-on-accent);
+}
+
+.marker.minor {
+  width: 16px;
+  height: 16px;
+  margin: 8px;
+  background: var(--hk-focus);
+  border-color: var(--hk-focus);
+}
+
+.marker.patch {
+  width: 10px;
+  height: 10px;
+  margin: 11px;
+  background: var(--hk-ink-faint);
+  border-color: var(--hk-ink-faint);
+}
+
+.card {
+  margin-left: -40px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cardHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.version {
+  font-family: var(--hk-font-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--hk-accent-strong);
+  background: var(--hk-accent-soft);
+  border: 1px solid var(--hk-accent);
+  border-radius: 8px;
+  padding: 3px 9px;
+}
+
+.badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.badge-major {
+  background: var(--hk-accent-soft);
+  color: var(--hk-accent-strong);
+}
+
+.badge-minor {
+  background: rgba(47, 111, 237, 0.16);
+  color: var(--hk-focus);
+}
+
+.badge-patch {
+  background: var(--hk-surface-sunken);
+  color: var(--hk-ink-faint);
+}
+
+.date {
+  font-size: 0.74rem;
+  color: var(--hk-ink-faint);
+}
+
+.cardTitle {
+  margin: 4px 0 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--hk-ink);
+}
+
+.changeList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.changeItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--hk-ink-soft);
+}
+
+.changeIcon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.icon-feature {
+  background: var(--hk-positive-soft);
+  color: var(--hk-positive);
+}
+
+.icon-fix {
+  background: var(--hk-negative-soft);
+  color: var(--hk-negative);
+}
+
+.icon-improvement {
+  background: rgba(47, 111, 237, 0.16);
+  color: var(--hk-focus);
+}
+
+.changeLabel {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--hk-ink-faint);
+  margin-right: 6px;
+}
+
+.cardNote {
+  margin: 10px 0 0;
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--hk-ink-faint);
+}
