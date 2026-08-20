@@ -28,6 +28,7 @@ interface FormValues {
 }
 
 import { EXPENSE_CATEGORIES } from "../../utils/constant/Categories";
+import { getGroupTypeIcon } from "../../utils/comman/groupTypeIcon";
 
 const validationSchema = Yup.object().shape({
   expenseName: Yup.string()
@@ -294,6 +295,7 @@ function AddExpenseModal({
               <div className={`${styles.categoryRow} ${inPage ? "" : styles.categoryRowModal}`}>
                 {EXPENSE_CATEGORIES.map((cat) => {
                   const selected = values.expenseType === cat.label;
+                  const CatIcon = getGroupTypeIcon(cat.label);
                   return (
                     <button
                       key={cat.label}
@@ -301,7 +303,7 @@ function AddExpenseModal({
                       onClick={() => setFieldValue("expenseType", cat.label)}
                       className={`${styles.categoryBtn} ${selected ? styles.categoryBtnSelected : ""} ${inPage ? "" : styles.categoryBtnFull}`}
                     >
-                      <span className="text-lg">{cat.icon}</span>
+                      <CatIcon size={16} strokeWidth={1.8} />
                       <span>{cat.label}</span>
                     </button>
                   );

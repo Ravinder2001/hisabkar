@@ -3,6 +3,7 @@ import styles from "./style.module.css";
 import { ChevronDown, CopyPlus, Edit, MessageSquare, MoreVertical, Trash2, Users } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { ExpenseType, MemberType } from "../../utils/comman/CommanTypes";
+import { getGroupTypeIcon } from "../../utils/comman/groupTypeIcon";
 
 type PropsType = ExpenseType & {
   allMembersList: MemberType;
@@ -18,16 +19,6 @@ type PropsType = ExpenseType & {
   onMenuOpenChange: (id: number | null) => void;
 };
 
-const EXPENSE_ICON: Record<string, string> = {
-  Food: "🍴",
-  Grocery: "🛒",
-  Shopping: "🛍️",
-  Bills: "📄",
-  Cab: "🚕",
-  Entertainment: "🎬",
-  Health: "🏥",
-};
-
 const SPLIT_LABEL: Record<string, string> = {
   EQUAL: "split equally",
   PERCENTAGE: "split by percentage",
@@ -41,11 +32,14 @@ const ExpenseCard = React.memo(
     const [showSplit, setShowSplit] = useState(false);
     const paidByUser = expense.allMembersList.find((member) => member.id === expense.paid_by);
     const yourShare = expense.members.find((m) => String(m.id) === String(expense.currentUserId))?.amount ?? 0;
+    const CategoryIcon = getGroupTypeIcon(expense.expense_type);
 
     return (
       <div ref={ref}>
         <div className={styles.row}>
-          <div className={styles.icon}>{EXPENSE_ICON[expense.expense_type] ?? "✨"}</div>
+          <div className={styles.icon}>
+            <CategoryIcon size={18} strokeWidth={1.8} />
+          </div>
 
           <div className={styles.body}>
             <div className={styles.title}>{expense.expense_name}</div>

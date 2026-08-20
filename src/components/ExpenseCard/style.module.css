@@ -14,8 +14,8 @@
   align-items: center;
   justify-content: center;
   flex: none;
-  background: var(--hk-surface-sunken);
-  font-size: 1.05rem;
+  background: var(--hk-accent-soft);
+  color: var(--hk-accent-strong);
 }
 
 .body {

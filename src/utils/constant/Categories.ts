@@ -1,3 +1,7 @@
+// `icon` (emoji) is kept only for BarChart's <canvas> axis labels — Chart.js
+// draws literal text/glyphs on canvas and can't render a Lucide React/SVG
+// icon component there. Every other UI (AddExpense picker, ExpenseCard list)
+// renders the type-matched Lucide icon from getGroupTypeIcon instead.
 export const EXPENSE_CATEGORIES = [
   { label: "Food", icon: "🍴", color: "bg-orange-50 text-orange-600 border-orange-200", hex: "#ea580c" },
   { label: "Grocery", icon: "🛒", color: "bg-green-50 text-green-600 border-green-200", hex: "#16a34a" },

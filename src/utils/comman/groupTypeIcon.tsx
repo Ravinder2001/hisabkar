@@ -24,7 +24,7 @@ const GROUP_TYPE_ICON_RULES: [RegExp, LucideIcon][] = [
   [/shop|mall/i, ShoppingBag],
   [/food|dinner|lunch|restaurant|dining|cafe/i, UtensilsCrossed],
   [/bill|utility|utilities|electricity/i, Receipt],
-  [/movie|entertainment|cinema/i, Clapperboard],
+  [/movie|entertainment|cinema|\bent\b/i, Clapperboard],
   [/party|event|celebration|festival|diwali/i, PartyPopper],
   [/health|medical|doctor|hospital|pharmacy/i, HeartPulse],
   [/cab|taxi|transport|uber|ride|fuel|petrol/i, Car],
