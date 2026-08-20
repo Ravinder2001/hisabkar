@@ -72,7 +72,10 @@ axiosInstance.interceptors.response.use(
       // window.location.reload();
       return Promise.reject(error.response);
     } else {
-      return Promise.reject(error.response);
+      // Network-level failures (server unreachable, CORS, DNS, offline) never get an
+      // error.response — reject with the original error instead of undefined, otherwise
+      // callers crash reading properties off `undefined` (see useAPIFetch's catch block).
+      return Promise.reject(error.response ?? error);
     }
   }
 );

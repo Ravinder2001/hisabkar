@@ -1,17 +1,13 @@
 import React from "react";
+import { Check, AlertTriangle } from "lucide-react";
 
 export default function CircularProgress({ percentage }: { percentage: number }) {
   const radius = 24;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = Math.max(0, circumference - (percentage / 100) * circumference);
 
-  // Gradient from emerald (safe) to red (over budget)
   const isOverBudget = percentage >= 100;
-  const isWarning = percentage >= 85 && percentage < 100;
-
-  let strokeColor = "#10b981"; // emerald-500
-  if (isWarning) strokeColor = "#f59e0b"; // amber-500
-  if (isOverBudget) strokeColor = "#ef4444"; // red-500
+  const strokeColor = isOverBudget ? "var(--hk-negative)" : "var(--hk-positive)";
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
@@ -31,8 +27,8 @@ export default function CircularProgress({ percentage }: { percentage: number })
           className="transition-all duration-500 ease-in-out"
         />
       </svg>
-      <div className="z-10 flex flex-col items-center">
-        <span className="text-[10px] leading-[10px] font-black">{percentage}%</span>
+      <div className="z-10 flex items-center justify-center" style={{ color: strokeColor }}>
+        {isOverBudget ? <AlertTriangle size={12} /> : <Check size={12} />}
       </div>
     </div>
   );

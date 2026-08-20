@@ -1,11 +1,32 @@
 .container {
   width: 100%;
-  background-color: white;
+  background-color: var(--hk-surface);
+  border-bottom: 1px solid var(--hk-border);
   z-index: 50;
-  border-radius: var(--borderRadius);
-  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.08); /* subtle themed shadow */
   padding-top: env(safe-area-inset-top); /* Added for iPhone safe area */
 }
+
+.mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--hk-accent);
+  color: var(--hk-on-accent);
+  font-family: var(--hk-font-mono);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.wordmark {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--hk-ink);
+  letter-spacing: -0.01em;
+}
+
 @media (max-width: 768px) {
   .container {
     width: 100%;

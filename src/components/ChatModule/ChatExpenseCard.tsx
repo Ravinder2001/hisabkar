@@ -27,7 +27,7 @@ const ChatExpenseCard: React.FC<ChatExpenseCardProps> = ({ name, amount, date, i
     <div className={`${styles.cardContainer} ${isMe ? styles.myCardContainer : ""}`}>
       <div className={styles.cardHeader}>
         <div className={styles.iconBox}>
-          {icon ? <img src={icon} alt={category} className="w-4 h-4" /> : <Receipt size={16} className="text-green-600" />}
+          {icon ? <img src={icon} alt={category} className="w-4 h-4" /> : <Receipt size={16} />}
         </div>
         <div className={styles.titleBox}>
           <h4 className={styles.expenseName}>{name}</h4>
@@ -55,7 +55,9 @@ const ChatExpenseCard: React.FC<ChatExpenseCardProps> = ({ name, amount, date, i
                   <div className={styles.memberInfo}>
                     <Avatar className="h-5 w-5">
                       <AvatarImage src={member.avatar} />
-                      <AvatarFallback>{member.name[0]}</AvatarFallback>
+                      <AvatarFallback style={{ background: "var(--hk-avatar-1)", color: "#fff", fontSize: "9px" }}>
+                        {member.name[0]}
+                      </AvatarFallback>
                     </Avatar>
                     <span className={styles.memberName}>{member.name.split(" ")[0]}</span>
                   </div>

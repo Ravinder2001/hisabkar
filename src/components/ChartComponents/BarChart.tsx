@@ -19,6 +19,12 @@ const BarChart: React.FC<{ data: ExpenseData[] }> = ({ data }) => {
     const cat = EXPENSE_CATEGORIES.find((c) => c.label === item.expense_type);
     return cat ? `${cat.icon} ${cat.label}` : item.expense_type;
   });
+  // Icon-only version for the axis itself (kept compact); the full name still
+  // shows up via the tooltip title callback below, so nothing is lost on tap/hover.
+  const chartIcons = data.map((item) => {
+    const cat = EXPENSE_CATEGORIES.find((c) => c.label === item.expense_type);
+    return cat ? cat.icon : "✨";
+  });
 
   const chartData = {
     labels: chartLabels,
@@ -48,13 +54,16 @@ const BarChart: React.FC<{ data: ExpenseData[] }> = ({ data }) => {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: "rgba(255, 255, 255, 0.95)",
-        titleColor: "#1e293b",
-        bodyColor: "#1e293b",
-        borderColor: "#e2e8f0",
+        // Chart.js draws to a <canvas>, so these must be literal colors —
+        // var(--hk-*) custom properties aren't resolved by the Canvas 2D API.
+        backgroundColor: "#1a1f2e", // --hk-surface
+        titleColor: "#f1efea", // --hk-ink
+        bodyColor: "#f1efea", // --hk-ink
+        borderColor: "#2e3549", // --hk-border
         borderWidth: 1,
         padding: 12,
         callbacks: {
+          title: (items: any[]) => chartLabels[items[0].dataIndex],
           label: (context: any) => ` ₹${context.raw.toLocaleString("en-IN")}`,
         },
         titleFont: { family: "Nunito", size: 14, weight: "bold" },
@@ -64,27 +73,30 @@ const BarChart: React.FC<{ data: ExpenseData[] }> = ({ data }) => {
     scales: {
       x: {
         type: isMobile ? "linear" : "category",
-        grid: { display: !isMobile, color: "#f1f5f9" },
+        grid: { display: !isMobile, color: "#2e3549" }, // --hk-border
         beginAtZero: true,
         ticks: {
-          font: { family: "Nunito", size: isMobile ? 10 : 12 },
-          color: "#64748b",
+          // x holds the ₹ values on mobile, but the icons themselves on desktop
+          // (indexAxis flips) — icons need a bigger size to read clearly.
+          font: { family: "Nunito", size: isMobile ? 10 : 20 },
+          color: "#aeb4c7", // --hk-ink-soft
           callback: (value: any, index: number) => {
             if (isMobile) return `₹${value}`;
-            return chartLabels[index];
+            return chartIcons[index];
           },
         },
       },
       y: {
         type: isMobile ? "category" : "linear",
-        grid: { display: isMobile, color: "#f1f5f9" },
+        grid: { display: isMobile, color: "#2e3549" }, // --hk-border
         beginAtZero: true,
         ticks: {
-          font: { family: "Nunito", size: isMobile ? 11 : 12 },
-          color: "#64748b",
+          // y holds the icons on mobile (indexAxis: "y"), ₹ values on desktop.
+          font: { family: "Nunito", size: isMobile ? 20 : 12 },
+          color: "#aeb4c7", // --hk-ink-soft
           callback: (value: any, index: number) => {
             if (!isMobile) return `₹${value}`;
-            return chartLabels[index];
+            return chartIcons[index];
           },
         },
       },

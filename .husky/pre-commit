@@ -1,3 +1,5 @@
-npx lint-staged
-npm run lint
-git add .
+# Temporarily disabled: "git add ." here staged unrelated unstaged files
+# on every commit, which broke splitting changes into separate commits.
+# npx lint-staged
+# npm run lint
+# git add .

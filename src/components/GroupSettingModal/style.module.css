@@ -5,6 +5,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  color: var(--hk-ink);
 }
 .fieldBox {
   display: flex;
@@ -17,7 +18,132 @@
   }
 }
 
-/* From Uiverse.io by namecho */
+.title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--hk-ink);
+}
+
+.label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--hk-ink-soft);
+}
+
+.errorText {
+  color: var(--hk-negative);
+  font-size: 0.75rem;
+}
+
+.input {
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 0.9rem;
+  color: var(--hk-ink);
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+.input::placeholder {
+  color: var(--hk-ink-faint);
+}
+.input:focus-visible,
+.input:focus {
+  outline: none;
+  border-color: var(--hk-accent);
+  box-shadow: 0 0 0 1px var(--hk-accent);
+}
+.inputError {
+  border-color: var(--hk-negative);
+}
+
+.memberList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.memberRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  transition: background 0.15s ease;
+}
+
+.memberRow:hover {
+  background: var(--hk-surface-sunken);
+}
+
+.memberWho {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.memberAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex: none;
+  background: var(--hk-surface-sunken);
+}
+
+.memberAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.memberName {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--hk-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.removeBtn {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--hk-ink-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.removeBtn:hover {
+  background: var(--hk-surface-sunken);
+  color: var(--hk-negative);
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* From Uiverse.io by namecho — recolored onto hk tokens */
 .switch {
   --button-width: 2em;
   --button-height: 1em;
@@ -25,15 +151,20 @@
   --button-toggle-offset: calc((var(--button-height) - var(--toggle-diameter)) / 2);
   --toggle-shadow-offset: 1px;
   --toggle-wider: 3em;
-  --color-grey: #cccccc;
-  --color-green: #4296f4;
+  /* label is naturally inline, sized by line-height rather than its content —
+     that let the slider sit off-center vertically. Make the label itself a
+     flex box around its one visible child so it's centered on its own. */
+  display: inline-flex;
+  align-items: center;
+  flex: none;
 }
 
 .slider {
   display: inline-block;
   width: var(--button-width);
   height: var(--button-height);
-  background-color: var(--color-grey);
+  background-color: var(--hk-surface-sunken);
+  border: 1px solid var(--hk-border);
   border-radius: calc(var(--button-height) / 2);
   position: relative;
   transition: 0.3s all ease-in-out;
@@ -45,22 +176,22 @@
   display: inline-block;
   width: var(--toggle-diameter);
   height: var(--toggle-diameter);
-  background-color: #fff;
+  background-color: var(--hk-ink-faint);
   border-radius: calc(var(--toggle-diameter) / 2);
   position: absolute;
   top: var(--button-toggle-offset);
   transform: translateX(var(--button-toggle-offset));
-  box-shadow: var(--toggle-shadow-offset) 0 calc(var(--toggle-shadow-offset) * 4) rgba(0, 0, 0, 0.1);
   transition: 0.3s all ease-in-out;
 }
 
 .switch input[type="checkbox"]:checked + .slider {
-  background-color: var(--color-green);
+  background-color: var(--hk-accent);
+  border-color: var(--hk-accent);
 }
 
 .switch input[type="checkbox"]:checked + .slider::after {
+  background-color: var(--hk-on-accent);
   transform: translateX(calc(var(--button-width) - var(--toggle-diameter) - var(--button-toggle-offset)));
-  box-shadow: calc(var(--toggle-shadow-offset) * -1) 0 calc(var(--toggle-shadow-offset) * 4) rgba(0, 0, 0, 0.1);
 }
 
 .switch input[type="checkbox"] {

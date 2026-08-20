@@ -1,23 +1,41 @@
 .container {
-  width: 50vw;
+  /* 100%/max-width instead of vw — vw measures against the full viewport, not
+     this modal's already-narrower, already-padded parent box, so it could
+     overflow past the modal's own edge (same bug fixed in AddMemberModal). */
+  width: 100%;
+  max-width: 600px;
   height: auto;
   overflow: auto;
+  color: var(--hk-ink);
 }
-.selectBox {
+
+.headerRow {
   width: 100%;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  /* clears ModalComponent's absolutely-positioned close (X) button, which
+     floats independently at top-right */
+  padding-right: 30px;
+  margin-bottom: 16px;
 }
-.selectBox > div {
-  width: 200px;
+
+.title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--hk-ink);
+  white-space: nowrap;
+}
+
+.selectBox {
+  width: 130px;
+  flex: none;
 }
 
 @media only screen and (max-width: 768px) {
-  .container {
-    width: 85vw;
-    height: auto;
-  }
-  .selectBox > div {
-    width: 150px;
+  .selectBox {
+    width: 110px;
   }
 }

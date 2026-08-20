@@ -17,13 +17,16 @@ const getCustomStyles = (isMobile: boolean): any => ({
     maxWidth: isMobile ? "100%" : "800px", // Maximum width constraint
     height: "auto", // Prevents overflowing on small screens
     overflow: "visible", // Enables scrolling for long content
-    borderRadius: "10px",
+    borderRadius: "16px",
     padding: isMobile ? "15px" : "20px", // Smaller padding on mobile
-    backgroundColor: "#fff",
+    backgroundColor: "var(--hk-surface)",
+    color: "var(--hk-ink)",
+    border: "1px solid var(--hk-border)",
+    boxShadow: "0 20px 60px -20px rgba(var(--hk-shadow), 0.6)",
     margin: 0, // Reset any margin
   },
   overlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Dim background effect
+    backgroundColor: "rgba(3, 4, 8, 0.72)", // Dim background effect
     zIndex: 1000, // Ensures modal is on top
   },
 });
@@ -76,11 +79,14 @@ function ModalComponent(props: PropsType) {
             position: "absolute",
             top: isMobile ? "5px" : "8px",
             right: isMobile ? "8px" : "10px",
-            background: "transparent",
-            border: "none",
+            background: "var(--hk-surface-sunken)",
+            border: "1px solid var(--hk-border)",
+            borderRadius: "10px",
+            color: "var(--hk-ink-soft)",
             fontSize: isMobile ? "16px" : "18px",
             cursor: "pointer",
             padding: isMobile ? "4px" : "6px", // Larger touch target on mobile
+            display: "flex",
           }}
         >
           <X size={isMobile ? 16 : 18} />

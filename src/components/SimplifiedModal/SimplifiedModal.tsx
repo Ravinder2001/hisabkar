@@ -73,155 +73,115 @@ function SimplifiedComponent(props: PropsType) {
   };
 
   return (
-    <div id={styles.container} className="max-w-3xl mx-auto bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl">
-      <h2 className="text-md sm:text-2xl font-bold text-gray-800 mb-2 p-2">Expense Simplification</h2>
-
+    <div className={styles.container}>
       {userTransactions.length > 0 && (
-        <div className="mb-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-2 sm:p-3 shadow-sm border border-indigo-100 transform transition-all duration-300">
-          <h3 className="text-sm sm:text-lg font-semibold text-indigo-700 mb-2 flex items-center px-1">
-            <IndianRupee className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-            Your Simplified Expenses
-          </h3>
-          <div className="space-y-2">
-            {userTransactions.map((transaction, index) => (
-              <div
-                key={index}
-                className={`flex justify-between items-center p-2 rounded-lg ${
-                  transaction.from === LoggedInUser ? "bg-red-50 border-l-4 border-red-400" : "bg-green-50 border-l-4 border-green-400"
-                } transition-all duration-300 hover:shadow-sm`}
-              >
-                <div className="flex items-center">
-                  <div className="relative">
-                    <img
-                      src={transaction.from === LoggedInUser ? getMemberAvatar(transaction.to) : getMemberAvatar(transaction.from)}
-                      alt="User avatar"
-                      className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white shadow-sm"
-                    />
-                    <div
-                      className={`absolute -bottom-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-xs text-white ${
-                        transaction.from === LoggedInUser ? "bg-red-500" : "bg-green-500"
-                      }`}
-                    >
-                      {transaction.from === LoggedInUser ? "→" : "←"}
+        <div className={styles.section}>
+          <div className="hk-section-label">Your settlements</div>
+          <div className={styles.personalRows}>
+            {userTransactions.map((transaction, index) => {
+              const youOwe = transaction.from === LoggedInUser;
+              return (
+                <div
+                  key={index}
+                  className={styles.personalRow}
+                  style={{ background: youOwe ? "var(--hk-negative-soft)" : "var(--hk-positive-soft)" }}
+                >
+                  <div className={styles.personalWho}>
+                    <div className={styles.personalAvatarWrap}>
+                      <img src={youOwe ? getMemberAvatar(transaction.to) : getMemberAvatar(transaction.from)} alt="" />
+                      <div
+                        className={styles.personalAvatarBadge}
+                        style={{ background: youOwe ? "var(--hk-negative)" : "var(--hk-positive)" }}
+                      >
+                        {youOwe ? "→" : "←"}
+                      </div>
+                    </div>
+                    <div>
+                      <div className={styles.personalLabel}>{youOwe ? "You need to send to" : "You will get from"}</div>
+                      <div className={styles.personalName}>{youOwe ? getMemberName(transaction.to) : getMemberName(transaction.from)}</div>
                     </div>
                   </div>
-                  <div className="ml-3">
-                    <p className="text-xs sm:text-sm text-gray-700 font-medium">
-                      {transaction.from === LoggedInUser ? "You need to send to" : "You will get from"}
-                    </p>
-                    <p className="text-sm sm:text-base font-semibold text-gray-900">
-                      {transaction.from === LoggedInUser ? getMemberName(transaction.to) : getMemberName(transaction.from)}
-                    </p>
+                  <div className={styles.personalRight}>
+                    <div className={`hk-money ${styles.personalAmt}`} style={{ color: youOwe ? "var(--hk-negative)" : "var(--hk-positive)" }}>
+                      {youOwe ? "− " : "+ "}
+                      {transaction.amount.toFixed(2)}
+                    </div>
+                    {transaction.to === LoggedInUser && props.isSettled && (
+                      <button
+                        type="button"
+                        title="Send Reminder"
+                        className={styles.reminderBtn}
+                        onClick={() => handleSendReminder(transaction.from)}
+                        disabled={isReminding}
+                      >
+                        <Bell size={16} style={{ color: "var(--hk-positive)", opacity: isReminding ? 0.5 : 1 }} />
+                      </button>
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className={`text-sm sm:text-lg font-bold ${transaction.from === LoggedInUser ? "text-red-600" : "text-green-600"}`}>
-                    {transaction.from === LoggedInUser ? "-" : "+"}₹{transaction.amount.toFixed(2)}
-                  </div>
-                  {transaction.to === LoggedInUser && props.isSettled && (
-                    <button
-                      title="Send Reminder"
-                      className="p-2 rounded-full hover:bg-green-100 transition-colors"
-                      onClick={() => handleSendReminder(transaction.from)}
-                      disabled={isReminding}
-                    >
-                      <Bell className={`w-4 h-4 sm:w-5 sm:h-5 text-green-600 ${isReminding ? "opacity-50" : ""}`} />
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
 
-      <CustomAccordion header="Group Simplification" expanded={true}>
-        {isLoading ? (
-          <div className="flex justify-center items-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 border-b-2 border-indigo-600"></div>
-          </div>
-        ) : simplifiedData.length === 0 ? (
-          <div className="text-center text-gray-500 py-8 bg-gray-50 rounded-lg">
-            <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-full flex items-center justify-center mb-3">
-              <IndianRupee className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
+      <div className={styles.section}>
+        <CustomAccordion header="Group Simplification" expanded={true}>
+          {isLoading ? (
+            <div className={styles.spinnerWrap}>
+              <div className={styles.spinner} />
             </div>
-            <p className="text-sm sm:text-base font-medium">No settlements to display</p>
-            <p className="text-xs sm:text-sm text-gray-400 mt-1">All expenses are already balanced</p>
-          </div>
-        ) : (
-          <div className={`transition-all duration-500 overflow-auto`}>
-            <div className="flow-root">
-              <div className="flex flex-col">
-                {simplifiedData.map((transaction, index) => (
-                  <div
-                    key={index}
-                    className={`flex justify-between items-center p-3 ${
-                      index !== simplifiedData.length - 1 ? "border-b border-gray-100" : ""
-                    } hover:bg-gray-50 transition-colors`}
-                  >
-                    <div className="flex items-center">
-                      <div className="flex items-center">
-                        <div className="relative">
-                          <img
-                            src={getMemberAvatar(transaction.from) || "/placeholder.svg"}
-                            alt={`${getMemberName(transaction.from)}'s avatar`}
-                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white shadow-sm"
-                          />
-                        </div>
-                        <ArrowRight className="mx-2 h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
-                        <div className="relative">
-                          <img
-                            src={getMemberAvatar(transaction.to) || "/placeholder.svg"}
-                            alt={`${getMemberName(transaction.to)}'s avatar`}
-                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white shadow-sm"
-                          />
-                        </div>
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-sm sm:text-base font-medium text-gray-900">{getMemberName(transaction.from)}</p>
-                        <p className="text-xs sm:text-sm text-gray-500">pays {getMemberName(transaction.to)}</p>
-                      </div>
-                    </div>
-                    <div className="text-sm sm:text-base font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 sm:px-3 sm:py-1 rounded-full">
-                      ₹{transaction.amount.toFixed(2)}
-                    </div>
-                  </div>
-                ))}
+          ) : simplifiedData.length === 0 ? (
+            <div className={styles.emptyState}>
+              <div className={styles.emptyIcon}>
+                <IndianRupee size={22} />
               </div>
+              <div className={styles.emptyTitle}>No settlements to display</div>
+              <div className={styles.emptyDesc}>All expenses are already balanced</div>
             </div>
-          </div>
-        )}
-      </CustomAccordion>
-
-      {!isLoading && simplifiedData.length > 0 && (
-        <div className="mt-2 border-t border-gray-100">
-          <div className="relative bg-gray-50 p-4 rounded-lg overflow-x-auto">
-            <h4 className="text-md sm:text-2xl font-bold text-gray-800 mb-2">Transaction Flow</h4>
-            <div className="flex flex-wrap justify-center gap-4 min-w-[500px]">
-              {Array.from(new Set(simplifiedData.flatMap((transaction) => [transaction.from, transaction.to]))).map((memberId) => (
-                <div
-                  key={memberId}
-                  className="flex flex-col items-center bg-white rounded-lg p-2 sm:p-3 shadow-sm border border-gray-200 w-auto sm:w-24"
-                >
-                  <img
-                    src={getMemberAvatar(memberId) || "/placeholder.svg"}
-                    alt={`${getMemberName(memberId)}'s avatar`}
-                    className="w-8 h-8 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm mb-2"
-                  />
-                  <p className="text-xs font-medium text-center text-gray-800 truncate w-full">{getMemberName(memberId)}</p>
-                  {(() => {
-                    const outgoing = simplifiedData.filter((t) => t.from === memberId).reduce((sum, t) => sum + t.amount, 0);
-                    const incoming = simplifiedData.filter((t) => t.to === memberId).reduce((sum, t) => sum + t.amount, 0);
-                    const net = incoming - outgoing;
-                    return (
-                      <p className={`text-xs font-bold mt-1 ${net > 0 ? "text-green-600" : net < 0 ? "text-red-600" : "text-gray-500"}`}>
-                        {net > 0 ? "+" : ""}₹{net.toFixed(2)}
-                      </p>
-                    );
-                  })()}
+          ) : (
+            <div>
+              {simplifiedData.map((transaction, index) => (
+                <div key={index} className={styles.row}>
+                  <div className={styles.pairAvatars}>
+                    <img src={getMemberAvatar(transaction.from) || "/placeholder.svg"} alt={`${getMemberName(transaction.from)}'s avatar`} />
+                    <ArrowRight size={13} style={{ color: "var(--hk-ink-faint)" }} />
+                    <img src={getMemberAvatar(transaction.to) || "/placeholder.svg"} alt={`${getMemberName(transaction.to)}'s avatar`} />
+                  </div>
+                  <div className={styles.rowBody}>
+                    <div className={styles.rowName}>{getMemberName(transaction.from)}</div>
+                    <div className={styles.rowMeta}>pays {getMemberName(transaction.to)}</div>
+                  </div>
+                  <div className={`hk-money ${styles.amountPill}`}>₹{transaction.amount.toFixed(2)}</div>
                 </div>
               ))}
             </div>
+          )}
+        </CustomAccordion>
+      </div>
+
+      {!isLoading && simplifiedData.length > 0 && (
+        <div className={styles.section}>
+          <div className="hk-section-label">Transaction flow</div>
+          <div className={styles.flowGrid}>
+            {Array.from(new Set(simplifiedData.flatMap((transaction) => [transaction.from, transaction.to]))).map((memberId) => {
+              const outgoing = simplifiedData.filter((t) => t.from === memberId).reduce((sum, t) => sum + t.amount, 0);
+              const incoming = simplifiedData.filter((t) => t.to === memberId).reduce((sum, t) => sum + t.amount, 0);
+              const net = incoming - outgoing;
+              return (
+                <div key={memberId} className={styles.flowTile}>
+                  <img src={getMemberAvatar(memberId) || "/placeholder.svg"} alt={`${getMemberName(memberId)}'s avatar`} />
+                  <div className={styles.flowName}>{getMemberName(memberId)}</div>
+                  <div
+                    className={`hk-money ${styles.flowNet}`}
+                    style={{ color: net > 0 ? "var(--hk-positive)" : net < 0 ? "var(--hk-negative)" : "var(--hk-ink-faint)" }}
+                  >
+                    {net > 0 ? "+" : ""}
+                    {net.toFixed(2)}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

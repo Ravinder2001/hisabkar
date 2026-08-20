@@ -1,21 +1,19 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Badge } from "../../components/ui/badge";
-import { Button } from "../../components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
-import { Users, MoreVertical, Trash2, IndianRupee, Share } from "lucide-react";
+import { MoreVertical, Trash2, Share } from "lucide-react";
 import { GroupType } from "../../utils/comman/CommanTypes";
-import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
+import { getGroupTypeIcon } from "../../utils/comman/groupTypeIcon";
 import styles from "./style.module.css";
 import { useNavigate } from "react-router-dom";
 import CONSTANTS from "../../utils/constant/Constant";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import CustomCountUp from "../CustomCountUp/CustomCountUp";
 import CustomAlert from "../CustomAlert/CustomAlert";
 import useApiFetch from "../../hooks/useAPIFetch";
 import showToast from "../../utils/helpers/toastHelper";
 import Messages from "../../utils/constant/Messages";
-import { motion } from "framer-motion";
+
+const formatMoney = (amount: number) => `₹${Math.round(Math.abs(amount)).toLocaleString("en-IN")}`;
 
 export function GroupCard(
   props: GroupType & {
@@ -48,97 +46,87 @@ export function GroupCard(
     }
   }, [visibilityRes]);
 
+  const balance = props.net_balance ?? 0;
+  const isOwed = balance > 0;
+  const isOwing = balance < 0;
+
+  // Gold by default (you owe / no activity yet) — green only when money is actually owed to you.
+  const iconBg = isOwed ? "var(--hk-positive-soft)" : "var(--hk-accent-soft)";
+  const iconColor = isOwed ? "var(--hk-positive)" : "var(--hk-accent-strong)";
+  const CategoryIcon = getGroupTypeIcon(groupType?.name);
+
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        whileHover={{ y: -4 }}
-        transition={{ duration: 0.3 }}
-        className={styles.card}
-        onClick={() => navigate(CONSTANTS.PROJECT_ROUTES.GROUP + `/${props.group_id}`)}
-      >
-        {/* Header with Pattern and Name */}
-        <div className={styles.header}>
-          <div className={styles.headerTop}>
-            <div className="flex flex-col gap-1">
-              <h3 className={styles.groupName}>{props.group_name}</h3>
-              {props.is_you_admin && <Badge className={styles.adminBadge}>Admin</Badge>}
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                <Button variant="ghost" className="h-8 w-8 p-0 text-white/80 hover:bg-white/10 hover:text-white rounded-full">
-                  <MoreVertical className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white" onClick={(e) => e.stopPropagation()}>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    props.handleLinkShare();
-                  }}
-                  className="cursor-pointer"
-                >
-                  <Share className="mr-2 h-4 w-4" />
-                  <span>Share Group</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleConfirmModal();
-                  }}
-                  className={`${props.is_you_admin ? "text-red-600" : "text-orange-600"} cursor-pointer`}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  <span>{props.is_you_admin ? "Delete Group" : "Leave Group"}</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+      <div className={`hk-card ${styles.card}`} onClick={() => navigate(CONSTANTS.PROJECT_ROUTES.GROUP + `/${props.group_id}`)}>
+        <div className={styles.icon} style={{ background: iconBg, color: iconColor }}>
+          <CategoryIcon size={20} strokeWidth={1.8} />
         </div>
 
-        {/* Body with Landscape and Stats */}
         <div className={styles.body}>
-          <div className={styles.statsGrid}>
-            <div className={styles.statItem}>
-              <span className={styles.statLabel}>Category</span>
-              <div className={styles.statValue}>
-                <img src={groupType?.icon ?? ""} alt={groupType?.name} className={styles.typeIcon} />
-                <span>{groupType?.name}</span>
-              </div>
+          <div className={styles.titleRow}>
+            <div className={styles.title}>{props.group_name}</div>
+            {props.is_you_admin && <span className="hk-pill hk-pill-neutral">Admin</span>}
+          </div>
+          <div className={styles.meta}>
+            <div className="hk-avatar-stack">
+              {props.members.slice(0, 3).map((avatar, index) => (
+                <div key={index} className={`hk-avatar ${styles.hkAvatar}`}>
+                  {avatar ? <img src={avatar} alt="" className={styles.avatarImg} /> : null}
+                </div>
+              ))}
             </div>
-            <div className={styles.statItem}>
-              <span className={styles.statLabel}>Members</span>
-              <div className={styles.statValue}>
-                <Users className="w-4 h-4 text-indigo-500" />
-                <span>{props.total_members_count} Joined</span>
-              </div>
-            </div>
-            <div className={`${styles.statItem} col-span-2 mt-2`}>
-              <span className={styles.statLabel}>Total Group Spending</span>
-              <div className={`${styles.statValue} ${styles.amount}`}>
-                <IndianRupee className="w-5 h-5 text-emerald-600" />
-                <span className="font-extrabold text-slate-900">
-                  <CustomCountUp count={props.total_amount} />
-                </span>
-              </div>
-            </div>
+            <span className={styles.count}>{props.total_members_count} members</span>
           </div>
         </div>
 
-        {/* Footer with Member Pile and Status */}
-        <div className={styles.footer}>
-          <div className={styles.membersList}>
-            {props.members.slice(0, 3).map((userImage, index) => (
-              <div key={index} className={styles.memberAvatarWrap} style={{ zIndex: 3 - index }}>
-                <UserAvatar userImage={userImage} />
+        <div className={styles.right}>
+          {props.is_settled ? (
+            <span className="hk-pill hk-pill-neutral">Settled</span>
+          ) : (
+            <div className={styles.amtCol}>
+              <div className={`hk-money ${styles.amt}`} style={{ color: isOwing ? "var(--hk-negative)" : isOwed ? "var(--hk-positive)" : "var(--hk-ink-faint)" }}>
+                {isOwing ? "− " : isOwed ? "+ " : ""}
+                {formatMoney(balance)}
               </div>
-            ))}
-            {props.remaining_members > 0 && <div className={styles.remainingMembers}>+{props.remaining_members}</div>}
-          </div>
-          <Badge className={props.is_settled ? styles.badgeSettled : styles.badgeUnsettled}>{props.is_settled ? "Settled" : "Unsettled"}</Badge>
+              <div className={styles.label}>{isOwing ? "you owe" : isOwed ? "owed to you" : "settled up"}</div>
+            </div>
+          )}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+              <button className={styles.menuBtn}>
+                <MoreVertical className="h-4 w-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              style={{ background: "var(--hk-surface)", color: "var(--hk-ink)", border: "1px solid var(--hk-border)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props.handleLinkShare();
+                }}
+                className="cursor-pointer"
+              >
+                <Share className="mr-2 h-4 w-4" />
+                <span>Share Group</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleConfirmModal();
+                }}
+                className={`${props.is_you_admin ? "text-red-600" : "text-orange-600"} cursor-pointer`}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                <span>{props.is_you_admin ? "Delete Group" : "Leave Group"}</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      </motion.div>
+      </div>
 
       <CustomAlert
         isOpen={confirmationModal}
