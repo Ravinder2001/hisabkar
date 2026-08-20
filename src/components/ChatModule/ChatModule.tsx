@@ -9,6 +9,8 @@ import styles from "./ChatModule.module.css";
 import CircularLoader from "../CircularLoader/CircularLoader";
 import ChatExpenseCard from "./ChatExpenseCard";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 
 interface Message {
   chat_id: number;
@@ -32,11 +34,10 @@ interface Message {
 
 interface ChatModuleProps {
   groupId: string;
-  groupName: string;
   onClose?: () => void;
 }
 
-const ChatModule: React.FC<ChatModuleProps> = ({ groupId, groupName }) => {
+const ChatModule: React.FC<ChatModuleProps> = ({ groupId }) => {
   const user = useSelector((state: RootState) => state.user);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -208,33 +209,11 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, groupName }) => {
 
   return (
     <div className={styles.chatContainer}>
-      {/* Header section */}
-      <div className={styles.chatHeader}>
-        <div className={styles.headerInfo}>
-          <div className={styles.groupAvatar}>{groupName?.charAt(0).toUpperCase() || "G"}</div>
-          <div className={styles.groupTitle}>
-            <h3>{groupName}</h3>
-            <div className={styles.groupStatus}>
-              <span className={styles.statusDot}></span>
-              Online
-            </div>
-          </div>
-        </div>
-        <div className={styles.headerActions}>
-          {/* <button className={styles.iconBtn}>
-            <Users size={18} />
-          </button>
-          <button className={styles.iconBtn}>
-            <Info size={18} />
-          </button> */}
-        </div>
-      </div>
-
       <div id="scrollableDiv" className={styles.messagesList}>
         {isLoading ? (
           <CircularLoader />
         ) : messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+          <div className={`flex flex-col items-center justify-center h-full ${styles.emptyState}`}>
             <MessageSquare size={48} strokeWidth={1} />
             <p className="mt-2 text-sm">No messages yet. Start the conversation!</p>
           </div>
@@ -320,25 +299,39 @@ const ChatModule: React.FC<ChatModuleProps> = ({ groupId, groupName }) => {
         </div>
       )}
 
-      <form onSubmit={handleSendMessage} className={styles.inputArea}>
-        <div className="flex-1 relative">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={handleInputChange}
-            placeholder="Type a message..."
-            className={styles.input}
-            maxLength={500}
-          />
-          {newMessage.length >= 400 && (
-            <span className={`absolute right-4 bottom-[-18px] text-[10px] ${newMessage.length >= 500 ? "text-red-500 font-bold" : "text-gray-400"}`}>
-              {newMessage.length}/500
-            </span>
-          )}
+      <form
+        onSubmit={handleSendMessage}
+        className={styles.inputArea}
+        style={{ background: "var(--hk-surface)", borderTop: "1px solid var(--hk-border)" }}
+      >
+        <div
+          className="flex gap-2 items-center p-1.5 rounded-2xl transition-all flex-1"
+          style={{ background: "var(--hk-surface-2)", border: "1px solid var(--hk-border)" }}
+        >
+          <div className="flex-1 relative">
+            <Input
+              type="text"
+              value={newMessage}
+              onChange={handleInputChange}
+              placeholder="Type a message..."
+              maxLength={500}
+              className="border-none bg-transparent shadow-none focus-visible:ring-0 h-9"
+              style={{ color: "var(--hk-ink)" }}
+            />
+            {newMessage.length >= 400 && (
+              <span className={`${styles.charCount} ${newMessage.length >= 500 ? styles.charCountLimit : ""}`}>{newMessage.length}/500</span>
+            )}
+          </div>
+          <Button
+            type="submit"
+            size="icon"
+            disabled={!newMessage.trim() || newMessage.length > 500}
+            className="rounded-xl w-9 h-9 flex-shrink-0"
+            style={{ background: "var(--hk-accent)", color: "var(--hk-on-accent)" }}
+          >
+            <Send className="w-4 h-4" />
+          </Button>
         </div>
-        <button type="submit" disabled={!newMessage.trim() || newMessage.length > 500} className={styles.sendButton}>
-          <Send size={18} />
-        </button>
       </form>
     </div>
   );
