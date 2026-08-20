@@ -190,7 +190,7 @@ module.exports = {
                 FROM tbl_group_members gm_count 
                 WHERE gm_count.group_id = g.group_id
             ) AS total_members_count,
-            CASE 
+            CASE
                 WHEN g.admin_user = $1 THEN true
                 ELSE false
             END AS is_you_admin,
@@ -199,7 +199,19 @@ module.exports = {
                 FROM tbl_users u
                 JOIN tbl_group_members gm2 ON gm2.user_id = u.user_id
                 WHERE gm2.group_id = g.group_id
-            ) AS members_avatars
+            ) AS members_avatars,
+            (
+                SELECT COALESCE(SUM(
+                    CASE
+                        WHEN e.paid_by = $1 AND em.user_id != $1 THEN em.amount
+                        WHEN em.user_id = $1 AND e.paid_by != $1 THEN -em.amount
+                        ELSE 0
+                    END
+                ), 0)
+                FROM tbl_expenses e
+                JOIN tbl_expense_members em ON em.expense_id = e.expense_id
+                WHERE e.group_id = g.group_id AND e.is_active = TRUE
+            ) AS net_balance
         FROM tbl_groups g
         WHERE g.group_id IN (
         SELECT gm.group_id 
@@ -221,6 +233,7 @@ module.exports = {
           members: avatars.slice(0, 2), // Only first 5 avatars
           remaining_members: avatars.length > 2 ? avatars.length - 2 : undefined, // Remaining count
           members_avatars: undefined, // Removing the raw avatars array
+          net_balance: parseFloat(group.net_balance) || 0, // positive = owed to you, negative = you owe
         };
       });
 
