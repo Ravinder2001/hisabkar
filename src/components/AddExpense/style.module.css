@@ -3,6 +3,7 @@
   height: 70vh;
   overflow: auto;
   margin-top: 10px;
+  color: var(--hk-ink);
 }
 .container::-webkit-scrollbar {
   display: none;
@@ -19,8 +20,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #fff;
+  background: transparent;
   overflow: hidden;
+  color: var(--hk-ink);
 }
 
 .pageForm {
@@ -37,7 +39,7 @@
   background: transparent;
 }
 .pageForm::-webkit-scrollbar-thumb {
-  background: #ddd8fe;
+  background: var(--hk-border);
   border-radius: 10px;
 }
 
@@ -47,4 +49,253 @@
   align-items: stretch;
   gap: 4px;
   padding-top: 4px;
+}
+
+.resetBtn {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.72rem;
+  color: var(--hk-ink-faint);
+  cursor: pointer;
+  padding: 0;
+  margin-top: 2px;
+}
+.resetBtn:hover {
+  color: var(--hk-ink-soft);
+}
+
+/* ── Field basics ─────────────────────────────────────────────────────── */
+.label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--hk-ink-soft);
+}
+
+.required {
+  color: var(--hk-negative);
+}
+
+.errorText {
+  color: var(--hk-negative);
+  font-size: 0.78rem;
+}
+
+.input {
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 0.95rem;
+  color: var(--hk-ink);
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+  font-family: inherit;
+}
+.input::placeholder {
+  color: var(--hk-ink-faint);
+}
+.input:focus-visible,
+.input:focus {
+  outline: none;
+  border-color: var(--hk-accent);
+  box-shadow: 0 0 0 1px var(--hk-accent);
+}
+.input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.inputError {
+  border-color: var(--hk-negative);
+}
+
+.textarea {
+  resize: none;
+}
+
+/* ── Note toggle ──────────────────────────────────────────────────────── */
+.noteToggle {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: var(--hk-surface-2);
+  color: var(--hk-ink-faint);
+  font-family: inherit;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.noteToggle:hover {
+  background: var(--hk-surface-sunken);
+  color: var(--hk-ink-soft);
+}
+.noteToggleActive {
+  background: var(--hk-accent-soft);
+  color: var(--hk-accent-strong);
+}
+.noteToggleActive:hover {
+  background: var(--hk-accent-soft);
+  color: var(--hk-accent-strong);
+}
+
+/* ── Category chips ───────────────────────────────────────────────────── */
+.categoryRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.categoryRowModal {
+  flex-direction: column;
+}
+@media only screen and (min-width: 640px) {
+  .categoryRowModal {
+    flex-direction: row;
+  }
+}
+
+.categoryBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid var(--hk-border);
+  background: var(--hk-surface-2);
+  color: var(--hk-ink-soft);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.categoryBtn:hover {
+  border-color: var(--hk-ink-faint);
+}
+.categoryBtnFull {
+  width: 100%;
+}
+@media only screen and (min-width: 640px) {
+  .categoryBtnFull {
+    width: auto;
+  }
+}
+.categoryBtnSelected {
+  border-color: var(--hk-accent);
+  background: var(--hk-accent-soft);
+  color: var(--hk-accent-strong);
+  box-shadow: 0 0 0 1px var(--hk-accent);
+}
+
+/* ── Split type radios ────────────────────────────────────────────────── */
+.splitTypeRow {
+  display: flex;
+  gap: 16px;
+}
+.splitTypeOption {
+  display: flex;
+  align-items: center;
+}
+.radio {
+  accent-color: var(--hk-accent);
+  cursor: pointer;
+}
+.splitTypeLabel {
+  margin-left: 8px;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+  color: var(--hk-ink-soft);
+}
+
+/* ── Select users ─────────────────────────────────────────────────────── */
+.selectAllRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.checkbox {
+  accent-color: var(--hk-accent);
+  cursor: pointer;
+}
+
+.userGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.userItem {
+  text-align: center;
+}
+.avatarBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: var(--hk-surface-2);
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.avatarBtnSelected {
+  background: var(--hk-accent-soft);
+  border-color: var(--hk-accent);
+}
+.checkBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--hk-accent);
+  color: var(--hk-on-accent);
+  border-radius: 999px;
+  padding: 2px;
+  display: flex;
+}
+.userName {
+  font-size: 0.85rem;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+  color: var(--hk-ink);
+}
+
+/* ── Split details ─────────────────────────────────────────────────────── */
+.splitDetailsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.remainingLabel {
+  font-size: 0.75rem;
+  color: var(--hk-ink-faint);
+}
+.splitRows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.splitRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.splitRowName {
+  flex: 1;
+  font-size: 0.78rem;
+  color: var(--hk-ink-soft);
+}
+.splitInput {
+  width: 80px;
+  height: 32px;
+  text-align: right;
+  font-size: 0.78rem;
 }
