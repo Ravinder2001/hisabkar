@@ -1,0 +1,103 @@
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  background: var(--hk-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  padding-top: calc(24px + env(safe-area-inset-top));
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  text-align: center;
+}
+
+.card {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.iconWrap {
+  width: 88px;
+  height: 88px;
+  border-radius: 24px;
+  background: var(--hk-accent-soft);
+  color: var(--hk-accent-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--hk-ink);
+  margin: 0 0 12px;
+}
+
+.desc {
+  color: var(--hk-ink-soft);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  margin: 0 0 28px;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--hk-ink-soft);
+  font-size: 0.85rem;
+  margin-bottom: 28px;
+}
+
+.pulseDotWrap {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  flex: none;
+}
+
+.pulseDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--hk-accent);
+}
+
+.pulseRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--hk-accent);
+  animation: pulseRing 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.downtime {
+  color: var(--hk-ink-faint);
+  font-size: 0.8rem;
+  margin: 24px 0 0;
+}
+
+.footer {
+  color: var(--hk-ink-faint);
+  font-size: 0.75rem;
+  margin-top: 48px;
+}
