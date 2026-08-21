@@ -27,6 +27,18 @@ module.exports = {
       let user = await userModel.getUserDetailsByEmail(email);
 
       if (!user) {
+        // Don't silently create an account for an email the user may have
+        // signed in with by mistake — require an explicit confirmation from
+        // the client first (see SignIn.tsx's "create a new account?" prompt).
+        if (!req.body.confirmNewAccount) {
+          return res.status(HttpStatus.OK).json({
+            success: 0,
+            code: "NEW_ACCOUNT_CONFIRMATION_REQUIRED",
+            message: Messages.NEW_ACCOUNT_CONFIRMATION_REQUIRED,
+            data: { email, name, picture },
+          });
+        }
+
         const avatarImage = generateAvatarImage();
         const hashedUPIAddress = encryptData("dummy@upi");
 

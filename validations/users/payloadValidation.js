@@ -64,6 +64,7 @@ module.exports = {
         "any.required": "Token is required",
       })
       .max(5000),
+    confirmNewAccount: Joi.boolean().optional(),
   }),
   subscriptionSchema: Joi.object({
     endpoint: Joi.string().uri().max(500).required(), // Max length of 500 characters

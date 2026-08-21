@@ -24,6 +24,7 @@ const Messages = {
   // Authentication & Authorization
   AUTH_REQUIRED: "Authentication required. Please log in.",
   LOGIN_SUCCESS: "Login successful.",
+  NEW_ACCOUNT_CONFIRMATION_REQUIRED: "No account found for this email. Confirm to create a new account.",
   LOGIN_FAILED: "Login failed. Please check your credentials.",
   LOGOUT_SUCCESS: "Logout successful.",
   TOKEN_EXPIRED: "Your session has expired. Please log in again.",
