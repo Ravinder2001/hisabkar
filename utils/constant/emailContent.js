@@ -11,4 +11,8 @@ module.exports = {
     subject: "Welcome to Hisabkar",
     text: `Hello ${data.name},\n\nWelcome to Hisabkar! We're excited to have you on board.\n\nIf you have any questions or need assistance, feel free to reach out to our support team.\n\nRegards,\nHisabkar Team`,
   }),
+  ServerCrash: (data) => ({
+    subject: `[Hisabkar] Server crashed: ${data.type}`,
+    text: `The Hisabkar server crashed and is restarting.\n\nType: ${data.type}\nTime: ${data.timestamp}\nMessage: ${data.message}\n\nStack trace:\n${data.stack}`,
+  }),
 };

@@ -13,6 +13,8 @@ const initSockets = require("./sockets/index");
 const mainRouter = require("./routes/routes");
 const config = require("./configuration/config");
 const Messages = require("./utils/constant/messages");
+const sendEmail = require("./helpers/sendEmail");
+const emailContent = require("./utils/constant/emailContent");
 
 const client = require("./configuration/db");
 
@@ -20,6 +22,35 @@ require("./jobs/cronJob");
 require("./configuration/db");
 require("./configuration/redis");
 require("./queues/settlementReport.queue");
+
+// Email ourselves on a fatal, process-level crash (not routine per-request
+// errors — those are already handled by handleAsyncError in
+// common.controller.js and don't take the process down). Racing the send
+// against a timeout keeps a hung SMTP connection from delaying the crash
+// exit indefinitely.
+const notifyCrash = async (type, error) => {
+  console.error(`${type}:`, error);
+  try {
+    const { subject, text } = emailContent.ServerCrash({
+      type,
+      message: error?.message || String(error),
+      stack: error?.stack || "No stack trace available",
+      timestamp: new Date().toISOString(),
+    });
+    await Promise.race([sendEmail(config.NODEMAILER.EMAIL, { subject, text }), new Promise((resolve) => setTimeout(resolve, 5000))]);
+  } catch (emailError) {
+    console.error("Failed to send crash notification email:", emailError);
+  }
+};
+
+process.on("uncaughtException", (error) => {
+  notifyCrash("Uncaught Exception", error).finally(() => process.exit(1));
+});
+
+process.on("unhandledRejection", (reason) => {
+  const error = reason instanceof Error ? reason : new Error(String(reason));
+  notifyCrash("Unhandled Rejection", error).finally(() => process.exit(1));
+});
 
 const port = config.PORT;
 
