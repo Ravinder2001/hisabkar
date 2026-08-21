@@ -31,10 +31,9 @@ const useApiFetch = (initialUrl: string, initialOptions?: AxiosRequestConfig) =>
       } catch (error: any) {
         const errorMessage = error?.data?.message || error?.response?.data?.message || error?.message || "Something went wrong";
         showToast(errorMessage, "error");
-        if (error?.status === 401) {
-          localStorage.clear();
-          window.location.href = "/";
-        }
+        // 401 handling (silent refresh-and-retry, or force logout if the
+        // refresh token itself is invalid) now lives entirely in
+        // axiosInstance.ts's response interceptor — nothing else to do here.
         setResponse({ error: errorMessage, success: 0 });
       } finally {
         setIsLoading(false);

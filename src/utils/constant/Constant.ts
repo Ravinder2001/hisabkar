@@ -14,6 +14,8 @@ const CONSTANTS = {
   },
   API_ROUTES: {
     GOOGLE_SIGN_IN: "/user/google-signin",
+    REFRESH_TOKEN: "/user/refresh-token",
+    LOGOUT: "/user/logout",
     SEND_LOGIN_OTP: "/user/login-send-otp",
     SEND_OTP: "/user/send-otp",
     LOGIN: "/user/login",

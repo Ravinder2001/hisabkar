@@ -1,5 +1,5 @@
 {
-  "currentVersion": "3.8.0",
+  "currentVersion": "3.9.0",
   "note": "Hisabkar uses a single version number shared by both the frontend and backend (see package.json in each repo). Every release below covers whatever changed on either side.",
   "eras": [
     {
@@ -19,12 +19,33 @@
     {
       "id": 3,
       "title": "Chat, AI & PWA",
-      "range": "v3.0.0 – v3.8.0",
+      "range": "v3.0.0 – v3.9.0",
       "description": "Real-time chat, an AI assistant, offline installable PWA, and the dark/gold theme.",
       "color": "accent"
     }
   ],
   "versions": [
+    {
+      "version": "3.9.0",
+      "date": "2026-08-21",
+      "type": "minor",
+      "era": 3,
+      "title": "Short-lived sessions & instant logout",
+      "changes": [
+        {
+          "type": "feature",
+          "text": "Login now issues a short-lived access token plus a secure refresh token, silently renewed in the background — no more staying signed in on a single token for 100 days"
+        },
+        {
+          "type": "feature",
+          "text": "Signing out (or a forced logout) now instantly revokes the session server-side, instead of only clearing it on this device"
+        },
+        {
+          "type": "fix",
+          "text": "A stolen or leaked login token can no longer be used indefinitely"
+        }
+      ]
+    },
     {
       "version": "3.8.0",
       "date": "2026-08-21",

@@ -6,6 +6,7 @@ import styles from "./style.module.css";
 import { useDispatch } from "react-redux";
 import { setUserLoggedOut } from "../../store/features/userSlice";
 import CONSTANTS from "../../utils/constant/Constant";
+import useApiFetch from "../../hooks/useAPIFetch";
 
 const dropdownStyle: React.CSSProperties = {
   background: "var(--hk-surface)",
@@ -16,12 +17,17 @@ const dropdownStyle: React.CSSProperties = {
 const Navbar = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const { fetchData: postLogout } = useApiFetch("");
 
   // Group Detail pages render their own GroupDetailHeader (back button, group
   // name/avatars, admin menu) in place of this app-wide navbar.
   const isGroupDetailPage = location.pathname.includes("/group/") && !location.pathname.includes("/join-group");
 
   const handleLogout = () => {
+    // Fire-and-forget: revokes the session server-side (so the refresh
+    // cookie can't mint new access tokens anymore) but doesn't block the
+    // local sign-out on it succeeding.
+    postLogout(CONSTANTS.API_ROUTES.LOGOUT, { method: "POST" });
     dispatch(setUserLoggedOut());
   };
 
