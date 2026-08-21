@@ -2,15 +2,13 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { Input } from "../ui/input";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import { Check, CircleAlert } from "lucide-react";
 import { ExpenseType, MemberType, ModalType, SplitType } from "../../utils/comman/CommanTypes";
 import UserAvatar from "../Atoms/UserAvatar/UserAvatar";
-import { Textarea } from "../ui/textarea";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
-import ButtonComponent from "../Atoms/ButtonComponent/ButtonComponent";
+import CustomCircularLoading from "../Atoms/CustomCircularLoading/CustomCircularLoading";
 import styles from "./style.module.css";
 import { Tooltip } from "react-tooltip";
 
@@ -30,6 +28,7 @@ interface FormValues {
 }
 
 import { EXPENSE_CATEGORIES } from "../../utils/constant/Categories";
+import { getGroupTypeIcon } from "../../utils/comman/groupTypeIcon";
 
 const validationSchema = Yup.object().shape({
   expenseName: Yup.string()
@@ -245,23 +244,20 @@ function AddExpenseModal({
           <Form className="space-y-4" noValidate>
             <div className="space-y-1.5">
               <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-slate-600">
-                  Expense Name <span className="text-red-500">*</span>
+                <label className={styles.label}>
+                  Expense Name <span className={styles.required}>*</span>
                 </label>
                 <button
                   type="button"
                   onClick={() => setShowDescription(!showDescription)}
-                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-full transition-colors ${
-                    showDescription ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                  }`}
-                  style={{ fontSize: "13px" }}
+                  className={`${styles.noteToggle} ${showDescription ? styles.noteToggleActive : ""}`}
                 >
                   {showDescription ? "− Note" : "+ Note"}
                 </button>
               </div>
               <Field name="expenseName">
                 {({ field }: any) => (
-                  <Input
+                  <input
                     {...field}
                     onBlur={handleBlur}
                     onKeyDown={(e) => {
@@ -270,59 +266,59 @@ function AddExpenseModal({
                       }
                     }}
                     placeholder="e.g. Dinner"
-                    className={`border-[#e5e7eb] h-10 text-base rounded-lg ${touched.expenseName && errors.expenseName ? "border-red-500" : ""}`}
+                    className={`${styles.input} ${touched.expenseName && errors.expenseName ? styles.inputError : ""}`}
                   />
                 )}
               </Field>
-              {touched.expenseName && errors.expenseName && <div className="text-red-500 text-sm">{errors.expenseName}</div>}
+              {touched.expenseName && errors.expenseName && <div className={styles.errorText}>{errors.expenseName}</div>}
 
               {showDescription && (
                 <div className="mt-1">
                   <Field name="description">
                     {({ field }: any) => (
-                      <Textarea
+                      <textarea
                         {...field}
                         onBlur={handleBlur}
                         placeholder="Add a note..."
                         rows={2}
-                        className={`border-[#e5e7eb] rounded-lg text-base ${touched.description && errors.description ? "border-red-500" : ""}`}
+                        className={`${styles.input} ${styles.textarea} ${touched.description && errors.description ? styles.inputError : ""}`}
                       />
                     )}
                   </Field>
-                  {touched.description && errors.description && <div className="text-red-500 text-sm">{errors.description}</div>}
+                  {touched.description && errors.description && <div className={styles.errorText}>{errors.description}</div>}
                 </div>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-600">Category</label>
-              <div className={`flex ${inPage ? "flex-wrap" : "flex-col sm:flex-row"} gap-2`}>
-                {EXPENSE_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.label}
-                    type="button"
-                    onClick={() => setFieldValue("expenseType", cat.label)}
-                    className={`flex items-center gap-2 px-1 py-1 rounded-xl text-sm border transition-all ${
-                      values.expenseType === cat.label
-                        ? `${cat.color} border-current ring-1 ring-current shadow-sm`
-                        : "bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
-                    } ${inPage ? "flex-shrink-0" : "w-full sm:w-auto"}`}
-                  >
-                    <span className="text-lg">{cat.icon}</span>
-                    <span className="font-medium">{cat.label}</span>
-                  </button>
-                ))}
+              <label className={styles.label}>Category</label>
+              <div className={`${styles.categoryRow} ${inPage ? "" : styles.categoryRowModal}`}>
+                {EXPENSE_CATEGORIES.map((cat) => {
+                  const selected = values.expenseType === cat.label;
+                  const CatIcon = getGroupTypeIcon(cat.label);
+                  return (
+                    <button
+                      key={cat.label}
+                      type="button"
+                      onClick={() => setFieldValue("expenseType", cat.label)}
+                      className={`${styles.categoryBtn} ${selected ? styles.categoryBtnSelected : ""} ${inPage ? "" : styles.categoryBtnFull}`}
+                    >
+                      <CatIcon size={16} strokeWidth={1.8} />
+                      <span>{cat.label}</span>
+                    </button>
+                  );
+                })}
               </div>
-              {touched.expenseType && errors.expenseType && <div className="text-red-500 text-xs">{errors.expenseType}</div>}
+              {touched.expenseType && errors.expenseType && <div className={styles.errorText}>{errors.expenseType}</div>}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-600">
-                Amount <span className="text-red-500">*</span>
+              <label className={styles.label}>
+                Amount <span className={styles.required}>*</span>
               </label>
               <Field name="amount">
                 {({ field }: any) => (
-                  <Input
+                  <input
                     type="number"
                     onWheel={(event) => event.currentTarget.blur()}
                     {...field}
@@ -336,17 +332,17 @@ function AddExpenseModal({
                       setFieldValue("amount", e.target.value);
                       setFieldValue("selectedUsers", []);
                     }}
-                    className={`border-[#e5e7eb] rounded-lg h-10 text-base ${touched.amount && errors.amount ? "border-red-500" : ""}`}
+                    className={`${styles.input} ${touched.amount && errors.amount ? styles.inputError : ""}`}
                   />
                 )}
               </Field>
-              {touched.amount && errors.amount && <div className="text-red-500 text-sm">{errors.amount}</div>}
+              {touched.amount && errors.amount && <div className={styles.errorText}>{errors.amount}</div>}
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-600">Split Type</label>
-              <div className="flex gap-4">
+              <label className={styles.label}>Split Type</label>
+              <div className={styles.splitTypeRow}>
                 {["EQUAL", "PERCENTAGE", "CUSTOM"].map((type) => (
-                  <div key={type} className="flex items-center">
+                  <div key={type} className={styles.splitTypeOption}>
                     <Field
                       type="radio"
                       name="splitType"
@@ -356,9 +352,9 @@ function AddExpenseModal({
                         setFieldValue("selectedUsers", []);
                       }}
                       id={type}
-                      className="border-2 border-gray-200"
+                      className={styles.radio}
                     />
-                    <label htmlFor={type} className="ml-2 text-sm capitalize">
+                    <label htmlFor={type} className={styles.splitTypeLabel}>
                       {type}
                     </label>
                   </div>
@@ -367,10 +363,10 @@ function AddExpenseModal({
             </div>
             <div className="space-y-1.5">
               <div className="flex gap-1">
-                <div className="text-sm font-medium text-slate-600">
-                  Select Users <span className="text-red-500">*</span>
+                <div className={styles.label}>
+                  Select Users <span className={styles.required}>*</span>
                 </div>
-                <div>
+                <div className={styles.selectAllRow}>
                   <input
                     type="checkbox"
                     checked={availableMemberIds.length > 0 && availableMemberIds.every((id) => values.selectedUsers.includes(id))}
@@ -390,21 +386,20 @@ function AddExpenseModal({
                         setFieldValue("userSplits", []);
                       }
                     }}
-                    className="cursor-pointer"
+                    className={styles.checkbox}
                   />
                 </div>
               </div>
-              <div className="flex flex-wrap gap-4">
+              <div className={styles.userGrid}>
                 {displayUsers.map((user) => {
                   const UserName = user.name.split(" ")[0];
+                  const selected = values.selectedUsers.includes(user.id);
                   return (
-                    <div key={user.id} className="text-center">
+                    <div key={user.id} className={styles.userItem}>
                       <button
                         type="button"
                         onClick={() => {
-                          const newSelected = values.selectedUsers.includes(user.id)
-                            ? values.selectedUsers.filter((id) => id !== user.id)
-                            : [...values.selectedUsers, user.id];
+                          const newSelected = selected ? values.selectedUsers.filter((id) => id !== user.id) : [...values.selectedUsers, user.id];
                           setFieldValue("selectedUsers", newSelected);
                           const amount = parseFloat(values.amount) || 0;
                           const splits = newSelected.map((userId) => ({
@@ -413,26 +408,24 @@ function AddExpenseModal({
                           }));
                           setFieldValue("userSplits", splits);
                         }}
-                        className={`flex items-center justify-center relative w-12 h-12 rounded-full ${
-                          values.selectedUsers.includes(user.id) ? "bg-blue-100 border-2 border-blue-200" : "bg-gray-100"
-                        }`}
+                        className={`${styles.avatarBtn} ${selected ? styles.avatarBtnSelected : ""}`}
                       >
                         <UserAvatar userImage={user.avatar} userName={user.name} />
 
-                        {values.selectedUsers.includes(user.id) && (
-                          <div className="absolute -top-1 -right-1 bg-blue-500 rounded-full p-0.5">
-                            <Check className="w-3 h-3 text-white" />
+                        {selected && (
+                          <div className={styles.checkBadge}>
+                            <Check className="w-3 h-3" />
                           </div>
                         )}
                       </button>
-                      <div className="text-sm mt-1 flex items-center gap-1">
+                      <div className={styles.userName}>
                         <div>{UserName}</div>
                         {!user.is_available ? (
                           <div
                             data-tooltip-id="user-not-available-tooltip"
                             data-tooltip-content={`${UserName} is currently unavailable. Click on the avatar to add them manually.`}
                           >
-                            <CircleAlert color="red" size={14} />
+                            <CircleAlert color="var(--hk-negative)" size={14} />
                           </div>
                         ) : null}
                       </div>
@@ -440,36 +433,36 @@ function AddExpenseModal({
                   );
                 })}
               </div>
-              {touched.selectedUsers && errors.selectedUsers && <div className="text-red-500 text-sm mt-1">{errors.selectedUsers}</div>}
+              {touched.selectedUsers && errors.selectedUsers && <div className={styles.errorText}>{errors.selectedUsers}</div>}
             </div>
 
             {values.selectedUsers.length > 0 && (
               <div className="space-y-1.5">
-                <div className="flex justify-between items-center">
-                  <label className="text-sm font-medium text-slate-600">Split Details</label>
-                  <span className="text-xs text-gray-500">
+                <div className={styles.splitDetailsHeader}>
+                  <label className={styles.label}>Split Details</label>
+                  <span className={styles.remainingLabel}>
                     Remaining:{" "}
                     {values.splitType === "PERCENTAGE"
                       ? (100 - values.userSplits.reduce((sum, split) => sum + Number(split.amount || 0), 0)).toFixed(2) + "%"
                       : (Number(values.amount || 0) - values.userSplits.reduce((sum, split) => sum + Number(split.amount || 0), 0)).toFixed(2)}
                   </span>
                 </div>
-                <div className="space-y-2">
+                <div className={styles.splitRows}>
                   {values.userSplits.map(({ userId }, index) => {
                     const user = memberList.find((u) => u.id === userId);
                     if (!user) return null;
 
                     return (
-                      <div key={userId} className="flex items-center gap-3">
+                      <div key={userId} className={styles.splitRow}>
                         <UserAvatar userImage={user.avatar} userName={user.name} />
-                        <span className="flex-1 text-xs">{user.name.split(" ")[0]}</span>
+                        <span className={styles.splitRowName}>{user.name.split(" ")[0]}</span>
                         <Field name={`userSplits.${index}.amount`}>
                           {({ field }: any) => (
-                            <Input
+                            <input
                               {...field}
                               type="text"
                               disabled={values.splitType === "EQUAL"}
-                              className="w-20 h-8 text-right text-xs"
+                              className={`${styles.input} ${styles.splitInput}`}
                               placeholder={values.splitType === "PERCENTAGE" ? "%" : "0"}
                               value={
                                 values.splitType === "EQUAL"
@@ -483,18 +476,24 @@ function AddExpenseModal({
                     );
                   })}
                 </div>
-                {typeof errors.userSplits === "string" && <div className="text-red-500 text-xs mt-1">{errors.userSplits}</div>}
+                {typeof errors.userSplits === "string" && <div className={styles.errorText}>{errors.userSplits}</div>}
               </div>
             )}
 
             <div className={inPage ? styles.pageSubmitRow : ""}>
-              <ButtonComponent
-                type="submit"
-                text={selectedRow && !isClone ? "Edit Expense" : isClone ? "Clone Expense" : "Add Expense"}
-                isLoading={isLoading || editLoading}
-              />
+              <button type="submit" className="hk-btn-primary" style={{ width: "100%" }} disabled={isLoading || editLoading}>
+                {isLoading || editLoading ? (
+                  <CustomCircularLoading />
+                ) : selectedRow && !isClone ? (
+                  "Edit Expense"
+                ) : isClone ? (
+                  "Clone Expense"
+                ) : (
+                  "Add Expense"
+                )}
+              </button>
               {inPage && (
-                <button type="button" onClick={() => resetForm()} className="text-xs text-slate-400 hover:text-slate-600 transition-colors mt-1">
+                <button type="button" onClick={() => resetForm()} className={styles.resetBtn}>
                   Reset form
                 </button>
               )}

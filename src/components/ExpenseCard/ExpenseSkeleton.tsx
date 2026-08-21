@@ -1,31 +1,23 @@
 import React from "react";
-import styles from "./style.module.css";
 import skeletonStyles from "./skeleton.module.css";
 
-const ExpenseSkeleton = ({ isLast = false }: { isLast?: boolean }) => {
+const ExpenseSkeleton = () => {
   return (
-    <div className={`${styles.expenseCon} w-full`}>
-      <div className={styles.card}>
-        {/* Header Skeleton */}
-        <div className={`${styles.cardHeader} ${skeletonStyles.headerSkeleton}`}>
-          <div className={skeletonStyles.amountSkeleton} />
-          <div className={skeletonStyles.chipSkeleton} />
+    <div>
+      <div className={skeletonStyles.row}>
+        <div className={skeletonStyles.icon} />
+        <div className={skeletonStyles.body}>
+          <div className={skeletonStyles.title} />
+          <div className={skeletonStyles.meta} />
         </div>
-
-        {/* Body Skeleton */}
-        <div className={styles.cardBody}>
-          <div className={skeletonStyles.tagSkeleton} />
-          <div className={skeletonStyles.nameSkeleton} />
-          <div className={skeletonStyles.dateSkeleton} />
+        <div className={skeletonStyles.right}>
+          <div className={skeletonStyles.amt} />
+          <div className={skeletonStyles.share} />
         </div>
       </div>
-
-      {/* Branch connector */}
-      {!isLast && (
-        <div className={styles.branchConnector}>
-          <div className={styles.branchLine} />
-        </div>
-      )}
+      <div className={skeletonStyles.splitWrap}>
+        <div className={skeletonStyles.splitPill} />
+      </div>
     </div>
   );
 };

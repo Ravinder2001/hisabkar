@@ -15,7 +15,7 @@ const initialState: userState = {
   name: "",
   avatar: "",
   role: "",
-  token: "",
+  token: null,
   isUserLoggedIn: false,
   isNewUser: false,
 };
@@ -48,10 +48,16 @@ export const userSlice = createSlice({
     toggleNewUser: (state) => {
       state.isNewUser = false;
     },
+    // Updates just the access token after a silent refresh — see
+    // axiosInstance.ts's response interceptor. Deliberately doesn't touch
+    // any other field.
+    setAccessToken: (state, { payload }) => {
+      state.token = payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setUserLoggedIn, setUserLoggedOut, setUserProfileData, toggleNewUser } = userSlice.actions;
+export const { setUserLoggedIn, setUserLoggedOut, setUserProfileData, toggleNewUser, setAccessToken } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -1,5 +1,5 @@
 .skeletonBase {
-  background: linear-gradient(90deg, rgba(203, 213, 225, 0.5) 25%, rgba(226, 232, 240, 0.9) 50%, rgba(203, 213, 225, 0.5) 75%);
+  background: linear-gradient(90deg, var(--hk-surface-sunken) 25%, var(--hk-border) 50%, var(--hk-surface-sunken) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite linear;
   border-radius: 4px;
@@ -14,46 +14,70 @@
   }
 }
 
-.headerSkeleton {
-  background: #f1f5f9 !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  border-bottom: 2px solid #e2e8f0;
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--hk-border);
 }
 
-.amountSkeleton {
+.icon {
   composes: skeletonBase;
-  width: 80px;
-  height: 32px;
-  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  flex: none;
 }
 
-.chipSkeleton {
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
   composes: skeletonBase;
-  width: 100px;
-  height: 36px;
-  border-radius: 20px;
+  width: 55%;
+  height: 14px;
 }
 
-.tagSkeleton {
-  composes: skeletonBase;
-  width: 60px;
-  height: 16px;
-  margin-bottom: 12px;
-  border-radius: 12px;
-}
-
-.nameSkeleton {
+.meta {
   composes: skeletonBase;
   width: 70%;
-  height: 24px;
-  margin-bottom: 8px;
+  height: 10px;
 }
 
-.dateSkeleton {
+.right {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.amt {
   composes: skeletonBase;
-  width: 40%;
+  width: 50px;
   height: 14px;
-  margin-bottom: 24px;
+}
+
+.share {
+  composes: skeletonBase;
+  width: 60px;
+  height: 10px;
+}
+
+/* mirrors ExpenseCard's .splitWrap (the "Split between N people" pill) so the
+   skeleton reserves the same height and nothing shifts when real data lands */
+.splitWrap {
+  padding: 10px 10px 10px 62px;
+}
+
+.splitPill {
+  composes: skeletonBase;
+  width: 150px;
+  height: 24px;
+  border-radius: 999px;
 }

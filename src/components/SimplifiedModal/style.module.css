@@ -1,5 +1,260 @@
-@media only screen and (max-width: 1024px) {
-  #container {
-    width: 80vw;
+.container {
+  width: 100%;
+  color: var(--hk-ink);
+}
+
+.section {
+  margin-bottom: 22px;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Your settlements (personal quick view) ─────────────────────────────── */
+.personalRows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.personalRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+
+.personalWho {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.personalAvatarWrap {
+  position: relative;
+  flex: none;
+}
+
+.personalAvatarWrap img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--hk-surface);
+  display: block;
+}
+
+.personalAvatarBadge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  color: var(--hk-on-accent);
+  border: 2px solid var(--hk-surface);
+}
+
+.personalLabel {
+  font-size: 0.72rem;
+  color: var(--hk-ink-soft);
+}
+
+.personalName {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--hk-ink);
+  margin-top: 1px;
+}
+
+.personalRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.personalAmt {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.reminderBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.reminderBtn:hover:not(:disabled) {
+  background: var(--hk-surface-2);
+}
+
+/* ── Group Simplification list ────────────────────────────────────────── */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--hk-border);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.pairAvatars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.pairAvatars img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--hk-surface);
+  display: block;
+}
+
+.rowBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.rowName {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--hk-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rowMeta {
+  font-size: 0.76rem;
+  color: var(--hk-ink-soft);
+  margin-top: 1px;
+}
+
+.amountPill {
+  flex: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--hk-accent-soft);
+  color: var(--hk-accent-strong);
+}
+
+/* ── Empty / loading states ───────────────────────────────────────────── */
+.spinnerWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 0;
+}
+
+.spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid var(--hk-border);
+  border-bottom-color: var(--hk-accent);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 28px 12px;
+  color: var(--hk-ink-faint);
+}
+
+.emptyIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hk-surface-2);
+  color: var(--hk-ink-faint);
+}
+
+.emptyTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--hk-ink-soft);
+}
+
+.emptyDesc {
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+/* ── Transaction flow tiles ───────────────────────────────────────────── */
+.flowGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.flowTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 84px;
+  padding: 10px 6px;
+  border-radius: 14px;
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+}
+
+.flowTile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--hk-surface);
+}
+
+.flowName {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--hk-ink);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.flowNet {
+  font-size: 0.72rem;
+  font-weight: 700;
 }

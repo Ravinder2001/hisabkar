@@ -1,20 +1,19 @@
 import type React from "react";
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import UserAvatar from "../../components/Atoms/UserAvatar/UserAvatar";
 import CustomToggle from "../../components/Atoms/CustomToggle/CustomToggle";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
-import ButtonComponent from "../../components/Atoms/ButtonComponent/ButtonComponent";
 import showToast from "../../utils/helpers/toastHelper";
 import { useDispatch } from "react-redux";
 import { setUserProfileData } from "../../store/features/userSlice";
-import { formatDateTime } from "../../utils/helpers/commanHelper";
+import { formatMembershipDuration } from "../../utils/helpers/commanHelper";
 import CustomCircularLoading from "../../components/Atoms/CustomCircularLoading/CustomCircularLoading";
 import { getSubscription, subscribeUser, unsubscribeUser } from "../../utils/helpers/serviceWorkerHelper";
+import styles from "./style.module.css";
 
 const initialData = {
   email: "",
@@ -27,20 +26,35 @@ const initialData = {
 
 export default function Profile() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const { fetchData: fetchProfileDetails, response: profileRes, isLoading: profileLoading } = useApiFetch(CONSTANTS.API_ROUTES.PROFILE_DETAILS);
+  const { fetchData: fetchProfileDetails, response: profileRes } = useApiFetch(CONSTANTS.API_ROUTES.PROFILE_DETAILS);
   const { fetchData: fetchNewAvatarList, response: avatarRes, isLoading: avatarListLoading } = useApiFetch("");
-  const { fetchData: updateProfileRes, response: editProfileRes, isLoading } = useApiFetch("");
+  const { fetchData: updateProfileRes, response: editProfileRes } = useApiFetch("");
 
   const [formData, setFormData] = useState(initialData);
   const [avatarList, setAvatarList] = useState<string[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
 
+  const savedNameRef = useRef("");
+
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !("MSStream" in window);
   const isStandalone =
     window.matchMedia("(display-mode: standalone)").matches ||
     ("standalone" in navigator && (navigator as Navigator & { standalone?: boolean }).standalone);
+
+  const saveProfile = (overrides: Partial<typeof formData>) => {
+    const payload = { ...formData, ...overrides };
+    updateProfileRes(CONSTANTS.API_ROUTES.UPDATE_PROFILE_DETAILS, {
+      method: "PUT",
+      data: {
+        name: payload.name,
+        avatar: payload.avatar,
+        is_available: payload.is_available,
+      },
+    });
+  };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -48,28 +62,33 @@ export default function Profile() {
     const sanitizedValue = value.replace(/[^a-zA-Z\s]/g, "");
     setFormData({ ...formData, name: sanitizedValue });
   };
+
+  const handleNameBlur = () => {
+    const trimmedName = formData.name.trim();
+    if (!trimmedName || trimmedName === savedNameRef.current) return;
+    savedNameRef.current = trimmedName;
+    setFormData((prev) => ({ ...prev, name: trimmedName }));
+    saveProfile({ name: trimmedName });
+  };
+
   const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, is_available: e.target.checked });
+    const isAvailable = e.target.checked;
+    setFormData({ ...formData, is_available: isAvailable });
+    saveProfile({ is_available: isAvailable });
   };
 
   const handleAvatarChange = (newAvatar: string) => {
     setFormData({ ...formData, avatar: newAvatar });
+    saveProfile({ avatar: newAvatar });
   };
 
   const fetchAvatarList = () => {
     fetchNewAvatarList(CONSTANTS.API_ROUTES.GEN_NEW_AVATARS);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await updateProfileRes(CONSTANTS.API_ROUTES.UPDATE_PROFILE_DETAILS, {
-      method: "PUT",
-      data: {
-        name: formData.name,
-        avatar: formData.avatar,
-        is_available: formData.is_available,
-      },
-    });
+  const handleBack = () => {
+    if (window.history.length > 2) navigate(-1);
+    else navigate(CONSTANTS.PROJECT_ROUTES.HOME);
   };
 
   useEffect(() => {
@@ -114,6 +133,7 @@ export default function Profile() {
   useEffect(() => {
     if (profileRes?.success == 1) {
       setFormData(profileRes.data);
+      savedNameRef.current = profileRes.data.name;
     }
   }, [profileRes]);
   useEffect(() => {
@@ -123,7 +143,7 @@ export default function Profile() {
   }, [avatarRes]);
   useEffect(() => {
     if (editProfileRes?.success == 1) {
-      showToast("Profile Details edited succesfully", "success");
+      showToast("Profile updated", "success");
       dispatch(
         setUserProfileData({
           name: formData.name,
@@ -134,69 +154,75 @@ export default function Profile() {
   }, [editProfileRes]);
 
   return (
-    <form onSubmit={handleSubmit} className="h-full overflow-y-auto w-full pb-6">
-      <Card className="max-w-2xl mx-auto bg-white">
-        <CardHeader>
-          <CardTitle>Edit Profile</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex flex-col items-center space-y-4">
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <button type="button" className="hk-icon-btn" onClick={handleBack} aria-label="Go back">
+          <ArrowLeft size={18} />
+        </button>
+        <h1 className={styles.title}>Profile</h1>
+      </div>
+
+      <div className={styles.card}>
+        <div className={`${styles.row} ${styles.identityRow}`}>
+          <div className={styles.avatarWrap}>
             <UserAvatar userImage={formData.avatar} />
-            <div className="cursor-pointer text-blue-500" onClick={fetchAvatarList}>
-              Change Avatar
+            <div className={styles.changeAvatar} onClick={fetchAvatarList}>
+              {avatarListLoading ? <CustomCircularLoading /> : "Change"}
             </div>
-            {avatarListLoading ? (
-              <CustomCircularLoading />
-            ) : avatarList.length ? (
-              <div className="flex justify-around p-4 gap-5">
+            {avatarList.length ? (
+              <div className={styles.avatarList}>
                 {avatarList.map((avatar, index) => (
                   <UserAvatar userImage={avatar} key={index} onClick={handleAvatarChange} />
                 ))}
               </div>
             ) : null}
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" value={formData.name} onChange={handleNameChange} maxLength={20} />
+          <div className={styles.nameField}>
+            <label className={styles.label} htmlFor="name">
+              Name
+            </label>
+            <input id="name" className={styles.input} value={formData.name} onChange={handleNameChange} onBlur={handleNameBlur} maxLength={20} />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" className="cursor-not-allowed" value={formData.email} disabled />
+        </div>
+
+        <div className={`${styles.row} ${styles.availabilityRow}`}>
+          <div>
+            <div className={styles.availabilityText}>Available</div>
+            <p className={styles.availabilitySub}>Let your groups know you&apos;re around to settle up.</p>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="role">Role</Label>
-            <Input id="role" className="cursor-not-allowed" value={formData.role} disabled />
+          <CustomToggle checked={formData.is_available} onChange={handleToggle} />
+        </div>
+
+        <div className={styles.row}>
+          <span className={styles.infoLabel}>Email</span>
+          <span className={styles.infoValue}>{formData.email}</span>
+        </div>
+        <div className={styles.row}>
+          <span className={styles.infoLabel}>Role</span>
+          <span className={styles.infoValue}>{formData.role}</span>
+        </div>
+        <div className={styles.row}>
+          <span className={styles.infoLabel}>Member Since</span>
+          <span className={styles.infoValue}>{formData.created_at ? formatMembershipDuration(formData.created_at) : ""}</span>
+        </div>
+
+        <div className={styles.row}>
+          <div>
+            <div className={styles.notificationText}>Push Notifications</div>
+            <p className={styles.notificationSub}>Receive alerts for new expenses and updates.</p>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="created_at">Member Since</Label>
-            <Input id="created_at" className="cursor-not-allowed" value={formatDateTime(formData.created_at)} disabled />
+          <div className={styles.notificationToggleWrap}>
+            {notificationLoading && <CustomCircularLoading />}
+            <CustomToggle checked={isSubscribed} onChange={handleNotificationToggle} disabled={notificationLoading} />
           </div>
-          <div className="flex items-center space-x-2">
-            <CustomToggle checked={formData.is_available} onChange={handleToggle} />
-            <Label htmlFor="is_available">Available</Label>
+        </div>
+        {isIOS && !isStandalone && (
+          <div className={styles.iosNote}>
+            <strong>Note:</strong> On iOS, you must add &quot;Hisabkar&quot; to your <strong>Home Screen</strong> to receive notifications. Tap the{" "}
+            <strong>Share</strong> icon and select <strong>&quot;Add to Home Screen&quot;</strong>.
           </div>
-          <hr className="my-4 border-gray-100" />
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label className="text-base">Push Notifications</Label>
-                <p className="text-sm text-gray-500">Receive alerts for new expenses and updates.</p>
-              </div>
-              <div className="flex items-center">
-                {notificationLoading && <CustomCircularLoading />}
-                <CustomToggle checked={isSubscribed} onChange={handleNotificationToggle} disabled={notificationLoading} />
-              </div>
-            </div>
-            {isIOS && !isStandalone && (
-              <div className="rounded-lg bg-blue-50 p-3 text-xs text-blue-700">
-                <strong>Note:</strong> On iOS, you must add &quot;Hisabkar&quot; to your <strong>Home Screen</strong> to receive notifications. Tap
-                the <strong>Share</strong> icon and select <strong>&quot;Add to Home Screen&quot;</strong>.
-              </div>
-            )}
-          </div>
-        </CardContent>
-        <CardFooter>{profileLoading ? null : <ButtonComponent text="Submit" isLoading={isLoading} />}</CardFooter>
-      </Card>
-    </form>
+        )}
+      </div>
+    </div>
   );
 }

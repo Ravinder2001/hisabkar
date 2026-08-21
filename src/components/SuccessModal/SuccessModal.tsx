@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, Dispatch, SetStateAction } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { Button } from "../../components/ui/button";
 import confetti from "canvas-confetti";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import styles from "./style.module.css";
@@ -8,108 +7,81 @@ import styles from "./style.module.css";
 type PropsTyps = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  title?: string;
+  message?: string;
 };
 
-export default function SuccessModal(props: PropsTyps) {
+// Brand palette instead of canvas-confetti's generic web colors — gold, green
+// (money/positive), and the app's accent-strong, so the burst reads as "us".
+const CONFETTI_COLORS = ["#f0ac4c", "#f7c271", "#49c285", "#2f6fed", "#f1efea"];
+
+export default function SuccessModal({ open, setOpen, title = "Success!", message = "Your expense has been added successfully." }: PropsTyps) {
   const [animate, setAnimate] = useState(false);
   const confettiRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) {
-      setTimeout(() => {
-        setAnimate(false);
-      }, 300);
+      setTimeout(() => setAnimate(false), 300);
+      return;
     }
-  }, [open]);
-
-  useEffect(() => {
-    if (props.open) {
-      setTimeout(() => {
-        setAnimate(true);
-        if (confettiRef.current) {
-          const rect = confettiRef.current.getBoundingClientRect();
-          const x = rect.left + rect.width / 2;
-          const y = rect.top + rect.height / 2;
-
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: {
-              x: x / window.innerWidth,
-              y: y / window.innerHeight,
-            },
-            colors: ["#22c55e", "#10b981", "#3b82f6", "#8b5cf6", "#f59e0b"],
-            zIndex: 9999,
-          });
-        }
-      }, 10);
-    }
+    const timer = setTimeout(() => {
+      setAnimate(true);
+      if (confettiRef.current) {
+        const rect = confettiRef.current.getBoundingClientRect();
+        confetti({
+          particleCount: 90,
+          spread: 70,
+          startVelocity: 32,
+          origin: {
+            x: (rect.left + rect.width / 2) / window.innerWidth,
+            y: (rect.top + rect.height / 2) / window.innerHeight,
+          },
+          colors: CONFETTI_COLORS,
+          shapes: ["circle", "square", "star"],
+          zIndex: 9999,
+        });
+      }
+    }, 10);
+    return () => clearTimeout(timer);
   }, [open]);
 
   return (
-    <ModalComponent isOpen={props.open} setIsOpen={props.setOpen} hideCloseBtn>
+    <ModalComponent isOpen={open} setIsOpen={setOpen} hideCloseBtn>
       <div className={styles.container}>
-        <div
-          className="absolute inset-0 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 opacity-90"
-          style={{
-            backgroundSize: "200% 200%",
-            animation: "gradient-animation 5s ease infinite",
-          }}
-        />
+        <div className={styles.glow} />
 
-        <div className="relative z-10 flex flex-col items-center justify-center py-8" ref={confettiRef}>
-          <div
-            className={`relative flex items-center justify-center mb-6 transition-all duration-300 ${
-              animate ? "scale-100 opacity-100" : "scale-50 opacity-0"
-            }`}
-          >
-            <div className="absolute inset-0 rounded-full animate-ping opacity-30 bg-gradient-to-r from-green-400 to-emerald-500 scale-[1.2]"></div>
-            <div className="absolute inset-0 rounded-full animate-pulse opacity-40 bg-gradient-to-r from-green-300 to-teal-400 scale-[1.3] animation-delay-300"></div>
+        <div className={styles.body} ref={confettiRef}>
+          <div className={`${styles.badgeWrap} ${animate ? styles.badgeIn : styles.badgeOut}`}>
+            <div className={`${styles.ring} ${styles.ringOuter}`} />
+            <div className={`${styles.ring} ${styles.ringInner}`} />
 
-            <div className="relative h-24 w-24 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400 via-emerald-500 to-teal-400 shadow-lg shadow-green-500/30"></div>
-              <CheckCircle2
-                className={`h-24 w-24 text-white z-10 transition-all duration-700 ${animate ? "stroke-[2.5] scale-100" : "stroke-[0] scale-90"}`}
-                strokeWidth={3}
-              />
+            <div className={styles.orb}>
+              <CheckCircle2 size={52} strokeWidth={2.5} className={`${styles.check} ${animate ? styles.checkIn : styles.checkOut}`} />
               {animate &&
                 Array.from({ length: 8 }).map((_, i) => (
-                  <div
+                  <span
                     key={i}
-                    className="absolute h-2 w-2 rounded-full bg-white opacity-0"
+                    className={styles.sparkle}
                     style={{
                       top: `calc(50% + ${Math.sin((i * Math.PI) / 4) * 50}%)`,
                       left: `calc(50% + ${Math.cos((i * Math.PI) / 4) * 50}%)`,
-                      transform: "translate(-50%, -50%)",
-                      animation: `dot-animation 1.5s ease infinite ${i * 0.2}s`,
+                      animationDelay: `${i * 0.2}s`,
                     }}
                   />
                 ))}
             </div>
           </div>
 
-          <div className="space-y-2 mt-2">
-            <div
-              className={`text-center text-2xl font-bold bg-clip-text text-transparent text-green-500 transition-all duration-300 delay-100 ${
-                animate ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-              }`}
-            >
-              Success!
-            </div>
-            <div
-              className={`text-center text-base transition-all duration-300 delay-200 ${
-                animate ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-              }`}
-            >
-              <span className="text-gray-700 font-medium">Your expense has been added successfully.</span>
-            </div>
+          <div className={`${styles.textBlock} ${animate ? styles.textIn : styles.textOut}`}>
+            <div className={styles.title}>{title}</div>
+            <div className={styles.message}>{message}</div>
           </div>
         </div>
 
-        <div className={`flex justify-center relative z-10 transition-all duration-300 delay-300 ${animate ? "opacity-100" : "opacity-0"}`}>
-          <Button onClick={() => props.setOpen(false)} className="w-full sm:w-auto bg-green-500 text-white">
+        <div className={`${styles.actions} ${animate ? styles.actionsIn : styles.actionsOut}`}>
+          <button className={`hk-btn-primary ${styles.continueBtn}`} onClick={() => setOpen(false)}>
             Continue
-          </Button>
+          </button>
         </div>
       </div>
     </ModalComponent>

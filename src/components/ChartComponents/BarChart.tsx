@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { EXPENSE_CATEGORIES } from "../../utils/constant/Categories";
@@ -15,10 +15,7 @@ interface ExpenseData {
 const BarChart: React.FC<{ data: ExpenseData[] }> = ({ data }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
-  const chartLabels = data.map((item) => {
-    const cat = EXPENSE_CATEGORIES.find((c) => c.label === item.expense_type);
-    return cat ? `${cat.icon} ${cat.label}` : item.expense_type;
-  });
+  const chartLabels = data.map((item) => item.expense_type);
 
   const chartData = {
     labels: chartLabels,
@@ -48,13 +45,16 @@ const BarChart: React.FC<{ data: ExpenseData[] }> = ({ data }) => {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: "rgba(255, 255, 255, 0.95)",
-        titleColor: "#1e293b",
-        bodyColor: "#1e293b",
-        borderColor: "#e2e8f0",
+        // Chart.js draws to a <canvas>, so these must be literal colors —
+        // var(--hk-*) custom properties aren't resolved by the Canvas 2D API.
+        backgroundColor: "#1a1f2e", // --hk-surface
+        titleColor: "#f1efea", // --hk-ink
+        bodyColor: "#f1efea", // --hk-ink
+        borderColor: "#2e3549", // --hk-border
         borderWidth: 1,
         padding: 12,
         callbacks: {
+          title: (items: any[]) => chartLabels[items[0].dataIndex],
           label: (context: any) => ` ₹${context.raw.toLocaleString("en-IN")}`,
         },
         titleFont: { family: "Nunito", size: 14, weight: "bold" },
@@ -64,28 +64,25 @@ const BarChart: React.FC<{ data: ExpenseData[] }> = ({ data }) => {
     scales: {
       x: {
         type: isMobile ? "linear" : "category",
-        grid: { display: !isMobile, color: "#f1f5f9" },
+        grid: { display: !isMobile, color: "#2e3549" }, // --hk-border
         beginAtZero: true,
         ticks: {
+          // x holds the ₹ values on mobile, but the category names on desktop
+          // (indexAxis flips).
           font: { family: "Nunito", size: isMobile ? 10 : 12 },
-          color: "#64748b",
-          callback: (value: any, index: number) => {
-            if (isMobile) return `₹${value}`;
-            return chartLabels[index];
-          },
+          color: "#aeb4c7", // --hk-ink-soft
+          callback: (value: any, index: number) => (isMobile ? `₹${value}` : chartLabels[index]),
         },
       },
       y: {
         type: isMobile ? "category" : "linear",
-        grid: { display: isMobile, color: "#f1f5f9" },
+        grid: { display: isMobile, color: "#2e3549" }, // --hk-border
         beginAtZero: true,
         ticks: {
-          font: { family: "Nunito", size: isMobile ? 11 : 12 },
-          color: "#64748b",
-          callback: (value: any, index: number) => {
-            if (!isMobile) return `₹${value}`;
-            return chartLabels[index];
-          },
+          // y holds the category names on mobile, ₹ values on desktop.
+          font: { family: "Nunito", size: isMobile ? 12 : 12 },
+          color: "#aeb4c7", // --hk-ink-soft
+          callback: (value: any, index: number) => (!isMobile ? `₹${value}` : chartLabels[index]),
         },
       },
     },

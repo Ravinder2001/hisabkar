@@ -3,6 +3,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import userSlice from "./features/userSlice";
 import dataSlice from "./features/dataSlice";
+import recentGroupsSlice from "./features/recentGroupsSlice";
 
 // Define persist configuration
 const persistConfig = {
@@ -14,6 +15,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   user: userSlice,
   data: dataSlice,
+  recentGroups: recentGroupsSlice,
   // Add other reducers here
 });
 

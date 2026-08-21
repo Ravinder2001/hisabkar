@@ -1,0 +1,167 @@
+.container {
+  width: 100%;
+  height: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  background: var(--hk-bg);
+  padding: 14px 16px 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--hk-ink);
+  margin: 0;
+}
+
+.card {
+  background: var(--hk-surface);
+  border: 1px solid var(--hk-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+}
+
+.row + .row {
+  border-top: 1px solid var(--hk-border);
+}
+
+/* ── Identity — avatar on top, then the one editable field ───────────── */
+.identityRow {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.avatarWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.changeAvatar {
+  color: var(--hk-accent);
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.nameField {
+  width: 100%;
+}
+
+.label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--hk-ink-faint);
+  display: block;
+  margin-bottom: 3px;
+}
+
+.input {
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 0.88rem;
+  color: var(--hk-ink);
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--hk-accent);
+}
+
+.avatarList {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* ── Availability — the control this page is mostly used for ─────────── */
+.availabilityRow {
+  border-left: 3px solid var(--hk-accent);
+}
+
+.availabilityText {
+  color: var(--hk-ink);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.availabilitySub {
+  color: var(--hk-ink-soft);
+  font-size: 0.72rem;
+  margin-top: 1px;
+}
+
+/* ── Read-only account info ───────────────────────────────────────────── */
+.infoLabel {
+  color: var(--hk-ink-faint);
+  font-size: 0.8rem;
+}
+
+.infoValue {
+  color: var(--hk-ink);
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.notificationText {
+  color: var(--hk-ink);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.notificationSub {
+  color: var(--hk-ink-soft);
+  font-size: 0.72rem;
+  margin-top: 1px;
+}
+
+.notificationToggleWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.iosNote {
+  background: var(--hk-accent-soft);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 0.72rem;
+  color: var(--hk-accent-strong);
+  margin: 0 14px 12px;
+}

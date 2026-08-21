@@ -1,0 +1,82 @@
+.container {
+  width: 320px;
+  max-width: 100%;
+  color: var(--hk-ink);
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--hk-ink);
+  margin-bottom: 16px;
+}
+
+.summary {
+  margin-bottom: 18px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  font-size: 0.8rem;
+  color: var(--hk-ink-soft);
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.summaryRow:last-child {
+  margin-bottom: 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--hk-border);
+  font-weight: 700;
+}
+
+.form {
+  display: flex;
+  gap: 8px;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 0.9rem;
+  color: var(--hk-ink);
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: var(--hk-ink-faint);
+}
+
+.input:focus-visible,
+.input:focus {
+  outline: none;
+  border-color: var(--hk-accent);
+  box-shadow: 0 0 0 1px var(--hk-accent);
+}
+
+.saveBtn {
+  flex: none;
+}
+
+.trigger {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  padding: 0;
+}
+
+/* Once a budget is set, the progress ring itself is the visible boundary —
+   hk-icon-btn's own border/background just doubled up as a square-ish outline
+   around that circle, so drop them for this state. */
+.triggerRing {
+  border: none !important;
+  background: transparent !important;
+}

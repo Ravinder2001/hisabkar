@@ -2,13 +2,6 @@
 :root {
   --nav-h-mobile: 68px;
   --nav-h-desktop: 58px;
-
-  /* Gradient palette */
-  --grad-1: #6c63ff;
-  --grad-2: #a855f7;
-  --grad-3: #ec4899;
-  --grad-pill: linear-gradient(135deg, var(--grad-1), var(--grad-2));
-  --grad-active: linear-gradient(135deg, var(--grad-2), var(--grad-3));
 }
 
 /* ── Page wrapper ──────────────────────────────────────────────────────── */
@@ -16,9 +9,124 @@
   display: flex;
   flex-direction: column;
   height: 100%; /* fills the space left by the top navbar */
-  background: #f4f3ff;
-  border-radius: var(--borderRadius);
+  background: var(--hk-bg);
   overflow: hidden;
+}
+
+/* ── Balance hero ─────────────────────────────────────────────────────────
+   Permanently visible (no scroll-driven collapse) — the amount + Settle up
+   sit up top, and every send/receive pair renders as a small always-on chip
+   below, instead of full-width rows that had to be hidden/shrunk to fit. */
+.balanceHero {
+  flex: none;
+  margin: 10px 10px 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: linear-gradient(160deg, var(--hk-surface-2), var(--hk-surface-sunken));
+  border: 1px solid var(--hk-border);
+  border-radius: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.balanceHero::before {
+  content: "";
+  position: absolute;
+  inset: -60% -20% auto auto;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240, 172, 76, 0.16), transparent 70%);
+  pointer-events: none;
+}
+
+.balanceHeroTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+}
+
+.balanceHeroActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+.balanceHeroLabel {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--hk-ink-faint);
+  font-weight: 700;
+}
+
+.balanceHeroAmt {
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.balanceHeroAmt.pos {
+  color: var(--hk-positive);
+}
+
+.balanceHeroAmt.neg {
+  color: var(--hk-negative);
+}
+
+.balanceHeroTotalSpend {
+  font-size: 0.76rem;
+  color: var(--hk-ink-faint);
+  margin-top: 4px;
+}
+
+.balanceHeroTotalSpend :global(.hk-money) {
+  color: var(--hk-ink-soft);
+  font-weight: 600;
+}
+
+/* ── Compact owe/owed chips (replaces the old expandable pair-row list) ── */
+.balanceHeroChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  position: relative;
+}
+
+.balanceHeroChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.balanceHeroChip .chipName {
+  color: var(--hk-ink-soft);
+  font-weight: 600;
+}
+
+.chipNeg {
+  background: var(--hk-negative-soft);
+}
+
+.chipNeg :global(.hk-money) {
+  color: var(--hk-negative);
+}
+
+.chipPos {
+  background: var(--hk-positive-soft);
+}
+
+.chipPos :global(.hk-money) {
+  color: var(--hk-positive);
 }
 
 /* ── Content area ──────────────────────────────────────────────────────── */
@@ -30,6 +138,15 @@
 }
 
 /* ── Tab panes ─────────────────────────────────────────────────────────── */
+/* overflow:hidden here (not overflow-y:auto) — every tab's actual content
+   (.expBox / AddExpense's .pageForm / ChatModule's .messagesList) is its own
+   height:100% scroll box nested inside this pane. Letting .tabPane ALSO be
+   independently scrollable stacks two overflow:auto containers with the same
+   bounds, which on mobile (nested -webkit-overflow-scrolling: touch) can make
+   the outer pane's own scroll position drift from the inner one — visually
+   this reads as list content jumping/disappearing near the top after a small
+   scroll. .chatTabPane already overrode this for the same reason; apply it
+   to every pane instead of just chat. */
 .tabPane {
   position: absolute;
   top: 0;
@@ -42,8 +159,7 @@
   transition:
     opacity 0.28s ease,
     transform 0.28s ease;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
   max-width: 860px;
   margin: 0 auto;
 }
@@ -59,7 +175,17 @@
   height: 100%;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 12px !important;
+  /* padding: 4px 16px 110px !important; */
+  background: var(--hk-bg);
+}
+
+/* Timeline-only: no side gutter, so expense rows run edge-to-edge and read
+   bigger. ExpenseCard's own .row already has a small 4px side padding, so
+   this isn't literally flush against the screen edge. The Summary tab keeps
+   the regular .expBox gutter — GroupPairs has its own inner padding tuned
+   around it. */
+.expBoxTimeline {
+  padding: 4px 0 110px !important;
 }
 
 /* ── Chat tab pane: raw, no Card — ChatModule flex column fills it ──────── */
@@ -91,12 +217,12 @@
   gap: 12px;
   padding: 2rem;
   text-align: center;
-  color: #6b7280;
+  color: var(--hk-ink-soft);
 }
 
 .visitBtn {
-  background: var(--grad-pill) !important;
-  color: white !important;
+  background: var(--hk-accent) !important;
+  color: var(--hk-on-accent) !important;
   border: none !important;
 }
 
@@ -106,83 +232,30 @@
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  color: #9ca3af;
+  color: var(--hk-ink-faint);
 }
 
 .emptySettingsIcon {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ede9fe, #fce7f3);
+  background: var(--hk-accent-soft);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--grad-2);
+  color: var(--hk-accent-strong);
 }
 
 .emptySettingsTitle {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--hk-ink);
 }
 
 .emptySettingsDesc {
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: var(--hk-ink-faint);
 }
-
-/* ══════════════════════════════════════════════════════════════════════════
-   FAB STACK  (timeline tab only)
-   Order top → bottom: Budget · ChatBot · Add Expense
-══════════════════════════════════════════════════════════════════════════ */
-
-.fabStack {
-  position: fixed;
-  right: 20px;
-  /* sit 12px above the mobile navbar */
-  bottom: calc(var(--nav-h-mobile) + env(safe-area-inset-bottom) + 12px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  z-index: 110;
-}
-
-/* Add Expense button */
-.fabAdd {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #111827;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.fabAdd:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.32);
-}
-
-/* Desktop: stack sits just above the floating pill nav */
-@media (min-width: 768px) {
-  .fabStack {
-    bottom: calc(var(--nav-h-desktop) + 40px);
-    right: 28px;
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════════════════
-   BOTTOM NAVIGATION
-══════════════════════════════════════════════════════════════════════════ */
 
 /* ══════════════════════════════════════════════════════════════════════════
    BOTTOM NAVIGATION — part of the flex column (NOT fixed on mobile)
@@ -192,19 +265,15 @@
 .bottomNav {
   flex-shrink: 0; /* Never compress, never overlap */
   z-index: 100;
-  background: #fff;
-  border-radius: 9999px;
+  background: var(--hk-surface);
 }
 
 .navInner {
   pointer-events: all;
   display: flex;
   align-items: stretch;
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid rgba(108, 99, 255, 0.15);
-  box-shadow: 0 -4px 30px rgba(108, 99, 255, 0.12);
+  background: var(--hk-surface);
+  border-top: 1px solid var(--hk-border);
   height: calc(var(--nav-h-mobile) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
   border-radius: 0;
@@ -226,9 +295,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ec4899, #f43f5e);
-  border: 1.5px solid white;
-  box-shadow: 0 0 6px rgba(236, 72, 153, 0.6);
+  background: var(--hk-negative);
+  border: 1.5px solid var(--hk-surface);
   animation: dotPulse 1.5s ease infinite;
 }
 
@@ -258,12 +326,12 @@
   position: relative;
   padding: 8px 4px;
   transition: all 0.22s ease;
-  color: #9ca3af;
+  color: var(--hk-ink-faint);
 }
 
 .navItem:hover {
-  color: var(--grad-2);
-  background: rgba(168, 85, 247, 0.06);
+  color: var(--hk-ink);
+  background: var(--hk-surface-sunken);
 }
 
 /* ── Special Add (➕) tab button ─────────────────────────────────────── */
@@ -287,19 +355,19 @@
   transform: translateY(-12px);
 }
 
-/* black circle container */
+/* accent circle container */
 .navAddCircle {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: #111827;
+  background: var(--hk-accent);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--hk-on-accent);
   box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.3),
-    0 0 0 3px rgba(255, 255, 255, 0.9);
+    0 4px 16px rgba(var(--hk-shadow), 0.4),
+    0 0 0 3px var(--hk-surface);
   transition:
     background 0.22s ease,
     transform 0.22s ease,
@@ -307,16 +375,12 @@
 }
 
 .navItemAdd:hover .navAddCircle {
-  background: #374151;
+  background: var(--hk-accent-strong);
   transform: scale(1.08);
 }
 
-/* active: gradient circle */
 .navItemAddActive .navAddCircle {
-  background: linear-gradient(135deg, #6c63ff, #ec4899);
-  box-shadow:
-    0 4px 20px rgba(108, 99, 255, 0.5),
-    0 0 0 3px rgba(255, 255, 255, 0.9);
+  background: var(--hk-accent-strong);
 }
 
 .navIcon {
@@ -327,9 +391,8 @@
 }
 
 .navItemActive .navIcon {
-  transform: translateY(-2px) scale(1.15);
-  color: var(--grad-1);
-  filter: drop-shadow(0 0 6px rgba(108, 99, 255, 0.5));
+  transform: translateY(-2px) scale(1.1);
+  color: var(--hk-accent-strong);
 }
 
 .navLabel {
@@ -342,10 +405,7 @@
 
 .navItemActive .navLabel {
   font-weight: 700;
-  background: var(--grad-pill);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--hk-accent-strong);
 }
 
 /* Active indicator dot */
@@ -357,8 +417,7 @@
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--grad-pill);
-  box-shadow: 0 0 8px rgba(108, 99, 255, 0.6);
+  background: var(--hk-accent-strong);
   animation: dotPop 0.22s ease;
 }
 
@@ -395,12 +454,10 @@
   .navInner {
     border-radius: 9999px;
     height: var(--nav-h-desktop);
-    border: 1px solid rgba(108, 99, 255, 0.18);
-    border-top: 1px solid rgba(108, 99, 255, 0.18);
+    border: 1px solid var(--hk-border);
     box-shadow:
-      0 8px 32px rgba(108, 99, 255, 0.18),
-      0 2px 8px rgba(0, 0, 0, 0.06),
-      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      0 8px 32px -18px rgba(var(--hk-shadow), 0.4),
+      0 2px 8px rgba(var(--hk-shadow), 0.06);
     padding: 4px 8px;
     gap: 2px;
   }
@@ -416,16 +473,16 @@
   }
 
   .navItem:hover {
-    background: rgba(168, 85, 247, 0.08);
+    background: var(--hk-surface-sunken);
   }
 
   .navItemActive {
-    background: linear-gradient(135deg, rgba(108, 99, 255, 0.13), rgba(168, 85, 247, 0.13)) !important;
+    background: var(--hk-accent-soft) !important;
   }
 
   .navItemActive .navIcon {
     transform: none;
-    color: var(--grad-1);
+    color: var(--hk-accent-strong);
   }
 
   .navLabel {
@@ -437,22 +494,6 @@
     display: none;
   }
 
-  /* Active border highlight */
-  .navItemActive::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 9999px;
-    border: 1.5px solid transparent;
-    background: var(--grad-pill) border-box;
-    -webkit-mask:
-      linear-gradient(#fff 0 0) padding-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: destination-out;
-    mask-composite: exclude;
-    opacity: 0.7;
-  }
-
   /* Reset translation on desktop so it sits parallel with row-aligned icons */
   .navItemAdd {
     transform: translateY(0) !important;
@@ -461,82 +502,15 @@
   .navItemAdd:hover {
     transform: scale(1.05) !important;
   }
-
-  /* Dock FABs to the content column instead of screen edge */
-  .fabStack {
-    right: calc((100% - 860px) / 2 + 10px);
-    bottom: calc(var(--nav-h-desktop) + 32px);
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════════════════
-   UNREAD MESSAGES INDICATOR
-══════════════════════════════════════════════════════════════════════════ */
-.unreadIndicator {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #eff6ff;
-  border: 1px solid #3b82f6;
-  padding: 2px 8px;
-  border-radius: 12px;
-  position: absolute;
-  right: 100%;
-  margin-right: 8px;
-  white-space: nowrap;
-  animation: blinkShadow 1.5s infinite;
-}
-
-.unreadText {
-  font-size: 11px;
-  font-weight: 700;
-  color: #2563eb;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.unreadBlinkBorder {
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border: 2px solid #3b82f6;
-  border-radius: 14px;
-  opacity: 0;
-  animation: blinkRing 1.5s infinite;
-}
-
-@keyframes blinkShadow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
-  }
-}
-
-@keyframes blinkRing {
-  0% {
-    transform: scale(0.95);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1.1);
-    opacity: 0;
-  }
 }
 
 /* ── Misc legacy ─────────────────────────────────────────────────────── */
 .customSelect {
   width: 100%;
   font-size: 12px;
-  border: 1px solid rgba(229, 231, 235, 1);
+  border: 1px solid var(--hk-border);
   border-radius: 4px;
-  background-color: white;
+  background-color: var(--hk-surface);
   cursor: pointer;
   padding: 5px 8px;
 }

@@ -1,15 +1,13 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState } from "react";
 import styles from "./style.module.css";
-import { CopyPlus, Edit, MessageSquare, MoreVertical, Trash2 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { ChevronDown, CopyPlus, Edit, MessageSquare, MoreVertical, Trash2, Users } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { ExpenseType, MemberType } from "../../utils/comman/CommanTypes";
-import { formatDateTime } from "../../utils/helpers/commanHelper";
-import { Button } from "../../components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
-import CustomAccordion from "../CustomAccordian/CustomAccordian";
+import { getGroupTypeIcon } from "../../utils/comman/groupTypeIcon";
 
 type PropsType = ExpenseType & {
   allMembersList: MemberType;
+  currentUserId: string;
   index: number;
   totalItemsCount: number;
   setAddExpModal: () => void;
@@ -17,161 +15,130 @@ type PropsType = ExpenseType & {
   onCloneClick: () => void;
   onShareClick: () => void;
   isSettled: boolean;
+  openMenuId: number | null;
+  onMenuOpenChange: (id: number | null) => void;
 };
+
+const SPLIT_LABEL: Record<string, string> = {
+  EQUAL: "split equally",
+  PERCENTAGE: "split by percentage",
+  CUSTOM: "custom split",
+};
+
+const formatMoney = (amount: number) => `₹${Math.round(Math.abs(amount)).toLocaleString("en-IN")}`;
 
 const ExpenseCard = React.memo(
   forwardRef<HTMLDivElement, PropsType>((expense, ref) => {
+    const [showSplit, setShowSplit] = useState(false);
     const paidByUser = expense.allMembersList.find((member) => member.id === expense.paid_by);
-
-    const descriptionPoints = expense.description
-      ? expense.description
-          .split(".")
-          .map((point) => point.trim())
-          .filter((point) => point.length > 0)
-      : [];
-
-    const isOwn = expense.is_own_expense;
-    const isLast = expense.index === expense.totalItemsCount - 1;
+    const yourShare = expense.members.find((m) => String(m.id) === String(expense.currentUserId))?.amount ?? 0;
+    const CategoryIcon = getGroupTypeIcon(expense.expense_type);
 
     return (
-      <div className={`${styles.expenseCon} w-full`} ref={ref}>
-        {/* Full-width card */}
-        <div className={styles.card}>
-          {/* ── Coloured header with SVG dot-grid pattern ── */}
-          <div className={`${styles.cardHeader} ${isOwn ? styles.headerOwn : styles.headerOther}`}>
-            {/* Amount hero */}
-            <div className={styles.headerAmount}>
-              <span className={styles.currencySymbol}>₹</span>
-              <span className={styles.amountValue}>
-                {/* <CustomCountUp count={Number(expense.amount)} /> */}
-                {expense.amount}
-              </span>
-            </div>
+      <div ref={ref}>
+        <div className={styles.row}>
+          <div className={styles.icon}>
+            <CategoryIcon size={18} strokeWidth={1.8} />
+          </div>
 
-            {/* Payer chip + menu */}
-            <div className={styles.headerRight}>
-              <div className={styles.payerChip}>
-                <Avatar className={styles.payerAvatar}>
-                  <AvatarImage src={paidByUser?.avatar} />
-                  <AvatarFallback>{paidByUser?.name?.[0]?.toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <span className={styles.payerName}>{paidByUser?.name?.split(" ")[0]}</span>
-              </div>
-
-              {!expense.isSettled && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className={styles.menuBtn}>
-                      <span className="sr-only">Open menu</span>
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-white">
-                    <DropdownMenuItem onClick={expense.onShareClick} className="cursor-pointer">
-                      <MessageSquare className="mr-2 h-4 w-4" />
-                      Share in Chat
-                    </DropdownMenuItem>
-                    {expense.is_own_expense && (
-                      <DropdownMenuItem onClick={expense.setAddExpModal} className="cursor-pointer">
-                        <Edit className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                    )}
-                    {expense.is_own_expense && (
-                      <DropdownMenuItem onClick={expense.onCloneClick} className="cursor-pointer">
-                        <CopyPlus className="mr-2 h-4 w-4" />
-                        Clone
-                      </DropdownMenuItem>
-                    )}
-                    {expense.is_own_expense && (
-                      <DropdownMenuItem onClick={expense.setDeleteModal} className="text-red-600 cursor-pointer">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
+          <div className={styles.body}>
+            <div className={styles.title}>{expense.expense_name}</div>
+            <div className={styles.meta}>
+              {expense.is_own_expense ? "You" : (paidByUser?.name?.split(" ")[0] ?? "someone")} · {SPLIT_LABEL[expense.split_type] ?? "split"}
             </div>
           </div>
 
-          {/* ── White body with mountain SVG bg ── */}
-          <div className={styles.cardBody}>
-            <div className="flex items-center gap-2 mb-2">
-              <span
-                style={{ fontSize: "10px" }}
-                className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[8px] font-bold uppercase tracking-wider border border-slate-200"
-              >
-                {(() => {
-                  switch (expense.expense_type) {
-                    case "Food":
-                      return "🍴 Food";
-                    case "Grocery":
-                      return "🛒 Grocery";
-                    case "Shopping":
-                      return "🛍️ Shopping";
-                    case "Bills":
-                      return "📄 Bills";
-                    case "Cab":
-                      return "🚕 Cab";
-                    case "Entertainment":
-                      return "🎬 Entertainment";
-                    case "Health":
-                      return "🏥 Health";
-                    default:
-                      return "✨ Others";
-                  }
-                })()}
-              </span>
-            </div>
-            <h2 className={styles.expenseName}>{expense.expense_name}</h2>
-            <p className={styles.dateText}>{formatDateTime(expense.created_at, true)}</p>
+          <div className={styles.right}>
+            <div className={`hk-money ${styles.amt}`}>{formatMoney(expense.amount)}</div>
+            <div className={`hk-money ${styles.share}`}>{formatMoney(yourShare)}</div>
+          </div>
 
-            {descriptionPoints.length > 0 && (
-              <div className={styles.descSection}>
-                <div className={styles.divider} />
-                <ul className={styles.descList}>
-                  {descriptionPoints.map((point, i) => (
-                    <li key={i} className={styles.descItem}>
-                      <span className={styles.descDot} />
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <div className={styles.accordionWrap}>
-              <CustomAccordion
-                header={`Split between ${expense.members_count} ${Number(expense.members_count) > 1 ? "people" : "person"}`}
-                expanded={false}
+          {!expense.isSettled && (
+            <DropdownMenu
+              open={expense.openMenuId === expense.expense_id}
+              onOpenChange={(open) => expense.onMenuOpenChange(open ? expense.expense_id : null)}
+            >
+              <DropdownMenuTrigger asChild>
+                <button type="button" className={styles.menuBtn}>
+                  <span className="sr-only">Open menu</span>
+                  <MoreVertical size={18} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                collisionPadding={{ top: 8, bottom: 90 }}
+                style={{ background: "var(--hk-surface)", color: "var(--hk-ink)", border: "1px solid var(--hk-border)", zIndex: 1000 }}
               >
-                {expense.members.map((exMember) => {
+                <DropdownMenuItem onClick={expense.onShareClick} className={`cursor-pointer ${styles.menuItem}`}>
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Share in Chat
+                </DropdownMenuItem>
+                {expense.is_own_expense && (
+                  <DropdownMenuItem onClick={expense.setAddExpModal} className={`cursor-pointer ${styles.menuItem}`}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit
+                  </DropdownMenuItem>
+                )}
+                {expense.is_own_expense && (
+                  <DropdownMenuItem onClick={expense.onCloneClick} className={`cursor-pointer ${styles.menuItem}`}>
+                    <CopyPlus className="mr-2 h-4 w-4" />
+                    Clone
+                  </DropdownMenuItem>
+                )}
+                {expense.is_own_expense && (
+                  <DropdownMenuItem
+                    onClick={expense.setDeleteModal}
+                    className={`cursor-pointer ${styles.menuItem} ${styles.menuItemDanger}`}
+                    style={{ color: "var(--hk-negative)" }}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+
+        <div className={styles.splitWrap}>
+          <button className={styles.splitToggle} onClick={() => setShowSplit((v) => !v)}>
+            <Users size={13} />
+            Split between {expense.members_count} {Number(expense.members_count) > 1 ? "people" : "person"}
+            <ChevronDown size={13} style={{ transform: showSplit ? "rotate(180deg)" : "none", transition: "transform 0.15s" }} />
+          </button>
+          <div className={`${styles.splitCollapse} ${showSplit ? styles.splitCollapseOpen : ""}`}>
+            <div className={styles.splitCollapseInner}>
+              <div className={styles.splitCard}>
+                {expense.members.map((exMember, memberIndex) => {
                   const expenseMember = expense.allMembersList.find((m) => m.id === exMember.id);
+                  const isYou = String(exMember.id) === String(expense.currentUserId);
                   return (
-                    <div key={exMember.id} className={styles.splitRow}>
+                    <div key={exMember.id} className={`${styles.splitRow} ${isYou ? styles.splitRowMe : ""}`}>
                       <div className={styles.splitMember}>
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage src={expenseMember?.avatar} />
-                          <AvatarFallback>{expenseMember?.name?.[0]?.toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                        <span className={styles.splitName}>{expenseMember?.name}</span>
+                        <div
+                          className="hk-avatar"
+                          style={{ width: 22, height: 22, fontSize: "0.62rem", background: `var(--hk-avatar-${(memberIndex % 5) + 1})` }}
+                        >
+                          {expenseMember?.avatar ? (
+                            <img
+                              src={expenseMember.avatar}
+                              alt=""
+                              style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
+                            />
+                          ) : (
+                            expenseMember?.name?.[0]?.toUpperCase()
+                          )}
+                        </div>
+                        <span className={styles.splitName}>{isYou ? "You" : expenseMember?.name}</span>
                       </div>
-                      <span className={styles.splitAmount}>₹{exMember.amount}</span>
+                      <span className="hk-money">{formatMoney(exMember.amount)}</span>
                     </div>
                   );
                 })}
-              </CustomAccordion>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* ── Branch connector line between cards ── */}
-        {!isLast && (
-          <div className={`${styles.branchConnector} ${isOwn ? styles.branchOwn : styles.branchOther}`}>
-            <div className={styles.branchLine} />
-          </div>
-        )}
       </div>
     );
   })

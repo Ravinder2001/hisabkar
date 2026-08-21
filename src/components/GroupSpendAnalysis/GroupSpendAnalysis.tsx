@@ -46,18 +46,20 @@ function GroupSpendAnalysis(props: PropsType) {
   return (
     <ModalComponent isOpen={props.isOpen} setIsOpen={props.setIsOpen}>
       <div className={styles.container}>
-        <h1 className="text-3xl font-bold mb-2 text-center">Spend Analysis</h1>
-        <div className={styles.selectBox}>
-          <CustomSelect
-            options={groupMembersWithAll.map((type) => ({
-              value: type.id,
-              label: type.name,
-            }))}
-            onChange={(option: OptionType) => setSelectedMember(option)}
-            placeholder="Select expense type"
-            value={selectedMember}
-            isSearchable={false}
-          />
+        <div className={styles.headerRow}>
+          <h1 className={styles.title}>Spend Analysis</h1>
+          <div className={styles.selectBox}>
+            <CustomSelect
+              options={groupMembersWithAll.map((type) => ({
+                value: type.id,
+                label: type.name,
+              }))}
+              onChange={(option: OptionType) => setSelectedMember(option)}
+              placeholder="Select expense type"
+              value={selectedMember}
+              isSearchable={false}
+            />
+          </div>
         </div>
         {isLoading ? (
           <div className="w-full h-full flex justify-center">

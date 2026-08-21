@@ -3,6 +3,7 @@
   max-height: 90vh;
   display: flex;
   flex-direction: column;
+  color: var(--hk-ink);
 }
 
 .modalHeader {
@@ -13,24 +14,9 @@
 
 .modalTitle {
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
-}
-
-.closeButton {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  border-radius: 4px;
-  color: var(--text-secondary, #6b7280);
-}
-
-.closeButton:hover {
-  background-color: var(--hover-bg, #f3f4f6);
+  color: var(--hk-ink);
 }
 
 .modalBody {
@@ -42,7 +28,8 @@
 }
 
 .description {
-  color: var(--text-secondary, #6b7280);
+  color: var(--hk-ink-faint);
+  font-size: 0.85rem;
 }
 
 .searchContainer {
@@ -55,21 +42,28 @@
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--text-secondary, #6b7280);
+  color: var(--hk-ink-faint);
 }
 
 .searchInput {
   width: 100%;
+  box-sizing: border-box;
   padding: 10px 12px 10px 40px;
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 6px;
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 10px;
+  color: var(--hk-ink);
   font-size: 0.875rem;
+}
+
+.searchInput::placeholder {
+  color: var(--hk-ink-faint);
 }
 
 .searchInput:focus {
   outline: none;
-  border-color: var(--primary-color, #3b82f6);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  border-color: var(--hk-accent);
+  box-shadow: 0 0 0 1px var(--hk-accent);
 }
 
 .userList {
@@ -83,14 +77,14 @@
 .userItem {
   display: flex;
   align-items: center;
-  padding: 12px;
-  border-radius: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .userItem:hover {
-  background-color: var(--hover-bg, #f3f4f6);
+  background-color: var(--hk-surface-2);
 }
 
 .avatar {
@@ -99,40 +93,44 @@
   border-radius: 50%;
   object-fit: cover;
   margin-right: 12px;
+  border: 2px solid var(--hk-surface);
 }
 
 .userInfo {
   flex: 1;
+  min-width: 0;
 }
 
 .userName {
-  font-weight: 500;
+  font-weight: 700;
   margin-bottom: 2px;
+  color: var(--hk-ink);
 }
 
 .userEmail {
   font-size: 0.875rem;
-  color: var(--text-secondary, #6b7280);
+  color: var(--hk-ink-faint);
 }
 
 .addButton {
   background-color: transparent;
-  border: 1px solid var(--border-color, #e5e7eb);
+  border: 1px solid var(--hk-border);
   border-radius: 50%;
   width: 32px;
   height: 32px;
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--text-secondary, #6b7280);
+  color: var(--hk-ink-soft);
   transition: all 0.2s;
 }
 
 .addButton:hover {
-  background-color: var(--primary-color, #3b82f6);
-  border-color: var(--primary-color, #3b82f6);
-  color: white;
+  background-color: var(--hk-accent);
+  border-color: var(--hk-accent);
+  color: var(--hk-on-accent);
 }
 
 .modalFooter {
@@ -142,9 +140,8 @@
   margin-top: 10px;
 }
 
-.cancelButton,
-.submitButton {
-  min-width: 100px;
+.submitBtn {
+  width: 100%;
 }
 
 .selectedUsers {
@@ -152,10 +149,12 @@
 }
 
 .sectionTitle {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   margin: 0 0 8px 0;
-  color: var(--text-secondary, #6b7280);
+  color: var(--hk-ink-faint);
 }
 
 .userChips {
@@ -167,10 +166,12 @@
 .userChip {
   display: flex;
   align-items: center;
-  background-color: var(--chip-bg, #f3f4f6);
-  border-radius: 16px;
+  background-color: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 999px;
   padding: 4px 8px 4px 4px;
   font-size: 0.875rem;
+  color: var(--hk-ink);
 }
 
 .chipAvatar {
@@ -191,22 +192,28 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--text-secondary, #6b7280);
+  color: var(--hk-ink-faint);
   padding: 2px;
   border-radius: 50%;
 }
 
 .removeButton:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--hk-surface-sunken);
+  color: var(--hk-ink);
 }
 
 .noResults {
   text-align: center;
   padding: 24px;
-  color: var(--text-secondary, #6b7280);
+  color: var(--hk-ink-faint);
 }
 @media only screen and (max-width: 768px) {
   .container {
-    width: 85vw;
+    /* 100%, not a vw value — the modal's own "content" box is already 90vw with its
+       own 15px padding on each side; sizing this against the full viewport instead of
+       that already-narrower, already-padded parent made it overflow past the right
+       edge (the left edge looked fine because it's anchored by the parent's own
+       padding, independent of this element's width). */
+    width: 100%;
   }
 }

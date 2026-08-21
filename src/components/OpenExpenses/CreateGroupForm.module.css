@@ -1,0 +1,105 @@
+.card {
+  background: var(--hk-surface);
+  border: 1px solid var(--hk-border);
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.heading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--hk-ink);
+  margin: 0;
+}
+
+.formBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--hk-ink-faint);
+}
+
+.input {
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 0.88rem;
+  color: var(--hk-ink);
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--hk-accent);
+}
+
+.memberRow {
+  display: flex;
+  gap: 8px;
+}
+
+.memberRow .input {
+  flex: 1;
+}
+
+.removeBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hk-surface-sunken);
+  border: 1px solid var(--hk-border);
+  color: var(--hk-negative);
+}
+
+.memberList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.addMemberBtn {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--hk-accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions button {
+  flex: 1;
+  justify-content: center;
+}

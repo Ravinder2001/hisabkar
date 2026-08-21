@@ -1,30 +1,125 @@
 .container {
   width: 100%;
-  height: calc(100vh - 64px); /* Subtract Navbar height if any */
+  height: 100%;
+  max-width: 720px;
+  margin: 0 auto;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-}
-
-.cardCon {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
-  padding: 16px;
-  padding-bottom: 50px; /* Extra space at bottom for FAB and mobile nav */
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--hk-bg);
+  padding: 16px 16px 0;
   box-sizing: border-box;
 }
 
-.cardCon > div {
-  width: 100%;
+.header {
+  flex: none;
+  padding: 4px 4px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-@media (max-width: 640px) {
-  .cardCon {
-    grid-template-columns: 1fr;
-    padding: 12px;
-    padding-bottom: 50px; /* More space for smaller screens */
-    gap: 12px;
-  }
+.header h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--hk-ink);
+  margin: 0;
+}
+
+.headerSub {
+  color: var(--hk-ink-soft);
+  font-size: 0.8rem;
+  margin-top: 3px;
+}
+
+.searchBox {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--hk-surface);
+  border: 1px solid var(--hk-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: var(--hk-ink-faint);
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+}
+
+.searchBox input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--hk-ink);
+  font-family: inherit;
+}
+
+.searchBox input::placeholder {
+  color: var(--hk-ink-faint);
+}
+
+.filterRow {
+  flex: none;
+  display: flex;
+  gap: 8px;
+  padding-bottom: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.filterChip {
+  flex: none;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--hk-border);
+  background: var(--hk-surface);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--hk-ink-soft);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.filterChipActive {
+  background: var(--hk-accent);
+  color: var(--hk-on-accent);
+  border-color: var(--hk-accent);
+}
+
+.cardCon {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 100px;
+  width: 100%;
+  box-sizing: border-box;
+  flex: 1;
+  min-height: 0;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 64px 24px;
+  gap: 14px;
+}
+
+.emptyIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: var(--hk-accent-soft);
+  color: var(--hk-accent-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

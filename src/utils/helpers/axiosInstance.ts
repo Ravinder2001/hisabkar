@@ -2,6 +2,8 @@
 import axios, { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from "axios";
 import { Store } from "redux"; // Ensure you have redux types installed
 import ENVConfig from "../../config/config";
+import CONSTANTS from "../constant/Constant";
+import { setAccessToken, setUserLoggedOut } from "../../store/features/userSlice";
 
 // Define the type for the Redux store
 let store: Store<any>;
@@ -14,7 +16,43 @@ export const injectStore = (_store: Store<any>): void => {
 // Create an Axios instance
 const axiosInstance = axios.create({
   baseURL: ENVConfig.baseURL,
+  withCredentials: true, // sends the httpOnly refresh-token cookie
 });
+
+// Plain, un-intercepted client for the refresh call itself — reusing
+// axiosInstance here would recurse back into this same 401 handler if the
+// refresh call ever itself returns 401.
+const refreshClient = axios.create({
+  baseURL: ENVConfig.baseURL,
+  withCredentials: true,
+});
+
+// Shared across concurrent 401s so a burst of requests triggers exactly one
+// refresh call, not one per request.
+let refreshPromise: Promise<boolean> | null = null;
+
+const refreshAccessToken = (): Promise<boolean> => {
+  if (!refreshPromise) {
+    refreshPromise = refreshClient
+      .post(CONSTANTS.API_ROUTES.REFRESH_TOKEN)
+      .then((res) => {
+        const newToken = res.data?.data?.token;
+        if (!newToken) return false;
+        store.dispatch(setAccessToken(newToken));
+        return true;
+      })
+      .catch(() => false)
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
+};
+
+const forceLogout = () => {
+  store.dispatch(setUserLoggedOut());
+  window.location.href = "/";
+};
 
 // Add a request interceptor
 axiosInstance.interceptors.request.use(
@@ -57,7 +95,7 @@ axiosInstance.interceptors.response.use(
 
     return response;
   },
-  (error: AxiosError) => {
+  async (error: AxiosError) => {
     // Handle error and track it
     if (window.NREUM) {
       window.NREUM.addPageAction("apiError", {
@@ -68,11 +106,28 @@ axiosInstance.interceptors.response.use(
     }
 
     if (error.response && error.response.status === 401) {
-      // store.dispatch(logout());
-      // window.location.reload();
+      const originalRequest = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
+
+      // Access token expired — try one silent refresh (via the httpOnly
+      // cookie, through refreshClient so a 401 here can't recurse back into
+      // this same interceptor) and transparently replay the original
+      // request. Skip anything already retried once — the refresh token
+      // itself must be invalid/revoked at that point.
+      if (originalRequest && !originalRequest._retry) {
+        originalRequest._retry = true;
+        const refreshed = await refreshAccessToken();
+        if (refreshed) {
+          return axiosInstance(originalRequest);
+        }
+      }
+
+      forceLogout();
       return Promise.reject(error.response);
     } else {
-      return Promise.reject(error.response);
+      // Network-level failures (server unreachable, CORS, DNS, offline) never get an
+      // error.response — reject with the original error instead of undefined, otherwise
+      // callers crash reading properties off `undefined` (see useAPIFetch's catch block).
+      return Promise.reject(error.response ?? error);
     }
   }
 );

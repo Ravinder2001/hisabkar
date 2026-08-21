@@ -9,6 +9,7 @@ import Group from "../pages/GroupDetails/GroupDetails";
 import JoinGroup from "../pages/JoinGroup/JoinGroup";
 import Profile from "../pages/Profile/Profile";
 import LegalPage from "../pages/Legals/Legals";
+import WhatsNew from "../pages/WhatsNew/WhatsNew";
 import SignIn from "../pages/SignIn/SignIn";
 import Support from "../pages/Support/Support";
 import ExpenseTracker from "../pages/OpenExpenses/OpenExpenses";
@@ -74,6 +75,14 @@ const ProjectRoutes = () => {
         element={
           <PublicRoute>
             <LegalPage />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path={CONSTANTS.PROJECT_ROUTES.WHATS_NEW}
+        element={
+          <PublicRoute allowedRoutes={[CONSTANTS.PROJECT_ROUTES.WHATS_NEW]}>
+            <WhatsNew />
           </PublicRoute>
         }
       />

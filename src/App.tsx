@@ -4,8 +4,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
 import { useDispatch } from "react-redux";
 import ErrorFallback from "./error/ErrorFallback";
-import { setUserLoggedOut } from "./store/features/userSlice";
-import { isTokenExpired } from "./utils/helpers/authHelper";
 import useApiFetch from "./hooks/useAPIFetch";
 import CONSTANTS from "./utils/constant/Constant";
 import { setGroupTypeList } from "./store/features/dataSlice";
@@ -26,17 +24,18 @@ const App: React.FC = () => {
     fetchServerHealth();
   }, [fetchServerHealth]);
 
-  // Fetch group types only when server is healthy and token is valid
+  // Fetch group types once the server's healthy and we have a token. Don't
+  // gate on expiry here — the access token is short-lived by design, and
+  // axiosInstance.ts's response interceptor silently refreshes it via the
+  // httpOnly cookie on the first 401 rather than forcing a logout up front.
   useEffect(() => {
-    if (serverHealthRes?.success === 1 && token && !isTokenExpired(token)) {
+    if (serverHealthRes?.success === 1 && token) {
       fetchGroupTypeList();
       if (window.NREUM) {
         window.NREUM.setCustomAttribute("userId", id);
       }
-    } else if (token && isTokenExpired(token)) {
-      dispatch(setUserLoggedOut());
     }
-  }, [serverHealthRes, token, id, fetchGroupTypeList, dispatch]);
+  }, [serverHealthRes, token, id, fetchGroupTypeList]);
 
   // Update Redux store with group type list
   useEffect(() => {

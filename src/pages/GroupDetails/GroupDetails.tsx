@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "../../components/ui/card";
 import styles from "./style.module.css";
 import AddExpenseModal from "../../components/AddExpense/AddExpense";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
-import { useLocation } from "react-router-dom";
-import GroupDetailsContent from "../../components/GroupDetailsContent/GroupDetailsContent";
-import { LayoutDashboard, Users, TrendingUp, PlusCircle, MessageSquare } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import GroupDetailHeader from "../../components/GroupDetailHeader/GroupDetailHeader";
+import axiosInstance from "../../utils/helpers/axiosInstance";
+import { AxiosError } from "axios";
+import { Users, TrendingUp, PlusCircle, MessageSquare, Sparkles, BarChart3 } from "lucide-react";
 import { ExpenseType, GroupDataType, GroupPairsData, MemberType } from "../../utils/comman/CommanTypes";
 import ExpenseCard from "../../components/ExpenseCard/ExpenseCard";
 import { io, Socket } from "socket.io-client";
@@ -31,19 +32,26 @@ import BudgetSetter from "../../components/BudgetSetter/BudgetSetter";
 import ChatAssistant from "../../components/ChatBotAssistant/ChatAssistant";
 import ExpenseSkeleton from "../../components/ExpenseCard/ExpenseSkeleton";
 import GroupDetailsSkeleton from "../../components/GroupDetailsContent/GroupDetailsSkeleton";
+import { formatSectionLabel } from "../../utils/helpers/commanHelper";
 
-type TabId = "timeline" | "details" | "addExpense" | "summary" | "chat";
+type TabId = "timeline" | "addExpense" | "summary" | "assistant" | "chat";
+
+const formatMoney = (amount: number) => `₹${Math.round(Math.abs(amount)).toLocaleString("en-IN")}`;
 
 export default function GroupDetails() {
   const location = useLocation();
+  const navigate = useNavigate();
   const GroupId = location.pathname.split("/")[2];
   const user = useSelector((state: RootState) => state.user);
+  const groupTypeList = useSelector((state: RootState) => state.data.groupTypeList);
   const expenseRefs = useRef<(HTMLDivElement | null)[]>([]);
   const socketRef = useRef<Socket | null>(null);
 
   const [activeTab, setActiveTab] = useState<TabId>("timeline");
   // Track which tabs have been visited to lazy-load APIs
   const [visitedTabs, setVisitedTabs] = useState<Set<TabId>>(new Set<TabId>(["timeline"]));
+  // Only one expense's "..." menu open at a time — lifted here so opening one closes any other
+  const [openExpenseMenuId, setOpenExpenseMenuId] = useState<number | null>(null);
 
   const {
     fetchData: fetchGroupDetails,
@@ -58,6 +66,7 @@ export default function GroupDetails() {
   const { fetchData: fetchMyPairs, response: pairsRes, isLoading: pairsLoading } = useApiFetch(CONSTANTS.API_ROUTES.MY_PAIRS + GroupId);
   const { fetchData: deleteExpense, response: deleteExpRes, isLoading: deleteExpLoading } = useApiFetch("");
   const { fetchData: fetchUnreadStatus, response: unreadRes } = useApiFetch(CONSTANTS.API_ROUTES.UNREAD_STATUS + "/" + GroupId);
+  const { fetchData: toggleSettlement, response: settlementRes, isLoading: settlementLoading } = useApiFetch("");
 
   const { fetchData: fetchGroupMembers, response: membersRes } = useApiFetch(CONSTANTS.API_ROUTES.GROUP_MEMBERS + "/" + GroupId);
 
@@ -75,8 +84,10 @@ export default function GroupDetails() {
   const [logModal, setLogModal] = useState<boolean>(false);
   const [spendAnalysisModal, setSpendAnalysisModal] = useState<boolean>(false);
   const [successModal, setSuccessModal] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string>("Your expense has been added successfully.");
   const [addMemberModal, setAddMemberModal] = useState<boolean>(false);
   const [groupSettingModal, setGroupSettingModal] = useState<boolean>(false);
+  const [settlementConfirmModal, setSettlementConfirmModal] = useState<boolean>(false);
   const [isClone, setIsClone] = useState(false);
   const [isShareModal, setShareModal] = useState<boolean>(false);
   const [sharingExpense, setSharingExpense] = useState<ExpenseType | null>(null);
@@ -89,6 +100,18 @@ export default function GroupDetails() {
     const currentUserMember = groupMembers.find((m: any) => String(m.id) === String(user.id));
     return currentUserMember ? currentUserMember.is_available : false;
   }, [groupMembers, user.id]);
+
+  // net balance for the hero card: positive = you're owed, negative = you owe
+  const netBalance = useMemo(() => {
+    const totalSend = pairsData.send.reduce((acc, item) => acc + Number(item.amount), 0);
+    const totalReceive = pairsData.receive.reduce((acc, item) => acc + Number(item.amount), 0);
+    return totalReceive - totalSend;
+  }, [pairsData]);
+
+  const memberName = useCallback(
+    (id: string) => (groupMembers.find((m) => String(m.id) === String(id))?.name ?? "Someone").split(" ")[0],
+    [groupMembers]
+  );
 
   // Chat is now a tab — track if it's active to clear unread
   const isChatTabActiveRef = useRef<boolean>(false);
@@ -136,9 +159,7 @@ export default function GroupDetails() {
       if (!visitedTabs.has(tab)) {
         setVisitedTabs((prev) => new Set<TabId>(Array.from(prev).concat(tab)));
         // Trigger API fetch on first visit
-        if (tab === "details") {
-          fetchGroupDetails();
-        } else if (tab === "summary") {
+        if (tab === "summary") {
           fetchMyPairs();
           if (!groupData) fetchGroupDetails();
         } else if (tab === "addExpense") {
@@ -154,11 +175,12 @@ export default function GroupDetails() {
   }, [handleTabChange]);
 
   const handleAddExpenseSuccess = useCallback(() => {
+    setSuccessMessage(isClone ? "Expense cloned successfully." : selectedRow ? "Expense updated successfully." : "Expense added successfully.");
     fetchMyPairs();
     fetchGroupDetails();
     setSuccessModal(true);
     handleTabChange("timeline");
-  }, [fetchMyPairs, fetchGroupDetails, handleTabChange]);
+  }, [fetchMyPairs, fetchGroupDetails, handleTabChange, isClone, selectedRow]);
 
   // const handleExpModal = () => {
   //   if (isAddExpModal && selectedRow) {
@@ -185,6 +207,62 @@ export default function GroupDetails() {
     await deleteExpense(CONSTANTS.API_ROUTES.DELETE_EXPENSE + `/${GroupId}/${selectedRow?.expense_id}`, {
       method: "DELETE",
     });
+  };
+
+  const handleSettlementConfirmModal = () => {
+    setSettlementConfirmModal(!settlementConfirmModal);
+  };
+
+  const handleSettlement = () => {
+    toggleSettlement(CONSTANTS.API_ROUTES.GROUP_SETTLEMENT + "/" + GroupId);
+  };
+
+  const handleDownloadGroupData = async () => {
+    try {
+      const response = await axiosInstance({
+        url: CONSTANTS.API_ROUTES.DOWNLOAD_GROUP_DATA + "/" + GroupId,
+        method: "GET",
+        responseType: "blob", // Important: This tells axios to handle the response as binary data
+        headers: {
+          Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        },
+      });
+
+      // Get filename from response headers if available
+      const contentDisposition = response.headers["content-disposition"];
+      let filename = "group_data.xlsx";
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, "");
+        }
+      }
+
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+
+      if (link.parentNode) {
+        link.parentNode.removeChild(link);
+      }
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      let errorMessage = "Error downloading file";
+
+      if (err instanceof AxiosError) {
+        errorMessage = err.response?.data?.message || err.message;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      showToast(errorMessage, "error");
+    }
   };
 
   const handleLogModal = () => {
@@ -238,6 +316,7 @@ export default function GroupDetails() {
     fetchGroupDetails();
     fetchAllExpenses();
     fetchUnreadStatus();
+    fetchMyPairs();
 
     const socket = io(ENVConfig.baseURL, { withCredentials: true });
     socketRef.current = socket;
@@ -254,12 +333,6 @@ export default function GroupDetails() {
       socket.disconnect();
     };
   }, [GroupId]);
-
-  useEffect(() => {
-    const handleOpenSpendAnalysis = () => setSpendAnalysisModal(true);
-    window.addEventListener("openSpendAnalysis", handleOpenSpendAnalysis);
-    return () => window.removeEventListener("openSpendAnalysis", handleOpenSpendAnalysis);
-  }, []);
 
   useEffect(() => {
     if (unreadRes?.success === 1) {
@@ -318,13 +391,21 @@ export default function GroupDetails() {
     }
   }, [deleteExpRes]);
 
+  useEffect(() => {
+    if (settlementRes?.success == 1) {
+      showToast(settlementRes?.message ?? "", "success");
+      setSettlementConfirmModal(false);
+      setGroupData((prev) => (prev ? { ...prev, is_settled: !prev.is_settled } : prev));
+    }
+  }, [settlementRes]);
+
   // Nav tab definitions (built here so hasUnreadMessages is in scope)
   const NAV_TABS = React.useMemo<{ id: TabId; label: string; icon: React.ReactNode; isAdd?: boolean }[]>(
     () => [
       { id: "timeline", label: "Timeline", icon: <TrendingUp size={20} /> },
       { id: "summary", label: "Summary", icon: <Users size={20} /> },
       { id: "addExpense", label: "Add", icon: <PlusCircle size={28} />, isAdd: true },
-      { id: "details", label: "Details", icon: <LayoutDashboard size={20} /> },
+      { id: "assistant", label: "Assistant", icon: <Sparkles size={20} /> },
       {
         id: "chat",
         label: "Chat",
@@ -339,50 +420,124 @@ export default function GroupDetails() {
     [hasUnreadMessages]
   );
 
+  const isOwing = netBalance < 0;
+  const isOwed = netBalance > 0;
+
+  const groupTypeName = groupTypeList.find((type) => type.id === groupData?.group_type_id)?.name ?? "";
+
   return (
     <div className={styles.pageWrapper}>
+      {groupData && (
+        <GroupDetailHeader
+          groupName={groupData.group_name}
+          memberCount={groupData.total_members_count}
+          groupTypeName={groupTypeName}
+          members={groupMembers}
+          isYouAdmin={groupData.is_you_admin}
+          isSettled={groupData.is_settled}
+          onBack={() => navigate(CONSTANTS.PROJECT_ROUTES.HOME)}
+          onAddMember={handleAddMemModal}
+          onGroupSettings={handleGroupSettingModal}
+          onLogs={handleLogModal}
+          onToggleSettlement={handleSettlementConfirmModal}
+          onDownload={handleDownloadGroupData}
+        />
+      )}
+
+      {/* ── Balance hero — timeline tab only, permanently visible (no scroll collapse) ── */}
+      {activeTab === "timeline" && groupData && !groupData.is_settled && (pairsData.send.length > 0 || pairsData.receive.length > 0) && (
+        <div className={styles.balanceHero}>
+          <div className={styles.balanceHeroTop}>
+            <div>
+              <div className={styles.balanceHeroLabel}>Your balance</div>
+              <div className={`hk-money ${styles.balanceHeroAmt} ${isOwing ? styles.neg : isOwed ? styles.pos : ""}`}>
+                {isOwing ? "− " : isOwed ? "+ " : ""}
+                {formatMoney(netBalance)}
+              </div>
+              <div className={styles.balanceHeroTotalSpend}>
+                Total spend <span className="hk-money">{formatMoney(groupData.total_amount)}</span>
+              </div>
+            </div>
+            <div className={styles.balanceHeroActions}>
+              <BudgetSetter groupId={GroupId} onBudgetSet={() => fetchGroupDetails()} />
+              <button
+                className="hk-icon-btn"
+                style={{ width: 30, height: 30, flex: "none" }}
+                title="Spend Analysis"
+                onClick={handleSpendAnalysisModal}
+              >
+                <BarChart3 size={16} />
+              </button>
+            </div>
+          </div>
+          <div className={styles.balanceHeroChips}>
+            {pairsData.send.map((item) => (
+              <div key={`send-${item.user_id}`} className={`${styles.balanceHeroChip} ${styles.chipNeg}`}>
+                <span className={styles.chipName}>{memberName(item.user_id)}</span>
+                <span className="hk-money">− {formatMoney(Number(item.amount))}</span>
+              </div>
+            ))}
+            {pairsData.receive.map((item) => (
+              <div key={`receive-${item.user_id}`} className={`${styles.balanceHeroChip} ${styles.chipPos}`}>
+                <span className={styles.chipName}>{memberName(item.user_id)}</span>
+                <span className="hk-money">+ {formatMoney(Number(item.amount))}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ── Tab Content Area ────────────────────────────────────────────── */}
       <div className={styles.contentArea}>
         {/* TIMELINE TAB — no header, no filter */}
         <div className={`${styles.tabPane} ${activeTab === "timeline" ? styles.tabPaneActive : ""}`}>
-          <Card className="bg-white h-full">
+          <div className="h-full" style={{ background: "var(--hk-bg)" }}>
             {(expenseListLoading && !isFetchingMore) || !expenseRes ? (
-              <CardContent className={styles.expBox}>
+              <div className={`${styles.expBox} ${styles.expBoxTimeline}`}>
                 {[1, 2, 3].map((i) => (
                   <ExpenseSkeleton key={i} />
                 ))}
-              </CardContent>
+              </div>
             ) : (
-              <CardContent className={styles.expBox}>
+              <div className={`${styles.expBox} ${styles.expBoxTimeline}`}>
                 {tempExpenseList.length > 0 ? (
-                  tempExpenseList.map((expense, index) => (
-                    <ExpenseCard
-                      key={`${expense.expense_id}-${index}`}
-                      {...expense}
-                      allMembersList={groupMembers}
-                      index={index}
-                      totalItemsCount={expenseList.length}
-                      setAddExpModal={() => {
-                        setSelectedRow(expense);
-                        setIsClone(false);
-                        handleTabChange("addExpense");
-                      }}
-                      setDeleteModal={() => {
-                        handleDeleteModal();
-                        setSelectedRow(expense);
-                      }}
-                      ref={(el: any) => {
-                        expenseRefs.current[expense.expense_id] = el;
-                      }}
-                      isSettled={groupData?.is_settled ?? false}
-                      onCloneClick={() => {
-                        setSelectedRow(expense);
-                        setIsClone(true);
-                        handleTabChange("addExpense");
-                      }}
-                      onShareClick={() => handleShareInChat(expense)}
-                    />
-                  ))
+                  tempExpenseList.map((expense, index) => {
+                    const label = formatSectionLabel(expense.created_at);
+                    const prevLabel = index > 0 ? formatSectionLabel(tempExpenseList[index - 1].created_at) : null;
+                    return (
+                      <React.Fragment key={`${expense.expense_id}-${index}`}>
+                        {label !== prevLabel && <div className="hk-section-label">{label}</div>}
+                        <ExpenseCard
+                          {...expense}
+                          allMembersList={groupMembers}
+                          currentUserId={user.id}
+                          index={index}
+                          totalItemsCount={expenseList.length}
+                          setAddExpModal={() => {
+                            setSelectedRow(expense);
+                            setIsClone(false);
+                            handleTabChange("addExpense");
+                          }}
+                          setDeleteModal={() => {
+                            handleDeleteModal();
+                            setSelectedRow(expense);
+                          }}
+                          ref={(el: any) => {
+                            expenseRefs.current[expense.expense_id] = el;
+                          }}
+                          isSettled={groupData?.is_settled ?? false}
+                          openMenuId={openExpenseMenuId}
+                          onMenuOpenChange={setOpenExpenseMenuId}
+                          onCloneClick={() => {
+                            setSelectedRow(expense);
+                            setIsClone(true);
+                            handleTabChange("addExpense");
+                          }}
+                          onShareClick={() => handleShareInChat(expense)}
+                        />
+                      </React.Fragment>
+                    );
+                  })
                 ) : (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -401,23 +556,25 @@ export default function GroupDetails() {
                           repeat: Infinity,
                           ease: "easeInOut",
                         }}
-                        className="bg-gradient-to-br from-purple-50 to-blue-50 p-8 rounded-full shadow-inner"
+                        className="p-8 rounded-full"
+                        style={{ background: "var(--hk-accent-soft)" }}
                       >
-                        <TrendingUp className="w-16 h-16 text-purple-400 opacity-80" />
+                        <TrendingUp className="w-16 h-16" style={{ color: "var(--hk-accent-strong)" }} />
                       </motion.div>
                       <motion.div
                         animate={{ y: [0, -10, 0] }}
                         transition={{ duration: 2, repeat: Infinity }}
-                        className="absolute -top-2 -right-2 bg-white p-2 rounded-lg shadow-md"
+                        className="absolute -top-2 -right-2 p-2 rounded-lg"
+                        style={{ background: "var(--hk-surface)", border: "1px solid var(--hk-border)" }}
                       >
-                        <PlusCircle className="w-6 h-6 text-green-500" />
+                        <PlusCircle className="w-6 h-6" style={{ color: "var(--hk-positive)" }} />
                       </motion.div>
                     </div>
 
-                    <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
+                    <h3 className="text-xl font-bold mb-2" style={{ color: "var(--hk-ink)" }}>
                       Ready to start tracking?
                     </h3>
-                    <p className="text-gray-500 text-sm mb-8 max-w-[280px] mx-auto leading-relaxed">
+                    <p className="text-sm mb-8 max-w-[280px] mx-auto leading-relaxed" style={{ color: "var(--hk-ink-soft)" }}>
                       This timeline is waiting for your first group expense. Add one now to see the magic happen!
                     </p>
 
@@ -426,7 +583,7 @@ export default function GroupDetails() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleTabChange("addExpense")}
-                        className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-purple-200 flex items-center gap-2 hover:shadow-xl transition-all"
+                        className="hk-btn-primary"
                       >
                         <PlusCircle size={18} />
                         Add First Expense
@@ -440,33 +597,9 @@ export default function GroupDetails() {
                     <CircularLoader />
                   </div>
                 )}
-              </CardContent>
+              </div>
             )}
-          </Card>
-        </div>
-
-        {/* GROUP DETAILS TAB */}
-        <div className={`${styles.tabPane} ${activeTab === "details" ? styles.tabPaneActive : ""}`}>
-          <Card className="bg-white h-full">
-            <CardContent className={styles.expBox}>
-              {visitedTabs.has("details") ? (
-                groupDetailsLoading ? (
-                  <GroupDetailsSkeleton />
-                ) : groupData ? (
-                  <GroupDetailsContent
-                    {...groupData}
-                    membersList={groupMembers}
-                    GroupId={GroupId}
-                    setGroupData={setGroupData}
-                    handleAddMemModal={handleAddMemModal}
-                    handleGroupSettingModal={handleGroupSettingModal}
-                    handleLogs={handleLogModal}
-                    handleAnalysis={handleSpendAnalysisModal}
-                  />
-                ) : null
-              ) : null}
-            </CardContent>
-          </Card>
+          </div>
         </div>
 
         {/* ADD EXPENSE TAB — inline form */}
@@ -489,15 +622,17 @@ export default function GroupDetails() {
             />
           ) : (
             <div className={styles.emptySettings}>
-              <p className="text-sm text-gray-400">This group is settled — no new expenses can be added.</p>
+              <p className="text-sm" style={{ color: "var(--hk-ink-faint)" }}>
+                This group is settled — no new expenses can be added.
+              </p>
             </div>
           )}
         </div>
 
         {/* EXPENSE SUMMARY TAB */}
         <div className={`${styles.tabPane} ${activeTab === "summary" ? styles.tabPaneActive : ""}`}>
-          <Card className="bg-white h-full">
-            <CardContent className={styles.expBox}>
+          <div className="h-full" style={{ background: "var(--hk-bg)" }}>
+            <div className={styles.expBox}>
               {visitedTabs.has("summary") ? (
                 pairsLoading || groupDetailsLoading ? (
                   <GroupDetailsSkeleton />
@@ -505,25 +640,26 @@ export default function GroupDetails() {
                   <GroupPairs isSettled={groupData?.is_settled ?? false} pairsData={pairsData} GroupId={GroupId} groupMembers={groupMembers} />
                 )
               ) : null}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+        </div>
+
+        {/* AI ASSISTANT TAB — was a floating FAB + popup, now a proper tab */}
+        <div className={`${styles.tabPane} ${styles.chatTabPane} ${activeTab === "assistant" ? styles.tabPaneActive : ""}`}>
+          {visitedTabs.has("assistant") && <ChatAssistant groupId={GroupId} />}
         </div>
 
         {/* CHAT TAB — inline page, not a modal */}
         <div className={`${styles.tabPane} ${styles.chatTabPane} ${activeTab === "chat" ? styles.tabPaneActive : ""}`}>
           {/* Always mount ChatModule once chat tab is first visited so socket stays alive */}
-          {visitedTabs.has("chat") && <ChatModule groupId={GroupId} groupName={groupData?.group_name || "Group Chat"} />}
+          {visitedTabs.has("chat") && <ChatModule groupId={GroupId} />}
         </div>
       </div>
 
       {/* ── Floating / Mobile Bottom Nav ── */}
       <nav className={styles.bottomNav}>
         <div className={styles.navInner}>
-          {NAV_TABS.filter(
-            (tab) =>
-              !tab.isAdd ||
-              (groupData?.is_settled === false && isUserAvailable)
-          ).map((tab) => (
+          {NAV_TABS.filter((tab) => !tab.isAdd || (groupData?.is_settled === false && isUserAvailable)).map((tab) => (
             <button
               key={tab.id}
               className={`
@@ -534,40 +670,15 @@ export default function GroupDetails() {
               onClick={() => handleTabChange(tab.id)}
               aria-label={tab.label}
             >
-              <span className={tab.isAdd ? styles.navAddCircle : styles.navIcon}>
-                {tab.icon}
-              </span>
+              <span className={tab.isAdd ? styles.navAddCircle : styles.navIcon}>{tab.icon}</span>
 
-              {!tab.isAdd && (
-                <span className={styles.navLabel}>{tab.label}</span>
-              )}
+              {!tab.isAdd && <span className={styles.navLabel}>{tab.label}</span>}
 
-              {activeTab === tab.id && !tab.isAdd && (
-                <span className={styles.navActivePill} />
-              )}
+              {activeTab === tab.id && !tab.isAdd && <span className={styles.navActivePill} />}
             </button>
           ))}
         </div>
       </nav>
-
-      {/* ── FAB Stack — timeline tab only (Budget + ChatBot) ─────────── */}
-      <div className={styles.fabStack}>
-        {activeTab === "timeline" &&
-          groupData &&
-          !groupData.is_settled && (
-            <>
-              {/* Budget — top */}
-              <BudgetSetter
-                groupId={GroupId}
-                onBudgetSet={() => fetchGroupDetails()}
-                inStack
-              />
-            </>
-          )}
-
-        {/* ChatBot — bottom */}
-        <ChatAssistant groupId={GroupId} inStack />
-      </div>
 
       {/* ── Modals ──────────────────────────────────────────────────────── */}
       {/* Edit/Clone is now handled inline via the 'Add' tab */}
@@ -579,13 +690,20 @@ export default function GroupDetails() {
         description={Messages.EXPENSE.DELETE_ALERT(selectedRow?.expense_name ?? "")}
         isLoading={deleteExpLoading}
       />
+      <CustomAlert
+        isOpen={settlementConfirmModal}
+        onClose={handleSettlementConfirmModal}
+        onSubmit={handleSettlement}
+        description={Messages.EXPENSE.SETTLEMENT_ALERT(groupData?.is_settled ?? false)}
+        isLoading={settlementLoading}
+      />
       {logModal ? (
         <GroupLogs groupId={GroupId} isOpen={logModal} setIsOpen={handleLogModal} onExpenseClick={(id) => handleScrollToExpense(id)} />
       ) : null}
       {spendAnalysisModal ? (
         <GroupSpendAnalysis groupId={GroupId} isOpen={spendAnalysisModal} setIsOpen={handleSpendAnalysisModal} groupMembers={groupMembers} />
       ) : null}
-      {successModal ? <SuccessModal open={successModal} setOpen={setSuccessModal} /> : null}
+      {successModal ? <SuccessModal open={successModal} setOpen={setSuccessModal} message={successMessage} /> : null}
       {addMemberModal ? (
         <AddMemberModal
           isOpen={addMemberModal}

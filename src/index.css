@@ -7,12 +7,71 @@
   --sideBarWidth: 250px;
   --borderRadius: 8px;
   --boxShadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+  /* ── hisabkar design system — dark is the standing default theme ────────
+     See REDESIGN_PLAN.md before changing these values or the rollout order. */
+  --hk-bg: #10131c;
+  --hk-surface: #1a1f2e;
+  --hk-surface-2: #212739;
+  --hk-surface-sunken: #0b0e15;
+  --hk-border: #2e3549;
+  --hk-ink: #f1efea;
+  --hk-ink-soft: #aeb4c7;
+  --hk-ink-faint: #767d93;
+  --hk-accent: #f0ac4c;
+  --hk-accent-strong: #f7c271;
+  --hk-accent-soft: #3b2c13;
+  --hk-on-accent: #241804;
+  --hk-positive: #49c285;
+  --hk-positive-soft: #123424;
+  --hk-negative: #f0806a;
+  --hk-negative-soft: #3b1c15;
+  --hk-avatar-1: #7c8fb8;
+  --hk-avatar-2: #8fbb92;
+  --hk-avatar-3: #bb8da0;
+  --hk-avatar-4: #cfa06a;
+  --hk-avatar-5: #84afc0;
+  --hk-shadow: 0, 0, 0;
+  --hk-focus: #2f6fed;
+  --hk-font-mono: "Cascadia Code", "SF Mono", "Roboto Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+/* Optional light override — not default, not wired to a toggle yet.
+   Only use if/when a theme switcher is explicitly requested. */
+[data-theme="light"] {
+  --hk-bg: #f7f5f1;
+  --hk-surface: #ffffff;
+  --hk-surface-2: #fdfbf7;
+  --hk-surface-sunken: #efeae0;
+  --hk-border: #e4dfd3;
+  --hk-ink: #1c2333;
+  --hk-ink-soft: #5b6172;
+  --hk-ink-faint: #8a90a3;
+  --hk-accent: #cc8a2a;
+  --hk-accent-strong: #a66e1c;
+  --hk-accent-soft: #f7e4c2;
+  --hk-on-accent: #2b1b02;
+  --hk-positive: #22884f;
+  --hk-positive-soft: #dcf0e3;
+  --hk-negative: #c6472e;
+  --hk-negative-soft: #fbe3dc;
+  --hk-avatar-1: #4c5b77;
+  --hk-avatar-2: #6b8f6e;
+  --hk-avatar-3: #8a5f73;
+  --hk-avatar-4: #a9743f;
+  --hk-avatar-5: #5c7a8a;
+  --hk-shadow: 28, 20, 6;
 }
 
 [data-theme="dark"] {
   --background-color: #ffffff;
   --text-color: #000000;
   --primary-color: #bb86fc;
+}
+
+html,
+body {
+  background: var(--hk-bg);
 }
 
 body {
@@ -24,6 +83,41 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   touch-action: manipulation; /* Disables double-tap to zoom */
+}
+
+/* cogo-toast injects its own stylesheet with #ct-container { top: 0px }, which
+   sits under the iOS notch/Dynamic Island. #ct-container has higher
+   specificity than its .ct-container class rule, so this wins regardless of
+   which stylesheet loads last. */
+#ct-container {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Recolor cogo-toast's own light-mode card to match the dark/gold theme.
+   #ct-container .ct-toast beats the injected .ct-toast rule's specificity
+   regardless of load order, same reasoning as above. The colored left
+   border stays as cogo-toast's default green/red/blue/yellow — that's set
+   inline per-toast by the library (can't be themed without !important) —
+   and reads fine as a status accent stripe on a dark card; only the
+   top/right/bottom sides pick up our border since inline styles always win
+   over external CSS for the specific side they set. */
+#ct-container .ct-toast {
+  background-color: var(--hk-surface);
+  color: var(--hk-ink);
+  border: 1px solid var(--hk-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px -12px rgba(var(--hk-shadow), 0.55);
+}
+
+#ct-container .ct-heading,
+#ct-container .ct-text {
+  color: var(--hk-ink);
+  font-family: var(--fontFamily);
+}
+
+#ct-container .ct-icon-loading::after {
+  border-color: var(--hk-accent) transparent var(--hk-accent) transparent;
 }
 
 /* Fix for iOS zooming on input focus (minimum 16px required) */
@@ -149,4 +243,132 @@ input[type="number"] {
 }
 .css-1wvake5 {
   border: none !important;
+}
+
+/* ── shared atoms used across the redesigned pages (see REDESIGN_PLAN.md) ─── */
+.hk-money {
+  font-family: var(--hk-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.hk-card {
+  background: var(--hk-surface);
+  border: 1px solid var(--hk-border);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 2px rgba(var(--hk-shadow), 0.04),
+    0 10px 24px -18px rgba(var(--hk-shadow), 0.4);
+}
+.hk-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.hk-pill-positive {
+  background: var(--hk-positive-soft);
+  color: var(--hk-positive);
+}
+.hk-pill-negative {
+  background: var(--hk-negative-soft);
+  color: var(--hk-negative);
+}
+.hk-pill-neutral {
+  background: var(--hk-surface-sunken);
+  color: var(--hk-ink-soft);
+}
+.hk-avatar {
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  font-size: 0.8rem;
+  box-shadow: 0 0 0 2px var(--hk-surface);
+}
+.hk-avatar-stack {
+  display: flex;
+}
+.hk-avatar-stack .hk-avatar {
+  margin-left: -8px;
+}
+.hk-avatar-stack .hk-avatar:first-child {
+  margin-left: 0;
+}
+.hk-btn-primary {
+  background: var(--hk-accent);
+  color: var(--hk-on-accent);
+  border: none;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 12px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 18px -8px rgba(var(--hk-shadow), 0.55);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.hk-btn-primary:hover {
+  transform: translateY(-1px);
+}
+.hk-btn-secondary {
+  background: var(--hk-surface);
+  color: var(--hk-ink);
+  border: 1px solid var(--hk-border);
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.hk-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--hk-surface);
+  border: 1px solid var(--hk-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--hk-ink-soft);
+  flex: none;
+}
+.hk-fab {
+  position: fixed;
+  right: 20px;
+  bottom: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: var(--hk-accent);
+  color: var(--hk-on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 26px -10px rgba(var(--hk-shadow), 0.6);
+  border: none;
+  z-index: 20;
+  cursor: pointer;
+}
+.hk-section-label {
+  padding: 10px 12px 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--hk-ink-faint);
 }

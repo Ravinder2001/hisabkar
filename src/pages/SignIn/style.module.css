@@ -1,0 +1,361 @@
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  background: var(--hk-bg);
+}
+
+/* ── Mobile / narrow: single centered column ─────────────────────────── */
+.mobile {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(140% 65% at 50% -15%, rgba(240, 172, 76, 0.3) 0%, transparent 60%),
+    radial-gradient(120% 40% at 50% 55%, rgba(240, 172, 76, 0.16) 0%, transparent 60%), var(--hk-bg);
+}
+
+.top {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 32px 28px 0;
+  text-align: center;
+}
+
+.mark {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  box-shadow: 0 10px 22px -10px rgba(var(--hk-shadow), 0.6);
+}
+
+.wordmark {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--hk-ink);
+}
+
+.tagline {
+  color: var(--hk-ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.ledgerStrip {
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.ledgerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 12px;
+  background: var(--hk-surface);
+  border: 1px solid var(--hk-border);
+  border-radius: 10px;
+  font-size: 0.78rem;
+  color: var(--hk-ink-soft);
+}
+
+.ledgerRow span:last-child {
+  color: var(--hk-ink);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.bottom {
+  padding: 20px 28px 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.googleBtn {
+  width: 100%;
+  max-width: 320px;
+  background: var(--hk-surface);
+  border: 1px solid var(--hk-border);
+  border-radius: 999px;
+  padding: 13px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--hk-ink);
+  box-shadow: 0 6px 16px -10px rgba(var(--hk-shadow), 0.5);
+}
+
+.googleBtn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.trustRow {
+  display: flex;
+  gap: 16px;
+  color: var(--hk-ink-faint);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.trustRow span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.footLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  color: var(--hk-ink-faint);
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+.footLinks a {
+  color: var(--hk-ink-soft);
+  text-decoration: none;
+}
+
+.footLinks a:hover {
+  color: var(--hk-ink);
+}
+
+.copyright {
+  color: var(--hk-ink-faint);
+  font-size: 0.68rem;
+}
+
+.versionTag {
+  font-family: var(--hk-font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--hk-ink-faint);
+  background: var(--hk-surface);
+  border: 1px solid var(--hk-border);
+  border-radius: 999px;
+  padding: 4px 12px;
+  text-decoration: none;
+}
+
+.versionTag:hover {
+  color: var(--hk-accent-strong);
+  border-color: var(--hk-accent);
+}
+
+/* ── Desktop: split brand / form layout ──────────────────────────────── */
+.desktop {
+  display: none;
+  width: 100%;
+}
+
+.brandPanel {
+  flex: 1.1;
+  background: linear-gradient(160deg, var(--hk-surface-2), var(--hk-surface-sunken));
+  color: var(--hk-ink);
+  padding: 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.brandPanel::before {
+  content: "";
+  position: absolute;
+  inset: -40% -10% auto auto;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240, 172, 76, 0.45), transparent 70%);
+  z-index: 0;
+}
+
+.brandPanel::after {
+  content: "";
+  position: absolute;
+  inset: auto auto -25% -15%;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240, 172, 76, 0.2), transparent 70%);
+  z-index: 0;
+}
+
+.brandTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.brandTopMark {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  flex: none;
+}
+
+.brandMid {
+  position: relative;
+  z-index: 1;
+  max-width: 380px;
+}
+
+.brandMid h1 {
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--hk-ink);
+}
+
+.brandMid p {
+  margin-top: 14px;
+  color: var(--hk-ink-soft);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.brandLedger {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 360px;
+}
+
+.brandLedgerRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 11px 14px;
+  border: 1px solid var(--hk-border);
+  border-radius: 10px;
+  font-size: 0.82rem;
+  color: var(--hk-ink-soft);
+}
+
+.brandLedgerRow span:last-child {
+  color: var(--hk-ink);
+  font-weight: 600;
+}
+
+.formPanel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px;
+  background: var(--hk-bg);
+}
+
+.formCard {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  text-align: center;
+}
+
+.formCard h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--hk-ink);
+  margin: 0;
+}
+
+.formCard > p {
+  color: var(--hk-ink-soft);
+  font-size: 0.9rem;
+  margin: -12px 0 0;
+}
+
+@media (min-width: 900px) {
+  .mobile {
+    display: none;
+  }
+  .desktop {
+    display: flex;
+  }
+}
+
+/* ── "Create a new account?" confirmation modal ──────────────────────── */
+.confirmModal {
+  width: 340px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.confirmIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--hk-accent-soft);
+  color: var(--hk-accent-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.confirmTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--hk-ink);
+  margin: 0;
+}
+
+.confirmText {
+  color: var(--hk-ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.5;
+  margin: 8px 0 4px;
+}
+
+.confirmText b {
+  color: var(--hk-ink);
+}
+
+.confirmActions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.confirmActions button {
+  width: 100%;
+  justify-content: center;
+}

@@ -1,9 +1,6 @@
 import React, { useEffect } from "react";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import { useState } from "react";
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
-import { Textarea } from "../../components/ui/textarea";
 import { LifeBuoy, MessageSquare, Bug } from "lucide-react";
 import { OptionType, SupportType } from "../../utils/comman/CommanTypes";
 import CustomSelect from "../CustomSelect/CustomSelect";
@@ -11,6 +8,7 @@ import ButtonComponent from "../Atoms/ButtonComponent/ButtonComponent";
 import useApiFetch from "../../hooks/useAPIFetch";
 import CONSTANTS from "../../utils/constant/Constant";
 import showToast from "../../utils/helpers/toastHelper";
+import styles from "./style.module.css";
 
 interface SupportModalProps {
   isOpen: boolean;
@@ -144,11 +142,11 @@ function SupportModal({ isOpen, setIsOpen, supportType }: SupportModalProps) {
   const getIcon = () => {
     switch (supportType) {
       case "SUPPORT":
-        return <LifeBuoy className="h-6 w-6 text-primary" />;
+        return <LifeBuoy size={18} />;
       case "FEEDBACK":
-        return <MessageSquare className="h-6 w-6 text-primary" />;
+        return <MessageSquare size={18} />;
       case "BUG":
-        return <Bug className="h-6 w-6 text-primary" />;
+        return <Bug size={18} />;
       default:
         return null;
     }
@@ -185,58 +183,84 @@ function SupportModal({ isOpen, setIsOpen, supportType }: SupportModalProps) {
   return (
     <ModalComponent isOpen={isOpen} setIsOpen={setIsOpen}>
       <form onSubmit={handleSubmit}>
-        <div>
-          <div className="flex items-center gap-3">
-            {getIcon()}
-            <div>{getTitle()}</div>
-          </div>
-          <div className="mt-2">{getDescription()}</div>
+        <div className={styles.header}>
+          <div className={styles.iconBox}>{getIcon()}</div>
+          <div className={styles.title}>{getTitle()}</div>
         </div>
+        <p className={styles.description}>{getDescription()}</p>
 
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" placeholder="your@email.com" value={formData.email} onChange={handleChange} required />
-              {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+        <div className={styles.fields}>
+          <div className={styles.fieldRow}>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="email">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                className={styles.input}
+                placeholder="your@email.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              {errors.email && <p className={styles.error}>{errors.email}</p>}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" name="phone" type="tel" placeholder="+91 123123123" value={formData.phone} onChange={handleChange} />
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="phone">
+                Phone Number
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                className={styles.input}
+                placeholder="+91 123123123"
+                value={formData.phone}
+                onChange={handleChange}
+              />
             </div>
           </div>
 
           {supportType === "SUPPORT" && (
-            <div className="space-y-2">
-              <Label htmlFor="category">Support Category</Label>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="category">
+                Support Category
+              </label>
               <CustomSelect
                 options={optionList?.data}
                 onChange={handleSelectChange("category")}
                 value={optionList?.data.find((opt: OptionType) => opt.value === formData.category) || null}
                 placeholder="Select support category"
               />
-              {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
+              {errors.category && <p className={styles.error}>{errors.category}</p>}
             </div>
           )}
 
           {supportType === "BUG" && (
-            <div className="space-y-2">
-              <Label htmlFor="priority">Priority</Label>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="priority">
+                Priority
+              </label>
               <CustomSelect
                 options={optionList?.data}
                 onChange={handleSelectChange("priority")}
                 value={optionList?.data.find((opt: OptionType) => opt.value === formData.priority) || null}
                 placeholder="Select priority level"
               />
-              {errors.priority && <p className="text-red-500 text-sm">{errors.priority}</p>}
+              {errors.priority && <p className={styles.error}>{errors.priority}</p>}
             </div>
           )}
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="description">
+              Description
+            </label>
+            <textarea
               id="description"
               name="description"
+              className={styles.textarea}
               placeholder={
                 supportType === "SUPPORT"
                   ? "Describe what you need help with..."
@@ -244,17 +268,16 @@ function SupportModal({ isOpen, setIsOpen, supportType }: SupportModalProps) {
                     ? "Share your thoughts and suggestions..."
                     : "Describe the issue in detail..."
               }
-              className="min-h-[120px]"
               value={formData.description}
               onChange={handleChange}
               required
               maxLength={500}
             />
-            {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+            {errors.description && <p className={styles.error}>{errors.description}</p>}
           </div>
         </div>
 
-        <div>
+        <div className={styles.submitRow}>
           <ButtonComponent text="Submit" isLoading={isLoading} />
         </div>
       </form>
