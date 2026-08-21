@@ -8,11 +8,12 @@ import styles from "./style.module.css";
 import FloatingActionButton from "../../components/FloatingActionButton/FloatingActionButton";
 import CreateGroupModal from "../../components/CreateGroup/CreateGroup";
 import GroupSharingModal from "../../components/ShareGroup/ShareGroup";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import GroupCardSkeleton from "../../components/GroupCard/GroupCardSkeleton";
 import WelcomeModal from "../../components/WelcomeModal/WelcomeModal";
 import { RootState } from "../../store/store";
 import NotificationPrompt from "../../components/NotificationPrompt/NotificationPrompt";
+import { setRecentGroupsPreview } from "../../store/features/recentGroupsSlice";
 
 type FilterId = "all" | "owe" | "owed" | "settled";
 
@@ -26,6 +27,7 @@ const FILTERS: { id: FilterId; label: string }[] = [
 const formatMoney = (amount: number) => `₹${Math.round(Math.abs(amount)).toLocaleString("en-IN")}`;
 
 function Home() {
+  const dispatch = useDispatch();
   const isNewUser = useSelector((state: RootState) => state.user.isNewUser);
   const { fetchData, response, isLoading } = useApiFetch(CONSTANTS.API_ROUTES.ALL_GROUPS);
 
@@ -46,6 +48,18 @@ function Home() {
   useEffect(() => {
     if (response?.success == 1) {
       setGroupList(response.data);
+
+      // Cache a small snapshot of the top active groups so the sign-in
+      // screen can show a real preview after logout without a fetch.
+      const preview = (response.data as GroupType[])
+        .filter((group) => !group.is_settled)
+        .slice(0, 3)
+        .map((group) => ({
+          group_name: group.group_name,
+          net_balance: group.net_balance,
+          is_settled: group.is_settled,
+        }));
+      dispatch(setRecentGroupsPreview(preview));
     }
   }, [response]);
 

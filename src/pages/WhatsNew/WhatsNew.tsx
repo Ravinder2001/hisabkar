@@ -1,8 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { ArrowLeft, GitBranch, GitCommitVertical, Sparkles, Wrench, TrendingUp } from "lucide-react";
 import versionHistory from "../../data/versionHistory.json";
 import CONSTANTS from "../../utils/constant/Constant";
+import { RootState } from "../../store/store";
 import styles from "./style.module.css";
 
 type ChangeType = "feature" | "fix" | "improvement";
@@ -45,6 +47,9 @@ const changeLabel: Record<ChangeType, string> = {
 
 const WhatsNew: React.FC = () => {
   const navigate = useNavigate();
+  // PublicRoute renders this bare (no Navbar) only when logged out — see
+  // PublicRoutes.tsx. Only that case needs its own safe-area padding.
+  const isUserLoggedIn = useSelector((state: RootState) => state.user.isUserLoggedIn);
   const { currentVersion, eras, versions } = versionHistory as {
     currentVersion: string;
     eras: Era[];
@@ -60,7 +65,7 @@ const WhatsNew: React.FC = () => {
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
+      <header className={`${styles.header} ${!isUserLoggedIn ? styles.headerBare : ""}`}>
         <button className={styles.backBtn} onClick={handleBack} aria-label="Go back">
           <ArrowLeft size={18} />
         </button>

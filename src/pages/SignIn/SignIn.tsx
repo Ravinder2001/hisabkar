@@ -1,6 +1,6 @@
 /*eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Link } from "react-router-dom";
 
@@ -12,7 +12,22 @@ import { setUserLoggedIn } from "../../store/features/userSlice";
 import { decodeJWT } from "../../utils/helpers/authHelper";
 import CustomCircularLoading from "../../components/Atoms/CustomCircularLoading/CustomCircularLoading";
 import versionHistory from "../../data/versionHistory.json";
+import { RootState } from "../../store/store";
 import styles from "./style.module.css";
+
+const formatMoney = (amount: number) => `₹${Math.round(Math.abs(amount)).toLocaleString("en-IN")}`;
+
+/** Turns a cached group balance into a display-ready ledger row. */
+const toLedgerRow = (group: { group_name: string; net_balance: number }) => {
+  const isOwed = group.net_balance > 0;
+  const isOwing = group.net_balance < 0;
+  return {
+    key: group.group_name,
+    label: group.group_name,
+    amountText: isOwing ? `− ${formatMoney(group.net_balance)}` : isOwed ? `+ ${formatMoney(group.net_balance)}` : formatMoney(group.net_balance),
+    color: isOwing ? "var(--hk-negative)" : isOwed ? "var(--hk-positive)" : "var(--hk-ink-faint)",
+  };
+};
 
 const VersionTag = () => (
   <Link to={CONSTANTS.PROJECT_ROUTES.WHATS_NEW} className={styles.versionTag}>
@@ -44,6 +59,9 @@ const FootLinks = () => (
 
 function SignIn() {
   const dispatch = useDispatch();
+  const recentGroups = useSelector((state: RootState) => state.recentGroups.groups);
+  const ledgerRows = recentGroups.map(toLedgerRow);
+  const hasRecentGroups = ledgerRows.length > 0;
 
   const { fetchData: postGoogleSignIn, response: googleSignInRes, isLoading: googleLoading } = useApiFetch("");
 
@@ -87,16 +105,31 @@ function SignIn() {
         <div className={styles.top}>
           <div className={styles.mark}>₹</div>
           <div className={styles.wordmark}>hisabkar</div>
-          <p className={styles.tagline}>Split expenses with friends &amp; family. Settle up without the awkward math.</p>
+          <p className={styles.tagline}>
+            {hasRecentGroups
+              ? "Welcome back — here's where things stand."
+              : "Split expenses with friends & family. Settle up without the awkward math."}
+          </p>
           <div className={styles.ledgerStrip}>
-            <div className={styles.ledgerRow}>
-              <span>Goa Trip 2026</span>
-              <span style={{ color: "var(--hk-negative)" }}>− ₹3,200</span>
-            </div>
-            <div className={styles.ledgerRow}>
-              <span>Flatmates · HSR Layout</span>
-              <span style={{ color: "var(--hk-positive)" }}>+ ₹1,150</span>
-            </div>
+            {hasRecentGroups ? (
+              ledgerRows.map((row) => (
+                <div className={styles.ledgerRow} key={row.key}>
+                  <span>{row.label}</span>
+                  <span style={{ color: row.color }}>{row.amountText}</span>
+                </div>
+              ))
+            ) : (
+              <>
+                <div className={styles.ledgerRow}>
+                  <span>Goa Trip 2026</span>
+                  <span style={{ color: "var(--hk-negative)" }}>− ₹3,200</span>
+                </div>
+                <div className={styles.ledgerRow}>
+                  <span>Flatmates · HSR Layout</span>
+                  <span style={{ color: "var(--hk-positive)" }}>+ ₹1,150</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
         <div className={styles.bottom}>
@@ -122,18 +155,29 @@ function SignIn() {
             <p>Track shared expenses, split fairly, and settle up — built for trips, flats, and everything in between.</p>
           </div>
           <div className={styles.brandLedger}>
-            <div className={styles.brandLedgerRow}>
-              <span>Beach Resort · Goa Trip</span>
-              <span>₹18,000</span>
-            </div>
-            <div className={styles.brandLedgerRow}>
-              <span>Dinner at Thalassa</span>
-              <span>₹4,800</span>
-            </div>
-            <div className={styles.brandLedgerRow}>
-              <span>Cab to Airport</span>
-              <span>₹1,200</span>
-            </div>
+            {hasRecentGroups ? (
+              ledgerRows.map((row) => (
+                <div className={styles.brandLedgerRow} key={row.key}>
+                  <span>{row.label}</span>
+                  <span style={{ color: row.color }}>{row.amountText}</span>
+                </div>
+              ))
+            ) : (
+              <>
+                <div className={styles.brandLedgerRow}>
+                  <span>Beach Resort · Goa Trip</span>
+                  <span>₹18,000</span>
+                </div>
+                <div className={styles.brandLedgerRow}>
+                  <span>Dinner at Thalassa</span>
+                  <span>₹4,800</span>
+                </div>
+                <div className={styles.brandLedgerRow}>
+                  <span>Cab to Airport</span>
+                  <span>₹1,200</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
         <div className={styles.formPanel}>

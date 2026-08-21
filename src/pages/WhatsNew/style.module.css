@@ -25,6 +25,14 @@
   border-bottom: 1px solid var(--hk-border);
 }
 
+/* Only needed when this renders as a bare page (logged out) with no Navbar
+   above it to absorb the notch/Dynamic Island — the navbar-wrapped case
+   (logged in) already has its own safe-area padding, so adding it here too
+   would double up. See WhatsNew.tsx. */
+.headerBare {
+  padding-top: calc(18px + env(safe-area-inset-top));
+}
+
 .backBtn {
   width: 36px;
   height: 36px;
