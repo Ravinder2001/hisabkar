@@ -27,14 +27,20 @@ interface PendingAccount {
 const formatMoney = (amount: number) => `₹${Math.round(Math.abs(amount)).toLocaleString("en-IN")}`;
 
 /** Turns a cached group balance into a display-ready ledger row. */
-const toLedgerRow = (group: { group_name: string; net_balance: number }) => {
+const toLedgerRow = (group: { group_name: string; net_balance: number; is_settled: boolean }) => {
   const isOwed = group.net_balance > 0;
   const isOwing = group.net_balance < 0;
   return {
     key: group.group_name,
     label: group.group_name,
-    amountText: isOwing ? `− ${formatMoney(group.net_balance)}` : isOwed ? `+ ${formatMoney(group.net_balance)}` : formatMoney(group.net_balance),
-    color: isOwing ? "var(--hk-negative)" : isOwed ? "var(--hk-positive)" : "var(--hk-ink-faint)",
+    amountText: group.is_settled
+      ? "Settled"
+      : isOwing
+        ? `− ${formatMoney(group.net_balance)}`
+        : isOwed
+          ? `+ ${formatMoney(group.net_balance)}`
+          : formatMoney(group.net_balance),
+    color: group.is_settled ? "var(--hk-ink-faint)" : isOwing ? "var(--hk-negative)" : isOwed ? "var(--hk-positive)" : "var(--hk-ink-faint)",
   };
 };
 
