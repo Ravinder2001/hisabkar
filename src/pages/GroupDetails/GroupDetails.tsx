@@ -32,6 +32,7 @@ import BudgetSetter from "../../components/BudgetSetter/BudgetSetter";
 import ChatAssistant from "../../components/ChatBotAssistant/ChatAssistant";
 import ExpenseSkeleton from "../../components/ExpenseCard/ExpenseSkeleton";
 import GroupDetailsSkeleton from "../../components/GroupDetailsContent/GroupDetailsSkeleton";
+import GroupDetailHeaderSkeleton from "../../components/GroupDetailHeader/GroupDetailHeaderSkeleton";
 import { formatSectionLabel } from "../../utils/helpers/commanHelper";
 
 type TabId = "timeline" | "addExpense" | "summary" | "assistant" | "chat";
@@ -427,7 +428,7 @@ export default function GroupDetails() {
 
   return (
     <div className={styles.pageWrapper}>
-      {groupData && (
+      {groupData ? (
         <GroupDetailHeader
           groupName={groupData.group_name}
           memberCount={groupData.total_members_count}
@@ -442,6 +443,8 @@ export default function GroupDetails() {
           onToggleSettlement={handleSettlementConfirmModal}
           onDownload={handleDownloadGroupData}
         />
+      ) : (
+        <GroupDetailHeaderSkeleton />
       )}
 
       {/* ── Balance hero — timeline tab only, permanently visible (no scroll collapse) ── */}
