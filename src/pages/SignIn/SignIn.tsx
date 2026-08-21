@@ -16,6 +16,7 @@ import ModalComponent from "../../components/ModalComponent/ModalComponent";
 import versionHistory from "../../data/versionHistory.json";
 import { RootState } from "../../store/store";
 import styles from "./style.module.css";
+import logo from "../../assets/images/logo.png";
 
 interface PendingAccount {
   email: string;
@@ -133,7 +134,7 @@ function SignIn() {
       {/* ── Mobile / narrow layout ─────────────────────────────────────── */}
       <div className={styles.mobile}>
         <div className={styles.top}>
-          <div className={styles.mark}>₹</div>
+          <img src={logo} alt="hisabkar" className={styles.mark} />
           <div className={styles.wordmark}>hisabkar</div>
           <p className={styles.tagline}>
             {hasRecentGroups
@@ -178,7 +179,7 @@ function SignIn() {
       <div className={styles.desktop}>
         <div className={styles.brandPanel}>
           <div className={styles.brandTop}>
-            <span className={styles.brandTopMark}>₹</span> hisabkar
+            <img src={logo} alt="hisabkar" className={styles.brandTopMark} /> hisabkar
           </div>
           <div className={styles.brandMid}>
             <h1>Every rupee, accounted for.</h1>
@@ -212,7 +213,7 @@ function SignIn() {
         </div>
         <div className={styles.formPanel}>
           <div className={styles.formCard}>
-            <div className={styles.mark}>₹</div>
+            <img src={logo} alt="hisabkar" className={styles.mark} />
             <h2>Welcome back</h2>
             <p>Sign in to see your groups and balances.</p>
             <GoogleButton />

@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { setUserLoggedOut } from "../../store/features/userSlice";
 import CONSTANTS from "../../utils/constant/Constant";
 import useApiFetch from "../../hooks/useAPIFetch";
+import logo from "../../assets/images/logo.png";
 
 const dropdownStyle: React.CSSProperties = {
   background: "var(--hk-surface)",
@@ -86,7 +87,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center gap-2">
-              <span className={styles.mark}>₹</span>
+              <img src={logo} alt="hisabkar" className={styles.mark} />
               <span className={styles.wordmark}>hisabkar</span>
             </Link>
           </div>

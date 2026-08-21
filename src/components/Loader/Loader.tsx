@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { Sparkles, Zap, ShieldCheck } from "lucide-react";
+import logo from "../../assets/images/logo.png";
 import "./style.css";
 
 const STARTUP_MESSAGES = [
@@ -50,8 +51,8 @@ function Loader() {
           className="logo-section"
         >
           <div className="logo-icon-wrapper">
-            <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="logo-ring" />
-            <span className="logo-symbol">₹</span>
+            {/* <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="logo-ring" /> */}
+            <img src={logo} alt="hisabkar" className="logo-symbol" />
           </div>
           <motion.h1
             initial={{ letterSpacing: "0.2em", opacity: 0 }}

@@ -13,7 +13,7 @@
   flex-direction: column;
   background:
     radial-gradient(140% 65% at 50% -15%, rgba(240, 172, 76, 0.3) 0%, transparent 60%),
-    radial-gradient(90% 50% at 100% 100%, rgba(240, 172, 76, 0.14) 0%, transparent 55%), var(--hk-bg);
+    radial-gradient(120% 40% at 50% 55%, rgba(240, 172, 76, 0.16) 0%, transparent 60%), var(--hk-bg);
 }
 
 .top {
@@ -30,15 +30,7 @@
 .mark {
   width: 56px;
   height: 56px;
-  border-radius: 16px;
-  background: var(--hk-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--hk-on-accent);
-  font-family: var(--hk-font-mono);
-  font-weight: 700;
-  font-size: 1.5rem;
+  object-fit: contain;
   box-shadow: 0 10px 22px -10px rgba(var(--hk-shadow), 0.6);
 }
 
@@ -223,13 +215,7 @@
 .brandTopMark {
   width: 26px;
   height: 26px;
-  border-radius: 8px;
-  background: var(--hk-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--hk-on-accent);
-  font-family: var(--hk-font-mono);
+  object-fit: contain;
   flex: none;
 }
 

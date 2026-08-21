@@ -9,14 +9,7 @@
 .mark {
   width: 30px;
   height: 30px;
-  border-radius: 9px;
-  background: var(--hk-accent);
-  color: var(--hk-on-accent);
-  font-family: var(--hk-font-mono);
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  object-fit: contain;
   flex: none;
 }
 
