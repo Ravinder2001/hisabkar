@@ -15,6 +15,13 @@ const config = {
   },
   JWT: {
     SECRET_KEY: process.env.SECRET,
+    ACCESS_EXPIRY: "10m",
+    REFRESH_EXPIRY_DAYS: 30,
+  },
+  COOKIE: {
+    NAME: "refresh_token",
+    SECURE: process.env.NODE_ENV === "prod",
+    SAME_SITE: process.env.NODE_ENV === "prod" ? "none" : "lax",
   },
   CRYPTO: {
     SECRET_KEY: process.env.CRYPTO_SECRET_KEY ?? "",

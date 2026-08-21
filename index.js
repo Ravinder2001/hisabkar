@@ -1,6 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const morgan = require("morgan");
 const moment = require("moment");
@@ -62,8 +63,25 @@ const app = express();
 //   cert: config.SSL.CERT,
 // };
 
+// If ALLOWED_ORIGIN is configured (comma-separated for multiple), only those
+// origins get a credentialed response — required now that a refresh session
+// lives in a cookie, since `origin: true` + `credentials: true` otherwise
+// lets any site trigger a credentialed request and have the browser attach
+// it. Falls back to reflecting any origin (today's behavior) if unset, so
+// this doesn't break anything until ALLOWED_ORIGIN is actually set.
+const allowedOrigins = config.ALLOWED_ORIGIN
+  ? config.ALLOWED_ORIGIN.split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean)
+  : null;
+
 const corsOptions = {
-  origin: true,
+  origin: allowedOrigins
+    ? (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+        return callback(new Error("Not allowed by CORS"));
+      }
+    : true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "x-user-id"],
   optionsSuccessStatus: 200,
@@ -96,6 +114,7 @@ app.use(
 );
 
 app.use(passport.initialize());
+app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));

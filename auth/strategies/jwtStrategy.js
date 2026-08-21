@@ -8,6 +8,7 @@ const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
  * Module imports.
  */
 const userModel = require("../../model/users.model");
+const sessionsModel = require("../../model/sessions.model");
 const config = require("../../configuration/config");
 const Messages = require("../../utils/constant/messages");
 
@@ -35,6 +36,16 @@ passport.use(
     try {
       if (!payload.iss) {
         return done(null, false, { message: Messages.UNAUTHORIZED });
+      }
+
+      // Instant revocation: even a not-yet-expired access token is rejected
+      // once its session has been logged out / force-logged-out, since we
+      // check the session row on every request (see tbl_user_sessions).
+      if (payload.sessionId) {
+        const session = await sessionsModel.getValidSession(payload.sessionId);
+        if (!session) {
+          return done(null, false, { message: Messages.TOKEN_EXPIRED });
+        }
       }
 
       const user = await userModel.getUserDetailsByID(payload.id);

@@ -1,5 +1,6 @@
 const userModel = require("../model/users.model");
 const groupModel = require("../model/group.model");
+const sessionsModel = require("../model/sessions.model");
 const common = require("./common.controller");
 const { HttpStatus } = require("../utils/constant/constant");
 const Messages = require("../utils/constant/messages");
@@ -7,6 +8,28 @@ const config = require("../configuration/config");
 const { generateAvatarImage, maskEmail, generateCacheKey } = require("../utils/common/common");
 const { encryptData } = require("../utils/encryption");
 const redisClient = require("../configuration/redis");
+
+// Attributes that must match between set and clear for the browser to
+// recognize it's the same cookie — deliberately excludes maxAge/expires,
+// since Express's clearCookie would otherwise carry a future maxAge through
+// to the Set-Cookie header, and Max-Age wins over Expires per RFC 6265,
+// silently defeating the clear.
+const REFRESH_COOKIE_ATTRS = {
+  httpOnly: true,
+  secure: config.COOKIE.SECURE,
+  sameSite: config.COOKIE.SAME_SITE,
+};
+
+const setRefreshCookie = (res, refreshToken) => {
+  res.cookie(config.COOKIE.NAME, refreshToken, {
+    ...REFRESH_COOKIE_ATTRS,
+    maxAge: config.JWT.REFRESH_EXPIRY_DAYS * 24 * 60 * 60 * 1000,
+  });
+};
+
+const clearRefreshCookie = (res) => {
+  res.clearCookie(config.COOKIE.NAME, REFRESH_COOKIE_ATTRS);
+};
 
 module.exports = {
   googleLogin: async (req, res) => {
@@ -55,8 +78,55 @@ module.exports = {
         return res.status(401).json({ message: Messages.USER_DEACTIVATED, success: 0 });
       }
 
-      const token = await common.generateUserToken(user);
-      return common.successResponse(res, Messages.LOGIN_SUCCESS, HttpStatus.OK, { token });
+      const { accessToken, refreshToken } = await common.issueSession(user, req);
+      setRefreshCookie(res, refreshToken);
+      return common.successResponse(res, Messages.LOGIN_SUCCESS, HttpStatus.OK, { token: accessToken });
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
+  refreshToken: async (req, res) => {
+    try {
+      const refreshToken = req.cookies?.[config.COOKIE.NAME];
+      if (!refreshToken) {
+        return res.status(HttpStatus.UNAUTHORIZED).json({ success: 0, message: Messages.TOKEN_EXPIRED });
+      }
+
+      const session = await sessionsModel.getValidSessionByHash(common.hashToken(refreshToken));
+      if (!session) {
+        clearRefreshCookie(res);
+        return res.status(HttpStatus.UNAUTHORIZED).json({ success: 0, message: Messages.TOKEN_EXPIRED });
+      }
+
+      const user = await userModel.getUserDetailsByID(session.user_id);
+      if (!user || !user.is_active) {
+        return res.status(HttpStatus.UNAUTHORIZED).json({ success: 0, message: Messages.USER_DEACTIVATED });
+      }
+
+      const { accessToken, refreshToken: newRefreshToken } = await common.rotateSession(session, user);
+      setRefreshCookie(res, newRefreshToken);
+      return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK, { token: accessToken });
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
+  logout: async (req, res) => {
+    try {
+      const refreshToken = req.cookies?.[config.COOKIE.NAME];
+      if (refreshToken) {
+        await sessionsModel.revokeSessionByHash(common.hashToken(refreshToken));
+      }
+      clearRefreshCookie(res);
+      return common.successResponse(res, Messages.LOGOUT_SUCCESS, HttpStatus.OK);
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
+  logoutAllSessions: async (req, res) => {
+    try {
+      await sessionsModel.revokeAllUserSessions(req.user.user_id);
+      clearRefreshCookie(res);
+      return common.successResponse(res, Messages.LOGOUT_SUCCESS, HttpStatus.OK);
     } catch (error) {
       common.handleAsyncError(error, res);
     }

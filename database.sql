@@ -19,6 +19,20 @@ CREATE TABLE IF NOT EXISTS tbl_user_options (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ================= USER SESSIONS (refresh tokens) =================
+-- session_id is generated app-side (uuid package), not gen_random_uuid(),
+-- to avoid depending on the pgcrypto extension being enabled on the DB.
+CREATE TABLE IF NOT EXISTS tbl_user_sessions (
+  session_id UUID PRIMARY KEY,
+  user_id INT NOT NULL REFERENCES tbl_users(user_id) ON DELETE CASCADE,
+  refresh_token_hash TEXT NOT NULL,
+  user_agent TEXT,
+  ip_address TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP NOT NULL,
+  revoked_at TIMESTAMP
+);
+
 -- ================= UPI =================
 CREATE TABLE IF NOT EXISTS tbl_upi_address (
   upi_address_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
