@@ -1,5 +1,5 @@
 {
-  "currentVersion": "3.10.0",
+  "currentVersion": "3.10.1",
   "note": "Hisabkar uses a single version number shared by both the frontend and backend (see package.json in each repo). Every release below covers whatever changed on either side.",
   "eras": [
     {
@@ -25,6 +25,27 @@
     }
   ],
   "versions": [
+    {
+      "version": "3.10.1",
+      "date": "2026-08-21",
+      "type": "patch",
+      "era": 3,
+      "title": "Recent-groups preview fixes & PWA icon",
+      "changes": [
+        {
+          "type": "fix",
+          "text": "The PWA install icon and home-screen icon now show the current logo — the icon files hadn't actually been updated when the branding changed"
+        },
+        {
+          "type": "fix",
+          "text": "The recent-groups preview on the sign-in screen no longer hides settled groups from your top 3"
+        },
+        {
+          "type": "fix",
+          "text": "Settled groups in that preview now show \"Settled\" instead of a stale balance"
+        }
+      ]
+    },
     {
       "version": "3.10.0",
       "date": "2026-08-21",

@@ -49,16 +49,13 @@ function Home() {
     if (response?.success == 1) {
       setGroupList(response.data);
 
-      // Cache a small snapshot of the top active groups so the sign-in
-      // screen can show a real preview after logout without a fetch.
-      const preview = (response.data as GroupType[])
-        .filter((group) => !group.is_settled)
-        .slice(0, 3)
-        .map((group) => ({
-          group_name: group.group_name,
-          net_balance: group.net_balance,
-          is_settled: group.is_settled,
-        }));
+      // Cache a small snapshot of the top groups so the sign-in screen can
+      // show a real preview after logout without a fetch.
+      const preview = (response.data as GroupType[]).slice(0, 3).map((group) => ({
+        group_name: group.group_name,
+        net_balance: group.net_balance,
+        is_settled: group.is_settled,
+      }));
       dispatch(setRecentGroupsPreview(preview));
     }
   }, [response]);
