@@ -85,6 +85,15 @@ body {
   touch-action: manipulation; /* Disables double-tap to zoom */
 }
 
+/* cogo-toast injects its own stylesheet with #ct-container { top: 0px }, which
+   sits under the iOS notch/Dynamic Island. #ct-container has higher
+   specificity than its .ct-container class rule, so this wins regardless of
+   which stylesheet loads last. */
+#ct-container {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
 /* Fix for iOS zooming on input focus (minimum 16px required) */
 input,
 select,

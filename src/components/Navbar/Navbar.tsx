@@ -48,9 +48,6 @@ const Navbar = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent style={dropdownStyle} align="end">
           <DropdownMenuItem asChild className="cursor-pointer">
-            <Link to="/">Home</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild className="cursor-pointer">
             <Link to={CONSTANTS.PROJECT_ROUTES.PROFILE}>Profile</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="cursor-pointer">
