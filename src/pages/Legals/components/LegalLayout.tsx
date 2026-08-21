@@ -1,52 +1,50 @@
 import React, { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import CONSTANTS from "../../../utils/constant/Constant";
+import styles from "../style.module.css";
 
 interface LegalLayoutProps {
   children: ReactNode;
   title: string;
 }
 
+const NAV_ITEMS = [
+  { label: "Terms", path: `${CONSTANTS.PROJECT_ROUTES.LEGAL}/terms` },
+  { label: "Privacy Policy", path: `${CONSTANTS.PROJECT_ROUTES.LEGAL}/privacy` },
+  { label: "Disclaimer", path: `${CONSTANTS.PROJECT_ROUTES.LEGAL}/disclaimer` },
+  { label: "About Us", path: `${CONSTANTS.PROJECT_ROUTES.LEGAL}/about` },
+];
+
 export default function LegalLayout({ children, title }: LegalLayoutProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleBack = () => {
+    if (window.history.length > 2) navigate(-1);
+    else navigate(CONSTANTS.PROJECT_ROUTES.AUTHTICATION);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
-        </div>
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <button className={styles.backBtn} onClick={handleBack} aria-label="Go back">
+          <ArrowLeft size={18} />
+        </button>
+        <h1 className={styles.title}>{title}</h1>
       </header>
-      <main>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
-            <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-              <div className="px-4 py-5 sm:p-6">{children}</div>
-            </div>
-          </div>
-        </div>
-      </main>
-      <nav className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-        <ul className="flex space-x-4 text-sm text-gray-600">
-          <li>
-            <Link to="/legal/terms" className="hover:text-gray-900">
-              Terms & Conditions
-            </Link>
-          </li>
-          <li>
-            <Link to="/legal/privacy" className="hover:text-gray-900">
-              Privacy Policy
-            </Link>
-          </li>
-          <li>
-            <Link to="/legal/disclaimer" className="hover:text-gray-900">
-              Disclaimer
-            </Link>
-          </li>
-          <li>
-            <Link to="/legal/about" className="hover:text-gray-900">
-              About Us
-            </Link>
-          </li>
-        </ul>
+
+      <nav className={styles.tabRow}>
+        {NAV_ITEMS.map((item) => (
+          <Link key={item.path} to={item.path} className={`${styles.tab} ${location.pathname === item.path ? styles.tabActive : ""}`}>
+            {item.label}
+          </Link>
+        ))}
       </nav>
+
+      <main className={styles.main}>
+        <div className={styles.content}>{children}</div>
+      </main>
     </div>
   );
 }
