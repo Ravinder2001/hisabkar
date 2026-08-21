@@ -94,6 +94,32 @@ body {
   padding-top: env(safe-area-inset-top, 0px);
 }
 
+/* Recolor cogo-toast's own light-mode card to match the dark/gold theme.
+   #ct-container .ct-toast beats the injected .ct-toast rule's specificity
+   regardless of load order, same reasoning as above. The colored left
+   border stays as cogo-toast's default green/red/blue/yellow — that's set
+   inline per-toast by the library (can't be themed without !important) —
+   and reads fine as a status accent stripe on a dark card; only the
+   top/right/bottom sides pick up our border since inline styles always win
+   over external CSS for the specific side they set. */
+#ct-container .ct-toast {
+  background-color: var(--hk-surface);
+  color: var(--hk-ink);
+  border: 1px solid var(--hk-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px -12px rgba(var(--hk-shadow), 0.55);
+}
+
+#ct-container .ct-heading,
+#ct-container .ct-text {
+  color: var(--hk-ink);
+  font-family: var(--fontFamily);
+}
+
+#ct-container .ct-icon-loading::after {
+  border-color: var(--hk-accent) transparent var(--hk-accent) transparent;
+}
+
 /* Fix for iOS zooming on input focus (minimum 16px required) */
 input,
 select,
