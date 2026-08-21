@@ -8,7 +8,6 @@
   height: 100dvh; /* dynamic viewport on mobile (accounts for browser chrome) */
   display: flex;
   flex-direction: column;
-  gap: 5px; /* space between navbar and content */
   padding: 0px; /* margin from all sides */
   overflow: hidden; /* prevents the outer shell from ever scrolling */
   background: var(--hk-bg);

@@ -1,5 +1,5 @@
 {
-  "currentVersion": "3.4.0",
+  "currentVersion": "3.5.0",
   "note": "Hisabkar uses a single version number shared by both the frontend and backend (see package.json in each repo). Every release below covers whatever changed on either side.",
   "eras": [
     {
@@ -19,12 +19,27 @@
     {
       "id": 3,
       "title": "Chat, AI & PWA",
-      "range": "v3.0.0 – v3.4.0",
+      "range": "v3.0.0 – v3.5.0",
       "description": "Real-time chat, an AI assistant, offline installable PWA, and the dark/gold theme.",
       "color": "accent"
     }
   ],
   "versions": [
+    {
+      "version": "3.5.0",
+      "date": "2026-08-21",
+      "type": "minor",
+      "era": 3,
+      "title": "Open Expenses redesign",
+      "changes": [
+        { "type": "feature", "text": "Open Expenses (groups, expenses, settlements) redesigned to match the dark/gold theme" },
+        { "type": "feature", "text": "Add Member support added for existing groups in Open Expenses" },
+        {
+          "type": "fix",
+          "text": "Fixed several Open Expenses layout bugs: a background seam above page headers, stat numbers overflowing their card, the Add Expense form not scrolling, and the group-name field losing focus when creating a group"
+        }
+      ]
+    },
     {
       "version": "3.4.0",
       "date": "2026-08-20",

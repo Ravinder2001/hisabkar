@@ -1,0 +1,174 @@
+.card {
+  background: var(--hk-surface);
+  border: 1px solid var(--hk-border);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--hk-ink-faint);
+}
+
+.input {
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 0.88rem;
+  color: var(--hk-ink);
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--hk-accent);
+}
+
+.amountWrap {
+  position: relative;
+}
+
+.amountWrap .input {
+  padding-left: 26px;
+}
+
+.amountPrefix {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--hk-ink-faint);
+  font-size: 0.88rem;
+}
+
+.memberList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.memberRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.memberRow input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--hk-accent);
+  flex: none;
+}
+
+.memberName {
+  flex: 1;
+  font-size: 0.88rem;
+  color: var(--hk-ink);
+  font-weight: 500;
+}
+
+.shareInputWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--hk-ink-faint);
+  font-size: 0.85rem;
+}
+
+.shareInput {
+  width: 76px;
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 0.82rem;
+  color: var(--hk-ink);
+  font-family: inherit;
+}
+
+.shareInput:focus {
+  outline: none;
+  border-color: var(--hk-accent);
+}
+
+.segmented {
+  display: flex;
+  gap: 8px;
+}
+
+.segmentBtn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--hk-border);
+  background: var(--hk-surface);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--hk-ink-soft);
+  cursor: pointer;
+  text-align: center;
+}
+
+.segmentBtnActive {
+  background: var(--hk-accent);
+  color: var(--hk-on-accent);
+  border-color: var(--hk-accent);
+}
+
+.summaryCard {
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.summaryTitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--hk-ink);
+  margin: 0 0 8px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--hk-ink-soft);
+  padding: 3px 0;
+}
+
+.summaryTotalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--hk-ink);
+  border-top: 1px solid var(--hk-border);
+  margin-top: 6px;
+  padding-top: 8px;
+}
+
+.mismatch {
+  color: var(--hk-negative);
+  font-size: 0.76rem;
+  margin: 8px 0 0;
+}

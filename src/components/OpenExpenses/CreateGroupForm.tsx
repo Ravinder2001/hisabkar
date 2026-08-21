@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Plus, X } from "lucide-react";
+import styles from "./CreateGroupForm.module.css";
 
 interface CreateGroupFormProps {
   onSubmit: (name: string, members: string[]) => void;
@@ -10,13 +11,24 @@ export default function CreateGroupForm({ onSubmit, onCancel }: CreateGroupFormP
   const [groupName, setGroupName] = useState("");
   const [members, setMembers] = useState([""]);
   const memberRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const groupNameRef = useRef<HTMLInputElement | null>(null);
+  const isFirstRender = useRef(true);
 
   const addMember = () => {
     setMembers((prev) => [...prev, ""]);
   };
 
-  // Focus the last input whenever a new member is added
+  // Focus the group name field on mount.
   useEffect(() => {
+    groupNameRef.current?.focus();
+  }, []);
+
+  // Focus the last input whenever a new member is added (but not on mount).
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     const lastIndex = members.length - 1;
     memberRefs.current[lastIndex]?.focus();
   }, [members.length]);
@@ -52,26 +64,30 @@ export default function CreateGroupForm({ onSubmit, onCancel }: CreateGroupFormP
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border p-6">
-      <h3 className="text-lg font-semibold mb-4">Create New Group</h3>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Group Name</label>
+    <div className={styles.card}>
+      <h3 className={styles.heading}>Create New Group</h3>
+      <form onSubmit={handleSubmit} className={styles.formBody}>
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="groupName">
+            Group Name
+          </label>
           <input
+            id="groupName"
             type="text"
+            ref={groupNameRef}
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={styles.input}
             placeholder="Enter group name"
             required
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Members</label>
-          <div className="space-y-2">
+        <div className={styles.field}>
+          <label className={styles.label}>Members</label>
+          <div className={styles.memberList}>
             {members.map((member, index) => (
-              <div key={index} className="flex space-x-2">
+              <div key={index} className={styles.memberRow}>
                 <input
                   type="text"
                   value={member}
@@ -80,28 +96,28 @@ export default function CreateGroupForm({ onSubmit, onCancel }: CreateGroupFormP
                   ref={(el) => {
                     memberRefs.current[index] = el;
                   }}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={styles.input}
                   placeholder="Member name"
                 />
                 {members.length > 1 && (
-                  <button type="button" onClick={() => removeMember(index)} className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg">
-                    <X className="w-4 h-4" />
+                  <button type="button" onClick={() => removeMember(index)} className={styles.removeBtn} aria-label="Remove member">
+                    <X size={16} />
                   </button>
                 )}
               </div>
             ))}
           </div>
-          <button type="button" onClick={addMember} className="mt-2 text-blue-600 hover:text-blue-800 text-sm flex items-center space-x-1">
-            <Plus className="w-4 h-4" />
-            <span>Add Member</span>
+          <button type="button" onClick={addMember} className={styles.addMemberBtn}>
+            <Plus size={14} />
+            Add Member
           </button>
         </div>
 
-        <div className="flex space-x-3 pt-4">
-          <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+        <div className={styles.actions}>
+          <button type="submit" className="hk-btn-primary">
             Create Group
           </button>
-          <button type="button" onClick={onCancel} className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-lg transition-colors">
+          <button type="button" onClick={onCancel} className="hk-btn-secondary">
             Cancel
           </button>
         </div>

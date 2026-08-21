@@ -1,0 +1,298 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  min-width: 0;
+}
+
+.statText {
+  min-width: 0;
+  flex: 1;
+}
+
+.statIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  background: var(--hk-accent-soft);
+  color: var(--hk-accent-strong);
+}
+
+.statLabel {
+  font-size: 0.62rem;
+  color: var(--hk-ink-faint);
+  margin: 0;
+}
+
+.statValue {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--hk-ink);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.actionsRow {
+  display: flex;
+  gap: 10px;
+}
+
+.actionsRow > * {
+  flex: 1;
+  justify-content: center;
+}
+
+.actionsRow .pillBtn {
+  height: 42px;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.settleBtn {
+  background: var(--hk-positive-soft);
+  color: var(--hk-positive);
+  border: 1px solid var(--hk-positive-soft);
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.addMemberBtn {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: var(--hk-surface);
+  border: 1px solid var(--hk-border);
+  color: var(--hk-ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addMemberBtn:hover {
+  background: var(--hk-surface-2);
+  color: var(--hk-ink);
+}
+
+.addMemberModal {
+  width: 320px;
+  max-width: 100%;
+}
+
+.addMemberModalTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--hk-ink);
+  margin-bottom: 14px;
+}
+
+.addMemberForm {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.addMemberInput {
+  flex: 1;
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 0.88rem;
+  color: var(--hk-ink);
+  font-family: inherit;
+}
+
+.addMemberInput:focus {
+  outline: none;
+  border-color: var(--hk-accent);
+}
+
+.addMemberSubmit {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--hk-accent);
+  color: var(--hk-on-accent);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.existingMembersLabel {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--hk-ink-faint);
+  margin-bottom: 8px;
+}
+
+.existingMembersList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.existingMemberRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.existingMemberName {
+  font-size: 0.85rem;
+  color: var(--hk-ink);
+  font-weight: 500;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.membersCard {
+  padding: 16px;
+}
+
+.membersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 12px;
+}
+
+.memberTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.memberName {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--hk-ink);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.memberSpent {
+  font-size: 0.7rem;
+  color: var(--hk-ink-faint);
+  margin: 0;
+}
+
+.expensesCard {
+  overflow: hidden;
+}
+
+.expenseRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+}
+
+.expenseRow + .expenseRow {
+  border-top: 1px solid var(--hk-border);
+}
+
+.expenseInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.expenseDesc {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--hk-ink);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.expenseMeta {
+  font-size: 0.76rem;
+  color: var(--hk-ink-soft);
+  margin: 2px 0 0;
+}
+
+.expenseRight {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.expenseAmount {
+  font-weight: 700;
+  color: var(--hk-ink);
+  margin-right: 6px;
+}
+
+.iconBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--hk-ink-faint);
+}
+
+.iconBtn:hover {
+  background: var(--hk-surface-sunken);
+  color: var(--hk-ink);
+}
+
+.iconBtn.danger:hover {
+  background: var(--hk-negative-soft);
+  color: var(--hk-negative);
+}
+
+.emptyRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--hk-ink-soft);
+  font-size: 0.85rem;
+}

@@ -1,0 +1,169 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.shareBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+}
+
+.card {
+  padding: 18px;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--hk-ink);
+  margin: 0 0 14px;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 24px 12px;
+}
+
+.emptyIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: var(--hk-positive-soft);
+  color: var(--hk-positive);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyTitle {
+  font-weight: 700;
+  color: var(--hk-ink);
+  margin: 0;
+}
+
+.emptyDescription {
+  color: var(--hk-ink-soft);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.intro {
+  color: var(--hk-ink-soft);
+  font-size: 0.82rem;
+  margin: 0 0 12px;
+}
+
+.settlementList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settlementRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px;
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 12px;
+}
+
+.person {
+  min-width: 0;
+  flex: 1;
+}
+
+.personEnd {
+  text-align: right;
+}
+
+.personName {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--hk-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.personLabel {
+  font-size: 0.72rem;
+  color: var(--hk-ink-faint);
+}
+
+.amountBlock {
+  flex: none;
+  text-align: center;
+  padding: 0 8px;
+}
+
+.amount {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--hk-positive);
+}
+
+.amountLabel {
+  font-size: 0.68rem;
+  color: var(--hk-ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ── Share via WhatsApp modal ─────────────────────────────────────────── */
+.shareModal {
+  width: 380px;
+  max-width: 100%;
+}
+
+.shareModalTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--hk-ink);
+  margin-bottom: 14px;
+}
+
+.shareMemberRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.shareMemberName {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--hk-ink);
+}
+
+.waBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hk-positive);
+  color: var(--hk-on-accent);
+  flex: none;
+}
