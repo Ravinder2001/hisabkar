@@ -1,5 +1,5 @@
 {
-  "currentVersion": "3.7.0",
+  "currentVersion": "3.8.0",
   "note": "Hisabkar uses a single version number shared by both the frontend and backend (see package.json in each repo). Every release below covers whatever changed on either side.",
   "eras": [
     {
@@ -19,12 +19,25 @@
     {
       "id": 3,
       "title": "Chat, AI & PWA",
-      "range": "v3.0.0 – v3.7.0",
+      "range": "v3.0.0 – v3.8.0",
       "description": "Real-time chat, an AI assistant, offline installable PWA, and the dark/gold theme.",
       "color": "accent"
     }
   ],
   "versions": [
+    {
+      "version": "3.8.0",
+      "date": "2026-08-21",
+      "type": "minor",
+      "era": 3,
+      "title": "Confirm before creating a new account",
+      "changes": [
+        {
+          "type": "feature",
+          "text": "Signing in with a Google account that has no matching Hisabkar account now asks for confirmation before creating a new one, instead of creating it silently — helps avoid accidentally splitting your history across two accounts by signing in with the wrong email"
+        }
+      ]
+    },
     {
       "version": "3.7.0",
       "date": "2026-08-21",

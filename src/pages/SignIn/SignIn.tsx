@@ -1,8 +1,9 @@
 /*eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Link } from "react-router-dom";
+import { UserPlus } from "lucide-react";
 
 import showToast from "../../utils/helpers/toastHelper";
 import useApiFetch from "../../hooks/useAPIFetch";
@@ -11,9 +12,16 @@ import Messages from "../../utils/constant/Messages";
 import { setUserLoggedIn } from "../../store/features/userSlice";
 import { decodeJWT } from "../../utils/helpers/authHelper";
 import CustomCircularLoading from "../../components/Atoms/CustomCircularLoading/CustomCircularLoading";
+import ModalComponent from "../../components/ModalComponent/ModalComponent";
 import versionHistory from "../../data/versionHistory.json";
 import { RootState } from "../../store/store";
 import styles from "./style.module.css";
+
+interface PendingAccount {
+  email: string;
+  name: string;
+  picture: string;
+}
 
 const formatMoney = (amount: number) => `₹${Math.round(Math.abs(amount)).toLocaleString("en-IN")}`;
 
@@ -65,8 +73,14 @@ function SignIn() {
 
   const { fetchData: postGoogleSignIn, response: googleSignInRes, isLoading: googleLoading } = useApiFetch("");
 
+  // Google token kept in memory only, so the "create a new account?"
+  // confirmation can re-send it without asking the user to re-authenticate.
+  const [pendingGoogleToken, setPendingGoogleToken] = useState<string | null>(null);
+  const [pendingAccount, setPendingAccount] = useState<PendingAccount | null>(null);
+
   const handleGoogleSignIn = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
+      setPendingGoogleToken(tokenResponse.access_token);
       await postGoogleSignIn(CONSTANTS.API_ROUTES.GOOGLE_SIGN_IN, {
         method: "POST",
         data: { token: tokenResponse.access_token },
@@ -85,9 +99,25 @@ function SignIn() {
     }
   };
 
+  const handleConfirmNewAccount = () => {
+    if (!pendingGoogleToken) return;
+    postGoogleSignIn(CONSTANTS.API_ROUTES.GOOGLE_SIGN_IN, {
+      method: "POST",
+      data: { token: pendingGoogleToken, confirmNewAccount: true },
+    });
+  };
+
+  const handleTryDifferentAccount = () => {
+    setPendingAccount(null);
+    setPendingGoogleToken(null);
+  };
+
   useEffect(() => {
     if (googleSignInRes?.success === 1) {
+      setPendingAccount(null);
       handleLogin(googleSignInRes);
+    } else if (googleSignInRes?.code === "NEW_ACCOUNT_CONFIRMATION_REQUIRED") {
+      setPendingAccount(googleSignInRes.data);
     }
   }, [googleSignInRes]);
 
@@ -195,6 +225,27 @@ function SignIn() {
           </div>
         </div>
       </div>
+
+      <ModalComponent isOpen={!!pendingAccount} setIsOpen={handleTryDifferentAccount}>
+        <div className={styles.confirmModal}>
+          <div className={styles.confirmIcon}>
+            <UserPlus size={22} />
+          </div>
+          <h3 className={styles.confirmTitle}>Create a new account?</h3>
+          <p className={styles.confirmText}>
+            We couldn&apos;t find a Hisabkar account for <b>{pendingAccount?.email}</b>. If that&apos;s the right email, you can create a new account
+            now.
+          </p>
+          <div className={styles.confirmActions}>
+            <button className="hk-btn-secondary" onClick={handleTryDifferentAccount} disabled={googleLoading}>
+              Try a different account
+            </button>
+            <button className="hk-btn-primary" onClick={handleConfirmNewAccount} disabled={googleLoading}>
+              {googleLoading ? <CustomCircularLoading /> : "Create Account"}
+            </button>
+          </div>
+        </div>
+      </ModalComponent>
     </div>
   );
 }
