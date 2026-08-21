@@ -15,4 +15,8 @@ module.exports = {
     subject: `[Hisabkar] Server crashed: ${data.type}`,
     text: `The Hisabkar server crashed and is restarting.\n\nType: ${data.type}\nTime: ${data.timestamp}\nMessage: ${data.message}\n\nStack trace:\n${data.stack}`,
   }),
+  HealthCheckFailed: (data) => ({
+    subject: "[Hisabkar] Health check failing",
+    text: `The Hisabkar /health endpoint is failing.\n\nTime: ${data.timestamp}\nError: ${data.message}`,
+  }),
 };

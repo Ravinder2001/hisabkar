@@ -144,6 +144,13 @@ app.use(morgan(":method :url :status - userId: :user - :ist-date"));
 
 app.use("/", mainRouter);
 
+// Health check DB errors are caught here, so they never reach the
+// uncaughtException/unhandledRejection handlers above and never emailed
+// anyone on their own. Alert here too, with a cooldown so a run of
+// back-to-back failing checks doesn't flood the inbox.
+let lastHealthAlertAt = 0;
+const HEALTH_ALERT_COOLDOWN_MS = 15 * 60 * 1000;
+
 app.get("/health", async (req, res) => {
   try {
     const queryPromise = client.query("SELECT 1");
@@ -153,6 +160,18 @@ app.get("/health", async (req, res) => {
   } catch (error) {
     console.error("Health check failed:", error);
     res.status(503).json({ success: 0, message: "Service unavailable" });
+
+    const now = Date.now();
+    if (now - lastHealthAlertAt > HEALTH_ALERT_COOLDOWN_MS) {
+      lastHealthAlertAt = now;
+      const { subject, text } = emailContent.HealthCheckFailed({
+        message: error?.message || String(error),
+        timestamp: new Date().toISOString(),
+      });
+      sendEmail(config.NODEMAILER.EMAIL, { subject, text }).catch((emailError) => {
+        console.error("Failed to send health check alert email:", emailError);
+      });
+    }
   }
 });
 
