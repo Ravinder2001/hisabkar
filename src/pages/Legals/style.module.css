@@ -6,6 +6,7 @@
 .page {
   min-height: 100vh;
   min-height: 100dvh;
+  min-height: 100lvh; /* dvh gets stuck at the small viewport size in standalone PWA mode */
   height: 100%;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;

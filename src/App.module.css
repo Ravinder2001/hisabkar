@@ -6,6 +6,13 @@
   width: 100%;
   height: 100vh;
   height: 100dvh; /* dynamic viewport on mobile (accounts for browser chrome) */
+  /* In an installed PWA (standalone display mode) there's no browser chrome
+     to react to, and dvh gets stuck reporting the small/chrome-visible size
+     forever — never settling to the real full-screen height until an actual
+     user scroll happens. lvh (large viewport height) doesn't have that lazy
+     dynamic-tracking behavior and reports the true full-screen size from the
+     first paint, in both standalone PWA and regular browser tabs. */
+  height: 100lvh;
   display: flex;
   flex-direction: column;
   padding: 0px; /* margin from all sides */

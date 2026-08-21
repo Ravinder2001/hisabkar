@@ -15,7 +15,7 @@ export const injectStore = (_store: Store<any>): void => {
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  baseURL: ENVConfig.baseURL,
+  baseURL: ENVConfig.apiBaseURL,
   withCredentials: true, // sends the httpOnly refresh-token cookie
 });
 
@@ -23,7 +23,7 @@ const axiosInstance = axios.create({
 // axiosInstance here would recurse back into this same 401 handler if the
 // refresh call ever itself returns 401.
 const refreshClient = axios.create({
-  baseURL: ENVConfig.baseURL,
+  baseURL: ENVConfig.apiBaseURL,
   withCredentials: true,
 });
 
