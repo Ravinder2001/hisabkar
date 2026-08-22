@@ -1,0 +1,375 @@
+const client = require("../configuration/db");
+
+const getExpenseById = async (values) => {
+  try {
+    const expenseQuery = await client.query(
+      `
+      SELECT 
+        e.expense_id,
+        e.expense_name,
+        e.description,
+        e.split_type,
+        e.amount::FLOAT,
+        e.paid_by,
+        e.expense_type,
+        e.created_at,
+        COUNT(em.user_id) AS members_count,
+        JSON_AGG(
+          JSON_BUILD_OBJECT(
+            'id', em.user_id,  
+            'amount', em.amount::FLOAT
+          )
+        ) AS members,
+        CASE 
+        WHEN e.paid_by = $2 THEN TRUE 
+        ELSE FALSE 
+      END AS is_own_expense
+
+      FROM 
+        tbl_expenses e
+      INNER JOIN 
+        tbl_expense_members em ON e.expense_id = em.expense_id
+      WHERE 
+        e.group_id = $1 AND e.is_active = TRUE AND e.expense_id = $3
+      GROUP BY 
+        e.expense_id, e.paid_by
+      ORDER BY 
+        e.created_at DESC
+      `,
+      [values.groupId, values.userId, values.expenseId]
+    );
+
+    const expenseList = expenseQuery.rows;
+
+    return expenseList;
+  } catch (error) {
+    console.error("Error in fetching expenses:", error.message);
+    throw error;
+  }
+};
+
+const getGroupDataById = async (groupId) => {
+  const groupData = await client.query(
+    `
+      SELECT 
+        g.group_name, 
+        jsonb_agg(
+          jsonb_build_object(
+            'user_id', m.user_id,
+            'name', u.name
+          )
+        ) AS user_ids
+      FROM tbl_groups g
+      LEFT JOIN tbl_group_members m ON g.group_id = m.group_id
+      LEFT JOIN tbl_users u ON m.user_id = u.user_id
+      WHERE g.group_id = $1
+      GROUP BY g.group_name
+    `,
+    [groupId]
+  );
+  return groupData.rows[0];
+};
+
+module.exports = {
+  addExpense: async (values) => {
+    const { expenseName, description, amount, groupId, paidBy, members, splitType, expenseType } = values;
+    try {
+      await client.query("BEGIN");
+
+      // Step 1: Add Expense
+      const expenseResult = await client.query(
+        `
+          INSERT INTO tbl_expenses (
+              group_id,
+              expense_name, 
+              amount, 
+              paid_by,
+              description,
+              split_type,
+              expense_type
+          ) 
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+          RETURNING expense_id, paid_by
+      `,
+        [groupId, expenseName, amount, paidBy, description, splitType, expenseType]
+      );
+      const expense_data = expenseResult.rows[0];
+      const expense_id = expenseResult.rows[0].expense_id;
+
+      // Step 2: Add Expense Members
+      for (const member of members) {
+        await client.query(
+          `INSERT INTO tbl_expense_members (expense_id, user_id, amount) 
+           VALUES ($1, $2, $3)`,
+          [expense_id, member.userId, member.amount]
+        );
+      }
+
+      await client.query(
+        `UPDATE tbl_groups
+        SET total_amount = total_amount + $2
+        WHERE group_id = $1`,
+        [groupId, amount]
+      );
+
+      const expenseData = await getExpenseById({ groupId, userId: paidBy, expenseId: expense_id });
+      await client.query("COMMIT");
+      return { expenseData, groupData: await getGroupDataById(groupId), expense_data };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      console.error("Error in creating group:", error.message);
+      throw error;
+    }
+  },
+  editExpense: async (values) => {
+    const { expenseId, expenseName, amount, paidBy, members, description, splitType, expenseType } = values;
+    try {
+      await client.query("BEGIN");
+
+      // Step 1: Fetch old expense details
+      const oldExpense = await client.query(`SELECT amount, paid_by FROM tbl_expenses WHERE expense_id = $1`, [expenseId]);
+
+      const oldAmount = oldExpense.rows[0].amount;
+
+      // Step 2: Fetch old expense members
+      const oldMembers = await client.query(`SELECT user_id, amount FROM tbl_expense_members WHERE expense_id = $1`, [expenseId]);
+
+      const oldMemberMap = new Map();
+      oldMembers.rows.forEach(({ user_id, amount }) => {
+        oldMemberMap.set(user_id, amount);
+      });
+
+      // Step 3: Update Expense Details
+      const expenseResult = await client.query(
+        `UPDATE tbl_expenses
+         SET expense_name = $1, amount = $2, paid_by = $3, description = $4, split_type = $5, expense_type = $6
+         WHERE expense_id = $7 RETURNING group_id`,
+        [expenseName, amount, paidBy, description, splitType, expenseType, expenseId]
+      );
+
+      const groupId = expenseResult.rows[0].group_id;
+
+      // Step 5: Update expense members table
+      await client.query(`DELETE FROM tbl_expense_members WHERE expense_id = $1`, [expenseId]);
+      for (const { userId, amount } of members) {
+        await client.query(`INSERT INTO tbl_expense_members (expense_id, user_id, amount) VALUES ($1, $2, $3)`, [expenseId, userId, amount]);
+      }
+
+      // Step 6: Update Group's Total Amount
+      await client.query(
+        `UPDATE tbl_groups 
+         SET total_amount = total_amount - $1 + $2
+         WHERE group_id = $3`,
+        [oldAmount, amount, groupId]
+      );
+
+      const expenseData = await getExpenseById({ groupId, userId: paidBy, expenseId });
+      await client.query("COMMIT");
+
+      return { oldAmount, groupId, expenseData, groupData: await getGroupDataById(groupId) };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      console.error("Error in editing expense:", error.message);
+      throw error;
+    }
+  },
+  getAllExpenses: async (values) => {
+    const { groupId, userId, lastId, limit = 10 } = values;
+    try {
+      let query = `
+        SELECT 
+          e.expense_id,
+          e.expense_name,
+          e.description,
+          e.split_type,
+          e.amount::FLOAT,
+          e.paid_by,
+          e.expense_type,
+          e.created_at,
+          COUNT(em.user_id) AS members_count,
+          JSON_AGG(
+            JSON_BUILD_OBJECT(
+              'id', em.user_id,
+              'amount', em.amount::FLOAT
+            )
+          ) AS members,
+          CASE 
+          WHEN e.paid_by = $2 THEN TRUE 
+          ELSE FALSE 
+        END AS is_own_expense
+
+        FROM 
+          tbl_expenses e
+        INNER JOIN 
+          tbl_expense_members em ON e.expense_id = em.expense_id
+        WHERE 
+          e.group_id = $1 AND e.is_active = TRUE
+      `;
+
+      const queryValues = [groupId, userId, limit];
+
+      if (lastId) {
+        query += ` AND (e.created_at, e.expense_id) < (
+                     (SELECT created_at FROM tbl_expenses WHERE expense_id = $4), 
+                     $4
+                   ) `;
+        queryValues.push(lastId);
+      }
+
+      query += `
+        GROUP BY 
+          e.expense_id, e.paid_by
+        ORDER BY 
+          e.created_at DESC, e.expense_id DESC
+        LIMIT $3
+      `;
+
+      const expenseQuery = await client.query(query, queryValues);
+      const expenseList = expenseQuery.rows;
+
+      return expenseList;
+    } catch (error) {
+      console.error("Error in fetching expenses:", error.message);
+      throw error;
+    }
+  },
+  deleteExpense: async (expenseId, deletedByUserId) => {
+    try {
+      await client.query("BEGIN");
+
+      // Step 1: Fetch the Expense Details
+      const expenseResult = await client.query(
+        `SELECT group_id, paid_by, amount, expense_name, description, split_type 
+         FROM tbl_expenses 
+         WHERE expense_id = $1`,
+        [expenseId]
+      );
+
+      if (expenseResult.rows.length === 0) {
+        throw new Error("Expense not found");
+      }
+
+      const expense = expenseResult.rows[0];
+
+      // Step 2: Fetch Expense Members
+      const membersResult = await client.query(
+        `SELECT user_id, amount 
+         FROM tbl_expense_members 
+         WHERE expense_id = $1`,
+        [expenseId]
+      );
+
+      const members = membersResult.rows;
+
+      // Step 3: Construct JSON details
+      const expenseDetails = {
+        expense: {
+          expense_id: expenseId,
+          group_id: expense.group_id,
+          expense_name: expense.expense_name,
+          description: expense.description,
+          amount: parseFloat(expense.amount), // Ensure numeric values are properly formatted
+          paid_by: expense.paid_by,
+          split_type: expense.split_type,
+        },
+        members: members.map((member) => ({
+          user_id: member.user_id,
+          amount: parseFloat(member.amount), // Ensure numeric values are properly formatted
+        })),
+      };
+
+      // Step 4: Log the deletion in tbl_group_logs with JSON details
+      await client.query(
+        `INSERT INTO tbl_group_logs (
+          group_id, expense_id, user_id, action_type, old_amount, new_amount, details
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [
+          expense.group_id,
+          expenseId,
+          deletedByUserId,
+          "DELETE",
+          expense.amount,
+          0,
+          JSON.stringify(expenseDetails), // Convert to JSON string for insertion
+        ]
+      );
+
+      // Step 3: Remove Expense Members
+      await client.query(`DELETE FROM tbl_expense_members WHERE expense_id = $1`, [expenseId]);
+
+      // Step 4: Remove Expense from tbl_expenses
+      await client.query(
+        `DELETE FROM tbl_expenses WHERE expense_id = $1
+        
+        `,
+        [expenseId]
+      );
+
+      await client.query(
+        `UPDATE tbl_groups
+        SET total_amount = total_amount - $2
+        WHERE group_id = $1`,
+        [expense.group_id, expense.amount]
+      );
+
+      await client.query("COMMIT");
+      console.log("Expense deleted successfully.");
+      return { groupData: await getGroupDataById(expense.group_id), deletedExpenseMembers: members };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      console.error("Error in deleting expense:", error.message);
+      throw error;
+    }
+  },
+  logExpenseChange: async ({ groupId, expenseId, userId, actionType, oldAmount = null, newAmount = null }) => {
+    try {
+      // Insert into log table
+      await client.query(
+        `INSERT INTO tbl_group_logs (group_id, expense_id, user_id, action_type, old_amount, new_amount)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [groupId, expenseId, userId, actionType, oldAmount, newAmount]
+      );
+    } catch (error) {
+      console.error("Error in fetching expenses:", error.message);
+      throw error;
+    }
+  },
+  getExpenseLogs: async (groupId) => {
+    try {
+      const logs = await client.query(
+        `SELECT 
+          u.name,
+          u.avatar,
+          el.action_type,
+          el.old_amount,
+          el.new_amount,
+          el.created_at
+         FROM tbl_group_logs el
+         JOIN tbl_users u ON el.user_id = u.user_id
+         WHERE el.group_id = $1 
+         ORDER BY el.created_at DESC`,
+        [groupId]
+      );
+      return logs.rows;
+    } catch (error) {
+      console.error("Error in fetching expenses:", error.message);
+      throw error;
+    }
+  },
+  getExpenseDataById: async (values) => {
+    try {
+      const logs = await client.query(
+        `SELECT
+         *
+        FROM tbl_expenses
+        WHERE expense_id = $1
+        `,
+        [values.expense_id]
+      );
+      return logs.rows[0];
+    } catch (error) {
+      console.error("Error in fetching expenses:", error.message);
+      throw error;
+    }
+  },
+};

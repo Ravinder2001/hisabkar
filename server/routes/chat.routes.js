@@ -1,0 +1,9 @@
+const express = require("express");
+const router = express.Router();
+const chatController = require("../controller/chat.controller");
+const passport = require("passport");
+
+router.get("/history/:groupId", passport.authenticate("jwt", { session: false }), chatController.getChatHistory);
+router.get("/unread-status/:groupId", passport.authenticate("jwt", { session: false }), chatController.getUnreadStatus);
+
+module.exports = router;

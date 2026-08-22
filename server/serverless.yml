@@ -1,0 +1,13 @@
+service: hisabkar-server
+
+provider:
+  name: aws
+  httpApi:
+    cors: true
+  timeout: 300 # Global timeout of 5 minutes
+  memorySize: 1024 # Optional: Increase memory size
+
+functions:
+  myFunction:
+    handler: index.handler
+    timeout: 600 # 10 minutes for this specific function
