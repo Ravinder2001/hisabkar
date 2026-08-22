@@ -1,0 +1,229 @@
+const client = require("../configuration/db");
+
+const chatBotModel = {
+  checkAndIncrementAiUsage: async (userId, limit) => {
+    try {
+      // Get current usage and role
+      const checkQuery = `
+        SELECT ai_message_count, last_ai_usage_date, role 
+        FROM tbl_users WHERE user_id = $1
+      `;
+      const checkResult = await client.query(checkQuery, [userId]);
+      const user = checkResult.rows[0];
+
+      // Bypass limit for ADMIN users
+      if (user.role === "ADMIN") {
+        return { allowed: true, currentCount: (user.ai_message_count || 0) + 1, isInfinite: true };
+      }
+
+      let currentCount = 0;
+      let lastDate = null;
+      if (user.last_ai_usage_date) {
+        const d = new Date(user.last_ai_usage_date);
+        // Extract local year, month, day to avoid UTC timezone shifts when formatting Date objects
+        lastDate = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+      }
+
+      const now = new Date();
+      const today = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+
+      if (lastDate === today) {
+        currentCount = user.ai_message_count || 0;
+      } else {
+        // Reset counter for a new day
+        currentCount = 0;
+      }
+
+      if (currentCount >= limit) {
+        return { allowed: false, currentCount };
+      }
+
+      // Increment count
+      const updateQuery = `
+        UPDATE tbl_users 
+        SET ai_message_count = $1, last_ai_usage_date = $2 
+        WHERE user_id = $3
+      `;
+      await client.query(updateQuery, [currentCount + 1, today, userId]);
+
+      return { allowed: true, currentCount: currentCount + 1 };
+    } catch (error) {
+      console.error("Error in checkAndIncrementAiUsage:", error.message);
+      throw error;
+    }
+  },
+
+  getGroupSummaryForAi: async (groupId) => {
+    try {
+      const query = `
+        SELECT 
+          g.group_name,
+          g.total_amount::FLOAT,
+          g.is_settled,
+          (SELECT COUNT(*) FROM tbl_group_members WHERE group_id = $1) as member_count,
+          (SELECT COUNT(*) FROM tbl_expenses WHERE group_id = $1 AND is_active = TRUE) as total_expenses
+        FROM tbl_groups g
+        WHERE g.group_id = $1
+      `;
+      const result = await client.query(query, [groupId]);
+      return result.rows[0];
+    } catch (error) {
+      console.error("Error in getGroupSummaryForAi:", error.message);
+      throw error;
+    }
+  },
+
+  getUserExpensesForAi: async (groupId, userId) => {
+    try {
+      const query = `
+        SELECT 
+          COUNT(*) as expense_count,
+          COALESCE(SUM(amount)::FLOAT, 0) as total_amount
+        FROM tbl_expenses
+        WHERE group_id = $1 AND paid_by = $2 AND is_active = TRUE
+      `;
+      const result = await client.query(query, [groupId, userId]);
+      return result.rows[0];
+    } catch (error) {
+      console.error("Error in getUserExpensesForAi:", error.message);
+      throw error;
+    }
+  },
+
+  findExpensesByName: async (groupId, name) => {
+    try {
+      const query = `
+        SELECT expense_name, amount::FLOAT, expense_type, created_at, (SELECT name FROM tbl_users WHERE user_id = paid_by) as payer
+        FROM tbl_expenses
+        WHERE group_id = $1 AND expense_name ILIKE $2 AND is_active = TRUE
+        ORDER BY created_at DESC
+        LIMIT 5
+      `;
+      const result = await client.query(query, [groupId, `%${name}%`]);
+      return result.rows;
+    } catch (error) {
+      console.error("Error in findExpensesByName:", error.message);
+      throw error;
+    }
+  },
+
+  getExpensesByAmountRange: async (groupId, min, max) => {
+    try {
+      const query = `
+        SELECT expense_name, amount::FLOAT, expense_type, created_at
+        FROM tbl_expenses
+        WHERE group_id = $1 AND amount >= $2 AND amount <= $3 AND is_active = TRUE
+        ORDER BY amount DESC
+        LIMIT 10
+      `;
+      const result = await client.query(query, [groupId, min || 0, max || 9999999]);
+      return result.rows;
+    } catch (error) {
+      console.error("Error in getExpensesByAmountRange:", error.message);
+      throw error;
+    }
+  },
+
+  getPredictionDataForAi: async (groupId) => {
+    try {
+      const statsQuery = `
+        SELECT 
+          COALESCE(SUM(amount)::FLOAT, 0) as total_spent,
+          MIN(created_at) as first_expense_date,
+          COUNT(*) as total_count
+        FROM tbl_expenses
+        WHERE group_id = $1 AND is_active = TRUE
+      `;
+      const statsResult = await client.query(statsQuery, [groupId]);
+      const data = statsResult.rows[0];
+
+      // Get the group creation date
+      const groupQuery = `SELECT created_at FROM tbl_groups WHERE group_id = $1`;
+      const groupResult = await client.query(groupQuery, [groupId]);
+
+      // Get detailed expense history for AI analysis (last 40 expenses)
+      const historyQuery = `
+        SELECT expense_name as name, amount::FLOAT, created_at as date
+        FROM tbl_expenses
+        WHERE group_id = $1 AND is_active = TRUE
+        ORDER BY created_at DESC
+        LIMIT 40
+      `;
+      const historyResult = await client.query(historyQuery, [groupId]);
+
+      return {
+        ...data,
+        group_created_at: groupResult.rows[0]?.created_at,
+        expense_history: historyResult.rows,
+      };
+    } catch (error) {
+      console.error("Error in getPredictionDataForAi:", error.message);
+      throw error;
+    }
+  },
+  getExpensesByCategory: async (groupId, category) => {
+    try {
+      const query = `
+        SELECT expense_name, amount::FLOAT, created_at
+        FROM tbl_expenses
+        WHERE group_id = $1 AND expense_type ILIKE $2 AND is_active = TRUE
+        ORDER BY created_at DESC
+        LIMIT 10
+      `;
+      const result = await client.query(query, [groupId, category]);
+      return result.rows;
+    } catch (error) {
+      console.error("Error in getExpensesByCategory:", error.message);
+      throw error;
+    }
+  },
+  getSpendingByCategory: async (groupId) => {
+    try {
+      const query = `
+        SELECT expense_type, SUM(amount)::FLOAT as total_amount, COUNT(*) as count
+        FROM tbl_expenses
+        WHERE group_id = $1 AND is_active = TRUE
+        GROUP BY expense_type
+        ORDER BY total_amount DESC
+      `;
+      const result = await client.query(query, [groupId]);
+      return result.rows;
+    } catch (error) {
+      console.error("Error in getSpendingByCategory:", error.message);
+      throw error;
+    }
+  },
+  getGroupMembersForAi: async (groupId) => {
+    try {
+      const query = `
+        SELECT u.user_id as id, u.name
+        FROM tbl_group_members gm
+        JOIN tbl_users u ON gm.user_id = u.user_id
+        WHERE gm.group_id = $1 AND gm.is_active = TRUE
+      `;
+      const result = await client.query(query, [groupId]);
+      return result.rows;
+    } catch (error) {
+      console.error("Error in getGroupMembersForAi:", error.message);
+      throw error;
+    }
+  },
+  getDetailedUserExpensesForAi: async (groupId, userId) => {
+    try {
+      const query = `
+        SELECT expense_name as name, amount::FLOAT, created_at as date
+        FROM tbl_expenses
+        WHERE group_id = $1 AND paid_by = $2 AND is_active = TRUE
+        ORDER BY created_at DESC
+        LIMIT 20
+      `;
+      const result = await client.query(query, [groupId, userId]);
+      return result.rows;
+    } catch (error) {
+      console.error("Error in getDetailedUserExpensesForAi:", error.message);
+      throw error;
+    }
+  },
+};
+
+module.exports = chatBotModel;

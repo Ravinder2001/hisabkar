@@ -1,0 +1,42 @@
+name: Deploy to EC2 Instance
+
+on:
+  push:
+    branches:
+      - stable
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code from GitHub
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      # Step 2: Pull the latest code and build the client on the EC2 instance
+      - name: Pull Code and Build Client
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo su - <<EOF
+            cd ${{ secrets.TARGET_DIR }}
+            git pull
+            npm install --legacy-peer-deps
+            EOF
+
+      # Step 3: Reload the PM2 process on the EC2 instance
+      - name: Reload PM2 Process
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo su - <<EOF
+            pm2 reload 0
+            EOF
