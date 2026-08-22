@@ -1,0 +1,11 @@
+{
+  "name": "hisabkar",
+  "version": "3.10.1",
+  "private": true,
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

@@ -1,0 +1,16 @@
+staged=$(git diff --cached --name-only)
+
+if echo "$staged" | grep -q '^client/'; then
+  cd client
+  npx lint-staged
+  npm run lint
+  cd ..
+  git add client
+fi
+
+if echo "$staged" | grep -q '^server/'; then
+  cd server
+  npm run pc
+  cd ..
+  git add server
+fi
