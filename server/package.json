@@ -1,6 +1,5 @@
 {
   "name": "hisabkar-server",
-  "version": "3.10.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,8 +9,7 @@
     "lint": "eslint \"**/*.{js,jsx}\"",
     "lint:fix": "eslint \"**/*.{js,jsx}\" --quiet --fix",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "pc": "yarn lint --fix && yarn format",
-    "prepare": "husky install"
+    "pc": "yarn lint --fix && yarn format"
   },
   "keywords": [],
   "author": "",
@@ -49,7 +47,6 @@
     "@eslint/js": "^9.13.0",
     "eslint": "^9.13.0",
     "globals": "^15.11.0",
-    "husky": "^8.0.0",
     "nodemon": "^3.1.0",
     "prettier": "3.3.3"
   }

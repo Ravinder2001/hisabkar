@@ -1,6 +1,5 @@
 {
   "name": "hisabkar",
-  "version": "3.10.1",
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
@@ -63,7 +62,6 @@
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "prepare": "husky",
     "lint": "eslint --fix **/src/**/*.{ts,tsx}"
   },
   "browserslist": {
@@ -91,7 +89,6 @@
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react": "^7.37.4",
     "globals": "^15.14.0",
-    "husky": "^9.1.7",
     "lint-staged": "^15.4.2",
     "postcss": "^8.5.1",
     "prettier": "^3.4.2",
