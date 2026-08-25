@@ -1,5 +1,6 @@
 const { Pool } = require("pg");
 const fs = require("fs");
+const path = require("path");
 const config = require("../configuration/config");
 
 const isProduction = process.env.NODE_ENV === "prod" || process.env.NODE_ENV === "production";
@@ -16,13 +17,27 @@ const poolConfig = {
   max: 10, // Keep pool small for free tier
 };
 
-if (isProduction && process.env.PG_CA_CERT) {
-  const raw = fs.readFileSync(process.env.PG_CA_CERT, "utf-8").trim();
-  const pem = raw.startsWith("-----BEGIN") ? raw : Buffer.from(raw, "base64").toString("utf-8");
-  poolConfig.ssl = {
-    rejectUnauthorized: true,
-    ca: pem,
-  };
+if (isProduction) {
+  let caPem = null;
+  if (process.env.PG_CA_CERT) {
+    const certPath = path.isAbsolute(process.env.PG_CA_CERT) ? process.env.PG_CA_CERT : path.resolve(__dirname, "..", process.env.PG_CA_CERT);
+
+    if (fs.existsSync(certPath)) {
+      const raw = fs.readFileSync(certPath, "utf-8").trim();
+      caPem = raw.startsWith("-----BEGIN") ? raw : Buffer.from(raw, "base64").toString("utf-8");
+    }
+  }
+
+  if (caPem) {
+    poolConfig.ssl = {
+      rejectUnauthorized: true,
+      ca: caPem,
+    };
+  } else {
+    poolConfig.ssl = {
+      rejectUnauthorized: false,
+    };
+  }
 }
 
 const pool = new Pool(poolConfig);

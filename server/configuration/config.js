@@ -40,7 +40,7 @@ const config = {
     GOOGLE_INFO_ENDPOINT: process.env.GOOGLE_USER_INFO_ENDPOINT,
   },
   SSL:
-    process.env.IS_SSL_REQUIRED === "true"
+    process.env.IS_SSL_REQUIRED === "true" && process.env.SSL_KEY && process.env.SSL_CERT && fs.existsSync(process.env.SSL_KEY) && fs.existsSync(process.env.SSL_CERT)
       ? {
           KEY: fs.readFileSync(process.env.SSL_KEY),
           CERT: fs.readFileSync(process.env.SSL_CERT),
