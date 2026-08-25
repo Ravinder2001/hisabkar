@@ -60,3 +60,6 @@ server/**/initdb
 server/**/certs/
 server/**/index.html
 server/**/.zip
+
+
+.claude
