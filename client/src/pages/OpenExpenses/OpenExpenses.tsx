@@ -1,5 +1,4 @@
 import type React from "react";
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -7,37 +6,42 @@ import CONSTANTS from "../../utils/constant/Constant";
 import GroupsView from "../../components/OpenExpenses/GroupsView";
 import GroupView from "../../components/OpenExpenses/GroupView";
 import ExpenseForm from "../../components/OpenExpenses/ExpenseForm";
+import AdvanceForm from "../../components/OpenExpenses/AdvanceForm";
 import SettlementsView from "../../components/OpenExpenses/SettlementsView";
 import styles from "./style.module.css";
 
 // Types
-interface Member {
+export type TransactionType = "expense" | "advance";
+
+export interface Member {
   id: string;
   name: string;
 }
 
-interface ExpenseShare {
+export interface ExpenseShare {
   memberId: string;
   amount: number;
 }
 
-interface Expense {
+export interface Expense {
   id: string;
   description: string;
   amount: number;
   paidBy: string;
   shares: ExpenseShare[];
   date: string;
+  type?: TransactionType;
+  toMemberId?: string;
 }
 
-interface Group {
+export interface Group {
   id: string;
   name: string;
   members: Member[];
   expenses: Expense[];
 }
 
-interface Settlement {
+export interface Settlement {
   from: string;
   to: string;
   amount: number;
@@ -65,14 +69,14 @@ export const calculateSettlements = (group: Group): Settlement[] => {
     balances[member.id] = 0;
   });
 
-  // Calculate net balances
+  // Calculate net balances (handles both expenses and advances seamlessly)
   group.expenses.forEach((expense) => {
     // Add amount paid
-    balances[expense.paidBy] += expense.amount;
+    balances[expense.paidBy] = (balances[expense.paidBy] || 0) + expense.amount;
 
-    // Subtract shares owed
+    // Subtract shares owed / received
     expense.shares.forEach((share) => {
-      balances[share.memberId] -= share.amount;
+      balances[share.memberId] = (balances[share.memberId] || 0) - share.amount;
     });
   });
 
@@ -120,9 +124,12 @@ export const calculateSettlements = (group: Group): Settlement[] => {
 export default function ExpenseTracker() {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<Group[]>([]);
-  const [currentView, setCurrentView] = useState<"groups" | "group" | "addExpense" | "editExpense" | "settlements">("groups");
+  const [currentView, setCurrentView] = useState<"groups" | "group" | "addExpense" | "editExpense" | "addAdvance" | "editAdvance" | "settlements">(
+    "groups"
+  );
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [editingAdvance, setEditingAdvance] = useState<Expense | null>(null);
 
   // Load data on mount
   useEffect(() => {
@@ -162,6 +169,7 @@ export default function ExpenseTracker() {
     const newExpense: Expense = {
       ...expense,
       id: generateId(),
+      type: "expense",
       date: new Date().toISOString(),
     };
 
@@ -180,12 +188,39 @@ export default function ExpenseTracker() {
 
     const updatedGroup = {
       ...selectedGroup,
-      expenses: selectedGroup.expenses.map((e) => (e.id === expense.id ? { ...expense, date: e.date } : e)),
+      expenses: selectedGroup.expenses.map((e) => (e.id === expense.id ? { ...expense, type: "expense" as const, date: e.date } : e)),
     };
 
     setGroups((prev) => prev.map((g) => (g.id === selectedGroup.id ? updatedGroup : g)));
     setSelectedGroup(updatedGroup);
     setEditingExpense(null);
+    setCurrentView("group");
+  };
+
+  const addAdvance = (advance: Expense) => {
+    if (!selectedGroup) return;
+
+    const updatedGroup = {
+      ...selectedGroup,
+      expenses: [...selectedGroup.expenses, advance],
+    };
+
+    setGroups((prev) => prev.map((g) => (g.id === selectedGroup.id ? updatedGroup : g)));
+    setSelectedGroup(updatedGroup);
+    setCurrentView("group");
+  };
+
+  const updateAdvance = (advance: Expense) => {
+    if (!selectedGroup) return;
+
+    const updatedGroup = {
+      ...selectedGroup,
+      expenses: selectedGroup.expenses.map((e) => (e.id === advance.id ? advance : e)),
+    };
+
+    setGroups((prev) => prev.map((g) => (g.id === selectedGroup.id ? updatedGroup : g)));
+    setSelectedGroup(updatedGroup);
+    setEditingAdvance(null);
     setCurrentView("group");
   };
 
@@ -227,6 +262,16 @@ export default function ExpenseTracker() {
     return selectedGroup?.members.find((m) => m.id === memberId)?.name || "Unknown";
   };
 
+  const handleEditTransaction = (item: Expense) => {
+    if (item.type === "advance") {
+      setEditingAdvance(item);
+      setCurrentView("editAdvance");
+    } else {
+      setEditingExpense(item);
+      setCurrentView("editExpense");
+    }
+  };
+
   return (
     <div className={styles.page}>
       <header className={styles.header}>
@@ -241,6 +286,8 @@ export default function ExpenseTracker() {
               setSelectedGroup(null);
             } else {
               setCurrentView("group");
+              setEditingExpense(null);
+              setEditingAdvance(null);
             }
           }}
         >
@@ -251,6 +298,8 @@ export default function ExpenseTracker() {
           {currentView === "group" && selectedGroup?.name}
           {currentView === "addExpense" && "Add Expense"}
           {currentView === "editExpense" && "Edit Expense"}
+          {currentView === "addAdvance" && "Give Advance"}
+          {currentView === "editAdvance" && "Edit Advance"}
           {currentView === "settlements" && "Settle Up"}
         </h1>
       </header>
@@ -272,10 +321,8 @@ export default function ExpenseTracker() {
           <GroupView
             group={selectedGroup}
             onAddExpense={() => setCurrentView("addExpense")}
-            onEditExpense={(expense) => {
-              setEditingExpense(expense);
-              setCurrentView("editExpense");
-            }}
+            onAddAdvance={() => setCurrentView("addAdvance")}
+            onEditTransaction={handleEditTransaction}
             onDeleteExpense={deleteExpense}
             onAddMember={addMember}
             onSettleUp={() => setCurrentView("settlements")}
@@ -289,10 +336,14 @@ export default function ExpenseTracker() {
           <ExpenseForm group={selectedGroup} expense={editingExpense} onSubmit={updateExpense} />
         )}
 
+        {currentView === "addAdvance" && selectedGroup && <AdvanceForm group={selectedGroup} onSubmit={addAdvance} />}
+
+        {currentView === "editAdvance" && selectedGroup && editingAdvance && (
+          <AdvanceForm group={selectedGroup} expense={editingAdvance} onSubmit={updateAdvance} />
+        )}
+
         {currentView === "settlements" && selectedGroup && <SettlementsView group={selectedGroup} getMemberName={getMemberName} />}
       </main>
     </div>
   );
 }
-
-export type { Member, ExpenseShare, Expense, Group, Settlement };

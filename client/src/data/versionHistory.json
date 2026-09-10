@@ -1,5 +1,5 @@
 {
-  "currentVersion": "3.10.2",
+  "currentVersion": "3.11.0",
   "note": "Hisabkar uses a single version number shared by both the frontend and backend (see package.json in each repo). Every release below covers whatever changed on either side.",
   "eras": [
     {
@@ -25,6 +25,23 @@
     }
   ],
   "versions": [
+    {
+      "version": "3.11.0",
+      "date": "2026-09-10",
+      "type": "minor",
+      "era": 3,
+      "title": "Open Expenses Advance Payments & Member Transfers",
+      "changes": [
+        {
+          "type": "feature",
+          "text": "Added Member-to-Member Advance Payments in Open Expenses with real-time net balances, activity filtering, and automatic settlement optimization adjusted for advance money."
+        },
+        {
+          "type": "feature",
+          "text": "Made the Open Expenses Members & Balances section collapsible by default to optimize vertical screen space."
+        }
+      ]
+    },
     {
       "version": "3.10.2",
       "date": "2026-08-25",
