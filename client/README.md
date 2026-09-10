@@ -18,6 +18,7 @@
 - **Budget Tracking**: Set and monitor group-specific budgets to keep your expenditures under control.
 - **Flexible Expense Splitting**: Choose from **equal, percentage-based, or custom splits**.
 - **Smart Settlement System**: Optimized calculations reduce unnecessary transactions.
+- **Open Expenses & Advance Payments**: Standalone local group expense splitting with direct member-to-member advances, live net balances, and 1-click settlement recording.
 - **Real-time Expense Overview**: View **send & receive** amounts for quick settlements.
 - **Admin-Only Controls**:
   - Add or remove members
@@ -104,7 +105,13 @@
 - **Availability Toggle**:
   - If OFF, the user won’t be auto-selected in expenses but can still be manually added.
 
-### 4. Support Page
+### 4. Open Expenses
+
+- **Offline & Local Group Tracker**: Track group expenses without requiring an account or backend.
+- **Member Advances & Direct Transfers**: Record money given in advance from any member to another with live net balance tracking.
+- **Settlement Calculator & 1-Click Settle**: Greedy settlement algorithm with 1-click payment recording and WhatsApp sharing.
+
+### 5. Support Page
 
 - **Customer Support**: Get help directly from the app.
 - **Feedback & Bug Reporting**: Submit issues and feature requests.

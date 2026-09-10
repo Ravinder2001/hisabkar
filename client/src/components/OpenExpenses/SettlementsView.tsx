@@ -5,7 +5,12 @@ import { calculateSettlements } from "../../pages/OpenExpenses/OpenExpenses";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import styles from "./SettlementsView.module.css";
 
-export default function SettlementsView({ group, getMemberName }: { group: Group; getMemberName: (memberId: string) => string }) {
+interface SettlementsViewProps {
+  group: Group;
+  getMemberName: (memberId: string) => string;
+}
+
+export default function SettlementsView({ group, getMemberName }: SettlementsViewProps) {
   const settlements = calculateSettlements(group);
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -73,7 +78,7 @@ export default function SettlementsView({ group, getMemberName }: { group: Group
           </div>
         ) : (
           <>
-            <p className={styles.intro}>To settle all expenses, the following payments need to be made:</p>
+            <p className={styles.intro}>To settle all expenses & advances with minimal transactions, the following payments need to be made:</p>
             <div className={styles.settlementList}>
               {settlements.map((settlement, index) => (
                 <div key={index} className={styles.settlementRow}>

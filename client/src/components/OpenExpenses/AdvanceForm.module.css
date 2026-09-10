@@ -1,0 +1,123 @@
+.card {
+  background: var(--hk-surface);
+  border: 1px solid var(--hk-border);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--hk-ink-faint);
+}
+
+.input {
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 0.88rem;
+  color: var(--hk-ink);
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--hk-accent);
+}
+
+.amountWrap {
+  position: relative;
+}
+
+.amountWrap .input {
+  padding-left: 26px;
+}
+
+.amountPrefix {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--hk-ink-faint);
+  font-size: 0.88rem;
+}
+
+.transferPreview {
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.memberPreview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.memberPreviewName {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--hk-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.memberPreviewRole {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--hk-ink-faint);
+}
+
+.previewArrowWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+}
+
+.previewArrow {
+  color: var(--hk-accent);
+}
+
+.previewAmount {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--hk-accent-strong);
+}
+
+.errorText {
+  font-size: 0.76rem;
+  color: var(--hk-negative);
+  margin-top: 4px;
+}
