@@ -14,8 +14,6 @@ const initSockets = require("./sockets/index");
 const mainRouter = require("./routes/routes");
 const config = require("./configuration/config");
 const Messages = require("./utils/constant/messages");
-const sendEmail = require("./helpers/sendEmail");
-const emailContent = require("./utils/constant/emailContent");
 
 const client = require("./configuration/db");
 
@@ -24,33 +22,14 @@ require("./configuration/db");
 require("./configuration/redis");
 require("./queues/settlementReport.queue");
 
-// Email ourselves on a fatal, process-level crash (not routine per-request
-// errors — those are already handled by handleAsyncError in
-// common.controller.js and don't take the process down). Racing the send
-// against a timeout keeps a hung SMTP connection from delaying the crash
-// exit indefinitely.
-const notifyCrash = async (type, error) => {
-  console.error(`${type}:`, error);
-  try {
-    const { subject, text } = emailContent.ServerCrash({
-      type,
-      message: error?.message || String(error),
-      stack: error?.stack || "No stack trace available",
-      timestamp: new Date().toISOString(),
-    });
-    await Promise.race([sendEmail(config.NODEMAILER.EMAIL, { subject, text }), new Promise((resolve) => setTimeout(resolve, 5000))]);
-  } catch (emailError) {
-    console.error("Failed to send crash notification email:", emailError);
-  }
-};
-
 process.on("uncaughtException", (error) => {
-  notifyCrash("Uncaught Exception", error).finally(() => process.exit(1));
+  console.error("Uncaught Exception:", error);
+  process.exit(1);
 });
 
 process.on("unhandledRejection", (reason) => {
-  const error = reason instanceof Error ? reason : new Error(String(reason));
-  notifyCrash("Unhandled Rejection", error).finally(() => process.exit(1));
+  console.error("Unhandled Rejection:", reason);
+  process.exit(1);
 });
 
 const port = config.PORT;
@@ -144,13 +123,6 @@ app.use(morgan(":method :url :status - userId: :user - :ist-date"));
 
 app.use("/", mainRouter);
 
-// Health check DB errors are caught here, so they never reach the
-// uncaughtException/unhandledRejection handlers above and never emailed
-// anyone on their own. Alert here too, with a cooldown so a run of
-// back-to-back failing checks doesn't flood the inbox.
-let lastHealthAlertAt = 0;
-const HEALTH_ALERT_COOLDOWN_MS = 15 * 60 * 1000;
-
 app.get("/health", async (req, res) => {
   try {
     const queryPromise = client.query("SELECT 1");
@@ -160,18 +132,6 @@ app.get("/health", async (req, res) => {
   } catch (error) {
     console.error("Health check failed:", error);
     res.status(503).json({ success: 0, message: "Service unavailable" });
-
-    const now = Date.now();
-    if (now - lastHealthAlertAt > HEALTH_ALERT_COOLDOWN_MS) {
-      lastHealthAlertAt = now;
-      const { subject, text } = emailContent.HealthCheckFailed({
-        message: error?.message || String(error),
-        timestamp: new Date().toISOString(),
-      });
-      sendEmail(config.NODEMAILER.EMAIL, { subject, text }).catch((emailError) => {
-        console.error("Failed to send health check alert email:", emailError);
-      });
-    }
   }
 });
 
