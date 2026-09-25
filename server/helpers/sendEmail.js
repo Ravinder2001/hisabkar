@@ -8,6 +8,9 @@ const transporter = nodemailer.createTransport({
     user: config.NODEMAILER.EMAIL,
     pass: config.NODEMAILER.PASSWORD,
   },
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
 
 /**
@@ -20,8 +23,8 @@ async function sendEmail(to, data) {
   if (!to) {
     throw new Error("Recipient email is required.");
   }
-  if (!data.subject || !data.text) {
-    throw new Error("Email Subject, and text are required.");
+  if (!data.subject || (!data.text && !data.html)) {
+    throw new Error("Email Subject, and text or html are required.");
   }
 
   // Mail options
@@ -29,7 +32,8 @@ async function sendEmail(to, data) {
     from: `"Hisabkar" <${config.NODEMAILER.EMAIL}>`, // Sender email
     to, // Recipient email
     subject: data.subject, // Subject line
-    text: data.text, // Plain text body
+    text: data.text || "", // Plain text body
+    ...(data.html && { html: data.html }),
   };
 
   try {

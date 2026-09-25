@@ -41,5 +41,6 @@ router.delete(
   validateExpenseData.validateExpenseOwnership,
   ExpenseController.deleteExpense
 );
+router.post("/sendOpenExpenseEmail", authenticateJWT, validateBody(schemas.sendOpenExpenseEmail), ExpenseController.sendOpenExpenseEmail);
 
 module.exports = router;
