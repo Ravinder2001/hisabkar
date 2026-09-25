@@ -54,6 +54,7 @@ const CONSTANTS = {
     UNREAD_STATUS: "/chat/unread-status",
     BUDGET_DETAILS: "/group/budgetDetails",
     SEND_REMINDER: "/group/sendReminder",
+    SEND_OPEN_EXPENSE_EMAIL: "/expense/sendOpenExpenseEmail",
   },
   FONT_FAMILY: "Nunito",
 };

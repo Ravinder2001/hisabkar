@@ -1,5 +1,5 @@
 {
-  "currentVersion": "3.11.1",
+  "currentVersion": "3.12.0",
   "note": "Hisabkar uses a single version number shared by both the frontend and backend (see package.json in each repo). Every release below covers whatever changed on either side.",
   "eras": [
     {
@@ -25,6 +25,23 @@
     }
   ],
   "versions": [
+    {
+      "version": "3.12.0",
+      "date": "2026-09-25",
+      "type": "minor",
+      "era": 3,
+      "title": "Open Expense Email Settlement Reports",
+      "changes": [
+        {
+          "type": "feature",
+          "text": "Email complete open group expense breakdowns, member splits, and settlement reports for permanent inbox records."
+        },
+        {
+          "type": "feature",
+          "text": "Added dedicated email action in settlements view and backend email dispatch service with branded HTML report."
+        }
+      ]
+    },
     {
       "version": "3.11.1",
       "date": "2026-09-17",

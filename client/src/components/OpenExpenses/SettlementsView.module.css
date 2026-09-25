@@ -7,14 +7,23 @@
 .headerRow {
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
 }
 
-.shareBtn {
+.actionBtn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
   font-size: 0.8rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.actionBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .card {
@@ -60,6 +69,61 @@
   margin: 0;
 }
 
+/* ── Settled Email Callout ─────────────────────────────────────────────── */
+.settledEmailBox {
+  margin-top: 18px;
+  width: 100%;
+  max-width: 420px;
+  padding: 16px;
+  background: var(--hk-surface-2);
+  border: 1px solid var(--hk-border);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  text-align: center;
+}
+
+.settledEmailInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settledEmailHeading {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--hk-ink);
+  margin: 0;
+}
+
+.settledEmailSub {
+  font-size: 0.78rem;
+  color: var(--hk-ink-soft);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.emailSummaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.emailSummaryBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ── Settlement List ─────────────────────────────────────────────────── */
 .intro {
   color: var(--hk-ink-soft);
   font-size: 0.82rem;
@@ -166,4 +230,24 @@
   background: var(--hk-positive);
   color: var(--hk-on-accent);
   flex: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.waBtn:hover {
+  transform: scale(1.05);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

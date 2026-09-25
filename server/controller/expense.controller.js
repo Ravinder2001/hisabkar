@@ -8,6 +8,7 @@ const Messages = require("../utils/constant/messages");
 const { trackExpenseChange } = require("../helpers/expenseLog");
 const { sendNotificationsToUsers } = require("../helpers/pushService");
 const { encryptData } = require("../utils/encryption");
+const sendOpenExpenseEmail = require("../helpers/sendOpenExpenseEmail");
 
 module.exports = {
   addExpense: async (req, res) => {
@@ -181,6 +182,27 @@ module.exports = {
       }
 
       return common.successResponse(res, Messages.SUCCESS, HttpStatus.OK);
+    } catch (error) {
+      common.handleAsyncError(error, res);
+    }
+  },
+  sendOpenExpenseEmail: async (req, res) => {
+    try {
+      const userEmail = req.user?.email || req.body.email;
+      if (!userEmail) {
+        return common.errorResponse(res, "No email found for logged-in user.", HttpStatus.BAD_REQUEST);
+      }
+      const { groupName, totalExpenses, totalAdvances, members, expenses, settlements } = req.body;
+      await sendOpenExpenseEmail({
+        email: userEmail,
+        groupName,
+        totalExpenses,
+        totalAdvances,
+        members,
+        expenses,
+        settlements,
+      });
+      return common.successResponse(res, `Settlement report sent to ${userEmail} successfully.`, HttpStatus.OK);
     } catch (error) {
       common.handleAsyncError(error, res);
     }

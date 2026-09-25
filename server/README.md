@@ -20,7 +20,7 @@ Hisabkar is a feature-rich expense splitting application with a robust backend b
 - **Database**: PostgreSQL
 - **Authentication**: JWT, OAuth (Google Sign-In)
 - **Security**: AES Encryption, VAPID keys for push notifications
-- **Email Services**: Nodemailer for OTP-based authentication
+- **Email Services**: Nodemailer for OTP-based authentication and rich HTML settlement/expense report delivery
 - **AI Integration**: OpenRouter API for intelligent financial consulting
 - **Cloud Storage**: Avatar generation via DiceBear API
 

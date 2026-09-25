@@ -109,7 +109,7 @@
 
 - **Offline & Local Group Tracker**: Track group expenses without requiring an account or backend.
 - **Member Advances & Direct Transfers**: Record money given in advance from any member to another with live net balance tracking.
-- **Settlement Calculator & 1-Click Settle**: Greedy settlement algorithm with 1-click payment recording and WhatsApp sharing.
+- **Settlement Calculator & 1-Click Settle**: Greedy settlement algorithm with WhatsApp sharing and email report dispatch for permanent records.
 
 ### 5. Support Page
 
